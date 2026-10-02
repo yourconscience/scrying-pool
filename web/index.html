@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dominion Match Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/marked@18.0.14/lib/marked.umd.js"
         integrity="sha384-2vpGtuKqJvFlwJqYnf/wUMuzUfhUnYBt9oay0e2yaFcq0Dh6/aEbQ8YAOeKGzlYo"
@@ -16,6 +18,8 @@
 </header>
 
 <main>
+  <p id="static-note" class="note" hidden>This page runs entirely in your browser and sends nothing anywhere. For game results, DM <strong>DomBot</strong> on Discord with <code>!match player1, player2</code> and paste its reply in the second box. The <a href="https://github.com/yourconscience/dombot">local app</a> can ask DomBot for you.</p>
+
   <form id="form">
     <label for="chat">Match chat <span class="hint">(copy the chat box after the match; starts with "Match #… created")</span></label>
     <textarea id="chat" rows="12" required placeholder="Match #8605 created&#10;Alice: Good luck and have fun!&#10;…&#10;Match: Alice 1, Bob 0"></textarea>

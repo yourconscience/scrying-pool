@@ -1,3 +1,5 @@
+//go:build !js
+
 // dombot turns dominion.games match chat into readable Markdown notes, optionally
 // enriched with game results fetched from DomBot over your own Discord DM.
 package main
@@ -7,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -92,57 +93,6 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
-}
-
-type result struct {
-	report
-	DomBot string `json:"dombot"` // the DomBot summary text that was used, if any
-	Source string `json:"source"` // "pasted", "discord" or "none"
-}
-
-// process is shared by the CLI and the web UI.
-func process(chatText, botText string, ask bool, timeout time.Duration) (result, error) {
-	c, err := parseChat(chatText)
-	if err != nil {
-		return result{}, err
-	}
-	res := result{Source: "none"}
-	if strings.TrimSpace(botText) != "" {
-		res.Source = "pasted"
-	} else if ask {
-		for _, p := range c.Players {
-			if strings.ContainsAny(p, ",\n") || len(p) > 40 {
-				return result{}, fmt.Errorf("unexpected player name %q", p)
-			}
-		}
-		msgs, err := askDomBot(fmt.Sprintf("!match %s, %s", c.Players[0], c.Players[1]), timeout)
-		if err != nil {
-			return result{}, fmt.Errorf("asking DomBot: %w", err)
-		}
-		botText, res.Source = renderMessages(msgs, time.Local), "discord"
-	}
-	var s *Summary
-	var extra []string
-	if strings.TrimSpace(botText) != "" {
-		if s, err = parseSummary(botText); err != nil {
-			if res.Source == "pasted" {
-				return result{}, err
-			}
-			extra = append(extra, "DomBot replied, but not with a match summary: "+firstLine(botText))
-		}
-	}
-	res.report = buildReport(c, s)
-	res.Warnings = append(extra, res.Warnings...)
-	res.DomBot = botText
-	return res, nil
-}
-
-func firstLine(s string) string {
-	s = strings.TrimSpace(s)
-	if i := strings.IndexByte(s, '\n'); i >= 0 {
-		s = s[:i]
-	}
-	return s
 }
 
 func emit(path, text string) error {

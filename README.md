@@ -17,6 +17,10 @@ Or from a clone: `go run . web`.
 
 Click **Load demo match** to see a full example. It uses a real six-game match, with spectator names replaced.
 
+## Hosted version
+
+`go run ./cmd/buildsite` builds a browser-only copy into `site/`: the formatter compiled to WebAssembly plus one HTML page. Any static host can serve it. It formats pasted chat and pasted DomBot replies, and can't ask DomBot itself, since that would DM from whoever's token is on the server.
+
 ## Getting the inputs
 
 1. **Match chat:** after the match, select the whole chat box on dominion.games, copy it, and paste it. Lines like `Match: Alice 1, Bob 0` mark the end of each game.

@@ -1,3 +1,5 @@
+//go:build !js
+
 package main
 
 import (
@@ -14,32 +16,6 @@ import (
 )
 
 var api = "https://discord.com/api/v10"
-
-type user struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Bot      bool   `json:"bot"`
-}
-
-type discordEmbed struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Fields      []struct {
-		Name  string `json:"name"`
-		Value string `json:"value"`
-	} `json:"fields"`
-	Footer *struct {
-		Text string `json:"text"`
-	} `json:"footer"`
-}
-
-type message struct {
-	ID        string         `json:"id"`
-	Author    user           `json:"author"`
-	Content   string         `json:"content"`
-	Embeds    []discordEmbed `json:"embeds"`
-	Timestamp string         `json:"timestamp"`
-}
 
 type client struct {
 	token string

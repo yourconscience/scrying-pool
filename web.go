@@ -1,3 +1,5 @@
+//go:build !js
+
 package main
 
 import (
@@ -12,12 +14,6 @@ import (
 
 //go:embed web
 var webFiles embed.FS
-
-//go:embed sample/chat.txt
-var sampleChat string
-
-//go:embed sample/dombot.txt
-var sampleDomBot string
 
 func serve(addr string, timeout time.Duration) error {
 	fmt.Printf("dombot web UI: http://%s\n", addr)
