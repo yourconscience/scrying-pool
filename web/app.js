@@ -165,16 +165,21 @@ function cardTile(card) {
   const typeLine = card.types.join(" – ");
   a.title = `${card.name} · ${typeLine}${card.cost || card.debt || card.potion ? " · " + costText(card) : ""} · ${card.set}`;
 
-  const art = el("span", "art");
-  if (showArt) {
-    const img = el("img");
-    img.alt = "";
-    img.loading = "lazy";
-    img.src = "/art/" + encodeURIComponent(card.art);
-    img.onerror = () => img.remove();
-    art.append(img);
+  if (!showArt) {
+    // Compact chip: cost, then name over "types · set".
+    a.classList.add("chip");
+    const info = el("span", "info");
+    info.append(el("span", "name", card.name), el("span", "meta", `${typeLine} · ${card.set}`));
+    a.append(costBadges(card), info);
+    return a;
   }
-  art.append(el("span", "set", card.set));
+  const art = el("span", "art");
+  const img = el("img");
+  img.alt = "";
+  img.loading = "lazy";
+  img.src = "/art/" + encodeURIComponent(card.art);
+  img.onerror = () => img.remove();
+  art.append(img, el("span", "set", card.set));
   a.append(art, el("span", "name", card.name));
   const foot = el("span", "foot");
   foot.append(costBadges(card), el("span", "types", typeLine));
