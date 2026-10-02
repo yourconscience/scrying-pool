@@ -15,8 +15,9 @@ var mdEscaper = strings.NewReplacer(
 func md(s string) string { return mdEscaper.Replace(s) }
 
 type report struct {
-	Markdown string   `json:"markdown"`
-	Warnings []string `json:"warnings"`
+	Markdown string     `json:"markdown"`
+	Warnings []string   `json:"warnings"`
+	Games    []*Kingdom `json:"games"` // per chat game; null when DomBot results are missing
 }
 
 // buildReport renders the chat (and DomBot results, if any) as Markdown.
@@ -27,6 +28,14 @@ func buildReport(c *Chat, s *Summary) report {
 		var ok bool
 		if results, ok = align(c, s); !ok {
 			warn = append(warn, fmt.Sprintf("DomBot's games don't match the chat's %d results (winners differ or games are missing), so game details are left out. DomBot's !match only covers the last day or two.", len(c.Games)))
+		}
+	}
+
+	kingdoms := make([]*Kingdom, len(c.Games))
+	for i, r := range results {
+		if r != nil && len(r.Cards) > 0 {
+			k := classify(r.Cards)
+			kingdoms[i] = &k
 		}
 	}
 
@@ -74,8 +83,8 @@ func buildReport(c *Chat, s *Summary) report {
 		fmt.Fprintf(&w, "\n## Game %d: %s wins (match %d-%d)\n\n", i+1, md(g.Winner), g.Score[0], g.Score[1])
 		if r := results[i]; r != nil {
 			fmt.Fprintf(&w, "- **Result:** %s %d, %s %d (%s, %s turns, %s)\n", md(a), r.Points[a], md(b), r.Points[b], md(r.End), r.Turns, r.Duration)
-			if len(r.Cards) > 0 {
-				w.WriteString("- **Kingdom and landscapes:** " + md(strings.Join(r.Cards, ", ")) + "\n")
+			if k := kingdoms[i]; k != nil {
+				writeKingdom(&w, k)
 			}
 			if r.Empty != "" {
 				w.WriteString("- **Empty piles:** " + md(r.Empty) + "\n")
@@ -91,7 +100,26 @@ func buildReport(c *Chat, s *Summary) report {
 		w.WriteString("\n## After the last result\n\n")
 		writeChat(&w, c, c.Tail)
 	}
-	return report{Markdown: w.String(), Warnings: warn}
+	return report{Markdown: w.String(), Warnings: warn, Games: kingdoms}
+}
+
+func writeKingdom(w *strings.Builder, k *Kingdom) {
+	var cards, lands []string
+	for _, c := range k.Cards {
+		cards = append(cards, md(c.Name)+" ("+costLabel(c)+")")
+	}
+	for _, c := range k.Landscapes {
+		lands = append(lands, md(c.Name)+" ("+c.Types[0]+")")
+	}
+	if len(cards) > 0 {
+		w.WriteString("- **Kingdom:** " + strings.Join(cards, ", ") + "\n")
+	}
+	if len(lands) > 0 {
+		w.WriteString("- **Landscapes:** " + strings.Join(lands, ", ") + "\n")
+	}
+	if len(k.Unknown) > 0 {
+		w.WriteString("- **Not in the card list:** " + md(strings.Join(k.Unknown, ", ")) + "\n")
+	}
 }
 
 func writeChat(w *strings.Builder, c *Chat, lines []chatLine) {

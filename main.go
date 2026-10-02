@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -17,6 +18,7 @@ const usageText = `usage:
   dombot format [-dombot FILE | -ask] CHAT_FILE      chat (+ DomBot results) -> Markdown
   dombot match PLAYER1 PLAYER2                       ask DomBot "!match PLAYER1, PLAYER2"
   dombot ask '<command>'                             send any DomBot command, e.g. '!game 184206813'
+  dombot cards sync [-kinds kingdom,landscape]       download card art from the Dominion Strategy wiki
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
 Run "dombot <command> -h" for flags.
@@ -86,6 +88,20 @@ func main() {
 			}
 		}
 		err = emit(*out, renderMessages(msgs, time.Local))
+	case "cards":
+		kinds := fs.String("kinds", "", "comma-separated card kinds (kingdom, landscape, basic, other); empty means all")
+		if len(args) == 0 || args[0] != "sync" {
+			fmt.Fprint(os.Stderr, usageText)
+			os.Exit(2)
+		}
+		fs.Parse(args[1:])
+		want := map[string]bool{}
+		for _, k := range strings.Split(*kinds, ",") {
+			if k = strings.TrimSpace(k); k != "" {
+				want[k] = true
+			}
+		}
+		err = syncArt(want)
 	default:
 		fmt.Fprint(os.Stderr, usageText)
 		os.Exit(2)

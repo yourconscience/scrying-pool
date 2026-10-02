@@ -15,7 +15,7 @@ dombot web            # http://127.0.0.1:8765
 
 Or from a clone: `go run . web`.
 
-Click **Load demo match** to see a full example. It uses a real six-game match, with spectator names replaced.
+Click **Load demo match** to see a full example. It uses a real six-game match, with the real spectator chat.
 
 ## Hosted version
 
@@ -50,6 +50,13 @@ dombot format chat.txt > notes.md                     # chat only
 dombot match Alice Bob                                # print DomBot's !match reply as text
 dombot ask '!game 184206813'                          # any DomBot command; -raw FILE keeps the JSON
 ```
+
+## Kingdom viewer and card data
+
+Each game section shows its kingdom: piles sorted by cost, then landscapes (Events, Projects, Landmarks, Ways, Allies, Traits, Prophecies), framed in their card-type colours. Click a card to open its page on the [Dominion Strategy wiki](https://wiki.dominionstrategy.com).
+
+- `cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
+- Card art belongs to Rio Grande Games, so it isn't in this repo or the hosted page. The local app downloads art thumbnails from the wiki the first time it shows each card. It keeps them in your user cache folder (`~/Library/Caches/dombot/art` on macOS; `DOMBOT_ART_DIR` overrides it). To fetch them all at once (about 11 MB), run `dombot cards sync`.
 
 ## Notes
 

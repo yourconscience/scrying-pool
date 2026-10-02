@@ -24,7 +24,7 @@ function fromWasm(json) {
 
 const backend = STATIC
   ? {
-      status: async () => ({ discord: false }),
+      status: async () => ({ discord: false, art: false }),
       sample: async () => (await loadWasm(), fromWasm(dombotSample())),
       format: async (req) => (await loadWasm(), fromWasm(dombotFormat(req.chat, req.dombot))),
     }
@@ -57,7 +57,9 @@ if (STATIC) {
   $("static-note").hidden = false;
 }
 
+let showArt = false;
 backend.status().then((s) => {
+  showArt = s.art;
   $("ask").disabled = !s.discord;
   $("ask-hint").textContent = s.discord
     ? "(DMs DomBot as you; against Discord's ToS for automation)"
@@ -86,6 +88,7 @@ $("form").addEventListener("submit", async (e) => {
     const title = markdown.split("\n", 1)[0].replace(/^# /, "").replace(/\\/g, "");
     fileName = title.replace(/:.*/, "").replace(/[^\w.-]+/g, "_") + ".md";
     $("rendered").innerHTML = marked.parse(markdown);
+    renderKingdoms(r.games || []);
     $("source-md").textContent = markdown;
     $("source").textContent = {
       pasted: "Game results: pasted DomBot reply",
@@ -111,6 +114,96 @@ $("form").addEventListener("submit", async (e) => {
     $("go").textContent = "Format notes";
   }
 });
+
+// Kingdom viewer: one tile per pile, framed in the colours of its card types.
+// Art is only available in the local app, which keeps a private copy per machine.
+
+const FRAME = {
+  Night: "#45424f", Treasure: "#efcb55", Victory: "#9cc97a", Curse: "#b48ac8",
+  Reaction: "#82acd9", Duration: "#f0a35c", Reserve: "#d8b87e", Ruins: "#a8865f",
+  Shelter: "#d98b6d", Action: "#ece2cb",
+  event: "#c9c6bd", project: "#eba7b3", landmark: "#8fb58f", way: "#a6cfe1",
+  ally: "#e8c897", trait: "#c1aedb", prophecy: "#a8c3ea",
+};
+const FRAME_ORDER = ["Night", "Treasure", "Victory", "Curse", "Reaction", "Duration", "Reserve", "Ruins", "Shelter", "Action"];
+
+function frames(card) {
+  if (FRAME[card.kind]) return [FRAME[card.kind], FRAME[card.kind]];
+  const hits = FRAME_ORDER.filter((t) => card.types.includes(t)).map((t) => FRAME[t]);
+  return [hits[0] || FRAME.Action, hits[1] || hits[0] || FRAME.Action];
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function costBadges(card) {
+  const box = el("span", "cost");
+  if (card.cost) box.append(el("span", "coin", card.cost));
+  if (card.potion) box.append(el("span", "potion", "P"));
+  if (card.debt) box.append(el("span", "debt", String(card.debt)));
+  return box;
+}
+
+function wikiURL(card) {
+  return "https://wiki.dominionstrategy.com/index.php/" + encodeURIComponent(card.name.split("/")[0].replace(/ /g, "_"));
+}
+
+function cardTile(card) {
+  const landscape = !!FRAME[card.kind];
+  const a = el("a", landscape ? "tile landscape" : "tile");
+  a.href = wikiURL(card);
+  a.target = "_blank";
+  a.rel = "noopener";
+  const [f1, f2] = frames(card);
+  a.style.setProperty("--f1", f1);
+  a.style.setProperty("--f2", f2);
+  if (card.types.includes("Night")) a.classList.add("dark");
+  const typeLine = card.types.join(" – ");
+  a.title = `${card.name} · ${typeLine}${card.cost || card.debt || card.potion ? " · " + costText(card) : ""} · ${card.set}`;
+
+  const art = el("span", "art");
+  if (showArt) {
+    const img = el("img");
+    img.alt = "";
+    img.loading = "lazy";
+    img.src = "/art/" + encodeURIComponent(card.art);
+    img.onerror = () => img.remove();
+    art.append(img);
+  }
+  art.append(el("span", "set", card.set));
+  a.append(art, el("span", "name", card.name));
+  const foot = el("span", "foot");
+  foot.append(costBadges(card), el("span", "types", typeLine));
+  a.append(foot);
+  return a;
+}
+
+function costText(card) {
+  return [card.cost && "$" + card.cost, card.potion && "P", card.debt && card.debt + "D"].filter(Boolean).join(" ");
+}
+
+function renderKingdoms(games) {
+  const heads = [...$("rendered").querySelectorAll("h2")];
+  games.forEach((k, i) => {
+    if (!k || !heads[i]) return;
+    const box = el("section", "kingdom");
+    box.setAttribute("aria-label", `Game ${i + 1} kingdom`);
+    const cards = el("div", "piles");
+    k.cards.forEach((c) => cards.append(cardTile(c)));
+    box.append(cards);
+    if (k.landscapes.length) {
+      const lands = el("div", "landscapes");
+      k.landscapes.forEach((c) => lands.append(cardTile(c)));
+      box.append(lands);
+    }
+    const details = heads[i].nextElementSibling;
+    (details && details.tagName === "UL" ? details : heads[i]).after(box);
+  });
+}
 
 $("copy").addEventListener("click", () => {
   navigator.clipboard.writeText(markdown).then(

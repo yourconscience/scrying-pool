@@ -29,7 +29,16 @@ func newHandler(timeout time.Duration) http.Handler {
 	})
 	mux.HandleFunc("GET /api/status", func(w http.ResponseWriter, r *http.Request) {
 		_, err := token()
-		writeJSON(w, 200, map[string]bool{"discord": err == nil})
+		writeJSON(w, 200, map[string]bool{"discord": err == nil, "art": true})
+	})
+	mux.HandleFunc("GET /art/{file}", func(w http.ResponseWriter, r *http.Request) {
+		p, err := artPath(r.PathValue("file"))
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Cache-Control", "max-age=604800")
+		http.ServeFile(w, r, p)
 	})
 	mux.HandleFunc("POST /api/format", func(w http.ResponseWriter, r *http.Request) {
 		// Only our own page may trigger this: it can send a DM from the user's account.

@@ -1,0 +1,8385 @@
+{
+ "cards": [
+  {
+   "name": "Abundance",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "AbundanceArt.jpg"
+  },
+  {
+   "name": "Academy",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "AcademyArt.jpg"
+  },
+  {
+   "name": "Acolyte",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Augur"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "AcolyteArt.jpg"
+  },
+  {
+   "name": "Acting Troupe",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "Acting_TroupeArt.jpg"
+  },
+  {
+   "name": "Advance",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Empires",
+   "art": "AdvanceArt.jpg"
+  },
+  {
+   "name": "Adventurer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Dominion",
+   "art": "AdventurerArt.jpg"
+  },
+  {
+   "name": "Advisor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "AdvisorArt.jpg"
+  },
+  {
+   "name": "Alchemist",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "AlchemistArt.jpg"
+  },
+  {
+   "name": "Alley",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Shadow"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "AlleyArt.jpg"
+  },
+  {
+   "name": "Alliance",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "10",
+   "set": "Menagerie",
+   "art": "AllianceArt.jpg"
+  },
+  {
+   "name": "Alms",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Adventures",
+   "art": "AlmsArt.jpg"
+  },
+  {
+   "name": "Altar",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Dark Ages",
+   "art": "AltarArt.jpg"
+  },
+  {
+   "name": "Amass",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "AmassArt.jpg"
+  },
+  {
+   "name": "Ambassador",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "AmbassadorArt.jpg"
+  },
+  {
+   "name": "Amulet",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "AmuletArt.jpg"
+  },
+  {
+   "name": "Animal Fair",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "7*",
+   "set": "Menagerie",
+   "art": "Animal_FairArt.jpg"
+  },
+  {
+   "name": "Annex",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "debt": 8,
+   "set": "Empires",
+   "art": "AnnexArt.jpg"
+  },
+  {
+   "name": "Anvil",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3",
+   "set": "Prosperity",
+   "art": "AnvilArt.jpg"
+  },
+  {
+   "name": "Apothecary",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "ApothecaryArt.jpg"
+  },
+  {
+   "name": "Apprentice",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Alchemy",
+   "art": "ApprenticeArt.jpg"
+  },
+  {
+   "name": "Approaching Army",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Approaching_ArmyArt.jpg"
+  },
+  {
+   "name": "Aqueduct",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "AqueductArt.jpg"
+  },
+  {
+   "name": "Archer",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Clash"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "ArcherArt.jpg"
+  },
+  {
+   "name": "Architects' Guild",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Architects'_GuildArt.jpg"
+  },
+  {
+   "name": "Archive",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "ArchiveArt.jpg"
+  },
+  {
+   "name": "Arena",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "ArenaArt.jpg"
+  },
+  {
+   "name": "Aristocrat",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Rising Sun",
+   "art": "AristocratArt.jpg"
+  },
+  {
+   "name": "Armory",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "ArmoryArt.jpg"
+  },
+  {
+   "name": "Artificer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "ArtificerArt.jpg"
+  },
+  {
+   "name": "Artisan",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Dominion",
+   "art": "ArtisanArt.jpg"
+  },
+  {
+   "name": "Artist",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "debt": 8,
+   "set": "Rising Sun",
+   "art": "ArtistArt.jpg"
+  },
+  {
+   "name": "Asceticism",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "AsceticismArt.jpg"
+  },
+  {
+   "name": "Astrolabe",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "AstrolabeArt.jpg"
+  },
+  {
+   "name": "Augurs",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Augur"
+   ],
+   "cost": "3*",
+   "set": "Allies",
+   "art": "AugursArt.jpg"
+  },
+  {
+   "name": "Avanto",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Promo",
+   "art": "AvantoArt.jpg"
+  },
+  {
+   "name": "Avoid",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "AvoidArt.jpg"
+  },
+  {
+   "name": "Bad Omens",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "Bad_OmensArt.jpg"
+  },
+  {
+   "name": "Bag of Gold",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Prize"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "Bag_of_GoldArt.jpg"
+  },
+  {
+   "name": "Baker",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "BakerArt.jpg"
+  },
+  {
+   "name": "Ball",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "BallArt.jpg"
+  },
+  {
+   "name": "Band of Misfits",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Command"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "Band_of_MisfitsArt.jpg"
+  },
+  {
+   "name": "Band of Nomads",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Band_of_NomadsArt.jpg"
+  },
+  {
+   "name": "Bandit",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "BanditArt.jpg"
+  },
+  {
+   "name": "Bandit Camp",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "Bandit_CampArt.jpg"
+  },
+  {
+   "name": "Bandit Fort",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "Bandit_FortArt.jpg"
+  },
+  {
+   "name": "Banish",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "BanishArt.jpg"
+  },
+  {
+   "name": "Bank",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "7",
+   "set": "Prosperity",
+   "art": "BankArt.jpg"
+  },
+  {
+   "name": "Banquet",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "BanquetArt.jpg"
+  },
+  {
+   "name": "Barbarian",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "BarbarianArt.jpg"
+  },
+  {
+   "name": "Bard",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "BardArt.jpg"
+  },
+  {
+   "name": "Bargain",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "BargainArt.jpg"
+  },
+  {
+   "name": "Barge",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "BargeArt.jpg"
+  },
+  {
+   "name": "Baron",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "BaronArt.jpg"
+  },
+  {
+   "name": "Barracks",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "6",
+   "set": "Renaissance",
+   "art": "BarracksArt.jpg"
+  },
+  {
+   "name": "Basilica",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "BasilicaArt.jpg"
+  },
+  {
+   "name": "Bat",
+   "kind": "other",
+   "types": [
+    "Night"
+   ],
+   "cost": "2*",
+   "set": "Nocturne",
+   "art": "BatArt.jpg"
+  },
+  {
+   "name": "Baths",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "BathsArt.jpg"
+  },
+  {
+   "name": "Battle Plan",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Clash"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "Battle_PlanArt.jpg"
+  },
+  {
+   "name": "Battlefield",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "BattlefieldArt.jpg"
+  },
+  {
+   "name": "Bauble",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Liaison"
+   ],
+   "cost": "2",
+   "set": "Allies",
+   "art": "BaubleArt.jpg"
+  },
+  {
+   "name": "Bazaar",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "BazaarArt.jpg"
+  },
+  {
+   "name": "Beggar",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Dark Ages",
+   "art": "BeggarArt.jpg"
+  },
+  {
+   "name": "Berserker",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "BerserkerArt.jpg"
+  },
+  {
+   "name": "Biding Time",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Biding_TimeArt.jpg"
+  },
+  {
+   "name": "Bishop",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "BishopArt.jpg"
+  },
+  {
+   "name": "Black Cat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "Black_CatArt.jpg"
+  },
+  {
+   "name": "Black Market",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Promo",
+   "art": "Black_MarketArt.jpg"
+  },
+  {
+   "name": "Blacksmith",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Townsfolk"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "BlacksmithArt.jpg"
+  },
+  {
+   "name": "Blessed Village",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "Blessed_VillageArt.jpg"
+  },
+  {
+   "name": "Blockade",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "BlockadeArt.jpg"
+  },
+  {
+   "name": "Bonfire",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "BonfireArt.jpg"
+  },
+  {
+   "name": "Border Guard",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Renaissance",
+   "art": "Border_GuardArt.jpg"
+  },
+  {
+   "name": "Border Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Hinterlands",
+   "art": "Border_VillageArt.jpg"
+  },
+  {
+   "name": "Borrow",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Adventures",
+   "art": "BorrowArt.jpg"
+  },
+  {
+   "name": "Bounty Hunter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "Bounty_HunterArt.jpg"
+  },
+  {
+   "name": "Bridge",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "BridgeArt.jpg"
+  },
+  {
+   "name": "Bridge Troll",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Bridge_TrollArt.jpg"
+  },
+  {
+   "name": "Broker",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Liaison"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "BrokerArt.jpg"
+  },
+  {
+   "name": "Bureaucracy",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "BureaucracyArt.jpg"
+  },
+  {
+   "name": "Bureaucrat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "BureaucratArt.jpg"
+  },
+  {
+   "name": "Buried Treasure",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "Buried_TreasureArt.jpg"
+  },
+  {
+   "name": "Bury",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "1",
+   "set": "Plunder",
+   "art": "BuryArt.jpg"
+  },
+  {
+   "name": "Bustling Village",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "Bustling_VillageArt.jpg"
+  },
+  {
+   "name": "Butcher",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "ButcherArt.jpg"
+  },
+  {
+   "name": "Cabin Boy",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "Cabin_BoyArt.jpg"
+  },
+  {
+   "name": "Cache",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "CacheArt.jpg"
+  },
+  {
+   "name": "Cage",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "CageArt.jpg"
+  },
+  {
+   "name": "Camel Train",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "Camel_TrainArt.jpg"
+  },
+  {
+   "name": "Canal",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "7",
+   "set": "Renaissance",
+   "art": "CanalArt.jpg"
+  },
+  {
+   "name": "Candlestick Maker",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "Candlestick_MakerArt.jpg"
+  },
+  {
+   "name": "Capital",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "CapitalArt.jpg"
+  },
+  {
+   "name": "Capital City",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "Capital_CityArt.jpg"
+  },
+  {
+   "name": "Capitalism",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "CapitalismArt.jpg"
+  },
+  {
+   "name": "Captain",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "6",
+   "set": "Promo",
+   "art": "CaptainArt.jpg"
+  },
+  {
+   "name": "Caravan",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "CaravanArt.jpg"
+  },
+  {
+   "name": "Caravan Guard",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "Caravan_GuardArt.jpg"
+  },
+  {
+   "name": "Cardinal",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "CardinalArt.jpg"
+  },
+  {
+   "name": "Cargo Ship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "Cargo_ShipArt.jpg"
+  },
+  {
+   "name": "Carnival",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "CarnivalArt.jpg"
+  },
+  {
+   "name": "Carpenter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "CarpenterArt.jpg"
+  },
+  {
+   "name": "Cartographer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "CartographerArt.jpg"
+  },
+  {
+   "name": "Castles",
+   "kind": "kingdom",
+   "types": [
+    "Victory",
+    "Castle"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "CastlesArt.jpg"
+  },
+  {
+   "name": "Catacombs",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "CatacombsArt.jpg"
+  },
+  {
+   "name": "Catapult",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "CatapultArt.jpg"
+  },
+  {
+   "name": "Catapult / Rocks",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3*",
+   "set": "Empires",
+   "art": "Catapult_/_RocksArt.jpg"
+  },
+  {
+   "name": "Cathedral",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "CathedralArt.jpg"
+  },
+  {
+   "name": "Cauldron",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "CauldronArt.jpg"
+  },
+  {
+   "name": "Cavalry",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "CavalryArt.jpg"
+  },
+  {
+   "name": "Cave Dwellers",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Cave_DwellersArt.jpg"
+  },
+  {
+   "name": "Cellar",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Dominion",
+   "art": "CellarArt.jpg"
+  },
+  {
+   "name": "Cemetery",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "CemeteryArt.jpg"
+  },
+  {
+   "name": "Champion",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "6*",
+   "set": "Adventures",
+   "art": "ChampionArt.jpg"
+  },
+  {
+   "name": "Chancellor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "ChancellorArt.jpg"
+  },
+  {
+   "name": "Change",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "ChangeArt.jpg"
+  },
+  {
+   "name": "Changeling",
+   "kind": "kingdom",
+   "types": [
+    "Night"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "ChangelingArt.jpg"
+  },
+  {
+   "name": "Chapel",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Dominion",
+   "art": "ChapelArt.jpg"
+  },
+  {
+   "name": "Chariot Race",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "Chariot_RaceArt.jpg"
+  },
+  {
+   "name": "Charlatan",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "CharlatanArt.jpg"
+  },
+  {
+   "name": "Charm",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "CharmArt.jpg"
+  },
+  {
+   "name": "Cheap",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "CheapArt.jpg"
+  },
+  {
+   "name": "Church",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Promo",
+   "art": "ChurchArt.jpg"
+  },
+  {
+   "name": "Circle of Witches",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Circle_of_WitchesArt.jpg"
+  },
+  {
+   "name": "Citadel",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "8",
+   "set": "Renaissance",
+   "art": "CitadelArt.jpg"
+  },
+  {
+   "name": "City",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "CityArt.jpg"
+  },
+  {
+   "name": "City Gate",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "City_GateArt.jpg"
+  },
+  {
+   "name": "City Quarter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "debt": 8,
+   "set": "Empires",
+   "art": "City_QuarterArt.jpg"
+  },
+  {
+   "name": "City-state",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "City-stateArt.jpg"
+  },
+  {
+   "name": "Clashes",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Clash"
+   ],
+   "cost": "3*",
+   "set": "Allies",
+   "art": "ClashesArt.jpg"
+  },
+  {
+   "name": "Clerk",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "ClerkArt.jpg"
+  },
+  {
+   "name": "Coastal Haven",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Coastal_HavenArt.jpg"
+  },
+  {
+   "name": "Cobbler",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "CobblerArt.jpg"
+  },
+  {
+   "name": "Coin of the Realm",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Reserve"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "Coin_of_the_RealmArt.jpg"
+  },
+  {
+   "name": "Collection",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "CollectionArt.jpg"
+  },
+  {
+   "name": "Colonnade",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "ColonnadeArt.jpg"
+  },
+  {
+   "name": "Colony",
+   "kind": "basic",
+   "types": [
+    "Victory"
+   ],
+   "cost": "11",
+   "set": "Base",
+   "art": "ColonyArt.jpg"
+  },
+  {
+   "name": "Commerce",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "CommerceArt.jpg"
+  },
+  {
+   "name": "Conclave",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "ConclaveArt.jpg"
+  },
+  {
+   "name": "Conjurer",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Duration",
+    "Wizard"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "ConjurerArt.jpg"
+  },
+  {
+   "name": "Conquest",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "6",
+   "set": "Empires",
+   "art": "ConquestArt.jpg"
+  },
+  {
+   "name": "Conspirator",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "ConspiratorArt.jpg"
+  },
+  {
+   "name": "Continue",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "ContinueArt.jpg"
+  },
+  {
+   "name": "Contraband",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "ContrabandArt.jpg"
+  },
+  {
+   "name": "Contract",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration",
+    "Liaison"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "ContractArt.jpg"
+  },
+  {
+   "name": "Copper",
+   "kind": "basic",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "0",
+   "set": "Base",
+   "art": "CopperArt.jpg"
+  },
+  {
+   "name": "Coppersmith",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "CoppersmithArt.jpg"
+  },
+  {
+   "name": "Coronet",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Treasure",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "CoronetArt.jpg"
+  },
+  {
+   "name": "Corsair",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "CorsairArt.jpg"
+  },
+  {
+   "name": "Council Room",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "Council_RoomArt.jpg"
+  },
+  {
+   "name": "Count",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "CountArt.jpg"
+  },
+  {
+   "name": "Counterfeit",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "CounterfeitArt.jpg"
+  },
+  {
+   "name": "Counting House",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "Counting_HouseArt.jpg"
+  },
+  {
+   "name": "Courier",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "CourierArt.jpg"
+  },
+  {
+   "name": "Courser",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "CourserArt.jpg"
+  },
+  {
+   "name": "Courtier",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "CourtierArt.jpg"
+  },
+  {
+   "name": "Courtyard",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Intrigue",
+   "art": "CourtyardArt.jpg"
+  },
+  {
+   "name": "Coven",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "CovenArt.jpg"
+  },
+  {
+   "name": "Crafters' Guild",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Crafters'_GuildArt.jpg"
+  },
+  {
+   "name": "Craftsman",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Rising Sun",
+   "art": "CraftsmanArt.jpg"
+  },
+  {
+   "name": "Credit",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "CreditArt.jpg"
+  },
+  {
+   "name": "Crew",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "CrewArt.jpg"
+  },
+  {
+   "name": "Crop Rotation",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "6",
+   "set": "Renaissance",
+   "art": "Crop_RotationArt.jpg"
+  },
+  {
+   "name": "Crossroads",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Hinterlands",
+   "art": "CrossroadsArt.jpg"
+  },
+  {
+   "name": "Crown",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "CrownArt.jpg"
+  },
+  {
+   "name": "Crucible",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "CrucibleArt.jpg"
+  },
+  {
+   "name": "Crypt",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "CryptArt.jpg"
+  },
+  {
+   "name": "Crystal Ball",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "Crystal_BallArt.jpg"
+  },
+  {
+   "name": "Cultist",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Looter"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "CultistArt.jpg"
+  },
+  {
+   "name": "Curse",
+   "kind": "basic",
+   "types": [
+    "Curse"
+   ],
+   "cost": "0",
+   "set": "Base",
+   "art": "CurseArt.jpg"
+  },
+  {
+   "name": "Cursed",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "CursedArt.jpg"
+  },
+  {
+   "name": "Cursed Gold",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "Cursed_GoldArt.jpg"
+  },
+  {
+   "name": "Cursed Village",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Doom"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "Cursed_VillageArt.jpg"
+  },
+  {
+   "name": "Cutpurse",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "CutpurseArt.jpg"
+  },
+  {
+   "name": "Cutthroat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "CutthroatArt.jpg"
+  },
+  {
+   "name": "Daimyo",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Command"
+   ],
+   "debt": 6,
+   "set": "Rising Sun",
+   "art": "DaimyoArt.jpg"
+  },
+  {
+   "name": "Death Cart",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Looter"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "Death_CartArt.jpg"
+  },
+  {
+   "name": "Defiled Shrine",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "Defiled_ShrineArt.jpg"
+  },
+  {
+   "name": "Delay",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Menagerie",
+   "art": "DelayArt.jpg"
+  },
+  {
+   "name": "Deliver",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "DeliverArt.jpg"
+  },
+  {
+   "name": "Delusion",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "DelusionArt.jpg"
+  },
+  {
+   "name": "Delve",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Empires",
+   "art": "DelveArt.jpg"
+  },
+  {
+   "name": "Demand",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "DemandArt.jpg"
+  },
+  {
+   "name": "Demesne",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Victory",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "DemesneArt.jpg"
+  },
+  {
+   "name": "Den of Sin",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "Den_of_SinArt.jpg"
+  },
+  {
+   "name": "Desert Guides",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Desert_GuidesArt.jpg"
+  },
+  {
+   "name": "Desperation",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Menagerie",
+   "art": "DesperationArt.jpg"
+  },
+  {
+   "name": "Destrier",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6*",
+   "set": "Menagerie",
+   "art": "DestrierArt.jpg"
+  },
+  {
+   "name": "Develop",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "DevelopArt.jpg"
+  },
+  {
+   "name": "Devil's Workshop",
+   "kind": "kingdom",
+   "types": [
+    "Night"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "Devil's_WorkshopArt.jpg"
+  },
+  {
+   "name": "Diadem",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Prize"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "DiademArt.jpg"
+  },
+  {
+   "name": "Diplomat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "DiplomatArt.jpg"
+  },
+  {
+   "name": "Disciple",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "5*",
+   "set": "Adventures",
+   "art": "DiscipleArt.jpg"
+  },
+  {
+   "name": "Dismantle",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "DismantleArt.jpg"
+  },
+  {
+   "name": "Displace",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "DisplaceArt.jpg"
+  },
+  {
+   "name": "Distant Lands",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve",
+    "Victory"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Distant_LandsArt.jpg"
+  },
+  {
+   "name": "Distant Shore",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Victory",
+    "Odyssey"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "Distant_ShoreArt.jpg"
+  },
+  {
+   "name": "Divine Wind",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Divine_WindArt.jpg"
+  },
+  {
+   "name": "Doctor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3+",
+   "set": "Guilds",
+   "art": "DoctorArt.jpg"
+  },
+  {
+   "name": "Dominate",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "14",
+   "set": "Empires",
+   "art": "DominateArt.jpg"
+  },
+  {
+   "name": "Donate",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "debt": 8,
+   "set": "Empires",
+   "art": "DonateArt.jpg"
+  },
+  {
+   "name": "Druid",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "DruidArt.jpg"
+  },
+  {
+   "name": "Ducat",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "2",
+   "set": "Renaissance",
+   "art": "DucatArt.jpg"
+  },
+  {
+   "name": "Duchess",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Hinterlands",
+   "art": "DuchessArt.jpg"
+  },
+  {
+   "name": "Duchy",
+   "kind": "basic",
+   "types": [
+    "Victory"
+   ],
+   "cost": "5",
+   "set": "Base",
+   "art": "DuchyArt.jpg"
+  },
+  {
+   "name": "Duke",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "DukeArt.jpg"
+  },
+  {
+   "name": "Dungeon",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "DungeonArt.jpg"
+  },
+  {
+   "name": "Duplicate",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "DuplicateArt.jpg"
+  },
+  {
+   "name": "Elder",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Townsfolk"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "ElderArt.jpg"
+  },
+  {
+   "name": "Embargo",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Seaside",
+   "art": "EmbargoArt.jpg"
+  },
+  {
+   "name": "Embassy",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "EmbassyArt.jpg"
+  },
+  {
+   "name": "Emissary",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Liaison"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "EmissaryArt.jpg"
+  },
+  {
+   "name": "Emporium",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "EmporiumArt.jpg"
+  },
+  {
+   "name": "Encampment",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Empires",
+   "art": "EncampmentArt.jpg"
+  },
+  {
+   "name": "Encampment / Plunder",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2*",
+   "set": "Empires",
+   "art": "Encampment_/_PlunderArt.jpg"
+  },
+  {
+   "name": "Enchantress",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "EnchantressArt.jpg"
+  },
+  {
+   "name": "Enclave",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "8",
+   "set": "Menagerie",
+   "art": "EnclaveArt.jpg"
+  },
+  {
+   "name": "Engineer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "debt": 4,
+   "set": "Empires",
+   "art": "EngineerArt.jpg"
+  },
+  {
+   "name": "Enhance",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "EnhanceArt.jpg"
+  },
+  {
+   "name": "Enlarge",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "EnlargeArt.jpg"
+  },
+  {
+   "name": "Enlightenment",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "EnlightenmentArt.jpg"
+  },
+  {
+   "name": "Envious / Deluded",
+   "kind": "other",
+   "types": [
+    "State"
+   ],
+   "set": "Nocturne",
+   "art": "Envious_/_DeludedArt.jpg"
+  },
+  {
+   "name": "Envoy",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "EnvoyArt.jpg"
+  },
+  {
+   "name": "Envy",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "EnvyArt.jpg"
+  },
+  {
+   "name": "Estate",
+   "kind": "basic",
+   "types": [
+    "Victory"
+   ],
+   "cost": "2",
+   "set": "Base",
+   "art": "EstateArt.jpg"
+  },
+  {
+   "name": "Exorcist",
+   "kind": "kingdom",
+   "types": [
+    "Night"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "ExorcistArt.jpg"
+  },
+  {
+   "name": "Expand",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "7",
+   "set": "Prosperity",
+   "art": "ExpandArt.jpg"
+  },
+  {
+   "name": "Expedition",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "ExpeditionArt.jpg"
+  },
+  {
+   "name": "Experiment",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "ExperimentArt.jpg"
+  },
+  {
+   "name": "Exploration",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "ExplorationArt.jpg"
+  },
+  {
+   "name": "Explorer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "ExplorerArt.jpg"
+  },
+  {
+   "name": "Fair",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "FairArt.jpg"
+  },
+  {
+   "name": "Fairgrounds",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "6",
+   "set": "Cornucopia",
+   "art": "FairgroundsArt.jpg"
+  },
+  {
+   "name": "Faithful Hound",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "Faithful_HoundArt.jpg"
+  },
+  {
+   "name": "Falconer",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "FalconerArt.jpg"
+  },
+  {
+   "name": "Familiar",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "FamiliarArt.jpg"
+  },
+  {
+   "name": "Family of Inventors",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Family_of_InventorsArt.jpg"
+  },
+  {
+   "name": "Famine",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "FamineArt.jpg"
+  },
+  {
+   "name": "Farmers' Market",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Gathering"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "Farmers'_MarketArt.jpg"
+  },
+  {
+   "name": "Farmhands",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "FarmhandsArt.jpg"
+  },
+  {
+   "name": "Farming Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "Farming_VillageArt.jpg"
+  },
+  {
+   "name": "Farmland",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "6",
+   "set": "Hinterlands",
+   "art": "FarmlandArt.jpg"
+  },
+  {
+   "name": "Farrier",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2+",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "FarrierArt.jpg"
+  },
+  {
+   "name": "Fated",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "FatedArt.jpg"
+  },
+  {
+   "name": "Fawning",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "FawningArt.jpg"
+  },
+  {
+   "name": "Fear",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "FearArt.jpg"
+  },
+  {
+   "name": "Feast",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "FeastArt.jpg"
+  },
+  {
+   "name": "Fellowship of Scribes",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Fellowship_of_ScribesArt.jpg"
+  },
+  {
+   "name": "Feodum",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "FeodumArt.jpg"
+  },
+  {
+   "name": "Ferry",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "FerryArt.jpg"
+  },
+  {
+   "name": "Ferryman",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "FerrymanArt.jpg"
+  },
+  {
+   "name": "Festival",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "FestivalArt.jpg"
+  },
+  {
+   "name": "Figurine",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "FigurineArt.jpg"
+  },
+  {
+   "name": "First Mate",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "First_MateArt.jpg"
+  },
+  {
+   "name": "Fisherman",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5*",
+   "set": "Menagerie",
+   "art": "FishermanArt.jpg"
+  },
+  {
+   "name": "Fishing Village",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "Fishing_VillageArt.jpg"
+  },
+  {
+   "name": "Fishmonger",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Shadow"
+   ],
+   "cost": "2",
+   "set": "Rising Sun",
+   "art": "FishmongerArt.jpg"
+  },
+  {
+   "name": "Flag",
+   "kind": "other",
+   "types": [
+    "Artifact"
+   ],
+   "set": "Renaissance",
+   "art": "FlagArt.jpg"
+  },
+  {
+   "name": "Flag Bearer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "Flag_BearerArt.jpg"
+  },
+  {
+   "name": "Flagship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Command"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "FlagshipArt.jpg"
+  },
+  {
+   "name": "Fleet",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "FleetArt.jpg"
+  },
+  {
+   "name": "Flourishing Trade",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Flourishing_TradeArt.jpg"
+  },
+  {
+   "name": "Followers",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Prize"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "FollowersArt.jpg"
+  },
+  {
+   "name": "Fool",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "FoolArt.jpg"
+  },
+  {
+   "name": "Fool's Gold",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Hinterlands",
+   "art": "Fool's_GoldArt.jpg"
+  },
+  {
+   "name": "Footpad",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "FootpadArt.jpg"
+  },
+  {
+   "name": "Forager",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "ForagerArt.jpg"
+  },
+  {
+   "name": "Foray",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "ForayArt.jpg"
+  },
+  {
+   "name": "Foresight",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "ForesightArt.jpg"
+  },
+  {
+   "name": "Forest Dwellers",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Forest_DwellersArt.jpg"
+  },
+  {
+   "name": "Forge",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "7",
+   "set": "Prosperity",
+   "art": "ForgeArt.jpg"
+  },
+  {
+   "name": "Fortress",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "FortressArt.jpg"
+  },
+  {
+   "name": "Forts",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fort"
+   ],
+   "cost": "3*",
+   "set": "Allies",
+   "art": "FortsArt.jpg"
+  },
+  {
+   "name": "Fortune",
+   "kind": "other",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "8",
+   "debt": 8,
+   "set": "Empires",
+   "art": "FortuneArt.jpg"
+  },
+  {
+   "name": "Fortune Hunter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "Fortune_HunterArt.jpg"
+  },
+  {
+   "name": "Fortune Teller",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Cornucopia",
+   "art": "Fortune_TellerArt.jpg"
+  },
+  {
+   "name": "Forum",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "ForumArt.jpg"
+  },
+  {
+   "name": "Fountain",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "FountainArt.jpg"
+  },
+  {
+   "name": "Friendly",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "FriendlyArt.jpg"
+  },
+  {
+   "name": "Frigate",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "FrigateArt.jpg"
+  },
+  {
+   "name": "Fugitive",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "4*",
+   "set": "Adventures",
+   "art": "FugitiveArt.jpg"
+  },
+  {
+   "name": "Galleria",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "GalleriaArt.jpg"
+  },
+  {
+   "name": "Gamble",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "GambleArt.jpg"
+  },
+  {
+   "name": "Gang of Pickpockets",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Gang_of_PickpocketsArt.jpg"
+  },
+  {
+   "name": "Gardens",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "GardensArt.jpg"
+  },
+  {
+   "name": "Garrison",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Duration",
+    "Fort"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "GarrisonArt.jpg"
+  },
+  {
+   "name": "Gatekeeper",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "GatekeeperArt.jpg"
+  },
+  {
+   "name": "Gather",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "GatherArt.jpg"
+  },
+  {
+   "name": "Gear",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "GearArt.jpg"
+  },
+  {
+   "name": "Ghost",
+   "kind": "other",
+   "types": [
+    "Night",
+    "Duration",
+    "Spirit"
+   ],
+   "cost": "4*",
+   "set": "Nocturne",
+   "art": "GhostArt.jpg"
+  },
+  {
+   "name": "Ghost Ship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "Ghost_ShipArt.jpg"
+  },
+  {
+   "name": "Ghost Town",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Ghost_TownArt.jpg"
+  },
+  {
+   "name": "Giant",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "GiantArt.jpg"
+  },
+  {
+   "name": "Gladiator",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Empires",
+   "art": "GladiatorArt.jpg"
+  },
+  {
+   "name": "Gladiator / Fortune",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3*",
+   "set": "Empires",
+   "art": "Gladiator_/_FortuneArt.jpg"
+  },
+  {
+   "name": "Goat",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "GoatArt.jpg"
+  },
+  {
+   "name": "Goatherd",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "GoatherdArt.jpg"
+  },
+  {
+   "name": "Gold",
+   "kind": "basic",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "6",
+   "set": "Base",
+   "art": "GoldArt.jpg"
+  },
+  {
+   "name": "Gold Mine",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "Gold_MineArt.jpg"
+  },
+  {
+   "name": "Golem",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "GolemArt.jpg"
+  },
+  {
+   "name": "Gondola",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "GondolaArt.jpg"
+  },
+  {
+   "name": "Good Harvest",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Good_HarvestArt.jpg"
+  },
+  {
+   "name": "Goons",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "6",
+   "set": "Prosperity",
+   "art": "GoonsArt.jpg"
+  },
+  {
+   "name": "Governor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Promo",
+   "art": "GovernorArt.jpg"
+  },
+  {
+   "name": "Grand Market",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Prosperity",
+   "art": "Grand_MarketArt.jpg"
+  },
+  {
+   "name": "Graverobber",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "GraverobberArt.jpg"
+  },
+  {
+   "name": "Great Hall",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Victory"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "Great_HallArt.jpg"
+  },
+  {
+   "name": "Great Leader",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Great_LeaderArt.jpg"
+  },
+  {
+   "name": "Greed",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "GreedArt.jpg"
+  },
+  {
+   "name": "Grey Mustang",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Animals",
+   "art": "Grey_MustangArt.jpg"
+  },
+  {
+   "name": "Groom",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "GroomArt.jpg"
+  },
+  {
+   "name": "Grotto",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "GrottoArt.jpg"
+  },
+  {
+   "name": "Groundskeeper",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "GroundskeeperArt.jpg"
+  },
+  {
+   "name": "Growth",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "GrowthArt.jpg"
+  },
+  {
+   "name": "Guard Dog",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "Guard_DogArt.jpg"
+  },
+  {
+   "name": "Guardian",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "GuardianArt.jpg"
+  },
+  {
+   "name": "Guide",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "GuideArt.jpg"
+  },
+  {
+   "name": "Guildhall",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "GuildhallArt.jpg"
+  },
+  {
+   "name": "Guildmaster",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Liaison"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "GuildmasterArt.jpg"
+  },
+  {
+   "name": "Haggler",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "HagglerArt.jpg"
+  },
+  {
+   "name": "Hamlet",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Cornucopia",
+   "art": "HamletArt.jpg"
+  },
+  {
+   "name": "Harbinger",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "HarbingerArt.jpg"
+  },
+  {
+   "name": "Harbor Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "Harbor_VillageArt.jpg"
+  },
+  {
+   "name": "Harem / Farm",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Victory"
+   ],
+   "cost": "6",
+   "set": "Intrigue",
+   "art": "Harem_/_FarmArt.jpg"
+  },
+  {
+   "name": "Harsh Winter",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Harsh_WinterArt.jpg"
+  },
+  {
+   "name": "Harvest",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "HarvestArt.jpg"
+  },
+  {
+   "name": "Hasty",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "HastyArt.jpg"
+  },
+  {
+   "name": "Haunted Mirror",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "0",
+   "set": "Nocturne",
+   "art": "Haunted_MirrorArt.jpg"
+  },
+  {
+   "name": "Haunted Woods",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Haunted_WoodsArt.jpg"
+  },
+  {
+   "name": "Haunting",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "HauntingArt.jpg"
+  },
+  {
+   "name": "Haven",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Seaside",
+   "art": "HavenArt.jpg"
+  },
+  {
+   "name": "Herald",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4+",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "HeraldArt.jpg"
+  },
+  {
+   "name": "Herb Gatherer",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Augur"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "Herb_GathererArt.jpg"
+  },
+  {
+   "name": "Herbalist",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Alchemy",
+   "art": "HerbalistArt.jpg"
+  },
+  {
+   "name": "Hermit",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "HermitArt.jpg"
+  },
+  {
+   "name": "Hero",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "5*",
+   "set": "Adventures",
+   "art": "HeroArt.jpg"
+  },
+  {
+   "name": "Hideout",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "HideoutArt.jpg"
+  },
+  {
+   "name": "Highway",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "HighwayArt.jpg"
+  },
+  {
+   "name": "Highwayman",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "HighwaymanArt.jpg"
+  },
+  {
+   "name": "Hill Fort",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Fort"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "Hill_FortArt.jpg"
+  },
+  {
+   "name": "Hireling",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "6",
+   "set": "Adventures",
+   "art": "HirelingArt.jpg"
+  },
+  {
+   "name": "Hoard",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "6",
+   "set": "Prosperity",
+   "art": "HoardArt.jpg"
+  },
+  {
+   "name": "Horn",
+   "kind": "other",
+   "types": [
+    "Artifact"
+   ],
+   "set": "Renaissance",
+   "art": "HornArt.jpg"
+  },
+  {
+   "name": "Horn of Plenty",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "Horn_of_PlentyArt.jpg"
+  },
+  {
+   "name": "Horse",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "3*",
+   "set": "Menagerie",
+   "art": "HorseArt.jpg"
+  },
+  {
+   "name": "Horse Traders",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "Horse_TradersArt.jpg"
+  },
+  {
+   "name": "Hostelry",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "HostelryArt.jpg"
+  },
+  {
+   "name": "Housecarl",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "HousecarlArt.jpg"
+  },
+  {
+   "name": "Hovel",
+   "kind": "other",
+   "types": [
+    "Reaction",
+    "Shelter"
+   ],
+   "cost": "1",
+   "set": "Dark Ages",
+   "art": "HovelArt.jpg"
+  },
+  {
+   "name": "Huge Turnip",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "Huge_TurnipArt.jpg"
+  },
+  {
+   "name": "Hunter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "HunterArt.jpg"
+  },
+  {
+   "name": "Hunting Grounds",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Dark Ages",
+   "art": "Hunting_GroundsArt.jpg"
+  },
+  {
+   "name": "Hunting Lodge",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "Hunting_LodgeArt.jpg"
+  },
+  {
+   "name": "Hunting Party",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "Hunting_PartyArt.jpg"
+  },
+  {
+   "name": "Idol",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Attack",
+    "Fate"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "IdolArt.jpg"
+  },
+  {
+   "name": "Ill-Gotten Gains",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "Ill-Gotten_GainsArt.jpg"
+  },
+  {
+   "name": "Imp",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Spirit"
+   ],
+   "cost": "2*",
+   "set": "Nocturne",
+   "art": "ImpArt.jpg"
+  },
+  {
+   "name": "Imperial Envoy",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "Imperial_EnvoyArt.jpg"
+  },
+  {
+   "name": "Importer",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Liaison"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "ImporterArt.jpg"
+  },
+  {
+   "name": "Improve",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "ImproveArt.jpg"
+  },
+  {
+   "name": "Infirmary",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3+",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "InfirmaryArt.jpg"
+  },
+  {
+   "name": "Inheritance",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "7",
+   "set": "Adventures",
+   "art": "InheritanceArt.jpg"
+  },
+  {
+   "name": "Inherited",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "InheritedArt.jpg"
+  },
+  {
+   "name": "Inn",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "InnArt.jpg"
+  },
+  {
+   "name": "Innkeeper",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "InnkeeperArt.jpg"
+  },
+  {
+   "name": "Innovation",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "6",
+   "set": "Renaissance",
+   "art": "InnovationArt.jpg"
+  },
+  {
+   "name": "Inspiring",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "InspiringArt.jpg"
+  },
+  {
+   "name": "Invasion",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "10",
+   "set": "Plunder",
+   "art": "InvasionArt.jpg"
+  },
+  {
+   "name": "Inventor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "InventorArt.jpg"
+  },
+  {
+   "name": "Invest",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "InvestArt.jpg"
+  },
+  {
+   "name": "Investment",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "InvestmentArt.jpg"
+  },
+  {
+   "name": "Ironmonger",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "IronmongerArt.jpg"
+  },
+  {
+   "name": "Ironworks",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "IronworksArt.jpg"
+  },
+  {
+   "name": "Island",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "IslandArt.jpg"
+  },
+  {
+   "name": "Island Folk",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Island_FolkArt.jpg"
+  },
+  {
+   "name": "Jack of All Trades",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "Jack_of_All_TradesArt.jpg"
+  },
+  {
+   "name": "Jester",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "JesterArt.jpg"
+  },
+  {
+   "name": "Jewelled Egg",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "Jewelled_EggArt.jpg"
+  },
+  {
+   "name": "Journey",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "JourneyArt.jpg"
+  },
+  {
+   "name": "Journeyman",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "JourneymanArt.jpg"
+  },
+  {
+   "name": "Joust",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia",
+   "art": "JoustArt.jpg"
+  },
+  {
+   "name": "Junk Dealer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "Junk_DealerArt.jpg"
+  },
+  {
+   "name": "Keep",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "KeepArt.jpg"
+  },
+  {
+   "name": "Key",
+   "kind": "other",
+   "types": [
+    "Artifact"
+   ],
+   "set": "Renaissance",
+   "art": "KeyArt.jpg"
+  },
+  {
+   "name": "Kiln",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "KilnArt.jpg"
+  },
+  {
+   "name": "Kind Emperor",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Kind_EmperorArt.jpg"
+  },
+  {
+   "name": "King's Cache",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "7",
+   "set": "Plunder",
+   "art": "King's_CacheArt.jpg"
+  },
+  {
+   "name": "King's Court",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "7",
+   "set": "Prosperity",
+   "art": "King's_CourtArt.jpg"
+  },
+  {
+   "name": "Kintsugi",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "KintsugiArt.jpg"
+  },
+  {
+   "name": "Kitsune",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Omen"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "KitsuneArt.jpg"
+  },
+  {
+   "name": "Knights",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "KnightsArt.jpg"
+  },
+  {
+   "name": "Laboratory",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "LaboratoryArt.jpg"
+  },
+  {
+   "name": "Labyrinth",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "LabyrinthArt.jpg"
+  },
+  {
+   "name": "Lackeys",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Renaissance",
+   "art": "LackeysArt.jpg"
+  },
+  {
+   "name": "Landing Party",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "Landing_PartyArt.jpg"
+  },
+  {
+   "name": "Lantern",
+   "kind": "other",
+   "types": [
+    "Artifact"
+   ],
+   "set": "Renaissance",
+   "art": "LanternArt.jpg"
+  },
+  {
+   "name": "Launch",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "LaunchArt.jpg"
+  },
+  {
+   "name": "League of Bankers",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "League_of_BankersArt.jpg"
+  },
+  {
+   "name": "League of Shopkeepers",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "League_of_ShopkeepersArt.jpg"
+  },
+  {
+   "name": "Legionary",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "LegionaryArt.jpg"
+  },
+  {
+   "name": "Leprechaun",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Doom"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "LeprechaunArt.jpg"
+  },
+  {
+   "name": "Library",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "LibraryArt.jpg"
+  },
+  {
+   "name": "Lich",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Wizard"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "LichArt.jpg"
+  },
+  {
+   "name": "Lighthouse",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Seaside",
+   "art": "LighthouseArt.jpg"
+  },
+  {
+   "name": "Litter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "LitterArt.jpg"
+  },
+  {
+   "name": "Livery",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "LiveryArt.jpg"
+  },
+  {
+   "name": "Loan",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3",
+   "set": "Prosperity",
+   "art": "LoanArt.jpg"
+  },
+  {
+   "name": "Locusts",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "LocustsArt.jpg"
+  },
+  {
+   "name": "Longship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "LongshipArt.jpg"
+  },
+  {
+   "name": "Lookout",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "LookoutArt.jpg"
+  },
+  {
+   "name": "Loot",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Loot"
+   ],
+   "cost": "7*",
+   "set": "Plunder",
+   "art": "LootArt.jpg"
+  },
+  {
+   "name": "Looting",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "6",
+   "set": "Plunder",
+   "art": "LootingArt.jpg"
+  },
+  {
+   "name": "Lost Arts",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "6",
+   "set": "Adventures",
+   "art": "Lost_ArtsArt.jpg"
+  },
+  {
+   "name": "Lost City",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Lost_CityArt.jpg"
+  },
+  {
+   "name": "Lost in the Woods",
+   "kind": "other",
+   "types": [
+    "State"
+   ],
+   "set": "Nocturne",
+   "art": "Lost_in_the_WoodsArt.jpg"
+  },
+  {
+   "name": "Lucky Coin",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "Lucky_CoinArt.jpg"
+  },
+  {
+   "name": "Lurker",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Intrigue",
+   "art": "LurkerArt.jpg"
+  },
+  {
+   "name": "Madman",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "0*",
+   "set": "Dark Ages",
+   "art": "MadmanArt.jpg"
+  },
+  {
+   "name": "Maelstrom",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "MaelstromArt.jpg"
+  },
+  {
+   "name": "Magic Lamp",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "0",
+   "set": "Nocturne",
+   "art": "Magic_LampArt.jpg"
+  },
+  {
+   "name": "Magnate",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "MagnateArt.jpg"
+  },
+  {
+   "name": "Magpie",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "MagpieArt.jpg"
+  },
+  {
+   "name": "Mandarin",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "MandarinArt.jpg"
+  },
+  {
+   "name": "Mapmaker",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "MapmakerArt.jpg"
+  },
+  {
+   "name": "Marauder",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Looter"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "MarauderArt.jpg"
+  },
+  {
+   "name": "March",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "MarchArt.jpg"
+  },
+  {
+   "name": "Marchland",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "5",
+   "set": "Promo",
+   "art": "MarchlandArt.jpg"
+  },
+  {
+   "name": "Margrave",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "MargraveArt.jpg"
+  },
+  {
+   "name": "Market",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "MarketArt.jpg"
+  },
+  {
+   "name": "Market Square",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "Market_SquareArt.jpg"
+  },
+  {
+   "name": "Market Towns",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Market_TownsArt.jpg"
+  },
+  {
+   "name": "Maroon",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "MaroonArt.jpg"
+  },
+  {
+   "name": "Marquis",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "MarquisArt.jpg"
+  },
+  {
+   "name": "Masquerade",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "MasqueradeArt.jpg"
+  },
+  {
+   "name": "Mastermind",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "MastermindArt.jpg"
+  },
+  {
+   "name": "Masterpiece",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3+",
+   "set": "Guilds",
+   "art": "MasterpieceArt.jpg"
+  },
+  {
+   "name": "Menagerie",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Cornucopia",
+   "art": "MenagerieArt.jpg"
+  },
+  {
+   "name": "Mercenary",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "0*",
+   "set": "Dark Ages",
+   "art": "MercenaryArt.jpg"
+  },
+  {
+   "name": "Merchant",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "MerchantArt.jpg"
+  },
+  {
+   "name": "Merchant Camp",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "Merchant_CampArt.jpg"
+  },
+  {
+   "name": "Merchant Guild",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "Merchant_GuildArt.jpg"
+  },
+  {
+   "name": "Merchant Ship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "Merchant_ShipArt.jpg"
+  },
+  {
+   "name": "Messenger",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "MessengerArt.jpg"
+  },
+  {
+   "name": "Militia",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "MilitiaArt.jpg"
+  },
+  {
+   "name": "Mill",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "MillArt.jpg"
+  },
+  {
+   "name": "Miller",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Townsfolk"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "MillerArt.jpg"
+  },
+  {
+   "name": "Mine",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "MineArt.jpg"
+  },
+  {
+   "name": "Mining Road",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "Mining_RoadArt.jpg"
+  },
+  {
+   "name": "Mining Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "Mining_VillageArt.jpg"
+  },
+  {
+   "name": "Minion",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "MinionArt.jpg"
+  },
+  {
+   "name": "Mint",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "MintArt.jpg"
+  },
+  {
+   "name": "Mirror",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "MirrorArt.jpg"
+  },
+  {
+   "name": "Miser",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "MiserArt.jpg"
+  },
+  {
+   "name": "Miserable / Twice Miserable",
+   "kind": "other",
+   "types": [
+    "State"
+   ],
+   "set": "Nocturne",
+   "art": "Miserable_/_Twice_MiserableArt.jpg"
+  },
+  {
+   "name": "Misery",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "MiseryArt.jpg"
+  },
+  {
+   "name": "Mission",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "MissionArt.jpg"
+  },
+  {
+   "name": "Moat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Dominion",
+   "art": "MoatArt.jpg"
+  },
+  {
+   "name": "Modify",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "ModifyArt.jpg"
+  },
+  {
+   "name": "Monastery",
+   "kind": "kingdom",
+   "types": [
+    "Night"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "MonasteryArt.jpg"
+  },
+  {
+   "name": "Moneylender",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "MoneylenderArt.jpg"
+  },
+  {
+   "name": "Monkey",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "MonkeyArt.jpg"
+  },
+  {
+   "name": "Monument",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "MonumentArt.jpg"
+  },
+  {
+   "name": "Mountain Folk",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Mountain_FolkArt.jpg"
+  },
+  {
+   "name": "Mountain Pass",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "Mountain_PassArt.jpg"
+  },
+  {
+   "name": "Mountain Shrine",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Omen"
+   ],
+   "debt": 5,
+   "set": "Rising Sun",
+   "art": "Mountain_ShrineArt.jpg"
+  },
+  {
+   "name": "Mountain Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "Mountain_VillageArt.jpg"
+  },
+  {
+   "name": "Mountebank",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "MountebankArt.jpg"
+  },
+  {
+   "name": "Museum",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "MuseumArt.jpg"
+  },
+  {
+   "name": "Mystic",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "MysticArt.jpg"
+  },
+  {
+   "name": "Native Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Seaside",
+   "art": "Native_VillageArt.jpg"
+  },
+  {
+   "name": "Navigator",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "NavigatorArt.jpg"
+  },
+  {
+   "name": "Nearby",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "NearbyArt.jpg"
+  },
+  {
+   "name": "Necromancer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "NecromancerArt.jpg"
+  },
+  {
+   "name": "Necropolis",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Shelter"
+   ],
+   "cost": "1",
+   "set": "Dark Ages",
+   "art": "NecropolisArt.jpg"
+  },
+  {
+   "name": "Night Watchman",
+   "kind": "kingdom",
+   "types": [
+    "Night"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Night_WatchmanArt.jpg"
+  },
+  {
+   "name": "Ninja",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Shadow"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "NinjaArt.jpg"
+  },
+  {
+   "name": "Noble Brigand",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "Noble_BrigandArt.jpg"
+  },
+  {
+   "name": "Nobles",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Victory"
+   ],
+   "cost": "6",
+   "set": "Intrigue",
+   "art": "NoblesArt.jpg"
+  },
+  {
+   "name": "Nomad Camp",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "Nomad_CampArt.jpg"
+  },
+  {
+   "name": "Nomads",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "NomadsArt.jpg"
+  },
+  {
+   "name": "Oasis",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "OasisArt.jpg"
+  },
+  {
+   "name": "Obelisk",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "ObeliskArt.jpg"
+  },
+  {
+   "name": "Odysseys",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Odyssey"
+   ],
+   "cost": "3*",
+   "set": "Allies",
+   "art": "OdysseysArt.jpg"
+  },
+  {
+   "name": "Old Map",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Odyssey"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "Old_MapArt.jpg"
+  },
+  {
+   "name": "Old Witch",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "Old_WitchArt.jpg"
+  },
+  {
+   "name": "Oracle",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "OracleArt.jpg"
+  },
+  {
+   "name": "Orchard",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "OrchardArt.jpg"
+  },
+  {
+   "name": "Order of Astrologers",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Order_of_AstrologersArt.jpg"
+  },
+  {
+   "name": "Order of Masons",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Order_of_MasonsArt.jpg"
+  },
+  {
+   "name": "Outpost",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "OutpostArt.jpg"
+  },
+  {
+   "name": "Overgrown Estate",
+   "kind": "other",
+   "types": [
+    "Victory",
+    "Shelter"
+   ],
+   "cost": "1",
+   "set": "Dark Ages",
+   "art": "Overgrown_EstateArt.jpg"
+  },
+  {
+   "name": "Overlord",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Command"
+   ],
+   "debt": 8,
+   "set": "Empires",
+   "art": "OverlordArt.jpg"
+  },
+  {
+   "name": "Paddock",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "PaddockArt.jpg"
+  },
+  {
+   "name": "Page",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "PageArt.jpg"
+  },
+  {
+   "name": "Pageant",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "PageantArt.jpg"
+  },
+  {
+   "name": "Palace",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "PalaceArt.jpg"
+  },
+  {
+   "name": "Panic",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "PanicArt.jpg"
+  },
+  {
+   "name": "Pasture",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Victory",
+    "Heirloom"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "PastureArt.jpg"
+  },
+  {
+   "name": "Pathfinding",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "8",
+   "set": "Adventures",
+   "art": "PathfindingArt.jpg"
+  },
+  {
+   "name": "Patient",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "PatientArt.jpg"
+  },
+  {
+   "name": "Patrician",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Empires",
+   "art": "PatricianArt.jpg"
+  },
+  {
+   "name": "Patrician / Emporium",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2*",
+   "set": "Empires",
+   "art": "Patrician_/_EmporiumArt.jpg"
+  },
+  {
+   "name": "Patrol",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "PatrolArt.jpg"
+  },
+  {
+   "name": "Patron",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "PatronArt.jpg"
+  },
+  {
+   "name": "Pawn",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Intrigue",
+   "art": "PawnArt.jpg"
+  },
+  {
+   "name": "Peaceful Cult",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Peaceful_CultArt.jpg"
+  },
+  {
+   "name": "Pearl Diver",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Seaside",
+   "art": "Pearl_DiverArt.jpg"
+  },
+  {
+   "name": "Peasant",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "PeasantArt.jpg"
+  },
+  {
+   "name": "Peddler",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "8*",
+   "set": "Prosperity",
+   "art": "PeddlerArt.jpg"
+  },
+  {
+   "name": "Pendant",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "PendantArt.jpg"
+  },
+  {
+   "name": "Peril",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "PerilArt.jpg"
+  },
+  {
+   "name": "Philosopher's Stone",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "Philosopher's_StoneArt.jpg"
+  },
+  {
+   "name": "Piazza",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "PiazzaArt.jpg"
+  },
+  {
+   "name": "Pickaxe",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "PickaxeArt.jpg"
+  },
+  {
+   "name": "Pilgrim",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "PilgrimArt.jpg"
+  },
+  {
+   "name": "Pilgrimage",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "PilgrimageArt.jpg"
+  },
+  {
+   "name": "Pillage",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "PillageArt.jpg"
+  },
+  {
+   "name": "Pious",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "PiousArt.jpg"
+  },
+  {
+   "name": "Pirate",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Reaction"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "PirateArt.jpg"
+  },
+  {
+   "name": "Pirate Ship",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "Pirate_ShipArt.jpg"
+  },
+  {
+   "name": "Pixie",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "PixieArt.jpg"
+  },
+  {
+   "name": "Plague",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "PlagueArt.jpg"
+  },
+  {
+   "name": "Plan",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Adventures",
+   "art": "PlanArt.jpg"
+  },
+  {
+   "name": "Plateau Shepherds",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Plateau_ShepherdsArt.jpg"
+  },
+  {
+   "name": "Platinum",
+   "kind": "basic",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "9",
+   "set": "Base",
+   "art": "PlatinumArt.jpg"
+  },
+  {
+   "name": "Player Start Deck",
+   "kind": "other",
+   "types": [
+    "Start Deck"
+   ],
+   "set": "Base",
+   "art": "Player_Start_DeckArt.jpg"
+  },
+  {
+   "name": "Plaza",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "PlazaArt.jpg"
+  },
+  {
+   "name": "Plunder",
+   "kind": "other",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "PlunderArt.jpg"
+  },
+  {
+   "name": "Poacher",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "PoacherArt.jpg"
+  },
+  {
+   "name": "Poet",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Omen"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "PoetArt.jpg"
+  },
+  {
+   "name": "Pooka",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "PookaArt.jpg"
+  },
+  {
+   "name": "Poor House",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "1",
+   "set": "Dark Ages",
+   "art": "Poor_HouseArt.jpg"
+  },
+  {
+   "name": "Populate",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "10",
+   "set": "Menagerie",
+   "art": "PopulateArt.jpg"
+  },
+  {
+   "name": "Port",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "PortArt.jpg"
+  },
+  {
+   "name": "Possession",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "PossessionArt.jpg"
+  },
+  {
+   "name": "Potion",
+   "kind": "basic",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Base",
+   "art": "PotionArt.jpg"
+  },
+  {
+   "name": "Pouch",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Heirloom"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "PouchArt.jpg"
+  },
+  {
+   "name": "Poverty",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "PovertyArt.jpg"
+  },
+  {
+   "name": "Practice",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "PracticeArt.jpg"
+  },
+  {
+   "name": "Prepare",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "PrepareArt.jpg"
+  },
+  {
+   "name": "Priest",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "PriestArt.jpg"
+  },
+  {
+   "name": "Prince",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "8",
+   "set": "Promo",
+   "art": "PrinceArt.jpg"
+  },
+  {
+   "name": "Princess",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Prize"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "PrincessArt.jpg"
+  },
+  {
+   "name": "Procession",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "ProcessionArt.jpg"
+  },
+  {
+   "name": "Progress",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "ProgressArt.jpg"
+  },
+  {
+   "name": "Prosper",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "10",
+   "set": "Plunder",
+   "art": "ProsperArt.jpg"
+  },
+  {
+   "name": "Province",
+   "kind": "basic",
+   "types": [
+    "Victory"
+   ],
+   "cost": "8",
+   "set": "Base",
+   "art": "ProvinceArt.jpg"
+  },
+  {
+   "name": "Pursue",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "PursueArt.jpg"
+  },
+  {
+   "name": "Quarry",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "QuarryArt.jpg"
+  },
+  {
+   "name": "Quartermaster",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "QuartermasterArt.jpg"
+  },
+  {
+   "name": "Quest",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "0",
+   "set": "Adventures",
+   "art": "QuestArt.jpg"
+  },
+  {
+   "name": "Rabbits",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Animals",
+   "art": "RabbitsArt.jpg"
+  },
+  {
+   "name": "Rabble",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "RabbleArt.jpg"
+  },
+  {
+   "name": "Raid",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "RaidArt.jpg"
+  },
+  {
+   "name": "Raider",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "6",
+   "set": "Nocturne",
+   "art": "RaiderArt.jpg"
+  },
+  {
+   "name": "Ranger",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "RangerArt.jpg"
+  },
+  {
+   "name": "Rapid Expansion",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "Rapid_ExpansionArt.jpg"
+  },
+  {
+   "name": "Ratcatcher",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "RatcatcherArt.jpg"
+  },
+  {
+   "name": "Rats",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "RatsArt.jpg"
+  },
+  {
+   "name": "Raze",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "RazeArt.jpg"
+  },
+  {
+   "name": "Reap",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "7",
+   "set": "Menagerie",
+   "art": "ReapArt.jpg"
+  },
+  {
+   "name": "Rebuild",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "RebuildArt.jpg"
+  },
+  {
+   "name": "Receive Tribute",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "Receive_TributeArt.jpg"
+  },
+  {
+   "name": "Reckless",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "RecklessArt.jpg"
+  },
+  {
+   "name": "Recruiter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "RecruiterArt.jpg"
+  },
+  {
+   "name": "Relic",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "RelicArt.jpg"
+  },
+  {
+   "name": "Remake",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "RemakeArt.jpg"
+  },
+  {
+   "name": "Remodel",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "RemodelArt.jpg"
+  },
+  {
+   "name": "Renown",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Reward"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "RenownArt.jpg"
+  },
+  {
+   "name": "Replace",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "ReplaceArt.jpg"
+  },
+  {
+   "name": "Research",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "ResearchArt.jpg"
+  },
+  {
+   "name": "Rice",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "7",
+   "set": "Rising Sun",
+   "art": "RiceArt.jpg"
+  },
+  {
+   "name": "Rice Broker",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "Rice_BrokerArt.jpg"
+  },
+  {
+   "name": "Rich",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "RichArt.jpg"
+  },
+  {
+   "name": "Ride",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "RideArt.jpg"
+  },
+  {
+   "name": "Ritual",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "RitualArt.jpg"
+  },
+  {
+   "name": "River Shrine",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Omen"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "River_ShrineArt.jpg"
+  },
+  {
+   "name": "Riverboat",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Rising Sun",
+   "art": "RiverboatArt.jpg"
+  },
+  {
+   "name": "Road Network",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "Road_NetworkArt.jpg"
+  },
+  {
+   "name": "Rocks",
+   "kind": "other",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "RocksArt.jpg"
+  },
+  {
+   "name": "Rogue",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Dark Ages",
+   "art": "RogueArt.jpg"
+  },
+  {
+   "name": "Ronin",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Shadow"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "RoninArt.jpg"
+  },
+  {
+   "name": "Root Cellar",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Rising Sun",
+   "art": "Root_CellarArt.jpg"
+  },
+  {
+   "name": "Rope",
+   "kind": "kingdom",
+   "types": [
+    "Treasure",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "RopeArt.jpg"
+  },
+  {
+   "name": "Royal Blacksmith",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "debt": 8,
+   "set": "Empires",
+   "art": "Royal_BlacksmithArt.jpg"
+  },
+  {
+   "name": "Royal Carriage",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Royal_CarriageArt.jpg"
+  },
+  {
+   "name": "Royal Galley",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "Royal_GalleyArt.jpg"
+  },
+  {
+   "name": "Royal Seal",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "Royal_SealArt.jpg"
+  },
+  {
+   "name": "Ruins",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Ruins"
+   ],
+   "cost": "0",
+   "set": "Dark Ages",
+   "art": "RuinsArt.jpg"
+  },
+  {
+   "name": "Rush",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "RushArt.jpg"
+  },
+  {
+   "name": "Rustic Village",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Omen"
+   ],
+   "cost": "4",
+   "set": "Rising Sun",
+   "art": "Rustic_VillageArt.jpg"
+  },
+  {
+   "name": "Saboteur",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "SaboteurArt.jpg"
+  },
+  {
+   "name": "Sack of Loot",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "6",
+   "set": "Plunder",
+   "art": "Sack_of_LootArt.jpg"
+  },
+  {
+   "name": "Sacred Grove",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "Sacred_GroveArt.jpg"
+  },
+  {
+   "name": "Sacrifice",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "SacrificeArt.jpg"
+  },
+  {
+   "name": "Sage",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "SageArt.jpg"
+  },
+  {
+   "name": "Sailor",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "SailorArt.jpg"
+  },
+  {
+   "name": "Salt the Earth",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "Salt_the_EarthArt.jpg"
+  },
+  {
+   "name": "Salvager",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "SalvagerArt.jpg"
+  },
+  {
+   "name": "Samurai",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "6",
+   "set": "Rising Sun",
+   "art": "SamuraiArt.jpg"
+  },
+  {
+   "name": "Sanctuary",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "SanctuaryArt.jpg"
+  },
+  {
+   "name": "Sauna",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "SaunaArt.jpg"
+  },
+  {
+   "name": "Sauna / Avanto",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4*",
+   "set": "Promo",
+   "art": "Sauna_/_AvantoArt.jpg"
+  },
+  {
+   "name": "Save",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "1",
+   "set": "Adventures",
+   "art": "SaveArt.jpg"
+  },
+  {
+   "name": "Scavenger",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "ScavengerArt.jpg"
+  },
+  {
+   "name": "Scepter",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "ScepterArt.jpg"
+  },
+  {
+   "name": "Scheme",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "SchemeArt.jpg"
+  },
+  {
+   "name": "Scholar",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "ScholarArt.jpg"
+  },
+  {
+   "name": "Scout",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "ScoutArt.jpg"
+  },
+  {
+   "name": "Scouting Party",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "Scouting_PartyArt.jpg"
+  },
+  {
+   "name": "Scrap",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "ScrapArt.jpg"
+  },
+  {
+   "name": "Scrounge",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "ScroungeArt.jpg"
+  },
+  {
+   "name": "Scrying Pool",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "2",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "Scrying_PoolArt.jpg"
+  },
+  {
+   "name": "Sculptor",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "SculptorArt.jpg"
+  },
+  {
+   "name": "Sea Chart",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "Sea_ChartArt.jpg"
+  },
+  {
+   "name": "Sea Hag",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "Sea_HagArt.jpg"
+  },
+  {
+   "name": "Sea Trade",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "set": "Rising Sun",
+   "art": "Sea_TradeArt.jpg"
+  },
+  {
+   "name": "Sea Witch",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "Sea_WitchArt.jpg"
+  },
+  {
+   "name": "Search",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "SearchArt.jpg"
+  },
+  {
+   "name": "Seaway",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "SeawayArt.jpg"
+  },
+  {
+   "name": "Secluded Shrine",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "Secluded_ShrineArt.jpg"
+  },
+  {
+   "name": "Secret Cave",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Secret_CaveArt.jpg"
+  },
+  {
+   "name": "Secret Chamber",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Intrigue",
+   "art": "Secret_ChamberArt.jpg"
+  },
+  {
+   "name": "Secret Passage",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Intrigue",
+   "art": "Secret_PassageArt.jpg"
+  },
+  {
+   "name": "Seer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "SeerArt.jpg"
+  },
+  {
+   "name": "Seize the Day",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "Seize_the_DayArt.jpg"
+  },
+  {
+   "name": "Sentinel",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "SentinelArt.jpg"
+  },
+  {
+   "name": "Sentry",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "SentryArt.jpg"
+  },
+  {
+   "name": "Settlers",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Empires",
+   "art": "SettlersArt.jpg"
+  },
+  {
+   "name": "Settlers / Bustling Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2*",
+   "set": "Empires",
+   "art": "Settlers_/_Bustling_VillageArt.jpg"
+  },
+  {
+   "name": "Sewers",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "SewersArt.jpg"
+  },
+  {
+   "name": "Shaman",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Plunder",
+   "art": "ShamanArt.jpg"
+  },
+  {
+   "name": "Shanty Town",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "Shanty_TownArt.jpg"
+  },
+  {
+   "name": "Sheepdog",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "SheepdogArt.jpg"
+  },
+  {
+   "name": "Shepherd",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "ShepherdArt.jpg"
+  },
+  {
+   "name": "Shop",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Cornucopia",
+   "art": "ShopArt.jpg"
+  },
+  {
+   "name": "Shy",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "ShyArt.jpg"
+  },
+  {
+   "name": "Sibyl",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Augur"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "SibylArt.jpg"
+  },
+  {
+   "name": "Sickness",
+   "kind": "prophecy",
+   "types": [
+    "Prophecy"
+   ],
+   "set": "Rising Sun",
+   "art": "SicknessArt.jpg"
+  },
+  {
+   "name": "Silk Merchant",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "Silk_MerchantArt.jpg"
+  },
+  {
+   "name": "Silk Road",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "Silk_RoadArt.jpg"
+  },
+  {
+   "name": "Silos",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "SilosArt.jpg"
+  },
+  {
+   "name": "Silver",
+   "kind": "basic",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3",
+   "set": "Base",
+   "art": "SilverArt.jpg"
+  },
+  {
+   "name": "Silver Mine",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "Silver_MineArt.jpg"
+  },
+  {
+   "name": "Sinister Plot",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "4",
+   "set": "Renaissance",
+   "art": "Sinister_PlotArt.jpg"
+  },
+  {
+   "name": "Siren",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "SirenArt.jpg"
+  },
+  {
+   "name": "Skirmisher",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "SkirmisherArt.jpg"
+  },
+  {
+   "name": "Skulk",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Doom"
+   ],
+   "cost": "4",
+   "set": "Nocturne",
+   "art": "SkulkArt.jpg"
+  },
+  {
+   "name": "Sleigh",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "SleighArt.jpg"
+  },
+  {
+   "name": "Smithy",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "SmithyArt.jpg"
+  },
+  {
+   "name": "Smugglers",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "SmugglersArt.jpg"
+  },
+  {
+   "name": "Snake Witch",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "2",
+   "set": "Rising Sun",
+   "art": "Snake_WitchArt.jpg"
+  },
+  {
+   "name": "Snowy Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "Snowy_VillageArt.jpg"
+  },
+  {
+   "name": "Soldier",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Traveller"
+   ],
+   "cost": "3*",
+   "set": "Adventures",
+   "art": "SoldierArt.jpg"
+  },
+  {
+   "name": "Soothsayer",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "SoothsayerArt.jpg"
+  },
+  {
+   "name": "Soothsayer BB2DE",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Guilds",
+   "art": "Soothsayer_BB2DEArt.jpg"
+  },
+  {
+   "name": "Sorcerer",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Wizard"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "SorcererArt.jpg"
+  },
+  {
+   "name": "Sorceress",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Augur"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "SorceressArt.jpg"
+  },
+  {
+   "name": "Souk",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "SoukArt.jpg"
+  },
+  {
+   "name": "Specialist",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "SpecialistArt.jpg"
+  },
+  {
+   "name": "Spice Merchant",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "Spice_MerchantArt.jpg"
+  },
+  {
+   "name": "Spices",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "SpicesArt.jpg"
+  },
+  {
+   "name": "Spoils",
+   "kind": "other",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "0*",
+   "set": "Dark Ages",
+   "art": "SpoilsArt.jpg"
+  },
+  {
+   "name": "Spy",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "SpyArt.jpg"
+  },
+  {
+   "name": "Squire",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Dark Ages",
+   "art": "SquireArt.jpg"
+  },
+  {
+   "name": "Stables",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "StablesArt.jpg"
+  },
+  {
+   "name": "Stampede",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Menagerie",
+   "art": "StampedeArt.jpg"
+  },
+  {
+   "name": "Star Chart",
+   "kind": "project",
+   "types": [
+    "Project"
+   ],
+   "cost": "3",
+   "set": "Renaissance",
+   "art": "Star_ChartArt.jpg"
+  },
+  {
+   "name": "Stash",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Promo",
+   "art": "StashArt.jpg"
+  },
+  {
+   "name": "Steward",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "StewardArt.jpg"
+  },
+  {
+   "name": "Stockpile",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "StockpileArt.jpg"
+  },
+  {
+   "name": "Stonemason",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2+",
+   "set": "Cornucopia \u0026 Guilds",
+   "art": "StonemasonArt.jpg"
+  },
+  {
+   "name": "Storeroom",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "StoreroomArt.jpg"
+  },
+  {
+   "name": "Storyteller",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "StorytellerArt.jpg"
+  },
+  {
+   "name": "Stowaway",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "StowawayArt.jpg"
+  },
+  {
+   "name": "Stronghold",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Victory",
+    "Duration",
+    "Fort"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "StrongholdArt.jpg"
+  },
+  {
+   "name": "Student",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Wizard"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "StudentArt.jpg"
+  },
+  {
+   "name": "Summon",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Promo",
+   "art": "SummonArt.jpg"
+  },
+  {
+   "name": "Sunken Treasure",
+   "kind": "other",
+   "types": [
+    "Treasure",
+    "Odyssey"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "Sunken_TreasureArt.jpg"
+  },
+  {
+   "name": "Supplies",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "SuppliesArt.jpg"
+  },
+  {
+   "name": "Swamp Hag",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Swamp_HagArt.jpg"
+  },
+  {
+   "name": "Swamp Shacks",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "Swamp_ShacksArt.jpg"
+  },
+  {
+   "name": "Swap",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "SwapArt.jpg"
+  },
+  {
+   "name": "Swashbuckler",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "SwashbucklerArt.jpg"
+  },
+  {
+   "name": "Swindler",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "SwindlerArt.jpg"
+  },
+  {
+   "name": "Sycophant",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Liaison"
+   ],
+   "cost": "2",
+   "set": "Allies",
+   "art": "SycophantArt.jpg"
+  },
+  {
+   "name": "Tactician",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "TacticianArt.jpg"
+  },
+  {
+   "name": "Talisman",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "TalismanArt.jpg"
+  },
+  {
+   "name": "Tanuki",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Shadow"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "TanukiArt.jpg"
+  },
+  {
+   "name": "Taskmaster",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "3",
+   "set": "Plunder",
+   "art": "TaskmasterArt.jpg"
+  },
+  {
+   "name": "Tax",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Empires",
+   "art": "TaxArt.jpg"
+  },
+  {
+   "name": "Taxman",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Guilds",
+   "art": "TaxmanArt.jpg"
+  },
+  {
+   "name": "Tea House",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Omen"
+   ],
+   "cost": "5",
+   "set": "Rising Sun",
+   "art": "Tea_HouseArt.jpg"
+  },
+  {
+   "name": "Teacher",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "6*",
+   "set": "Adventures",
+   "art": "TeacherArt.jpg"
+  },
+  {
+   "name": "Temple",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Gathering"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "TempleArt.jpg"
+  },
+  {
+   "name": "Tent",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Fort"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "TentArt.jpg"
+  },
+  {
+   "name": "Territory",
+   "kind": "other",
+   "types": [
+    "Victory",
+    "Clash"
+   ],
+   "cost": "6",
+   "set": "Allies",
+   "art": "TerritoryArt.jpg"
+  },
+  {
+   "name": "The Earth's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Earth's_GiftArt.jpg"
+  },
+  {
+   "name": "The Field's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Field's_GiftArt.jpg"
+  },
+  {
+   "name": "The Flame's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Flame's_GiftArt.jpg"
+  },
+  {
+   "name": "The Forest's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Forest's_GiftArt.jpg"
+  },
+  {
+   "name": "The Moon's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Moon's_GiftArt.jpg"
+  },
+  {
+   "name": "The Mountain's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Mountain's_GiftArt.jpg"
+  },
+  {
+   "name": "The River's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_River's_GiftArt.jpg"
+  },
+  {
+   "name": "The Sea's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Sea's_GiftArt.jpg"
+  },
+  {
+   "name": "The Sky's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Sky's_GiftArt.jpg"
+  },
+  {
+   "name": "The Sun's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Sun's_GiftArt.jpg"
+  },
+  {
+   "name": "The Swamp's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Swamp's_GiftArt.jpg"
+  },
+  {
+   "name": "The Wind's Gift",
+   "kind": "other",
+   "types": [
+    "Boon"
+   ],
+   "set": "Nocturne",
+   "art": "The_Wind's_GiftArt.jpg"
+  },
+  {
+   "name": "Thief",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "ThiefArt.jpg"
+  },
+  {
+   "name": "Throne Room",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dominion",
+   "art": "Throne_RoomArt.jpg"
+  },
+  {
+   "name": "Tiara",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "TiaraArt.jpg"
+  },
+  {
+   "name": "Tide Pools",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "Tide_PoolsArt.jpg"
+  },
+  {
+   "name": "Tireless",
+   "kind": "trait",
+   "types": [
+    "Trait"
+   ],
+   "set": "Plunder",
+   "art": "TirelessArt.jpg"
+  },
+  {
+   "name": "Toil",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Menagerie",
+   "art": "ToilArt.jpg"
+  },
+  {
+   "name": "Tomb",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "TombArt.jpg"
+  },
+  {
+   "name": "Tools",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "4",
+   "set": "Plunder",
+   "art": "ToolsArt.jpg"
+  },
+  {
+   "name": "Tormentor",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Doom"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "TormentorArt.jpg"
+  },
+  {
+   "name": "Torturer",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "TorturerArt.jpg"
+  },
+  {
+   "name": "Tournament",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "TournamentArt.jpg"
+  },
+  {
+   "name": "Tower",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "TowerArt.jpg"
+  },
+  {
+   "name": "Town",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "TownArt.jpg"
+  },
+  {
+   "name": "Town Crier",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Townsfolk"
+   ],
+   "cost": "2",
+   "set": "Allies",
+   "art": "Town_CrierArt.jpg"
+  },
+  {
+   "name": "Townsfolk",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Townsfolk"
+   ],
+   "cost": "2*",
+   "set": "Allies",
+   "art": "TownsfolkArt.jpg"
+  },
+  {
+   "name": "Tracker",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Fate"
+   ],
+   "cost": "2",
+   "set": "Nocturne",
+   "art": "TrackerArt.jpg"
+  },
+  {
+   "name": "Trade",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "TradeArt.jpg"
+  },
+  {
+   "name": "Trade Route",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Prosperity",
+   "art": "Trade_RouteArt.jpg"
+  },
+  {
+   "name": "Trader",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "TraderArt.jpg"
+  },
+  {
+   "name": "Trading Post",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "Trading_PostArt.jpg"
+  },
+  {
+   "name": "Tragic Hero",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "Tragic_HeroArt.jpg"
+  },
+  {
+   "name": "Trail",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "TrailArt.jpg"
+  },
+  {
+   "name": "Training",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "6",
+   "set": "Adventures",
+   "art": "TrainingArt.jpg"
+  },
+  {
+   "name": "Transmogrify",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "4",
+   "set": "Adventures",
+   "art": "TransmogrifyArt.jpg"
+  },
+  {
+   "name": "Transmute",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "TransmuteArt.jpg"
+  },
+  {
+   "name": "Transport",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "3",
+   "set": "Menagerie",
+   "art": "TransportArt.jpg"
+  },
+  {
+   "name": "Trappers' Lodge",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Trappers'_LodgeArt.jpg"
+  },
+  {
+   "name": "Trash",
+   "kind": "other",
+   "types": [
+    "Trash"
+   ],
+   "set": "Base",
+   "art": "TrashArt.jpg"
+  },
+  {
+   "name": "Travelling Fair",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "2",
+   "set": "Adventures",
+   "art": "Travelling_FairArt.jpg"
+  },
+  {
+   "name": "Treasure Chest",
+   "kind": "other",
+   "types": [
+    "Artifact"
+   ],
+   "set": "Renaissance",
+   "art": "Treasure_ChestArt.jpg"
+  },
+  {
+   "name": "Treasure Hunter",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Traveller"
+   ],
+   "cost": "3*",
+   "set": "Adventures",
+   "art": "Treasure_HunterArt.jpg"
+  },
+  {
+   "name": "Treasure Map",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Seaside",
+   "art": "Treasure_MapArt.jpg"
+  },
+  {
+   "name": "Treasure Trove",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Treasure_TroveArt.jpg"
+  },
+  {
+   "name": "Treasurer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "TreasurerArt.jpg"
+  },
+  {
+   "name": "Treasury",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "TreasuryArt.jpg"
+  },
+  {
+   "name": "Tribute",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "TributeArt.jpg"
+  },
+  {
+   "name": "Trickster",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "TricksterArt.jpg"
+  },
+  {
+   "name": "Triumph",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "debt": 5,
+   "set": "Empires",
+   "art": "TriumphArt.jpg"
+  },
+  {
+   "name": "Triumphal Arch",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "Triumphal_ArchArt.jpg"
+  },
+  {
+   "name": "Trusty Steed",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Prize"
+   ],
+   "cost": "0*",
+   "set": "Cornucopia",
+   "art": "Trusty_SteedArt.jpg"
+  },
+  {
+   "name": "Tunnel",
+   "kind": "kingdom",
+   "types": [
+    "Victory",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Hinterlands",
+   "art": "TunnelArt.jpg"
+  },
+  {
+   "name": "Underling",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Liaison"
+   ],
+   "cost": "3",
+   "set": "Allies",
+   "art": "UnderlingArt.jpg"
+  },
+  {
+   "name": "University",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "UniversityArt.jpg"
+  },
+  {
+   "name": "Upgrade",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Intrigue",
+   "art": "UpgradeArt.jpg"
+  },
+  {
+   "name": "Urchin",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "3",
+   "set": "Dark Ages",
+   "art": "UrchinArt.jpg"
+  },
+  {
+   "name": "Vagrant",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "2",
+   "set": "Dark Ages",
+   "art": "VagrantArt.jpg"
+  },
+  {
+   "name": "Vampire",
+   "kind": "kingdom",
+   "types": [
+    "Night",
+    "Attack",
+    "Doom"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "VampireArt.jpg"
+  },
+  {
+   "name": "Vassal",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "VassalArt.jpg"
+  },
+  {
+   "name": "Vault",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "VaultArt.jpg"
+  },
+  {
+   "name": "Venture",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "VentureArt.jpg"
+  },
+  {
+   "name": "Villa",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Empires",
+   "art": "VillaArt.jpg"
+  },
+  {
+   "name": "Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "VillageArt.jpg"
+  },
+  {
+   "name": "Village Green",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Menagerie",
+   "art": "Village_GreenArt.jpg"
+  },
+  {
+   "name": "Villain",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Renaissance",
+   "art": "VillainArt.jpg"
+  },
+  {
+   "name": "Vineyard",
+   "kind": "kingdom",
+   "types": [
+    "Victory"
+   ],
+   "potion": 1,
+   "set": "Alchemy",
+   "art": "VineyardArt.jpg"
+  },
+  {
+   "name": "Voyage",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Duration",
+    "Odyssey"
+   ],
+   "cost": "4",
+   "set": "Allies",
+   "art": "VoyageArt.jpg"
+  },
+  {
+   "name": "Wall",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "WallArt.jpg"
+  },
+  {
+   "name": "Walled Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "Walled_VillageArt.jpg"
+  },
+  {
+   "name": "Walled Village BB2DE",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Promo",
+   "art": "Walled_Village_BB2DEArt.jpg"
+  },
+  {
+   "name": "Wandering Minstrel",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Dark Ages",
+   "art": "Wandering_MinstrelArt.jpg"
+  },
+  {
+   "name": "War",
+   "kind": "other",
+   "types": [
+    "Hex"
+   ],
+   "set": "Nocturne",
+   "art": "WarArt.jpg"
+  },
+  {
+   "name": "War Chest",
+   "kind": "kingdom",
+   "types": [
+    "Treasure"
+   ],
+   "cost": "5",
+   "set": "Prosperity",
+   "art": "War_ChestArt.jpg"
+  },
+  {
+   "name": "Warehouse",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Seaside",
+   "art": "WarehouseArt.jpg"
+  },
+  {
+   "name": "Warlord",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Duration",
+    "Attack",
+    "Clash"
+   ],
+   "cost": "5",
+   "set": "Allies",
+   "art": "WarlordArt.jpg"
+  },
+  {
+   "name": "Warrior",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Attack",
+    "Traveller"
+   ],
+   "cost": "4*",
+   "set": "Adventures",
+   "art": "WarriorArt.jpg"
+  },
+  {
+   "name": "Watchtower",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "3",
+   "set": "Prosperity",
+   "art": "WatchtowerArt.jpg"
+  },
+  {
+   "name": "Way of the Butterfly",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_ButterflyArt.jpg"
+  },
+  {
+   "name": "Way of the Camel",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_CamelArt.jpg"
+  },
+  {
+   "name": "Way of the Chameleon",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_ChameleonArt.jpg"
+  },
+  {
+   "name": "Way of the Frog",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_FrogArt.jpg"
+  },
+  {
+   "name": "Way of the Goat",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_GoatArt.jpg"
+  },
+  {
+   "name": "Way of the Horse",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_HorseArt.jpg"
+  },
+  {
+   "name": "Way of the Mole",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_MoleArt.jpg"
+  },
+  {
+   "name": "Way of the Monkey",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_MonkeyArt.jpg"
+  },
+  {
+   "name": "Way of the Mouse",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_MouseArt.jpg"
+  },
+  {
+   "name": "Way of the Mule",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_MuleArt.jpg"
+  },
+  {
+   "name": "Way of the Otter",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_OtterArt.jpg"
+  },
+  {
+   "name": "Way of the Owl",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_OwlArt.jpg"
+  },
+  {
+   "name": "Way of the Ox",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_OxArt.jpg"
+  },
+  {
+   "name": "Way of the Pig",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_PigArt.jpg"
+  },
+  {
+   "name": "Way of the Rat",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_RatArt.jpg"
+  },
+  {
+   "name": "Way of the Seal",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_SealArt.jpg"
+  },
+  {
+   "name": "Way of the Sheep",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_SheepArt.jpg"
+  },
+  {
+   "name": "Way of the Squirrel",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_SquirrelArt.jpg"
+  },
+  {
+   "name": "Way of the Turtle",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_TurtleArt.jpg"
+  },
+  {
+   "name": "Way of the Worm",
+   "kind": "way",
+   "types": [
+    "Way"
+   ],
+   "set": "Menagerie",
+   "art": "Way_of_the_WormArt.jpg"
+  },
+  {
+   "name": "Wayfarer",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "6*",
+   "set": "Menagerie",
+   "art": "WayfarerArt.jpg"
+  },
+  {
+   "name": "Wealthy Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Plunder",
+   "art": "Wealthy_VillageArt.jpg"
+  },
+  {
+   "name": "Weaver",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "4",
+   "set": "Hinterlands",
+   "art": "WeaverArt.jpg"
+  },
+  {
+   "name": "Wedding",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "4",
+   "debt": 3,
+   "set": "Empires",
+   "art": "WeddingArt.jpg"
+  },
+  {
+   "name": "Werewolf",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack",
+    "Night",
+    "Doom"
+   ],
+   "cost": "5",
+   "set": "Nocturne",
+   "art": "WerewolfArt.jpg"
+  },
+  {
+   "name": "Wharf",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Duration"
+   ],
+   "cost": "5",
+   "set": "Seaside",
+   "art": "WharfArt.jpg"
+  },
+  {
+   "name": "Wheelwright",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "WheelwrightArt.jpg"
+  },
+  {
+   "name": "Wild Hunt",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Gathering"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "Wild_HuntArt.jpg"
+  },
+  {
+   "name": "Will-o'-Wisp",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Spirit"
+   ],
+   "cost": "0*",
+   "set": "Nocturne",
+   "art": "Will-o'-WispArt.jpg"
+  },
+  {
+   "name": "Windfall",
+   "kind": "event",
+   "types": [
+    "Event"
+   ],
+   "cost": "5",
+   "set": "Empires",
+   "art": "WindfallArt.jpg"
+  },
+  {
+   "name": "Wine Merchant",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reserve"
+   ],
+   "cost": "5",
+   "set": "Adventures",
+   "art": "Wine_MerchantArt.jpg"
+  },
+  {
+   "name": "Wish",
+   "kind": "other",
+   "types": [
+    "Action"
+   ],
+   "cost": "0*",
+   "set": "Nocturne",
+   "art": "WishArt.jpg"
+  },
+  {
+   "name": "Wishing Well",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Intrigue",
+   "art": "Wishing_WellArt.jpg"
+  },
+  {
+   "name": "Witch",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Dominion",
+   "art": "WitchArt.jpg"
+  },
+  {
+   "name": "Witch's Hut",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "5",
+   "set": "Hinterlands",
+   "art": "Witch's_HutArt.jpg"
+  },
+  {
+   "name": "Wizards",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Wizard"
+   ],
+   "cost": "3*",
+   "set": "Allies",
+   "art": "WizardsArt.jpg"
+  },
+  {
+   "name": "Wolf Den",
+   "kind": "landmark",
+   "types": [
+    "Landmark"
+   ],
+   "set": "Empires",
+   "art": "Wolf_DenArt.jpg"
+  },
+  {
+   "name": "Woodcutter",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "WoodcutterArt.jpg"
+  },
+  {
+   "name": "Woodworkers' Guild",
+   "kind": "ally",
+   "types": [
+    "Ally"
+   ],
+   "set": "Allies",
+   "art": "Woodworkers'_GuildArt.jpg"
+  },
+  {
+   "name": "Worker's Village",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "4",
+   "set": "Prosperity",
+   "art": "Worker's_VillageArt.jpg"
+  },
+  {
+   "name": "Workshop",
+   "kind": "kingdom",
+   "types": [
+    "Action"
+   ],
+   "cost": "3",
+   "set": "Dominion",
+   "art": "WorkshopArt.jpg"
+  },
+  {
+   "name": "Yard Dog",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Reaction"
+   ],
+   "cost": "2",
+   "set": "Animals",
+   "art": "Yard_DogArt.jpg"
+  },
+  {
+   "name": "Young Witch",
+   "kind": "kingdom",
+   "types": [
+    "Action",
+    "Attack"
+   ],
+   "cost": "4",
+   "set": "Cornucopia",
+   "art": "Young_WitchArt.jpg"
+  },
+  {
+   "name": "Zombie Apprentice",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Zombie"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Zombie_ApprenticeArt.jpg"
+  },
+  {
+   "name": "Zombie Mason",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Zombie"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Zombie_MasonArt.jpg"
+  },
+  {
+   "name": "Zombie Spy",
+   "kind": "other",
+   "types": [
+    "Action",
+    "Zombie"
+   ],
+   "cost": "3",
+   "set": "Nocturne",
+   "art": "Zombie_SpyArt.jpg"
+  }
+ ],
+ "source": "https://github.com/sumpfork/dominiontabs/tree/ba10794784418cbdff5d68074bb535e9ccda0ef0 (MIT; names, types, costs and sets only)"
+}
