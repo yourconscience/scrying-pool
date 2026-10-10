@@ -127,3 +127,14 @@ Phase 1, 2026-10-10 (partial):
   - 9 to 6 VP;
   - last turns 14 and 13.
 - Not done yet: the review page in the web UI, and more test logs. The dominion.games session logged out, and I don't sign in for the user.
+
+2026-10-10, evening: Cartographer and capture.
+
+- **Cartographer** (`cartographer/`) parses logs with the dominion.games client's own 244 templates and 842 card names.
+  - It replays ownership and gives a per-turn state: decks and counters for Coffers, Villagers, Favors, debt and VP tokens.
+  - `scry check` passes on all 220 imported games and all test logs: no unknown lines, and last turns and final decks equal the score screens.
+  - Fixes driven by real games: score screens read as trailing card pairs; Supply exiles and trashes decided by the causing card (including Ways); Loot named by a preceding reveal; Fortress, Lich and Trail returning from the trash; Inheritance; the Box; Fleet turns not counted; Tax debt and debt-cost buys.
+  - Not done: zones within a player's deck, Supply pile sizes, variable-VP cards.
+- **Capture.** `web/capture.js` plus `scry import` (AFK games dropped).
+  - Checked on 10 games that were captured by hand: byte-identical logs, all 10 pass.
+  - From DomBot `!prior`: 462 rated games in 2026. 220 imported (`<user config>/scrying-pool/games`); the rest were not captured when the run was stopped.

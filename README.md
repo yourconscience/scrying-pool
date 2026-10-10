@@ -24,17 +24,38 @@ Click **Load demo match** to see a full example. It uses a real six-game match, 
 1. One time: export the client's log grammar and card list. Run `scry bookmarklet -client`, save the printed `javascript:` link as a bookmark, click it on dominion.games, then run `pbpaste | scry client save`. These tables belong to 2nd Shuffle, so they stay on your machine instead of in this repo.
 2. On dominion.games, open **Profile** and click the Load Game icon next to a game in Recent Results (or use **My Table** > **Load Old Game** with a game ID). Press **Load from End**, then **Ready**.
 3. Click the **Copy log** bookmark (`scry bookmarklet` prints it), then save the clipboard to a file: `pbpaste > game.log`.
-4. `scry review game.log` prints the final decks and a turn table.
+4. `scry review game.log` prints the final decks and a turn table (`-json` for the full per-turn state).
+
+For many games at once, `web/capture.js` loads finished games by ID in your logged-in tab, drops AFK games (a player with fewer than 3 turns), and exports them as JSON lines for `scry import`, which saves and checks each one.
 
 The bookmarks only read the page. Copy log refuses rated games, because a game you load to review is always unrated. Don't use it on games in progress: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
 
-## How logs are read
+## How logs are read (cartographer)
 
-`cartographer/` matches each log line against the client's own templates (244 of them, e.g. `BUY_AND_GAIN` "Argument0 buys and gains Argument1."), most specific first. It reads card lists with the client's singular, plural and "a/an" forms, then replays every change of ownership. Its tests check that:
+`cartographer/` is the parser and game-state module.
 
-- every saved log in `testdata/logs` parses with no unknown lines and ends with the decks its score screen shows;
+- **Lines.** Each log line is matched against the client's own templates (244 of them, e.g. `BUY_AND_GAIN` "Argument0 buys and gains Argument1."), most specific first. Card lists are read with the client's singular, plural and "a/an" forms.
+- **Ownership.** Every change of ownership is replayed: gains, trashes, returns to the Supply or the Box, Masquerade passes, Traveller exchanges, Inheritance. The log doesn't say where some cards come from, so the line that caused an event decides:
+  - exiling or trashing a card from the Supply (Invest, Transport, Way of the Camel, Gladiator...);
+  - cards that come back right after being trashed (Fortress, Lich, a Trail played from the trash);
+  - Loot hidden from your seat but revealed just before (Pickaxe).
+- **Per turn.** `Turns()` gives coins, buys, gains, trashes, Actions played, cards drawn and shuffles for each turn. It also gives every player's deck and counters after the turn: Coffers, Villagers, Favors, debt, VP tokens.
+- **Checks.** `scry check` compares saved logs with their score screens: every line must be read, and each player's last turn and final deck must match. On 2026-10-10 all 220 imported games and all test logs pass.
+
+The tests check that:
+
+- every test log passes `scry check`'s rules;
+- the turn-by-turn replay ends at the final decks, and no balance ever goes negative;
 - every template is reachable;
-- every card reads correctly in every form.
+- every card reads in every form.
+
+Set `SCRY_GAMES` to a folder of saved games to run the replay test on those too.
+
+Not covered yet:
+
+- where cards are within a player's deck (hand, draw pile, discard);
+- Supply pile sizes;
+- VP from cards like Gardens.
 
 ## Hosted version
 
