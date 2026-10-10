@@ -28,7 +28,7 @@ const usageText = `usage:
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
   scry check [DIR or LOG_FILES]                    check saved logs against their score screens (default: saved games)
-  scry review [-names "Bot=Player"] LOG_FILE       turn table and final decks for a copied game log
+  scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -100,6 +100,7 @@ func main() {
 		err = emit(*out, renderMessages(msgs, time.Local))
 	case "review":
 		namesFlag := fs.String("names", "", `rename players, e.g. "Lord Rattington=UtagawaLk" (comma-separated)`)
+		asJSON := fs.Bool("json", false, "print players, turns (with decks and counters) and final decks as JSON")
 		fs.Parse(args)
 		if fs.NArg() != 1 {
 			fail(fmt.Errorf("review needs one LOG_FILE"))
@@ -126,7 +127,12 @@ func main() {
 		if perr != nil {
 			fail(perr)
 		}
-		err = emit(*out, reviewMarkdown(client, g))
+		if *asJSON {
+			b, _ := json.MarshalIndent(map[string]any{"header": g.Header, "players": g.Players, "turns": g.Turns(), "final_decks": g.FinalDecks()}, "", " ")
+			err = emit(*out, string(b)+"\n")
+		} else {
+			err = emit(*out, reviewMarkdown(client, g))
+		}
 	case "bookmarklet":
 		clientTables := fs.Bool("client", false, `print the "Copy client tables" bookmark instead of "Copy log"`)
 		fs.Parse(args)

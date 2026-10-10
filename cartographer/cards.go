@@ -1,6 +1,7 @@
 package cartographer
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 )
@@ -98,4 +99,16 @@ func (c *Client) longestForm(low string) (form, bool) {
 		}
 	}
 	return form{}, false
+}
+
+// MarshalJSON writes {"card": "Gold", "n": 2}; card is "" when the log hides it.
+func (c CardN) MarshalJSON() ([]byte, error) {
+	name := ""
+	if c.Card != nil {
+		name = c.Card.Name
+	}
+	return json.Marshal(struct {
+		Card string `json:"card"`
+		N    int    `json:"n"`
+	}{name, c.N})
 }

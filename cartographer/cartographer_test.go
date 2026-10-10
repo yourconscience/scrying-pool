@@ -153,3 +153,48 @@ func TestEveryCardForm(t *testing.T) {
 	}
 	t.Logf("%d cards checked", len(c.Cards))
 }
+
+// Logs to replay: the test logs, plus every saved game when SCRY_GAMES points at their folder.
+func corpus(t *testing.T) []string {
+	logs, _ := filepath.Glob("../testdata/logs/*.log")
+	if dir := os.Getenv("SCRY_GAMES"); dir != "" {
+		more, _ := filepath.Glob(filepath.Join(dir, "*.log"))
+		logs = append(logs, more...)
+	}
+	return logs
+}
+
+// The turn-by-turn replay must end where FinalDecks does, and no balance may go
+// below zero at the end of any turn (a negative one means a missed gain).
+func TestTurnsAreConsistent(t *testing.T) {
+	c := loadClient(t)
+	for _, lp := range corpus(t) {
+		b, _ := os.ReadFile(lp)
+		g, err := c.Parse(string(b), nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		turns := g.Turns()
+		if len(turns) == 0 {
+			continue
+		}
+		id := filepath.Base(lp)
+		if last := turns[len(turns)-1].Decks; !reflect.DeepEqual(last, g.FinalDecks()) {
+			t.Errorf("%s: last turn's decks differ from FinalDecks", id)
+		}
+		for _, tu := range turns {
+			for p, cs := range tu.Counters {
+				if cs.Coffers < 0 || cs.Villagers < 0 || cs.Favors < 0 || cs.Debt < 0 {
+					t.Errorf("%s turn %d (%s): %s has a negative balance %+v", id, tu.Number, tu.Player, p, cs)
+				}
+			}
+			for p, d := range tu.Decks {
+				for card, n := range d {
+					if n < 0 {
+						t.Errorf("%s turn %d: %s owns %d %s", id, tu.Number, p, n, card)
+					}
+				}
+			}
+		}
+	}
+}
