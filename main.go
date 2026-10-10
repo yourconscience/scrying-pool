@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -22,7 +24,8 @@ const usageText = `usage:
   scry match PLAYER1 PLAYER2                       ask DomBot "!match PLAYER1, PLAYER2"
   scry ask '<command>'                             send any DomBot command, e.g. '!game 184206813'
   scry cards sync [-kinds kingdom,landscape]       download card art from the Dominion Strategy wiki
-  scry bookmarklet                                 print the "Copy log" bookmark for dominion.games
+  scry bookmarklet [-client]                       print the "Copy log" (or "Copy client tables") bookmark
+  scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry review [-names "Bot=Player"] LOG_FILE       turn table and final decks for a copied game log
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
@@ -123,7 +126,13 @@ func main() {
 		}
 		err = emit(*out, reviewMarkdown(client, g))
 	case "bookmarklet":
-		src, _ := webFiles.ReadFile("web/bookmarklet.js")
+		clientTables := fs.Bool("client", false, `print the "Copy client tables" bookmark instead of "Copy log"`)
+		fs.Parse(args)
+		file := "web/bookmarklet.js"
+		if *clientTables {
+			file = "web/bookmarklet-client.js"
+		}
+		src, _ := webFiles.ReadFile(file)
 		var code []string
 		for _, l := range strings.Split(string(src), "\n") {
 			if t := strings.TrimSpace(l); t != "" && !strings.HasPrefix(t, "//") {
@@ -131,6 +140,37 @@ func main() {
 			}
 		}
 		fmt.Println("javascript:" + url.PathEscape(strings.Join(code, "\n")))
+	case "client":
+		if len(args) == 0 || args[0] != "save" {
+			fmt.Fprint(os.Stderr, usageText)
+			os.Exit(2)
+		}
+		fs.Parse(args[1:])
+		var b []byte
+		var rerr error
+		if fs.NArg() == 1 {
+			b, rerr = os.ReadFile(fs.Arg(0))
+		} else {
+			b, rerr = io.ReadAll(os.Stdin)
+		}
+		if rerr != nil {
+			fail(rerr)
+		}
+		client, cerr := cartographer.ParseClient(b)
+		if cerr != nil {
+			fail(fmt.Errorf("not client tables from the Copy client tables bookmark: %w", cerr))
+		}
+		dir, derr := cartographer.ClientDir()
+		if derr != nil {
+			fail(derr)
+		}
+		if derr = os.MkdirAll(dir, 0o755); derr != nil {
+			fail(derr)
+		}
+		path := filepath.Join(dir, "webclient-"+client.Version+".json")
+		if err = os.WriteFile(path, b, 0o644); err == nil {
+			fmt.Printf("saved %d templates and %d cards (client %s) to %s\n", len(client.Templates), len(client.Cards), client.Version, path)
+		}
 	case "cards":
 		kinds := fs.String("kinds", "", "comma-separated card kinds (kingdom, landscape, basic, other); empty means all")
 		if len(args) == 0 || args[0] != "sync" {

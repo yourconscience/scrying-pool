@@ -64,8 +64,11 @@ type Template struct {
 	literal int   // length of the fixed text, to try specific templates first
 }
 
+var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
+
 type clientFile struct {
 	Source    string `json:"source"`
+	Version   string `json:"version"`
 	Templates []struct {
 		Name    string `json:"name"`
 		English string `json:"english"`
@@ -89,17 +92,26 @@ type clientFile struct {
 	} `json:"cards"`
 }
 
+// ClientDir is where scry keeps exported client tables.
+func ClientDir() (string, error) {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "scrying-pool", "client"), nil
+}
+
 // DefaultClientPath is where scry keeps the exported client tables:
 // $SCRY_CLIENT, or the newest webclient-*.json in <user config>/scrying-pool/client.
 func DefaultClientPath() string {
 	if p := os.Getenv("SCRY_CLIENT"); p != "" {
 		return p
 	}
-	dir, err := os.UserConfigDir()
+	dir, err := ClientDir()
 	if err != nil {
 		return ""
 	}
-	files, _ := filepath.Glob(filepath.Join(dir, "scrying-pool", "client", "webclient-*.json"))
+	files, _ := filepath.Glob(filepath.Join(dir, "webclient-*.json"))
 	sort.Strings(files)
 	if len(files) == 0 {
 		return ""
@@ -107,17 +119,33 @@ func DefaultClientPath() string {
 	return files[len(files)-1]
 }
 
-// LoadClient reads exported client tables.
+// LoadClient reads exported client tables from a file.
 func LoadClient(path string) (*Client, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var f clientFile
-	if err := json.Unmarshal(b, &f); err != nil {
+	c, err := ParseClient(b)
+	if err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
-	c := &Client{Version: f.Source, Cards: map[string]*Card{}, forms: map[string][]form{}}
+	return c, nil
+}
+
+// ParseClient reads exported client tables, as copied by the "Copy client tables" bookmark.
+func ParseClient(b []byte) (*Client, error) {
+	var f clientFile
+	if err := json.Unmarshal(b, &f); err != nil {
+		return nil, err
+	}
+	if len(f.Templates) == 0 || len(f.Names) == 0 || len(f.Cards) == 0 {
+		return nil, fmt.Errorf("missing tables: %d templates, %d names, %d cards", len(f.Templates), len(f.Names), len(f.Cards))
+	}
+	version := f.Version
+	if version == "" {
+		version = reVersion.FindString(f.Source)
+	}
+	c := &Client{Version: version, Cards: map[string]*Card{}, forms: map[string][]form{}}
 
 	byKey := map[string]*Card{}
 	for _, n := range f.Names {

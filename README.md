@@ -21,11 +21,20 @@ Click **Load demo match** to see a full example. It uses a real six-game match, 
 
 ## Getting a game log
 
-1. In DomBot's Discord DM, send `!game` and copy the game ID.
-2. On dominion.games, go to **My Table** > **Load Old Game**. Enter the game ID and press **Load from End**; the decision index fills in by itself. Put a bot in the empty seat and press **Ready**.
-3. Click the **Copy log** bookmark. To create it, run `scry bookmarklet` and save the printed `javascript:` link as a bookmark.
+1. One time: export the client's log grammar and card list. Run `scry bookmarklet -client`, save the printed `javascript:` link as a bookmark, click it on dominion.games, then run `pbpaste | scry client save`. These tables belong to 2nd Shuffle, so they stay on your machine instead of in this repo.
+2. On dominion.games, open **Profile** and click the Load Game icon next to a game in Recent Results (or use **My Table** > **Load Old Game** with a game ID). Press **Load from End**, then **Ready**.
+3. Click the **Copy log** bookmark (`scry bookmarklet` prints it), then save the clipboard to a file: `pbpaste > game.log`.
+4. `scry review game.log` prints the final decks and a turn table.
 
-The bookmark only reads the log panel on the page. It refuses rated games, because a game you load to review is always unrated. Don't use it on games in progress: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
+The bookmarks only read the page. Copy log refuses rated games, because a game you load to review is always unrated. Don't use it on games in progress: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
+
+## How logs are read
+
+`cartographer/` matches each log line against the client's own templates (244 of them, e.g. `BUY_AND_GAIN` "Argument0 buys and gains Argument1."), most specific first. It reads card lists with the client's singular, plural and "a/an" forms, then replays every change of ownership. Its tests check that:
+
+- every saved log in `testdata/logs` parses with no unknown lines and ends with the decks its score screen shows;
+- every template is reachable;
+- every card reads correctly in every form.
 
 ## Hosted version
 
