@@ -1,0 +1,41 @@
+# row: 2026-10-09 14:15 | werkit2 | 58.15 | W | 1 - 2
+# original players: gamrevinu / werkit2
+You Resigned
+1
+Lord Rattington
+Turns: 5
+2
+gamrevinu
+Turns: 6
+Lord Rattington
+2
+Estate
+
+
+5
+Copper
+2
+Estate
+4
+Silver
+1
+Remake
+1
+Tide Pools
+gamrevinu
+1
+Estate
+
+
+2
+Copper
+1
+Estate
+1
+Silver
+1
+Remake
+1
+Gold
+Ready
+Leave Table

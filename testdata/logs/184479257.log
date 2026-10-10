@@ -1,0 +1,532 @@
+# scrying-pool log v1
+0	Game #184527463, unrated.
+0	Timer:|Off|Card Pool: level 8
+0	
+0	g|gets +|1|Favor. (|Cave Dwellers|)
+0	L|gets +|1|Favor. (|Cave Dwellers|)
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Cave Dwellers|)
+1	g|spends|1|Favor.
+1	g|draws|a Copper|. (|Cave Dwellers|)
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Tea House|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Crossroads|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Masquerade|.
+0	g|draws|4 Coppers|and|a Tea House|.
+0T	Turn 2 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|buys and gains|a Giant|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Tea House|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Tea House|.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|. (|Cave Dwellers|)
+1	L|spends|1|Favor.
+1	L|draws|a card|. (|Cave Dwellers|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|2 Estates|and|2 Coppers|.
+1	L|draws|2 cards|.
+1	L|gets +|3|Actions.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Sailor|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Sailor|.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Masquerade|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face down.
+1	L|gets +$|1|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Giant|.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Masquerade|.
+1	g|draws|a Copper|and|a Tea House|.
+1	g|passes|an Estate|to|L|.
+1	L|passes|an Estate|to|g|.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Haven|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|an Estate|,|and|2 Tea Houses|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Sailor|.
+1	L|gets +|1|Action.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Crossroads|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Tea House|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Tea House|.
+0	g|draws|3 Coppers|,|a Masquerade|,|and|a Haven|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +$|2|. (|Sailor|)
+1	L|trashes|a Copper|. (|Sailor|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|an Estate|,|a Copper|,|and|a Giant|.
+1	L|draws|a card|.
+1	L|gets +|3|Actions.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face up.
+1	L|gets +$|5|.
+1	g|reveals|a Copper|.
+1	g|discards|a Copper|.
+1	g|gains|a Curse|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|an Emissary|.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Haven|.
+1	g|draws|a Sailor|.
+1	g|gets +|1|Action.
+1	g|sets|a Masquerade|aside with|Haven|.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Haven|.
+1	g|plays|a Haven|.
+2S	g|shuffles their deck.
+2	g|draws|a Copper|.
+2	g|gets +|1|Action.
+2	g|sets|a Copper|aside with|Haven|.
+0	g|draws|a Curse|,|a Copper|,|an Estate|,|and|2 Tea Houses|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face down.
+1	L|gets +$|1|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Silver|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|puts|a Copper|and|a Masquerade|in hand (|Haven|).
+1	g|gets +$|2|. (|Sailor|)
+1	g|trashes|an Estate|. (|Sailor|)
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	Progress|comes true.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Masquerade|.
+1	g|draws|a Copper|and|a Tea House|.
+1	g|passes|a Curse|to|L|.
+1	L|passes|an Estate|to|g|.
+1	g|trashes|an Estate|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Province|.
+1	g|topdecks|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Province|,|a Haven|,|a Sailor|,|and|a Tea House|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|3 Coppers|and|a Curse|.
+1	L|gets +|3|Actions.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Silver|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Tea House|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|a Haven|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|sets|an Estate|aside with|Haven|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Sailor|.
+1	g|plays|a Sailor|.
+2	g|gets +|1|Action.
+0	g|draws|3 Coppers|,|a Haven|,|and|a Tea House|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Sailor|.
+1	L|gets +|1|Action.
+0	L|plays|an Emissary|.
+1	L|draws|3 cards|.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Sailor|.
+1	L|plays|a Sailor|.
+2	L|gets +|1|Action.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|puts|an Estate|in hand (|Haven|).
+1	g|gets +$|2|. (|Sailor|)
+1	g|trashes|a Copper|. (|Sailor|)
+1	g|gets +$|2|. (|Sailor|)
+1	g|trashes|a Copper|. (|Sailor|)
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Haven|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|sets|an Estate|aside with|Haven|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Province|.
+1	g|topdecks|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|2 Provinces|,|a Masquerade|,|and|a Tea House|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +$|2|. (|Sailor|)
+1	L|trashes|a Curse|. (|Sailor|)
+1	L|gets +$|2|. (|Sailor|)
+1	L|trashes|a Copper|. (|Sailor|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Silver|and|an Estate|.
+1	L|draws|a card|.
+1	L|gets +|3|Actions.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face up.
+1	L|gets +$|5|.
+1	g|reveals|a Tea House|.
+1	g|trashes|a Tea House|.
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|a Province|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|puts|an Estate|in hand (|Haven|).
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Masquerade|.
+1	g|draws|a Copper|and|a Haven|.
+1	g|passes|an Estate|to|L|.
+1	L|passes|a Copper|to|g|.
+1	g|trashes|a Copper|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Tea House|.
+1	g|topdecks|a Tea House|.
+0	g|draws|a Copper|,|2 Sailors|,|and|2 Tea Houses|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Province|,|an Estate|,|a Copper|,|and|a Giant|.
+1	L|draws|2 cards|.
+1	L|gets +|3|Actions.
+0	L|plays|an Emissary|.
+1	L|draws|3 cards|.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face down.
+1	L|gets +$|1|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|buys and gains|an Emissary|.
+1	L|topdecks|a card|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Samurai|.
+1	g|plays|a Samurai|.
+2	L|discards|a card|and|an Estate|.
+0	g|draws|2 Coppers|,|a Province|,|a Masquerade|,|and|a Haven|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|an Emissary|.
+1	L|draws|3 cards|.
+0	L|plays|a Silver|and|a Copper|. (+$|3|)
+0	L|buys and gains|a Crossroads|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|1|. (|Samurai|)
+1	g|gets +$|2|. (|Sailor|)
+1	g|trashes|a Copper|. (|Sailor|)
+1	g|gets +$|2|. (|Sailor|)
+0	g|plays|a Haven|.
+1	g|draws|a Province|.
+1	g|gets +|1|Action.
+1	g|sets|a Province|aside with|Haven|.
+0	g|plays|a Masquerade|.
+1	g|draws|a Haven|and|a Tea House|.
+1	g|passes|a Copper|to|L|.
+1	L|passes|a Copper|to|g|.
+1	g|trashes|a Copper|.
+0	g|buys and gains|a Tea House|.
+1	g|topdecks|a Tea House|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Province|,|a Masquerade|,|and|2 Tea Houses|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Sailor|.
+1	L|gets +|1|Action.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Crossroads|,|a Silver|,|and|a Copper|.
+1	L|gets +|3|Actions.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Silver|and|a Copper|.
+0	L|plays|a Silver|and|a Copper|. (+$|3|)
+0	L|buys and gains|a Crossroads|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|1|. (|Samurai|)
+1	g|puts|a Province|in hand (|Haven|).
+0	g|plays|a Tea House|.
+1	g|draws|a Haven|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Haven|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|sets|a Copper|aside with|Haven|.
+0	g|plays|a Tea House|.
+1	g|draws|a Sailor|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|a Masquerade|.
+1	g|draws|a Copper|and|a Tea House|.
+1	g|passes|a Copper|to|L|.
+1	L|passes|a Copper|to|g|.
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Province|.
+1	g|topdecks|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|a Province|,|a Masquerade|,|a Sailor|,|and|2 Tea Houses|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +$|2|. (|Sailor|)
+1	L|trashes|a Copper|. (|Sailor|)
+0	L|plays|an Emissary|.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+1	L|gets +|1|Action.
+1	L|gets +|2|Favors. (|Emissary|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Crossroads|,|a Silver|,|a Sailor|,|a Copper|,|and|a Giant|.
+1	L|gets +|3|Actions.
+0	L|plays|a Sailor|.
+1	L|gets +|1|Action.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face up.
+1	L|gets +$|5|.
+1	g|reveals|a Province|.
+1	g|discards|a Province|.
+1	g|gains|a Curse|.
+2	g|topdecks|a Curse|.
+0	L|plays|a Silver|and|a Copper|. (+$|3|)
+0	L|buys and gains|a Province|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|1|. (|Samurai|)
+1	g|puts|a Copper|in hand (|Haven|).
+1	g|gets +$|2|. (|Sailor|)
+1	g|trashes|a Copper|. (|Sailor|)
+0	g|plays|a Tea House|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|a Masquerade|.
+1	g|draws|a Haven|and|a Tea House|.
+1	g|passes|a Curse|to|L|.
+1	L|passes|a Copper|to|g|.
+1	g|trashes|a Copper|.
+0	g|buys and gains|a Province|.
+1	g|topdecks|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|3 Provinces|and|2 Tea Houses|.
+0T	Turn 15 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +$|2|. (|Sailor|)
+1	L|trashes|a Curse|. (|Sailor|)
+1	L|discards|a Province|. (|Cave Dwellers|)
+1	L|spends|1|Favor.
+1	L|draws|a card|. (|Cave Dwellers|)
+1	L|discards|a Copper|. (|Cave Dwellers|)
+1	L|spends|1|Favor.
+1	L|draws|a card|. (|Cave Dwellers|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Crossroads|,|a Province|,|and|an Estate|.
+1	L|draws|2 cards|.
+1	L|gets +|3|Actions.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Province|,|an Estate|,|a Giant|,|and|an Emissary|.
+1	L|draws|2 cards|.
+0	L|plays|an Emissary|.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+1	L|gets +|1|Action.
+1	L|gets +|2|Favors. (|Emissary|)
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face down.
+1	L|gets +$|1|.
+0	L|plays|2 Silvers|. (+$|4|)
+0	L|buys and gains|a Duchy|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 16 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|1|. (|Samurai|)
+1	g|gets +$|2|. (|Sailor|)
+0	g|plays|a Tea House|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Haven|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Haven|.
+1	g|draws|a Masquerade|.
+1	g|gets +|1|Action.
+1	g|sets|a Tea House|aside with|Haven|.
+0	g|buys and gains|a Province|.
+1	g|topdecks|a Province|.
+0	g|draws|a Copper|,|2 Provinces|,|a Haven|,|and|a Sailor|.
+0T	Turn 16 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|a Copper|. (|Cave Dwellers|)
+1	L|spends|1|Favor.
+1	L|draws|a card|. (|Cave Dwellers|)
+0	L|plays|an Emissary|.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+1	L|gets +|1|Action.
+1	L|gets +|2|Favors. (|Emissary|)
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Crossroads|,|2 Coppers|,|a Sailor|,|a Giant|,|and|a Duchy|.
+1	L|draws|a card|.
+1	L|gets +|3|Actions.
+0	L|plays|a Crossroads|.
+1	L|reveals their hand:|a Province|,|2 Coppers|,|a Sailor|,|a Giant|,|and|a Duchy|.
+1	L|draws|2 cards|.
+0	L|plays|a Sailor|.
+1	L|gets +|1|Action.
+0	L|plays|a Giant|.
+1	L|flips|Journey token|face up.
+1	L|gets +$|5|.
+1S	g|shuffles their deck.
+1	g|reveals|a Sailor|.
+1	g|trashes|a Sailor|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Duchy|.
+1	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 17 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|1|. (|Samurai|)
+1	g|puts|a Tea House|in hand (|Haven|).
+0	g|plays|a Sailor|.
+1	g|gets +|1|Action.
+0	g|plays|a Haven|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|sets|a Province|aside with|Haven|.
+0	g|plays|a Tea House|.
+1	g|draws|a Tea House|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Province|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Tea House|.
+1	g|draws|a Province|.
+1	g|gets +|1|Action.
+1	g|gets +$|2|.
+0	g|plays|a Copper|. (+$|1|)
