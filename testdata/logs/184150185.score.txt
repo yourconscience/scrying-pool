@@ -1,0 +1,75 @@
+# row: 
+# original players: ValhallaRising / gamrevinu
+You Resigned
+1
+Lord Rattington
+Turns: 13
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+4
+Province
+
+
+1
+Copper
+1
+Vagrant
+4
+Market Square
+1
+Sage
+1
+Silver
+1
+Smithy
+3
+Governor
+1
+Kitsune
+1
+Mastermind
+3
+Skirmisher
+6
+Gold
+4
+Province
+gamrevinu
+4
+Province
+
+
+1
+Duchy
+
+
+3
+Curse
+
+
+3
+Curse
+4
+Market Square
+1
+Smithy
+1
+Duchy
+3
+Governor
+2
+Kitsune
+3
+Mastermind
+1
+Royal Carriage
+5
+Skirmisher
+2
+Gold
+4
+Province
+Ready
+Leave Table

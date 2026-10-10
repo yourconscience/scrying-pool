@@ -1,0 +1,633 @@
+# scrying-pool log v1
+0	Game #184530681, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|a Hovel|,|a Necropolis|,|and|an Overgrown Estate|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|a Hovel|,|a Necropolis|,|and|an Overgrown Estate|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|,|a Necropolis|,|and|an Overgrown Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0	g|draws|4 Coppers|and|a Hovel|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Tiara|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Hovel|,|and|a Tiara|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Silver|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Copper|. (+$|1|)
+1	g|plays|a Copper|again. (+$|1|)
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|an Investment|.
+1	g|topdecks|an Investment|with|Tiara|.
+0	g|draws|3 Coppers|,|a Silver|,|and|an Investment|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|an Investment|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|an Investment|.
+1	g|trashes|a Copper|.
+1	g|gets +$|1|. (|Investment|)
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|buys and gains|a Cutthroat|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Necropolis|,|an Overgrown Estate|,|an Investment|,|and|a Cutthroat|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Copper|. (+$|1|)
+1	L|plays|a Copper|again. (+$|1|)
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Guard Dog|.
+1	L|topdecks|a Guard Dog|with|Tiara|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Necropolis|.
+1	g|gets +|2|Actions.
+0	g|plays|a Cutthroat|.
+1	L|reacts with|a Guard Dog|, playing it.
+1	L|plays|a Guard Dog|.
+2	L|draws|2 cards|.
+1	L|discards|2 other cards|and|a Copper|.
+0	g|plays|an Investment|.
+1	g|trashes|an Overgrown Estate|.
+2	g|draws|a Tiara|.
+1	g|gets +$|1|. (|Investment|)
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Copper|. (+$|1|)
+1	g|plays|a Copper|again. (+$|1|)
+0	g|buys and gains|a Silver|.
+1	g|topdecks|a Silver|with|Tiara|.
+0	L|discards|a Guard Dog|.
+0	g|draws|3 Coppers|and|2 Silvers|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Silver|and|a Copper|. (+$|3|)
+0	L|buys and gains|a Guard Dog|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|2 Silvers|and|2 Coppers|. (+$|6|)
+0	g|buys and gains|a Gold|.
+1	g|reveals|a Shield|.
+1	g|gains|a Shield|. (|Cutthroat|)
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Silver|,|a Hovel|,|and|a Tiara|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|an Investment|.
+2	L|trashes|a Hovel|.
+2	L|gets +$|1|. (|Investment|)
+1	L|plays|an Investment|again.
+2	L|trashes|a Copper|.
+2	L|gets +$|1|. (|Investment|)
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Guard Dog|.
+1	L|topdecks|a Guard Dog|with|Tiara|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Silver|. (+$|2|)
+1	g|plays|a Silver|again. (+$|2|)
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Guard Dog|.
+1	g|topdecks|a Guard Dog|with|Tiara|.
+0	g|buys and gains|a Guard Dog|.
+0	g|draws|a Copper|,|a Silver|,|a Gold|,|a Guard Dog|,|and|a Cutthroat|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Guard Dog|.
+1	L|draws|2 cards|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|buys and gains|a Cutthroat|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Cutthroat|.
+1	L|discards|a card|and|a Copper|.
+0	g|plays|a Silver|,|a Copper|,|and|a Gold|. (+$|6|)
+0	g|buys and gains|a Gold|.
+1	g|reveals|an Amphora|.
+1	g|gains|an Amphora|. (|Cutthroat|)
+0	g|draws|2 Coppers|,|a Necropolis|,|an Investment|,|and|a Shield|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Guard Dog|.
+1	L|draws|2 cards|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|an Investment|.
+2	L|trashes|an Overgrown Estate|.
+3	L|draws|a card|.
+2	L|gets +$|1|. (|Investment|)
+1	L|plays|an Investment|again.
+2	L|trashes|a Copper|.
+2	L|gets +$|1|. (|Investment|)
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Trail|.
+1	L|topdecks|a Trail|with|Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|an Investment|.
+1	g|trashes|a Copper|.
+1	g|gets +$|1|. (|Investment|)
+0	g|plays|a Shield|.
+1	g|gets +|1|Buy.
+1	g|gets +$|3|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Tiara|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Silver|,|an Investment|,|a Guard Dog|,|and|an Amphora|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Cutthroat|.
+1	g|reacts with|a Guard Dog|, playing it.
+1	g|plays|a Guard Dog|.
+2	g|draws|a Necropolis|and|a Cutthroat|.
+1	g|discards|a Copper|,|a Necropolis|,|and|an Investment|.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Tiara|.
+0	g|discards|a Guard Dog|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|plays|a Cutthroat|.
+1	L|discards|a card|and|a Copper|.
+2	L|reacts with|a Trail|, playing it.
+3	L|looks at|2 cards|.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	g|plays|a Silver|. (+$|2|)
+0	g|plays|an Amphora|.
+1	g|gets +|1|Buy.
+1	g|gets +$|3|.
+0	g|buys and gains|a Trail|.
+1	g|reacts with|a Trail|, playing it.
+2	g|draws|a Gold|.
+2	g|gets +|1|Action.
+0	L|discards|a Trail|.
+0	g|draws|a Copper|,|a Hovel|,|2 Tiaras|,|and|a Guard Dog|.
+0T	Turn 10 - Lord Rattington
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Silver|. (+$|2|)
+1	L|plays|a Silver|again. (+$|2|)
+0	L|plays|an Investment|.
+1	L|trashes|a Copper|.
+1	L|gets +$|1|. (|Investment|)
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Gold|.
+1	L|reveals|a Doubloons|.
+1	L|gains|a Doubloons|. (|Cutthroat|)
+2	L|gains|a Gold|. (|Doubloons|)
+1	g|reveals|a Spell Scroll|.
+1	g|gains|a Spell Scroll|. (|Cutthroat|)
+0	g|discards|a Cutthroat|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|plays|a Guard Dog|.
+1	g|draws|a Copper|and|a Silver|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Tiara|.
+2	g|gets +|1|Buy.
+2	g|plays|a Silver|. (+$|2|)
+2	g|plays|a Silver|again. (+$|2|)
+1	g|plays|a Tiara|again.
+2	g|gets +|1|Buy.
+2	g|plays|a Copper|. (+$|1|)
+2	g|plays|a Copper|again. (+$|1|)
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Guard Dog|.
+1	g|topdecks|a Guard Dog|with|Tiara|.
+0	g|buys and gains|a Tiara|.
+1	g|topdecks|a Tiara|with|Tiara|.
+0	g|draws|2 Coppers|,|a Gold|,|a Tiara|,|and|a Guard Dog|.
+0T	Turn 11 - Lord Rattington
+0	L|plays|a Necropolis|.
+1	L|gets +|2|Actions.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Cutthroat|.
+1	g|reacts with|a Guard Dog|, playing it.
+1	g|plays|a Guard Dog|.
+2S	g|shuffles their deck.
+2	g|draws|a Silver|and|a Shield|.
+1	g|reacts with|a Shield|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Gold|. (+$|3|)
+1	L|plays|a Gold|again. (+$|3|)
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Guard Dog|.
+1	L|topdecks|a Guard Dog|with|Tiara|.
+0	L|buys and gains|a Margrave|.
+1	L|topdecks|a Margrave|with|Tiara|.
+0	g|discards|a Guard Dog|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Shield|.
+2	g|gets +|1|Buy.
+2	g|gets +$|3|.
+1	g|plays|a Shield|again.
+2	g|gets +|1|Buy.
+2	g|gets +$|3|.
+0	g|plays|a Silver|,|2 Coppers|,|and|a Gold|. (+$|7|)
+0	g|buys and gains|a Margrave|.
+0	g|buys and gains|a Trail|.
+1	g|topdecks|a Trail|with|Tiara|.
+0	g|buys and gains|a Guard Dog|.
+1	g|topdecks|a Guard Dog|with|Tiara|.
+0	g|draws|2 Tiaras|,|a Guard Dog|,|a Trail|,|and|an Amphora|.
+0T	Turn 12 - Lord Rattington
+0	L|plays|a Margrave|.
+1	g|reacts with|a Guard Dog|, playing it.
+1	g|plays|a Guard Dog|.
+2	g|draws|a Hovel|and|a Necropolis|.
+1	L|draws|3 cards|.
+1	L|gets +|1|Buy.
+1	g|draws|a Copper|.
+1	g|discards|a Copper|,|a Hovel|,|a Necropolis|,|and|a Trail|.
+2	g|reacts with|a Trail|, playing it.
+3	g|looks at|a Guard Dog|,|a Silver|,|a Shield|,|3 Coppers|,|a Trail|,|a Margrave|,|a Gold|,|a Necropolis|,|a Hovel|,|and|a Tiara|.
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Doubloons|. (+$|3|)
+1	L|plays|a Doubloons|again. (+$|3|)
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Trail|.
+1	L|topdecks|a Trail|with|Tiara|.
+0	L|buys and gains|a Vagrant|.
+1	L|topdecks|a Vagrant|with|Tiara|.
+0	L|buys and gains|a Vagrant|.
+0	g|discards|a Guard Dog|and|a Trail|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Tiara|.
+2	g|gets +|1|Buy.
+2	g|plays|a Gold|. (+$|3|)
+2	g|plays|a Gold|again. (+$|3|)
+1	g|plays|a Tiara|again.
+2	g|gets +|1|Buy.
+2	g|plays|an Amphora|.
+3	g|gets +|1|Buy.
+3	g|gets +$|3|.
+2	g|plays|an Amphora|again.
+3	g|gets +|1|Buy.
+3	g|gets +$|3|.
+0	g|buys and gains|a Trail|.
+1	g|reacts with|a Trail|, playing it.
+2	g|draws|a Trail|.
+2	g|gets +|1|Action.
+0	g|buys and gains|a Trail|.
+1	g|reacts with|a Trail|, playing it.
+2	g|draws|a Spell Scroll|.
+2	g|gets +|1|Action.
+0	g|buys and gains|a Trail|.
+1	g|topdecks|a Trail|with|Tiara|.
+0	g|draws|a Copper|,|an Investment|,|a Guard Dog|,|a Trail|,|and|a Cutthroat|.
+0T	Turn 13 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Necropolis|.
+1	L|puts|a Necropolis|into their hand.
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|an Investment|.
+1	L|trashes|a Copper|.
+1	L|gets +$|1|. (|Investment|)
+0	L|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	L|buys and gains|a Gold|.
+1	L|reveals|an Orb|.
+1	L|gains|an Orb|. (|Cutthroat|)
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|plays|a Cutthroat|.
+1	L|discards|a card|and|a Copper|.
+2	L|reacts with|a Trail|, playing it.
+3	L|looks at|12 cards|.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	g|plays|an Investment|.
+1	g|trashes|a Copper|.
+1	g|gets +$|1|. (|Investment|)
+0	L|discards|a Trail|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Silver|,|a Margrave|,|a Guard Dog|,|and|a Trail|.
+0T	Turn 14 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Silver|.
+1	L|topdecks|a Silver|.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Tiara|.
+2	L|gets +|1|Buy.
+2	L|plays|a Doubloons|. (+$|3|)
+2	L|plays|a Doubloons|again. (+$|3|)
+1	L|plays|a Tiara|again.
+2	L|gets +|1|Buy.
+2	L|plays|a Gold|. (+$|3|)
+2	L|plays|a Gold|again. (+$|3|)
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|a Trail|.
+1	L|topdecks|a Trail|with|Tiara|.
+0	L|buys and gains|a Graverobber|.
+1	L|topdecks|a Graverobber|with|Tiara|.
+0	L|buys and gains|a Graverobber|.
+1	L|topdecks|a Graverobber|with|Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|plays|a Trail|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+0	g|plays|a Guard Dog|.
+1	g|draws|a Tiara|and|a Guard Dog|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Silver|. (+$|2|)
+1	g|plays|a Silver|again. (+$|2|)
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Graverobber|.
+1	g|topdecks|a Graverobber|with|Tiara|.
+0	g|draws|a Graverobber|,|a Necropolis|,|a Tiara|,|a Trail|,|and|a Spell Scroll|.
+0T	Turn 15 - Lord Rattington
+0	L|plays|a Graverobber|.
+1	L|trashes|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+1	L|gains|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Graverobber|.
+1	L|trashes|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+1	L|gains|a Graverobber|.
+0	L|plays|a Necropolis|.
+1	L|gets +|2|Actions.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Margrave|.
+1	L|draws|3 cards|.
+1	L|gets +|1|Buy.
+1	g|draws|a Tiara|.
+1	g|discards|a Necropolis|,|a Tiara|,|and|a Trail|.
+2	g|reacts with|a Trail|, playing it.
+3	g|looks at|2 Guard Dogs|,|a Silver|,|2 Coppers|,|2 Trails|,|a Margrave|,|a Necropolis|,|and|2 Tiaras|.
+3	g|draws|a Trail|.
+3	g|gets +|1|Action.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Investment|.
+1	L|topdecks|an Investment|.
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Guard Dog|.
+1	L|draws|2 cards|.
+0	L|plays|an Investment|.
+1	L|trashes|a Copper|.
+1	L|trashes|an Investment|.
+1	L|reveals their hand:|an Orb|,|a Vagrant|,|2 Coppers|,|2 Golds|,|and|a Tiara|.
+1	L|gets|4|VP from|Investment|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|an Orb|.
+2	L|looks at|a card|.
+2	L|plays|a Graverobber|.
+3	L|trashes|a Vagrant|.
+3	L|gains|a Trail|.
+3	L|topdecks|a Trail|with|Tiara|.
+1	L|plays|an Orb|again.
+2	L|gets +|1|Buy.
+2	L|gets +$|3|.
+0	L|plays|2 Coppers|and|2 Golds|. (+$|8|)
+0	L|buys and gains|a Graverobber|.
+1	L|topdecks|a Graverobber|with|Tiara|.
+0	L|buys and gains|a Margrave|.
+1	L|topdecks|a Margrave|with|Tiara|.
+0	g|discards|a Trail|.
+0	L|draws|5 cards|.
+0T	Turn 16 - gamrevinu
+0	g|plays|a Graverobber|.
+1	g|trashes|a Trail|.
+2	g|reacts with|a Trail|, playing it.
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+1	g|gains|a Graverobber|.
+0	g|plays|a Spell Scroll|.
+1	g|trashes|a Spell Scroll|.
+1	g|gains|a Margrave|.
+1	g|plays|a Margrave|.
+2	g|draws|a Copper|,|a Guard Dog|,|and|a Trail|.
+2	g|gets +|1|Buy.
+2	L|draws|a card|.
+2	L|discards|2 other cards|and|a Doubloons|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Gold|. (+$|3|)
+1	g|plays|a Gold|again. (+$|3|)
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Tiara|.
+1	g|topdecks|a Tiara|with|Tiara|.
+0	g|buys and gains|a Vagrant|.
+0	g|draws|a Copper|,|an Investment|,|a Tiara|,|an Amphora|,|and|a Shield|.
+0T	Turn 16 - Lord Rattington
+0	L|plays|a Graverobber|.
+1	L|trashes|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+1	L|gains|a Gold|.
+2	g|reveals|a Shield|.
+2	g|gains|a Shield|. (|Cutthroat|)
+0	L|plays|a Guard Dog|.
+1	L|draws|2 cards|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Gold|. (+$|3|)
+1	L|plays|a Gold|again. (+$|3|)
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|a Province|.
+0	g|discards|a Cutthroat|.
+0	L|draws|5 cards|.
+0T	Turn 17 - gamrevinu
+0	g|plays|an Investment|.
+1	g|trashes|a Copper|.
+1	g|trashes|an Investment|.
+1	g|reveals their hand:|a Shield|,|an Amphora|,|and|a Tiara|.
+1	g|gets|3|VP from|Investment|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Shield|.
+2	g|gets +|1|Buy.
+2	g|gets +$|3|.
+1	g|plays|a Shield|again.
+2	g|gets +|1|Buy.
+2	g|gets +$|3|.
+0	g|plays|an Amphora|.
+1	g|gets +|1|Buy.
+1	g|gets +$|3|.
+0	g|buys and gains|a Province|.
+0	g|draws|a Silver|,|a Gold|,|a Hovel|,|a Guard Dog|,|and|a Trail|.
+0T	Turn 17 - Lord Rattington
+0	L|plays|a Graverobber|.
+1	L|trashes|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+1	L|gains|a Graverobber|.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Gold|. (+$|3|)
+1	L|plays|a Gold|again. (+$|3|)
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Province|.
+0	L|buys and gains|a Guard Dog|.
+1	L|topdecks|a Guard Dog|with|Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 18 - gamrevinu
+0	g|plays|a Trail|.
+1S	g|shuffles their deck.
+1	g|draws|a Necropolis|.
+1	g|gets +|1|Action.
+0	g|plays|a Necropolis|.
+1	g|gets +|2|Actions.
+0	g|plays|a Guard Dog|.
+1	g|draws|a Copper|,|a Gold|,|and|2 Trails|.
+0	g|plays|a Trail|.
+1	g|draws|a Graverobber|.
+1	g|gets +|1|Action.
+0	g|plays|a Graverobber|.
+1	g|trashes|a Trail|.
+2	g|reacts with|a Trail|, playing it.
+3	g|draws|an Amphora|.
+3	g|gets +|1|Action.
+1	g|gains|a Duchy|.
+2	g|trashes|a Hovel|.
+0	g|plays|a Silver|,|a Copper|,|and|2 Golds|. (+$|9|)
+0	g|plays|an Amphora|.
+1	g|gets +|1|Buy.
+1	g|gets +$|3|.
+0	g|buys and gains|a Province|.
+0	g|buys and gains|an Investment|.
+0	g|draws|a Margrave|,|a Graverobber|,|a Tiara|,|a Guard Dog|,|and|a Trail|.
+0T	Turn 18 - Lord Rattington
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Necropolis|.
+1	L|gets +|2|Actions.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Graverobber|.
+1	L|trashes|a Margrave|.
+1	L|gains|a Province|.
+0	L|plays|a Doubloons|. (+$|3|)
+0	L|plays|an Orb|.
+1	L|looks at|22 cards|.
+1	L|plays|a Graverobber|.
+2	L|looks at|22 cards|.
+2	L|trashes|a Margrave|.
+2	L|gains|a Province|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Death Cart|.
+1	L|gains|a Ruined Library|and|a Survivors|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 19 - gamrevinu
+0	g|plays|a Graverobber|.
+1	g|trashes|a Trail|.
+2	g|reacts with|a Trail|, playing it.
+3	g|draws|a Tiara|.
+3	g|gets +|1|Action.
+1	g|gains|a Duchy|.
+0	g|plays|a Guard Dog|.
+1	g|draws|a Margrave|,|a Vagrant|,|a Trail|,|and|a Shield|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Tiara|.
+2	g|gets +|1|Buy.
+2	g|plays|a Shield|.
+3	g|gets +|1|Buy.
+3	g|gets +$|3|.
+2	g|plays|a Shield|again.
+3	g|gets +|1|Buy.
+3	g|gets +$|3|.
+1	g|plays|a Tiara|again.
+2	g|gets +|1|Buy.
+0	g|buys and gains|a Duchy|.
+0	g|draws|a Copper|,|a Silver|,|a Province|,|and|2 Guard Dogs|.
+0T	Turn 19 - Lord Rattington
+0	L|plays|a Death Cart|.
+1	L|trashes|a Trail|.
+2	L|reacts with|a Trail|, playing it.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+1	L|gets +$|5|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Necropolis|.
+1	L|puts|a Necropolis|into their hand.
+0	L|plays|a Necropolis|.
+1	L|gets +|2|Actions.
+0	L|plays|a Guard Dog|.
+1	L|draws|4 cards|.
+0	L|plays|a Graverobber|.
+1	L|trashes|a Graverobber|.
+1	L|gains|a Province|.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Province|.
+0	L|draws|5 cards|.

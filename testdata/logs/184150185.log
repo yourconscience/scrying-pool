@@ -1,0 +1,690 @@
+# scrying-pool log v1
+0	Game #184530670, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys|Cathedral|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys|Cathedral|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|an Estate|. (|Cathedral|)
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Market Square|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Market Square|.
+0T	Turn 2 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|an Estate|. (|Cathedral|)
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Market Square|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|an Estate|. (|Cathedral|)
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|. (|Market Square|)
+2	g|gains|a Gold|. (|Market Square|)
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Market Square|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|an Estate|. (|Cathedral|)
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Smithy|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|an Estate|. (|Cathedral|)
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Market Square|.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|a Gold|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|an Estate|. (|Cathedral|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Market Square|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Copper|. (|Cathedral|)
+0	g|plays|3 Coppers|and|a Gold|. (+$|6|)
+0	g|buys and gains|a Skirmisher|.
+0	g|draws|2 Coppers|and|3 Market Squares|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Copper|. (|Cathedral|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Market Square|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Copper|. (|Cathedral|)
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1S	g|shuffles their deck.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|3 Coppers|and|a Gold|. (+$|6|)
+0	g|buys and gains|a Governor|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Gold|,|a Market Square|,|and|a Skirmisher|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Copper|. (|Cathedral|)
+0	L|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	L|buys and gains|a Governor|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Copper|. (|Cathedral|)
+0	g|plays|a Skirmisher|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|3 Coppers|and|a Gold|. (+$|6|)
+0	g|buys and gains|a Skirmisher|.
+1	L|discards|a card|and|a Smithy|.
+0	g|buys and gains|a Vagrant|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Gold|,|a Market Square|,|a Governor|,|and|a Skirmisher|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Copper|. (|Cathedral|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Market Square|.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Skirmisher|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Copper|. (|Cathedral|)
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|. (|Market Square|)
+2	g|gains|a Gold|. (|Market Square|)
+0	g|plays|a Skirmisher|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Vagrant|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Vagrant|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|topdecks|a Copper|.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Governor|.
+1	g|gets +|1|Action.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|,|a Gold|,|and|a Skirmisher|.
+1	L|draws|a card|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|3 Coppers|and|2 Golds|. (+$|9|)
+0	g|buys and gains|a Kitsune|.
+1	L|discards|2 other cards|and|a Smithy|.
+0	g|buys and gains|a Mastermind|.
+0S	g|shuffles their deck.
+0	g|draws|2 Golds|,|a Market Square|,|a Mastermind|,|and|a Skirmisher|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Copper|. (|Cathedral|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Copper|.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Copper|and|2 Golds|. (+$|7|)
+0	L|buys and gains|a Governor|.
+0	L|buys and gains|a Vagrant|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Copper|. (|Cathedral|)
+0	g|plays|a Skirmisher|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Vagrant|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Vagrant|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|topdecks|a Copper|.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Mastermind|.
+0	g|plays|2 Coppers|and|2 Golds|. (+$|8|)
+0	g|buys and gains|a Skirmisher|.
+1	L|discards|a card|and|a Market Square|.
+0	g|buys and gains|a Smithy|.
+0S	g|shuffles their deck.
+0	g|draws|a Gold|,|a Governor|,|2 Skirmishers|,|and|a Kitsune|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Gold|. (|Cathedral|)
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Market Square|.
+0	L|plays|a Skirmisher|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Market Square|.
+1	L|topdecks|a Market Square|.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Copper|.
+0	L|plays|a Smithy|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+0	L|plays|3 Coppers|and|3 Golds|. (+$|12|)
+0	L|buys and gains|a Kitsune|.
+1	g|discards|a Gold|,|a Market Square|,|and|2 Skirmishers|.
+0	L|buys and gains|a Governor|.
+0	L|buys and gains|a Market Square|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|draws|a Copper|and|2 Market Squares|.
+2	L|draws|a card|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|draws|a Gold|,|a Smithy|,|and|a Vagrant|.
+2	L|draws|a card|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|gains|a Gold|.
+2	L|gains|a Silver|.
+1	g|trashes|a Copper|. (|Cathedral|)
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|. (|Market Square|)
+2	g|gains|a Gold|. (|Market Square|)
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|. (|Market Square|)
+2	g|gains|a Gold|. (|Market Square|)
+0	g|plays|a Vagrant|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1S	g|shuffles their deck.
+1	g|reveals|a Gold|.
+1	g|topdecks|a Gold|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Smithy|.
+1	g|draws|2 Golds|and|a Skirmisher|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	g|gains|a Silver|.
+0	g|plays|a Copper|and|5 Golds|. (+$|16|)
+0	g|buys and gains|a Skirmisher|.
+1	L|discards|3 other cards|and|a Market Square|.
+0	g|buys and gains|a Mastermind|.
+0S	g|shuffles their deck.
+0	g|draws|a Silver|,|a Smithy|,|2 Market Squares|,|and|a Mastermind|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Copper|. (|Cathedral|)
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Gold|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Governor|.
+1	L|topdecks|a Governor|.
+0	L|plays|a Kitsune|.
+1	L|gets +$|2|.
+1	g|gains|a Curse|.
+0	L|plays|a Copper|and|2 Golds|. (+$|7|)
+0	L|buys and gains|a Mastermind|.
+0	L|buys and gains|a Sage|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|trashes|a Silver|. (|Cathedral|)
+0	g|plays|a Market Square|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Mastermind|.
+0	g|plays|a Copper|and|2 Golds|. (+$|7|)
+0	g|buys and gains|a Skirmisher|.
+1	L|discards|a card|and|a Smithy|.
+0	g|buys and gains|a Market Square|.
+0	g|draws|2 Golds|,|a Governor|,|and|2 Skirmishers|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Skirmisher|. (|Cathedral|)
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+1	g|draws|a Kitsune|.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Mastermind|.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1	L|reveals|a Market Square|.
+1	L|puts|a Market Square|into their hand.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	L|gets +$|2|.
+0	L|plays|a Mastermind|.
+0	L|plays|a Silver|,|2 Coppers|,|and|a Gold|. (+$|7|)
+0	L|buys and gains|a Skirmisher|.
+0	L|buys and gains|a Market Square|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Skirmisher|. (|Mastermind|)
+2	g|draws|a Skirmisher|.
+2	g|gets +|1|Action.
+2	g|gets +$|1|.
+1	g|plays|a Skirmisher|. (|Mastermind|)
+2	g|draws|a Vagrant|.
+2	g|gets +|1|Action.
+2	g|gets +$|1|.
+1	g|plays|a Skirmisher|. (|Mastermind|)
+2	g|draws|a Market Square|.
+2	g|gets +|1|Action.
+2	g|gets +$|1|.
+1	g|trashes|a Vagrant|. (|Cathedral|)
+0	g|plays|a Skirmisher|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1S	g|shuffles their deck.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Governor|.
+1	g|gets +|1|Action.
+1	g|draws|2 Golds|and|a Market Square|.
+1	L|draws|a card|.
+0	g|plays|a Market Square|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Smithy|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Smithy|.
+1	g|draws|a Skirmisher|.
+0	g|plays|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	g|gains|a Silver|.
+0	g|plays|a Mastermind|.
+0	g|plays|a Copper|and|5 Golds|. (+$|16|)
+0	g|buys and gains|a Skirmisher|.
+1	L|discards|2 other cards|and|a Market Square|.
+0	g|buys and gains|2 Governors|.
+0	g|buys and gains|a Royal Carriage|.
+0	g|buys and gains|a Mastermind|.
+0S	g|shuffles their deck.
+0	g|draws|2 Golds|,|a Market Square|,|a Mastermind|,|and|a Kitsune|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Governor|. (|Mastermind|)
+2	L|gets +|1|Action.
+2S	L|shuffles their deck.
+2	L|draws|3 cards|.
+2	g|draws|a Copper|.
+1	L|plays|a Governor|. (|Mastermind|)
+2	L|gets +|1|Action.
+2	L|draws|3 cards|.
+2	g|draws|a Market Square|.
+1	L|plays|a Governor|. (|Mastermind|)
+2	L|gets +|1|Action.
+2	L|draws|3 cards|.
+2	g|draws|a Governor|.
+1	L|trashes|a Copper|. (|Cathedral|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|. (|Market Square|)
+2	L|gains|a Gold|. (|Market Square|)
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Market Square|.
+1	L|topdecks|a Market Square|.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1	L|reveals|a Market Square|.
+1	L|puts|a Market Square|into their hand.
+0	L|plays|a Skirmisher|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Smithy|.
+1	L|draws|3 cards|.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|trashes|a Market Square|.
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|.
+2	L|gains|a Gold|.
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|.
+2	L|gains|a Gold|.
+1	L|gains|a Skirmisher|.
+2	g|discards|2 Golds|,|2 Market Squares|,|and|a Kitsune|.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|trashes|a Gold|.
+1	L|gains|a Province|.
+0	L|plays|a Kitsune|.
+1	Great Leader|comes true.
+1	L|gets +$|2|.
+1	g|gains|a Curse|.
+0	L|plays|a Copper|and|2 Golds|. (+$|7|)
+0	L|buys|a Delve|.
+1	L|gets +|1|Buy.
+1	L|gains|a Silver|.
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Mastermind|. (|Mastermind|)
+1	g|plays|a Mastermind|. (|Mastermind|)
+1	g|plays|a Mastermind|. (|Mastermind|)
+1	g|trashes|a Copper|. (|Cathedral|)
+0	g|plays|a Governor|.
+1	g|gets +|1|Action.
+1	g|draws|a Gold|and|2 Skirmishers|.
+1	L|draws|a card|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Silver|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Silver|and|2 Golds|. (+$|8|)
+0	g|buys and gains|a Kitsune|.
+1	L|discards|2 other cards|and|a Skirmisher|.
+0	g|buys and gains|a Province|.
+0	g|draws|a Curse|,|a Smithy|,|a Market Square|,|a Governor|,|and|a Skirmisher|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|trashes|a Silver|. (|Cathedral|)
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Mastermind|.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Governor|.
+0	L|plays|a Smithy|.
+1	L|draws|3 cards|.
+0	L|plays|a Governor|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	g|draws|a Royal Carriage|.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1	L|reveals|a Market Square|.
+1	L|puts|a Market Square|into their hand.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Skirmisher|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Kitsune|.
+1	L|gets +$|2|.
+1	g|gains|a Curse|.
+0	L|plays|a Mastermind|.
+0	L|plays|a Silver|,|a Copper|,|and|5 Golds|. (+$|18|)
+0	L|buys and gains|a Skirmisher|.
+1	g|discards|a Curse|,|a Smithy|,|a Market Square|,|a Mastermind|,|and|a Skirmisher|.
+0	L|buys and gains|2 Provinces|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2S	g|shuffles their deck.
+2	g|draws|2 Golds|and|a Smithy|.
+2	L|draws|a card|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|draws|a Silver|,|a Province|,|and|a Skirmisher|.
+2	L|draws|a card|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|draws|a Gold|,|a Governor|,|and|a Skirmisher|.
+2	L|draws|a card|.
+1	g|plays|a Royal Carriage|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|puts|a Royal Carriage|on their|Tavern mat|.
+1	g|plays|a Royal Carriage|. (|Mastermind|)
+2	g|gets +|1|Action.
+1	g|plays|a Royal Carriage|. (|Mastermind|)
+2	g|gets +|1|Action.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|trashes|a Gold|.
+2	g|gains|a Province|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|trashes|a Gold|.
+2	g|gains|a Province|.
+2	g|calls|a Royal Carriage|.
+2	g|plays|a Governor|again.
+3	g|gets +|1|Action.
+3	g|trashes|a Gold|.
+3	g|gains|a Province|.
+1	g|plays|a Governor|. (|Mastermind|)
+2	g|gets +|1|Action.
+2	g|trashes|a Silver|.
+2	g|gains|a Duchy|.
+1	g|trashes|a Skirmisher|. (|Cathedral|)
+0	g|plays|a Governor|.
+1	g|gets +|1|Action.
+1	g|draws|a Market Square|,|a Skirmisher|,|and|a Kitsune|.
+1	L|draws|a card|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Skirmisher|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Smithy|.
+1	g|draws|2 Market Squares|and|a Skirmisher|.
+0	g|plays|a Skirmisher|.
+1	g|draws|a Mastermind|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.

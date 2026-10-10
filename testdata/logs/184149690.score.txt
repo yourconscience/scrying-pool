@@ -1,0 +1,93 @@
+# row: 
+# original players: Krispy / gamrevinu
+You Lose
+1
+Lord Rattington
+Turns: 19
+2
+gamrevinu
+Turns: 19
+Lord Rattington
+6
+Province
+
+
+
+
+2
+Copper
+1
+Ruined Library
+1
+Survivors
+1
+Necropolis
+1
+Vagrant
+5
+Guard Dog
+1
+Silver
+1
+Death Cart
+2
+Tiara
+5
+Trail
+1
+Cutthroat
+4
+Graverobber
+4
+Gold
+1
+Doubloons
+1
+Orb
+6
+Province
+gamrevinu
+2
+Province
+
+
+3
+Duchy
+
+
+
+
+3
+Copper
+1
+Necropolis
+1
+Vagrant
+4
+Guard Dog
+2
+Silver
+1
+Investment
+4
+Tiara
+5
+Trail
+1
+Cutthroat
+3
+Duchy
+2
+Graverobber
+2
+Margrave
+2
+Gold
+1
+Amphora
+2
+Shield
+2
+Province
+Ready
+Leave Table

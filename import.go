@@ -91,3 +91,53 @@ func importGames(file, dir string, minTurns int) error {
 	fmt.Printf("%d passed, %d failed, %d short games skipped; files in %s\n", pass, fail, short, dir)
 	return nil
 }
+
+// checkGames runs the cartographer check on saved logs: each <id>.log with its
+// <id>.score.txt, from a folder (default: the saved games) or a list of files.
+func checkGames(args []string) error {
+	cpath := cartographer.DefaultClientPath()
+	if cpath == "" {
+		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
+	}
+	client, err := cartographer.LoadClient(cpath)
+	if err != nil {
+		return err
+	}
+	var logs []string
+	if len(args) == 0 {
+		base, err := os.UserConfigDir()
+		if err != nil {
+			return err
+		}
+		args = []string{filepath.Join(base, "scrying-pool", "games")}
+	}
+	for _, a := range args {
+		if st, err := os.Stat(a); err == nil && st.IsDir() {
+			found, _ := filepath.Glob(filepath.Join(a, "*.log"))
+			logs = append(logs, found...)
+		} else {
+			logs = append(logs, a)
+		}
+	}
+	var pass, fail, noScore int
+	for _, lp := range logs {
+		id := strings.TrimSuffix(filepath.Base(lp), ".log")
+		b, err := os.ReadFile(lp)
+		if err != nil {
+			return err
+		}
+		sb, err := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".score.txt")
+		if err != nil {
+			noScore++
+			continue
+		}
+		if r := client.Check(string(b), string(sb)); r.OK() {
+			pass++
+		} else {
+			fail++
+			fmt.Printf("FAIL %s: %s\n", id, strings.Join(r.Problems, "; "))
+		}
+	}
+	fmt.Printf("%d passed, %d failed, %d without a score screen (of %d logs)\n", pass, fail, noScore, len(logs))
+	return nil
+}

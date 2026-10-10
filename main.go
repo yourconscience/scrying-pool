@@ -27,6 +27,7 @@ const usageText = `usage:
   scry bookmarklet [-client]                       print the "Copy log" (or "Copy client tables") bookmark
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
+  scry check [DIR or LOG_FILES]                    check saved logs against their score screens (default: saved games)
   scry review [-names "Bot=Player"] LOG_FILE       turn table and final decks for a copied game log
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
@@ -146,6 +147,9 @@ func main() {
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
 		fs.Parse(args)
 		err = importGames(fs.Arg(0), *dir, *minTurns)
+	case "check":
+		fs.Parse(args)
+		err = checkGames(fs.Args())
 	case "client":
 		if len(args) == 0 || args[0] != "save" {
 			fmt.Fprint(os.Stderr, usageText)

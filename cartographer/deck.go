@@ -29,9 +29,15 @@ var (
 	// Likewise these trash a card from the Supply, not one the player owns.
 	supplyTrashers = map[string]bool{"Gladiator": true, "Lurker": true, "Salt the Earth": true}
 
-	// A trashed card that moves itself back to its owner (Fortress into the hand,
-	// Lich into the discard pile) was never lost.
-	backFromTrash = map[string]bool{"PUT_IN_HAND": true, "PUT_IN_HAND_FROM": true, "DISCARD": true, "PUT_IN_DISCARD": true, "TOPDECK": true}
+	// Cards that move themselves out of the trash right after being trashed were
+	// never lost: Fortress goes to the hand, Lich to the discard pile, and a Trail
+	// played from the trash goes into play. Other cards reacting to a trash
+	// (Market Square discards other copies) don't count.
+	backFromTrash = map[string]map[string]bool{
+		"Fortress": {"PUT_IN_HAND": true, "PUT_IN_HAND_FROM": true},
+		"Lich":     {"DISCARD": true, "PUT_IN_DISCARD": true},
+		"Trail":    {"REACTS_PLAYING": true},
+	}
 )
 
 // Change is one change of ownership: Sign is +1 for cards gained, -1 for cards lost.
@@ -51,7 +57,7 @@ func (e Event) Changes() []Change {
 		return []Change{{e.Player, cards, -1}}
 	case toPile[e.Template] && toSupplyPile(e.Args[2].Text):
 		return []Change{{e.Player, cards, -1}}
-	case backFromTrash[e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == e.Cause:
+	case backFromTrash[e.Cause][e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == e.Cause:
 		return []Change{{e.Player, cards, 1}}
 	case e.Template == "EXILE" && supplyExilers[e.Cause]:
 		return []Change{{e.Player, cards, 1}}
