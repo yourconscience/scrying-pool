@@ -1,0 +1,73 @@
+# row: 2026-10-10 13:26 | yvon | 54.84 | L | 23 - 20
+# original players: gamrevinu / yvon
+You Resigned
+1
+Lord Rattington
+Turns: 12
+2
+gamrevinu
+Turns: 13
+Lord Rattington
+4
+Province
+
+
+1
+Curse
+
+
+2
+Copper
+1
+Curse
+1
+Goatherd
+1
+Bard
+5
+Blockade
+3
+Conspirator
+2
+Herald
+3
+Mountain Village
+1
+Gold
+4
+Province
+gamrevinu
+3
+Province
+
+
+2
+Estate
+
+
+1
+Copper
+1
+Will-o'-Wisp
+2
+Estate
+2
+Goatherd
+1
+Oasis
+1
+Silver
+2
+Bard
+5
+Blockade
+5
+Herald
+3
+Mountain Village
+1
+Catacombs
+3
+Province
+Ready
+Leave Table

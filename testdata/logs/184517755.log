@@ -1,0 +1,853 @@
+# scrying-pool log v1
+0	Game #184524477, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys|a Ferry|.
+1	g|moves|-Cost token|to|the Ferryman pile|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys|a Ferry|.
+1	L|moves|-Cost token|to|the Ferryman pile|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Ferryman|.
+1	g|gains|a Develop|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Develop|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Ferryman|.
+1	L|gains|a Develop|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Develop|.
+1	g|trashes|an Estate|.
+1	g|gains|a Ferryman|.
+2	g|gains|a Develop|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Ferryman|.
+1	g|gains|a Develop|.
+0	g|draws|2 Coppers|,|an Estate|,|and|2 Ferrymen|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Ferryman|.
+1	L|gains|a Develop|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+0	g|plays|a Ferryman|.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Wheelwright|.
+0	g|draws|a Copper|,|an Estate|,|2 Develops|,|and|a Ferryman|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Herald|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|a Develop|.
+1	g|gets +|1|Action.
+1	g|discards|a Develop|.
+0	g|plays|a Develop|.
+1	g|trashes|a Develop|.
+1	g|gains|a Herald|.
+1	g|gains|a Supplies|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Supplies|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Herald|,|and|a Supplies|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Town|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|a Herald|.
+1	g|draws|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Wheelwright|.
+0	g|draws|a Copper|,|a Develop|,|a Supplies|,|a Horse|,|and|a Ferryman|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|a Ferryman|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|an Estate|.
+1	L|gains|a Ferryman|.
+2	L|gains|a Develop|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Develop|.
+1	L|trashes|an Estate|.
+1	L|gains|a Shop|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Ferryman|.
+1	g|draws|2 Coppers|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Horse|.
+1	g|draws|an Estate|and|a Develop|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Develop|.
+1	g|trashes|a Develop|.
+1	g|gains|a Herald|.
+1	g|gains|a Supplies|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Ferryman|.
+1	g|gains|a Develop|.
+0	g|draws|a Herald|,|a Supplies|,|a Horse|,|a Wheelwright|,|and|a Ferryman|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Copper|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Herald|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Develop|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Herald|and|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Herald|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Develop|.
+1	g|trashes|an Estate|.
+1	g|gains|a Ferryman|.
+2	g|gains|a Develop|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Herald|.
+0	g|draws|an Estate|,|a Develop|,|a Supplies|,|a Horse|,|and|a Ferryman|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Ferryman|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|an Estate|.
+1	L|gains|a Shop|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Town|.
+2	L|draws|a card|.
+2	L|gets +|2|Actions.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Herald|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|a Horse|.
+1	g|draws|a Wheelwright|and|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|a Supplies|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Ferryman|.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Herald|.
+1	g|gets +|1|Action.
+1	g|discards|a Herald|.
+1	g|gains|a Town|.
+0	g|plays|a Develop|.
+1	g|trashes|an Estate|.
+1	g|gains|a Shop|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys|a Ferry|.
+1	g|moves|-Cost token|to|the Herald pile|.
+0	g|draws|a Copper|,|2 Horses|,|a Shop|,|and|a Ferryman|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Herald|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Develop|.
+2	L|plays|a Develop|.
+3	L|trashes|a Develop|.
+3	L|gains|a Herald|.
+3	L|gains|a Supplies|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Herald|.
+1	L|plays|a Herald|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Copper|.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Copper|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0	L|plays|a Town|.
+1	L|gets +|1|Buy.
+1	L|gets +$|2|.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|buys and gains|a Wheelwright|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|plays|a Shop|.
+1	g|draws|a Supplies|.
+1	g|gets +$|1|.
+1	g|plays|a Horse|.
+2	g|draws|a Copper|and|a Develop|.
+2	g|gets +|1|Action.
+2	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Herald|and|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Herald|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Herald|.
+1	g|plays|a Herald|.
+2	g|draws|a Copper|.
+2	g|gets +|1|Action.
+2	g|reveals|a Develop|.
+2	g|plays|a Develop|.
+3	g|trashes|a Ferryman|.
+3	g|gains|a Town|.
+3	g|gains|a Gold|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Gold|and|a Town|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Develop|.
+1	g|trashes|a Copper|.
+0	g|plays|a Town|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|3 Coppers|and|a Gold|. (+$|6|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Gold|,|a Horse|,|a Wheelwright|,|and|a Ferryman|.
+0T	Turn 10 - Lord Rattington
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Horse|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Herald|.
+1	L|plays|a Herald|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Ferryman|.
+2	L|plays|a Ferryman|.
+3	L|draws|2 cards|.
+3	L|gets +|1|Action.
+3	L|discards|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|a Wheelwright|.
+1	L|gains|a Gold|.
+1	L|gains|a Fortune Hunter|.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Fortune Hunter|.
+2	L|gets +$|2|.
+2	L|looks at|3 cards|.
+2	L|plays|a Gold|. (+$|3|)
+2	L|topdecks|2 cards|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Town|.
+1	L|plays|a Town|.
+2	L|gets +|1|Buy.
+2	L|gets +$|2|.
+0	L|plays|a Ferryman|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Wheelwright|.
+0	L|buys and gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Province|and|a Supplies|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|discards|a Province|.
+1	g|gains|a Town|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Develop|and|a Herald|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Herald|.
+1	g|draws|a Shop|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+0	g|plays|a Shop|.
+1	g|draws|a Copper|.
+1	g|gets +$|1|.
+1	g|plays|a Develop|.
+2	g|trashes|a Copper|.
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|plays|a Copper|and|a Gold|. (+$|4|)
+0	g|buys|a Herald|.
+1	g|loses|4|Coins.
+0	g|gains|a Herald|.
+1	g|looks at|2 Coppers|,|a Province|,|a Herald|,|and|a Town|.
+1	g|topdecks|2 Coppers|,|a Herald|,|and|a Town|.
+0	g|draws|2 Coppers|,|a Herald|,|a Horse|,|and|a Town|.
+0T	Turn 11 - Lord Rattington
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Develop|.
+1	L|plays|a Develop|.
+2	L|trashes|a Copper|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Fortune Hunter|.
+1	L|gets +$|2|.
+1	L|looks at|3 cards|.
+1	L|plays|a Supplies|.
+2	L|gains|a Horse|.
+1	L|topdecks|2 cards|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Develop|.
+1	L|plays|a Develop|.
+2	L|trashes|a Copper|.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Horse|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Ferryman|.
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Horse|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Wheelwright|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|a Gold|.
+1	L|gains|a Wheelwright|.
+0	L|plays|a Ferryman|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Gold|.
+0	L|plays|a Wheelwright|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|a Gold|.
+1	L|gains|a Town|.
+0	L|plays|a Ferryman|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Gold|.
+0	L|plays|a Town|.
+1	L|gets +|1|Buy.
+1	L|gets +$|2|.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|plays|a Herald|.
+1	g|draws|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|reveals|a Ferryman|.
+1	g|plays|a Ferryman|.
+2	g|draws|a Develop|and|a Supplies|.
+2	g|gets +|1|Action.
+2	g|discards|a Copper|.
+0	g|plays|a Develop|.
+1	g|trashes|a Ferryman|.
+1	g|gains|a Town|.
+1	g|gains|a Gold|.
+0	g|plays|a Horse|.
+1	g|draws|a Gold|and|a Town|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Town|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Town|.
+1	g|gets +|1|Buy.
+1	g|gets +$|2|.
+0	g|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Province|.
+0	g|draws|a Develop|,|a Herald|,|a Supplies|,|a Horse|,|and|a Town|.
+0T	Turn 12 - Lord Rattington
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Develop|.
+1	L|plays|a Develop|.
+2	L|trashes|a Shop|.
+2	L|gains|a Herald|.
+2	L|gains|a Supplies|.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Ferryman|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Province|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Gold|.
+0	L|plays|a Fortune Hunter|.
+1	L|gets +$|2|.
+1	L|looks at|3 cards|.
+1	L|plays|a Gold|. (+$|3|)
+1	L|topdecks|2 cards|.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|a Ferryman|.
+1	L|gains|a Shop|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Ferryman|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Develop|.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|plays|a Herald|.
+1	g|draws|a Herald|.
+1	g|gets +|1|Action.
+1	g|reveals|a Wheelwright|.
+1	g|plays|a Wheelwright|.
+2	g|draws|a Copper|.
+2	g|gets +|1|Action.
+2	g|discards|a Horse|.
+2	g|gains|a Herald|.
+0	g|plays|a Herald|.
+1	g|draws|a Town|.
+1	g|gets +|1|Action.
+1S	g|shuffles their deck.
+1	g|reveals|a Copper|.
+0	g|plays|a Town|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Town|.
+1	g|draws|a Supplies|.
+1	g|gets +|2|Actions.
+0	g|plays|a Develop|.
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys|a Herald|.
+1	g|loses|1|Coin.
+0	g|gains|a Herald|.
+1	g|looks at|a Herald|.
+1	g|topdecks|a Herald|.
+0	g|draws|2 Heralds|,|2 Horses|,|and|a Town|.
+0T	Turn 13 - Lord Rattington
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Shop|.
+1	L|plays|a Shop|.
+2	L|draws|a card|.
+2	L|gets +$|1|.
+2	L|plays|a Horse|.
+3	L|draws|2 cards|.
+3	L|gets +|1|Action.
+3	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Develop|.
+1	L|plays|a Develop|.
+2	L|trashes|a Horse|.
+2	L|gains|a Town|.
+2	L|gains|a Supplies|.
+0	L|plays|a Fortune Hunter|.
+1	L|gets +$|2|.
+1	L|looks at|3 cards|.
+1	L|plays|a Supplies|.
+2	L|gains|a Horse|.
+1	L|topdecks|2 cards|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Province|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Gold|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Ferryman|.
+1	L|plays|a Ferryman|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|discards|a Horse|.
+0	L|plays|a Town|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Develop|.
+0	L|plays|a Town|.
+1	L|gets +|1|Buy.
+1	L|gets +$|2|.
+0	L|plays|a Town|.
+1	L|gets +|1|Buy.
+1	L|gets +$|2|.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|buys and gains|2 Provinces|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|plays|a Herald|.
+1	g|draws|a Ferryman|.
+1	g|gets +|1|Action.
+1	g|reveals|a Gold|.
+0	g|plays|a Herald|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|reveals|a Shop|.
+1	g|plays|a Shop|.
+2	g|draws|a Ferryman|.
+2	g|gets +$|1|.
+2	g|plays|a Horse|.
+3	g|draws|a Develop|and|a Ferryman|.
+3	g|gets +|1|Action.
+3	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Develop|.
+1	g|trashes|a Ferryman|.
+1	g|gains|a Town|.
+1	g|gains|a Gold|.
+0	g|plays|a Horse|.
+1	g|draws|a Gold|and|a Town|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Town|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Ferryman|.
+1	g|draws|a Province|and|a Supplies|.
+1	g|gets +|1|Action.
+1	g|discards|a Province|.
+0	g|plays|a Ferryman|.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Horse|.
+1	g|draws|a Herald|and|a Town|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Town|.
+1	g|gets +|1|Buy.
+1	g|gets +$|2|.
+0	g|plays|a Herald|.
+1	g|draws|a Province|.
+1	g|gets +|1|Action.
+1	g|reveals|a Wheelwright|.
+1	g|plays|a Wheelwright|.
+2	g|draws|a Gold|.
+2	g|gets +|1|Action.
+0	g|plays|a Town|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|3 Golds|. (+$|9|)
+0	g|plays|a Supplies|.
+1	g|gains|a Horse|.
+0	g|buys and gains|a Marchland|.
+1	g|gets +|1|Buy.
+1	g|discards|2 Coppers|and|a Province|.
+1	g|gets +$|3|.
+0	g|buys and gains|a Marchland|.
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Marchland|.
+1	g|gets +|1|Buy.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Develop|,|a Herald|,|a Marchland|,|and|a Horse|.
+0T	Turn 14 - Lord Rattington
+0	L|plays|a Shop|.
+1	L|draws|a card|.
+1	L|gets +$|1|.
+1	L|plays|a Horse|.
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Province|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Town|.
+1	L|plays|a Town|.
+2	L|draws|a card|.
+2	L|gets +|2|Actions.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Wheelwright|.
+1	L|plays|a Wheelwright|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Fortune Hunter|.
+1	L|plays|a Fortune Hunter|.
+2	L|gets +$|2|.
+2	L|looks at|3 cards|.
+2	L|plays|a Gold|. (+$|3|)
+2	L|topdecks|2 cards|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Ferryman|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Province|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Shop|.
+1	L|plays|a Shop|.
+2	L|draws|a card|.
+2	L|gets +$|1|.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Ferryman|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|discards|a Province|.
+0	L|plays|a Town|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Town|.
+1	L|gets +|2|Actions.
+0	L|plays|a Develop|.
+1	L|trashes|a Supplies|.
+1	L|gains|a Silver|.
+0	L|plays|a Develop|.
+1	L|trashes|a Supplies|.
+1	L|gains|a Silver|.
+0	L|plays|a Supplies|.
+1	L|gains|a Horse|.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu

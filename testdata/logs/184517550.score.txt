@@ -1,0 +1,93 @@
+# row: 2026-10-10 12:31 | omochabako | 54.09 | L | 19 - 31
+# original players: gamrevinu / omochabako
+You Resigned
+1
+Lord Rattington
+Turns: 14
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+4
+Province
+
+
+3
+Estate
+
+
+
+
+7
+Copper
+3
+Estate
+1
+Peasant
+3
+Shop
+1
+Soldier
+3
+Bounty Hunter
+5
+Town
+3
+Disciple
+6
+Seer
+1
+Gold
+1
+Teacher
+4
+Province
+gamrevinu
+1
+Province
+
+
+1
+Duchy
+
+
+2
+Estate
+
+
+
+
+7
+Copper
+2
+Estate
+1
+Peasant
+3
+Shop
+2
+Soldier
+1
+Bounty Hunter
+1
+Fugitive
+4
+Town
+1
+Barge
+2
+Disciple
+1
+Duchy
+1
+Rebuild
+4
+Seer
+1
+Raider
+1
+Teacher
+1
+Province
+Ready
+Leave Table

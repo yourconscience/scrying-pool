@@ -1,0 +1,83 @@
+# row: 2026-10-10 12:50 | Lyokunn | 57.41 | L | -5 - 13
+# original players: gamrevinu / Lyokunn
+You Resigned
+1
+Lord Rattington
+Turns: 14
+2
+gamrevinu
+Turns: 15
+Lord Rattington
+5
+Province
+
+
+1
+Wall
+
+
+28
+1
+Supplies
+2
+Develop
+1
+Horse
+2
+Shop
+2
+Silver
+1
+Fortune Hunter
+4
+Herald
+3
+Town
+3
+Ferryman
+2
+Wheelwright
+2
+Gold
+5
+Province
+gamrevinu
+2
+Province
+
+
+3
+Marchland
+
+
+1
+Wall
+
+
+35
+4
+Copper
+3
+Supplies
+3
+Develop
+1
+Horse
+1
+Shop
+6
+Herald
+5
+Town
+2
+Ferryman
+3
+Marchland
+2
+Wheelwright
+3
+Gold
+2
+Province
+Ready
+Leave Table

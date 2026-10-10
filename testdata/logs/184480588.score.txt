@@ -1,0 +1,95 @@
+# row: 2026-10-09 15:35 | Til_LO29 | 55.90 | W | 36 - 31
+# original players: gamrevinu / Til_LO29
+You Resigned
+1
+Lord Rattington
+Turns: 17
+2
+gamrevinu
+Turns: 18
+Lord Rattington
+5
+Province
+
+
+
+
+3
+Copper
+4
+Black Cat
+1
+Ratcatcher
+1
+Stonemason
+4
+Silver
+2
+Farmhands
+1
+Militia
+1
+Remodel
+1
+Wandering Minstrel
+4
+Cartographer
+4
+Kitsune
+2
+Gold
+5
+Province
+gamrevinu
+2
+Province
+
+
+3
+Duchy
+
+
+2
+Estate
+
+
+
+
+4
+Curse
+
+
+5
+Copper
+4
+Curse
+4
+Black Cat
+2
+Estate
+1
+Ratcatcher
+2
+Stonemason
+7
+Silver
+2
+Farmhands
+2
+Militia
+1
+Remodel
+4
+Wandering Minstrel
+1
+Cartographer
+3
+Duchy
+4
+Kitsune
+1
+Gold
+2
+Province
+Ready
+Leave Table

@@ -1,0 +1,63 @@
+# row: 2026-10-10 13:53 | jsape | 54.69 | W | 0 - 1
+# original players: gamrevinu / jsape
+You Resigned
+1
+Lord Rattington
+Turns: 10
+2
+gamrevinu
+Turns: 11
+Lord Rattington
+4
+Copper
+1
+City Quarter
+2
+Jewelled Egg
+1
+Pouch
+3
+Lookout
+3
+Silver
+1
+Falconer
+4
+Storyteller
+2
+Gold
+1
+Puzzle Box
+1
+Sextant
+1
+Shield
+gamrevinu
+1
+Estate
+
+
+4
+Copper
+3
+City Quarter
+1
+Estate
+5
+Jewelled Egg
+1
+Pouch
+1
+Snake Witch
+1
+Lookout
+1
+Silver
+1
+Falconer
+3
+Market
+2
+Storyteller
+Ready
+Leave Table

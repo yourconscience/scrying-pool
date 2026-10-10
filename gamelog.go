@@ -33,7 +33,7 @@ type logEvent struct {
 	Coins  int     `json:"coins,omitempty"` // $ from "(+$N)" or "gets +$N"
 	Gets   int     `json:"gets,omitempty"`  // N in "gets +N Actions"
 	What   string  `json:"what,omitempty"`  // Action, Buy, ...
-	Cause  string  `json:"cause,omitempty"` // card in "(Shaman)"
+	Cause  string  `json:"cause,omitempty"` // card in "(Shaman)"; for "turn", what gave an extra turn ("Voyage")
 }
 
 type unknownLine struct {
@@ -67,7 +67,8 @@ var verbs = map[string]string{
 	"gets +$":              "coins",
 }
 
-var reTurnLine = regexp.MustCompile(`^Turn (\d+) - (.+)$`)
+// "Turn 11 - Alice [Voyage]" is an extra turn; extra turns share the turn numbering.
+var reTurnLine = regexp.MustCompile(`^Turn (\d+) - (.+?)(?: \[([^\]]+)\])?$`)
 
 // parseGameLog reads a copied log. names renames players, e.g. the bot that
 // took a seat ("Lord Rattington") back to the person who played it.
@@ -100,25 +101,43 @@ func parseGameLog(text string, names map[string]string) (*Game, error) {
 		rows = append(rows, raw{i + 2, level, kind, pieces})
 	}
 
-	// Who is who: each "Turn N - name" line is followed by "<initial>|starts their turn."
+	// Who is who: each "Turn N - name" line is usually followed by
+	// "<initial>|…"; the initial is the name's first letter. Players who never
+	// got a turn (resigned at once) only appear in "starts with" lines.
 	initials := map[string]string{}
 	g := &Game{}
+	addPlayer := func(name string) {
+		if !contains(g.Players, name) {
+			g.Players = append(g.Players, name)
+		}
+	}
 	for i, r := range rows {
 		if r.kind != "T" || len(r.pieces) == 0 {
 			continue
 		}
 		m := reTurnLine.FindStringSubmatch(r.pieces[0])
-		if m == nil || i+1 >= len(rows) || len(rows[i+1].pieces) == 0 {
+		if m == nil {
 			continue
 		}
 		name := rename(m[2], names)
-		initials[rows[i+1].pieces[0]] = name
-		if !contains(g.Players, name) {
-			g.Players = append(g.Players, name)
+		addPlayer(name)
+		if i+1 < len(rows) && rows[i+1].kind != "T" && len(rows[i+1].pieces) > 1 && len(rows[i+1].pieces[0]) <= 2 {
+			initials[rows[i+1].pieces[0]] = name
+		}
+		if _, ok := initials[m[2][:1]]; !ok {
+			initials[m[2][:1]] = name
+		}
+	}
+	for _, r := range rows {
+		if len(r.pieces) > 1 && r.pieces[1] == "starts with" {
+			if _, ok := initials[r.pieces[0]]; !ok {
+				initials[r.pieces[0]] = r.pieces[0]
+				addPlayer(r.pieces[0])
+			}
 		}
 	}
 	if len(g.Players) == 0 {
-		return nil, errors.New("no turns found in the log")
+		return nil, errors.New("no players found in the log")
 	}
 
 	turn, turnOf := 0, ""
@@ -128,6 +147,7 @@ func parseGameLog(text string, names map[string]string) (*Game, error) {
 			if m := reTurnLine.FindStringSubmatch(p[0]); m != nil {
 				turn, _ = strconv.Atoi(m[1])
 				turnOf = rename(m[2], names)
+				g.Events = append(g.Events, logEvent{Line: r.n, Turn: turn, TurnOf: turnOf, Player: turnOf, Verb: "turn", Cause: m[3]})
 				continue
 			}
 		}
