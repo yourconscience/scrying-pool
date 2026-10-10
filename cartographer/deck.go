@@ -26,20 +26,45 @@ var (
 	supplyExilers = map[string]bool{"Camel Train": true, "Transport": true, "Invest": true, "Way of the Worm": true, "Coven": true}
 )
 
-// FinalDecks replays every change of ownership.
-func (g *Game) FinalDecks() map[string]Deck {
-	decks := map[string]Deck{}
-	for _, p := range g.Players {
-		decks[p] = Deck{}
+// Change is one change of ownership: Sign is +1 for cards gained, -1 for cards lost.
+type Change struct {
+	Player string
+	Cards  []CardN
+	Sign   int
+}
+
+// Changes says how an event changes who owns which cards.
+func (e Event) Changes() []Change {
+	cards := e.Args[1].Cards
+	switch {
+	case gains[e.Template]:
+		return []Change{{e.Player, cards, 1}}
+	case losses[e.Template]:
+		return []Change{{e.Player, cards, -1}}
+	case toPile[e.Template] && strings.HasSuffix(strings.ToLower(e.Args[2].Text), "pile"):
+		return []Change{{e.Player, cards, -1}}
+	case e.Template == "EXILE" && supplyExilers[e.Cause]:
+		return []Change{{e.Player, cards, 1}}
+	case e.Template == "PASS":
+		return []Change{{e.Player, cards, -1}, {e.Args[2].Player, cards, 1}}
 	}
-	add := func(player string, cs []CardN, sign int) {
-		if player == "" {
-			return
+	return nil
+}
+
+// Decks holds every player's deck by player name.
+type Decks map[string]Deck
+
+// Apply adds an event's changes to the decks.
+func (decks Decks) Apply(e Event) {
+	for _, ch := range e.Changes() {
+		if ch.Player == "" {
+			continue
 		}
-		if decks[player] == nil {
-			decks[player] = Deck{}
+		if decks[ch.Player] == nil {
+			decks[ch.Player] = Deck{}
 		}
-		for _, c := range cs {
+		d := decks[ch.Player]
+		for _, c := range ch.Cards {
 			name := "unknown"
 			if c.Card != nil {
 				if !c.Card.InDeck() {
@@ -47,27 +72,22 @@ func (g *Game) FinalDecks() map[string]Deck {
 				}
 				name = c.Card.Name
 			}
-			decks[player][name] += sign * c.N
-			if decks[player][name] == 0 {
-				delete(decks[player], name)
+			d[name] += ch.Sign * c.N
+			if d[name] == 0 {
+				delete(d, name)
 			}
 		}
 	}
+}
+
+// FinalDecks replays every change of ownership.
+func (g *Game) FinalDecks() Decks {
+	decks := Decks{}
+	for _, p := range g.Players {
+		decks[p] = Deck{}
+	}
 	for _, e := range g.Events {
-		cards := e.Args[1].Cards
-		switch {
-		case gains[e.Template]:
-			add(e.Player, cards, 1)
-		case losses[e.Template]:
-			add(e.Player, cards, -1)
-		case toPile[e.Template] && strings.HasSuffix(strings.ToLower(e.Args[2].Text), "pile"):
-			add(e.Player, cards, -1)
-		case e.Template == "EXILE" && supplyExilers[e.Cause]:
-			add(e.Player, cards, 1)
-		case e.Template == "PASS":
-			add(e.Player, cards, -1)
-			add(e.Args[2].Player, cards, 1)
-		}
+		decks.Apply(e)
 	}
 	return decks
 }

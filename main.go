@@ -12,6 +12,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
 const usageText = `usage:
@@ -107,11 +109,19 @@ func main() {
 				names[strings.TrimSpace(from)] = strings.TrimSpace(to)
 			}
 		}
-		g, perr := parseGameLog(string(text), names)
+		cpath := cartographer.DefaultClientPath()
+		if cpath == "" {
+			fail(fmt.Errorf("no dominion.games client tables found; export them first (see README) or set SCRY_CLIENT"))
+		}
+		client, cerr := cartographer.LoadClient(cpath)
+		if cerr != nil {
+			fail(cerr)
+		}
+		g, perr := client.Parse(string(text), names)
 		if perr != nil {
 			fail(perr)
 		}
-		err = emit(*out, g.reviewMarkdown())
+		err = emit(*out, reviewMarkdown(client, g))
 	case "bookmarklet":
 		src, _ := webFiles.ReadFile("web/bookmarklet.js")
 		var code []string

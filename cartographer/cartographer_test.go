@@ -143,3 +143,30 @@ func TestLogsMatchScoreScreens(t *testing.T) {
 		})
 	}
 }
+
+// Game 184518886 (gamrevinu vs UtagawaLk, 2026-10-10) has no saved score screen;
+// its expected decks are DomBot's !game picture for that game.
+func TestFinalDecksMatchDomBot(t *testing.T) {
+	c := loadClient(t)
+	b, err := os.ReadFile("../testdata/logs/184518886.log")
+	if err != nil {
+		t.Fatal(err)
+	}
+	g, err := c.Parse(string(b), map[string]string{"Lord Rattington": "UtagawaLk"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(g.Unknown) != 0 {
+		t.Errorf("%d unknown lines", len(g.Unknown))
+	}
+	if !reflect.DeepEqual(g.Players, []string{"gamrevinu", "UtagawaLk"}) {
+		t.Errorf("players %v", g.Players)
+	}
+	want := Decks{
+		"gamrevinu": {"Hostelry": 7, "Destrier": 3, "Shaman": 3, "Groom": 7, "Estate": 6, "Duchy": 1, "Copper": 3, "Silver": 1, "Horse": 2},
+		"UtagawaLk": {"Hostelry": 3, "Innkeeper": 2, "Destrier": 7, "Shaman": 3, "Menagerie": 2, "Fortress": 1, "Groom": 3, "Province": 1, "Gold": 2, "Horse": 5},
+	}
+	if got := g.FinalDecks(); !reflect.DeepEqual(got, want) {
+		t.Errorf("decks:\n got  %v\n want %v", got, want)
+	}
+}
