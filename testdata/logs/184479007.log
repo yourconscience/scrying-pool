@@ -1,0 +1,416 @@
+# scrying-pool log v1
+0	Game #184528104, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|a Cursed Gold|,|a Haunted Mirror|,|and|a Magic Lamp|.
+0	g|starts with|4 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|a Cursed Gold|,|a Haunted Mirror|,|and|a Magic Lamp|.
+0	L|starts with|4 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Cursed Gold|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Secret Cave|.
+0	g|draws|a Copper|,|2 Estates|,|a Haunted Mirror|,|and|a Magic Lamp|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|a Cursed Gold|. (+$|3|)
+1	L|gains|a Curse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Marquis|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|a Haunted Mirror|,|a Copper|,|and|a Magic Lamp|. (+$|3|)
+0	g|buys and gains|a Chariot Race|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Haunted Mirror|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|a Haunted Mirror|,|a Copper|,|and|a Magic Lamp|. (+$|3|)
+0	L|buys and gains|a Silver|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Haunted Mirror|and|3 Coppers|. (+$|4|)
+0	g|buys and gains|a Salvager|.
+0	g|draws|a Copper|,|a Chariot Race|,|a Secret Cave|,|a Cursed Gold|,|and|a Magic Lamp|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Silver|,|a Copper|,|and|a Magic Lamp|. (+$|4|)
+0	L|buys|Sinister Plot|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|an Estate|.
+1	g|reveals|an Estate|.
+1	L|reveals|a Cursed Gold|.
+0	g|plays|a Secret Cave|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|2 Estates|and|a Cursed Gold|.
+0	g|plays|a Copper|and|a Magic Lamp|. (+$|2|)
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|an Estate|,|a Cursed Gold|,|a Haunted Mirror|,|and|a Magic Lamp|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1S	L|shuffles their deck.
+1	L|draws|4 cards|.
+0	L|plays|a Haunted Mirror|and|3 Coppers|. (+$|4|)
+0	L|buys and gains|a Cemetery|.
+1	L|trashes|a Curse|and|2 Estates|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|3|. (|Secret Cave|)
+0	g|plays|a Haunted Mirror|,|a Copper|,|and|a Magic Lamp|. (+$|3|)
+0	g|buys and gains|a Marquis|.
+0	g|draws|2 Coppers|,|an Estate|,|a Salvager|,|and|a Chariot Race|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|a card|. (|Sinister Plot|)
+0	L|plays|a Haunted Mirror|,|a Silver|,|and|a Magic Lamp|. (+$|4|)
+0	L|buys and gains|a Cemetery|.
+1	L|trashes|2 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|an Estate|.
+1	g|reveals|an Estate|.
+1S	L|shuffles their deck.
+1	L|reveals|a Magic Lamp|.
+1	g|gets +$|1|.
+1	g|gets|1|VP.
+0	g|plays|a Salvager|.
+1	g|gets +|1|Buy.
+1	g|trashes|an Estate|.
+1	g|gets +$|2|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys|Sinister Plot|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|an Estate|,|a Salvager|,|a Chariot Race|,|and|a Cursed Gold|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1	L|draws|4 cards|.
+0	L|plays|a Haunted Mirror|,|a Silver|,|and|a Copper|. (+$|4|)
+0	L|plays|a Cursed Gold|. (+$|3|)
+1	L|gains|a Curse|.
+0	L|plays|a Magic Lamp|. (+$|1|)
+1	L|trashes|a Magic Lamp|.
+1	L|gains|3 Wishes|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Chariot Race|.
+0	L|buys and gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|a Marquis|.
+1	g|reveals|a Marquis|.
+1	L|reveals|a Cemetery|.
+1	g|gets +$|1|.
+1	g|gets|1|VP.
+0	g|plays|a Marquis|.
+1	g|gets +|1|Buy.
+1	g|draws|2 Coppers|,|a Secret Cave|,|and|a Haunted Mirror|.
+0	g|plays|a Haunted Mirror|and|3 Coppers|. (+$|4|)
+0	g|buys|Pageant|.
+0	g|ends their buy phase.
+1	g|loses|1|Coin.
+1	g|gets +|1|Coffers. (|Pageant|)
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|an Estate|,|a Chariot Race|,|a Cursed Gold|,|and|a Magic Lamp|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Wish|.
+1	L|gets +|1|Action.
+1	L|returns|a Wish|to|the Wish pile|.
+1	L|gains|a Gold|.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1	L|draws|4 cards|.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|plays|a Cursed Gold|. (+$|3|)
+1	L|gains|a Curse|.
+0	L|buys and gains|a Cemetery|.
+1	L|trashes|a Copper|,|2 Cemeteries|,|and|a Haunted Mirror|.
+2	L|discards|a Wish|.
+2	L|gains|a Ghost|.
+0	L|buys and gains|a Potion|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|an Estate|.
+1	g|reveals|an Estate|.
+1S	L|shuffles their deck.
+1	L|reveals|a Curse|.
+1	g|gets +$|1|.
+1	g|gets|1|VP.
+0	g|plays|a Copper|and|a Magic Lamp|. (+$|2|)
+0	g|buys and gains|a Silver|.
+0	g|ends their buy phase.
+0	g|draws|3 Coppers|,|a Salvager|,|and|a Haunted Mirror|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|2 cards|. (|Sinister Plot|)
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Marquis|.
+1	g|reveals|a Marquis|.
+0	L|plays|a Wish|.
+1	L|gets +|1|Action.
+1	L|returns|a Wish|to|the Wish pile|.
+1	L|gains|a Gold|.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1	L|draws|6 cards|.
+1	L|discards|a card|and|a Cursed Gold|.
+0	L|plays|3 Golds|. (+$|9|)
+0	L|plays|a Potion|.
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|a Cemetery|.
+1	L|trashes|2 Curses|,|a Copper|,|and|a Cemetery|.
+0	L|buys and gains|a Chariot Race|.
+0	L|plays|a Ghost|.
+1S	L|shuffles their deck.
+1	L|reveals|a Chariot Race|.
+1	L|sets|a Chariot Race|aside.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|draws|a Secret Cave|and|a Marquis|. (|Sinister Plot|)
+0	g|plays|a Secret Cave|.
+1S	g|shuffles their deck.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|2 Coppers|and|an Estate|.
+0	g|plays|a Marquis|.
+1	g|gets +|1|Buy.
+1	g|draws|an Estate|,|a Cursed Gold|,|and|a Magic Lamp|.
+0	g|plays|a Haunted Mirror|and|a Copper|. (+$|2|)
+0	g|plays|a Cursed Gold|. (+$|3|)
+1	g|gains|a Curse|.
+0	g|plays|a Magic Lamp|. (+$|1|)
+1	g|trashes|a Magic Lamp|.
+1	g|gains|3 Wishes|.
+0	g|buys and gains|a Frigate|.
+0	g|ends their buy phase.
+1	g|loses|1|Coin.
+1	g|gets +|1|Coffers. (|Pageant|)
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Silver|,|a Chariot Race|,|and|2 Wishes|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Chariot Race|. (|Ghost|)
+2	L|gets +|1|Action.
+2	L|draws|a card|.
+2	L|reveals|a Gold|.
+2	g|reveals|a Salvager|.
+2	L|gets +$|1|.
+2	L|gets|1|VP.
+1	L|plays|a Chariot Race|. (|Ghost|)
+2	L|gets +|1|Action.
+2	L|draws|a card|.
+2	L|reveals|a Chariot Race|.
+2	g|reveals|a Salvager|.
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Marquis|.
+1	g|reveals|a Salvager|.
+1	L|gets +$|1|.
+1	L|gets|1|VP.
+0	L|plays|a Wish|.
+1	L|gets +|1|Action.
+1	L|returns|a Wish|to|the Wish pile|.
+1	L|gains|a Frigate|.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1	L|draws|2 cards|.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|3 Golds|. (+$|9|)
+0	L|plays|a Potion|.
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|2 Provinces|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|gets +$|3|. (|Secret Cave|)
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|a Salvager|.
+1	g|reveals|a Salvager|.
+1	L|reveals|a Gold|.
+1	g|discards|a Copper|.
+0	g|plays|a Wish|.
+1	g|gets +|1|Action.
+1	g|returns|a Wish|to|the Wish pile|.
+1	g|gains|a Gold|.
+0	g|plays|a Wish|.
+1	g|gets +|1|Action.
+1	g|returns|a Wish|to|the Wish pile|.
+1	g|gains|a Gold|.
+0	g|plays|a Silver|and|2 Golds|. (+$|8|)
+0	g|buys and gains|a Province|.
+0	g|ends their buy phase.
+1	g|loses|1|Coin.
+1	g|gets +|1|Coffers. (|Pageant|)
+0	g|draws|a Curse|,|a Copper|,|a Wish|,|a Marquis|,|and|a Frigate|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|a card|. (|Sinister Plot|)
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Chariot Race|.
+1	g|reveals|an Estate|.
+1	L|gets +$|1|.
+1	L|gets|1|VP.
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Province|.
+1	g|reveals|an Estate|.
+1	L|gets +$|1|.
+1	L|gets|1|VP.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|plays|a Potion|.
+0	L|buys and gains|a Province|.
+0	L|plays|a Ghost|.
+1	L|reveals|a Silver|and|a Marquis|.
+1	L|discards|a Silver|.
+1	L|sets|a Marquis|aside.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|draws|an Estate|. (|Sinister Plot|)
+0	g|plays|a Wish|.
+1	g|gets +|1|Action.
+1	g|returns|a Wish|to|the Wish pile|.
+1	g|gains|a Gold|.
+0	g|plays|a Frigate|.
+1	g|gets +$|3|.
+0	g|plays|a Copper|and|a Gold|. (+$|4|)
+0	g|uses|1|Coffers. (+$|1|)
+0	g|buys and gains|a Province|.
+0	g|ends their buy phase.
+0	g|draws|2 Coppers|,|an Estate|,|a Cursed Gold|,|and|a Haunted Mirror|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Marquis|. (|Ghost|)
+2	L|gets +|1|Buy.
+2	L|draws|5 cards|.
+2	L|discards|5 other cards|and|a Gold|.
+1	L|plays|a Marquis|. (|Ghost|)
+2	L|gets +|1|Buy.
+2S	L|shuffles their deck.
+2	L|draws|4 cards|.
+2	L|discards|3 other cards|and|a Gold|.
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Cemetery|.
+1S	g|shuffles their deck.
+1	g|reveals|an Estate|.
+1	L|gets +$|1|.
+1	L|gets|1|VP.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|a Potion|.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Vineyard|.
+0	L|buys and gains|a Chariot Race|.
+0	L|buys and gains|a Salvager|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Haunted Mirror|and|2 Coppers|. (+$|3|)
+0	g|buys and gains|a Chariot Race|.
+0	g|ends their buy phase.
+0	g|draws|a Copper|,|a Gold|,|an Estate|,|a Salvager|,|and|a Chariot Race|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|a card|. (|Sinister Plot|)
+0	L|plays|a Silver|and|a Gold|. (+$|5|)
+0	L|buys and gains|a Duchy|.
+0	L|plays|a Ghost|.
+1	L|reveals|a Chariot Race|.
+1	L|sets|a Chariot Race|aside.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|draws|a Marquis|. (|Sinister Plot|)
+0	g|plays|a Chariot Race|.
+1	g|gets +|1|Action.
+1	g|draws|a Secret Cave|.
+1	g|reveals|a Secret Cave|.
+1	L|reveals|a Salvager|.
+0	g|plays|a Secret Cave|.
+1	g|draws|a Silver|.
+1	g|gets +|1|Action.
+0	g|plays|a Salvager|.
+1	g|gets +|1|Buy.
+1	g|trashes|a Marquis|.
+1	g|gets +$|6|.
+0	g|plays|a Silver|,|a Copper|,|and|a Gold|. (+$|6|)
+0	g|buys and gains|a Province|.
+0	g|uses|1|Coffers. (+$|1|)
+0	g|buys and gains|a Duchy|.
+0	g|ends their buy phase.
+0	g|draws|a Curse|,|a Copper|,|2 Golds|,|and|a Province|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Chariot Race|. (|Ghost|)
+2	L|gets +|1|Action.
+2	L|draws|a card|.
+2	L|reveals|a Salvager|.
+2	g|reveals|a Province|.
+1	L|plays|a Chariot Race|. (|Ghost|)
+2	L|gets +|1|Action.
+2	L|draws|a card|.
+2	L|reveals|a Cemetery|.
+2	g|reveals|a Province|.
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Marquis|.
+1	g|reveals|a Province|.
+0	L|plays|a Chariot Race|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+1	L|reveals|a Cursed Gold|.
+1	g|reveals|a Province|.
+0	L|plays|a Marquis|.
+1	L|gets +|1|Buy.
+1S	L|shuffles their deck.
+1	L|draws|6 cards|.
+1	L|discards|a card|and|a Province|.
+0	L|plays|a Salvager|.
+1	L|gets +|1|Buy.
+1	L|trashes|a Cemetery|.
+1	L|gets +$|4|.
+0	L|plays|a Silver|and|3 Golds|. (+$|11|)
+0	L|plays|a Cursed Gold|. (+$|3|)
+1	L|gains|a Curse|.
+0	L|plays|a Potion|.
+0	L|buys and gains|2 Provinces|.
+0	L|buys and gains|a Vineyard|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.

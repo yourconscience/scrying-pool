@@ -1,0 +1,701 @@
+# scrying-pool log v1
+0	Game #184528153, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|Band of Nomads|)
+0	L|gets +|1|Favor. (|Band of Nomads|)
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Student|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Fishing Village|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|an Exorcist|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|an Exorcist|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|an Exorcist|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Fishing Village|.
+0	g|plays|an Exorcist|.
+1	g|trashes|an Estate|.
+1	g|gains|a Will-o'-Wisp|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Student|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Silver|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|an Estate|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Will-o'-Wisp|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|an Estate|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Estate|.
+1	L|gains|a Will-o'-Wisp|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Student|.
+1	g|topdecks|a Student|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Cutpurse|.
+0	g|draws|2 Coppers|,|a Silver|,|an Exorcist|,|and|a Student|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|an Exorcist|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Copper|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Silver|and|a Copper|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|an Estate|,|a Fishing Village|,|and|a Student|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a First Mate|.
+1	L|spends|1|Favor.
+1	L|draws|a card|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Estate|.
+1	L|gains|a Will-o'-Wisp|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Fishing Village|.
+0	g|draws|2 Coppers|,|2 Silvers|,|and|a Will-o'-Wisp|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a First Mate|.
+0	L|plays|a Silver|and|4 Coppers|. (+$|6|)
+0	L|buys|a Stonemason|.
+1	L|loses|4|Coins.
+0	L|gains|a Stonemason|.
+1	L|gains|a Cutpurse|.
+1	L|gains|a Destrier|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Cutpurse|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|puts|a Copper|into their hand.
+0	g|plays|a Cutpurse|.
+1	g|gets +$|2|.
+1	L|discards|a Copper|.
+0	g|plays|2 Silvers|and|3 Coppers|. (+$|7|)
+0	g|buys|a Stonemason|.
+1	g|loses|5|Coins.
+0	g|gains|a Stonemason|.
+1	g|gains|a Destrier|.
+1	g|gains|a First Mate|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Cutpurse|,|and|an Exorcist|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|an Estate|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Estate|.
+1	L|gains|a Will-o'-Wisp|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|a Cutpurse|.
+1	g|gets +$|2|.
+1	L|discards|a Copper|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a First Mate|.
+0	g|draws|a Copper|,|a Silver|,|a Stonemason|,|a Destrier|,|and|a Student|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Destrier|.
+1	L|topdecks|a Destrier|.
+0	L|plays|a First Mate|.
+1	L|plays|a Fishing Village|.
+2	L|gets +|2|Actions.
+2	L|gets +$|1|.
+1	L|draws|4 cards|.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Will-o'-Wisp|.
+1	L|puts|a Will-o'-Wisp|into their hand.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Estate|.
+1	L|puts|an Estate|into their hand.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Stonemason|.
+1	L|trashes|a Copper|.
+0	L|plays|a Cutpurse|.
+1	L|gets +$|2|.
+1	g|discards|a Copper|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|buys|Gather|.
+1	L|gains|a Fishing Village|.
+1	L|gains|an Exorcist|.
+1	L|gains|a Wheelwright|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Estate|.
+1	L|gains|a Will-o'-Wisp|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|plays|a Destrier|.
+1	g|draws|a Copper|and|a Silver|.
+1	g|gets +|1|Action.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Stonemason|.
+0	g|plays|2 Silvers|and|a Copper|. (+$|5|)
+0	g|buys and gains|a Wheelwright|.
+0	g|draws|a Copper|,|2 Fishing Villages|,|a Will-o'-Wisp|,|and|a First Mate|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Fishing Village|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Estate|.
+1	L|gains|a Will-o'-Wisp|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|plays|a First Mate|.
+1	g|plays|a Fishing Village|.
+2	g|gets +|2|Actions.
+2	g|gets +$|1|.
+1	g|plays|a Fishing Village|.
+2	g|gets +|2|Actions.
+2	g|gets +$|1|.
+1S	g|shuffles their deck.
+1	g|draws|3 Coppers|and|a Cutpurse|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Student|.
+1	g|gets +|1|Action.
+1	g|reveals|a Destrier|.
+1	g|topdecks|a Destrier|.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Copper|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Cutpurse|.
+1	g|gets +$|2|.
+1	L|discards|a Copper|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys|Gather|.
+1	g|gains|a Fishing Village|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+1	g|gains|a Cutpurse|.
+1	g|gains|a First Mate|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+0	g|buys and gains|2 Peddlers|.
+0	g|draws|a Silver|,|a Destrier|,|a Wheelwright|,|a Student|,|and|a First Mate|.
+0T	Turn 11 - Lord Rattington
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Silver|.
+1	L|topdecks|a Silver|.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Stonemason|.
+1	L|puts|a Stonemason|into their hand.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Stonemason|.
+1	L|gains|a Will-o'-Wisp|.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Copper|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+0	g|plays|a Wheelwright|.
+1	g|draws|an Exorcist|.
+1	g|gets +|1|Action.
+1	g|discards|a Destrier|.
+1	g|gains|a Wheelwright|.
+2	g|spends|1|Favor.
+2	g|draws|a Copper|.
+0	g|plays|a First Mate|.
+1	g|plays|a Student|.
+2	g|gets +|1|Action.
+2	g|rotates|3 Students|.
+2	g|trashes|a Copper|.
+2	g|gets +|1|Favor. (|Student|)
+2	g|topdecks|a Student|.
+1	g|draws|a Copper|,|a Silver|,|and|a Student|.
+1S	g|shuffles their deck.
+1	g|draws|a Fishing Village|.
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Copper|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a First Mate|.
+1	g|spends|1|Favor.
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Peddler|.
+0	g|plays|an Exorcist|.
+1	g|trashes|a Silver|.
+1	g|gains|an Imp|.
+0	g|draws|a Copper|,|a Peddler|,|a Will-o'-Wisp|,|a Wheelwright|,|and|a Student|.
+0T	Turn 12 - Lord Rattington
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Will-o'-Wisp|.
+1	L|puts|a Will-o'-Wisp|into their hand.
+0	L|plays|a Will-o'-Wisp|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Exorcist|.
+1	L|topdecks|an Exorcist|.
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|plays|a First Mate|.
+1	L|plays|a Cutpurse|.
+2	L|gets +$|2|.
+2	g|discards|a Copper|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|buys|Gather|.
+1	L|gains|a Fishing Village|.
+1	L|gains|an Exorcist|.
+1	L|gains|a Wheelwright|.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Copper|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|puts|a Copper|into their hand.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Cutpurse|.
+1	g|gets +|1|Action.
+1	g|discards|a Peddler|.
+1	g|gains|a Destrier|.
+2	g|spends|1|Favor.
+2	g|draws|a First Mate|.
+0	g|plays|a Cutpurse|.
+1	g|gets +$|2|.
+1	L|reveals their hand:|a Wheelwright|,|an Exorcist|,|2 Will-o'-Wisps|,|and|a Fishing Village|.
+0	g|plays|a First Mate|.
+1	g|plays|a Student|.
+2	g|gets +|1|Action.
+2	g|trashes|a Copper|.
+2	g|gets +|1|Favor. (|Student|)
+2	g|topdecks|a Student|.
+1	g|draws|a Cutpurse|,|a Peddler|,|a Destrier|,|a Student|,|and|a First Mate|.
+0	g|plays|a First Mate|.
+1	g|plays|a Student|.
+2	g|gets +|1|Action.
+2	g|trashes|a Copper|.
+2	g|gets +|1|Favor. (|Student|)
+2	g|topdecks|a Student|.
+1	g|draws|a Student|.
+1S	g|shuffles their deck.
+1	g|draws|a Silver|and|a Fishing Village|.
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|a Destrier|.
+1	g|draws|a Copper|and|an Exorcist|.
+1	g|gets +|1|Action.
+0	g|plays|a Peddler|.
+1	g|draws|a Fishing Village|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Copper|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys|Gather|.
+1	g|gains|a Fishing Village|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+1	g|gains|a Destrier|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+1	g|gains|a First Mate|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+0	g|buys and gains|2 Peddlers|.
+0	g|buys and gains|a Destrier|.
+0	g|plays|an Exorcist|.
+1	g|trashes|a Cutpurse|.
+1	g|gains|an Imp|.
+0	g|draws|2 Peddlers|,|a Student|,|and|2 First Mates|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Exorcist|.
+1	L|topdecks|an Exorcist|.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a Wheelwright|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|buys and gains|a Fishing Village|.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Copper|.
+0	L|plays|an Exorcist|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+0	g|plays|a Peddler|.
+1	g|draws|a Wheelwright|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Wheelwright|.
+1	g|draws|an Imp|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Wheelwright|.
+0	g|plays|a First Mate|.
+1	g|plays|a Peddler|.
+2	g|draws|a Destrier|.
+2	g|gets +|1|Action.
+2	g|gets +$|1|.
+1S	g|shuffles their deck.
+1	g|draws|a Silver|,|a Peddler|,|and|a First Mate|.
+0	g|plays|a Destrier|.
+1	g|draws|a Destrier|and|a Wheelwright|.
+1	g|gets +|1|Action.
+0	g|plays|a Wheelwright|.
+1	g|draws|an Exorcist|.
+1	g|gets +|1|Action.
+1	g|discards|a Destrier|.
+1	g|gains|a Wheelwright|.
+0	g|plays|a Peddler|.
+1	g|draws|a Destrier|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a First Mate|.
+1	g|plays|a Student|.
+2	g|gets +|1|Action.
+2	g|trashes|a Silver|.
+2	g|gets +|1|Favor. (|Student|)
+2	g|topdecks|a Student|.
+1	g|draws|a Will-o'-Wisp|,|a Destrier|,|and|a Student|.
+0	g|plays|an Imp|.
+1	g|draws|a Peddler|and|a First Mate|.
+1	g|plays|a Will-o'-Wisp|.
+2	g|draws|a Wheelwright|.
+2	g|gets +|1|Action.
+2	g|reveals|an Imp|.
+2	g|puts|an Imp|into their hand.
+0	g|plays|a Wheelwright|.
+1	g|draws|a First Mate|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Wheelwright|.
+2	g|spends|1|Favor.
+2	g|gets +|1|Buy.
+0	g|plays|a Destrier|.
+1	g|draws|2 Fishing Villages|.
+1	g|gets +|1|Action.
+0	g|plays|a Destrier|.
+1	g|draws|a Peddler|and|a First Mate|.
+1	g|gets +|1|Action.
+0	g|plays|an Imp|.
+1S	g|shuffles their deck.
+1	g|draws|a Cutpurse|and|a Wheelwright|.
+1	g|plays|a Cutpurse|.
+2	g|gets +$|2|.
+2	L|discards|a Copper|.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Destrier|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Wheelwright|.
+0	g|plays|a Destrier|.
+1	g|draws|a Wheelwright|and|a First Mate|.
+1	g|gets +|1|Action.
+0	g|plays|a Wheelwright|.
+1S	g|shuffles their deck.
+1	g|draws|a First Mate|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Wheelwright|.
+0	g|plays|a Peddler|.
+1	g|draws|a Wheelwright|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Wheelwright|.
+1S	g|shuffles their deck.
+1	g|draws|a First Mate|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Wheelwright|.
+0	g|plays|a Peddler|.
+1	g|draws|a Wheelwright|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Wheelwright|.
+1S	g|shuffles their deck.
+1	g|draws|a Wheelwright|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a First Mate|.
+0	g|plays|a Wheelwright|.
+1	g|draws|a First Mate|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a First Mate|.
+0	g|plays|a First Mate|.
+1	g|plays|a Fishing Village|.
+2	g|gets +|2|Actions.
+2	g|gets +$|1|.
+1	g|plays|a Fishing Village|.
+2	g|gets +|2|Actions.
+2	g|gets +$|1|.
+1S	g|shuffles their deck.
+1	g|draws|4 First Mates|.
+0	g|buys and gains|a Province|.
+0	g|buys and gains|a Peddler|.
+0	g|plays|an Exorcist|.
+1	g|trashes|a First Mate|.
+1	g|gains|an Imp|.
+0S	g|shuffles their deck.
+0	g|draws|a Cutpurse|,|a Fishing Village|,|2 Imps|,|and|a Wheelwright|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+1	L|gets +|1|Action. (|Fishing Village|)
+1	L|gets +$|1|. (|Fishing Village|)
+0	L|plays|a First Mate|.
+1	L|plays|a Will-o'-Wisp|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Will-o'-Wisp|.
+2	L|puts|a Will-o'-Wisp|into their hand.
+1	L|plays|a Will-o'-Wisp|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Cutpurse|.
+2	L|topdecks|a Cutpurse|.
+1	L|plays|a Will-o'-Wisp|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Copper|.
+2	L|puts|a Copper|into their hand.
+1	L|draws|a card|.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|puts|a Copper|into their hand.
+0	L|plays|a Destrier|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Will-o'-Wisp|.
+1	L|puts|a Will-o'-Wisp|into their hand.
+0	L|plays|a Will-o'-Wisp|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Exorcist|.
+1	L|topdecks|an Exorcist|.
+0	L|plays|a Fishing Village|.
+1	L|gets +|2|Actions.
+1	L|gets +$|1|.
+0	L|plays|a Wheelwright|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Cutpurse|.
+1	L|gets +$|2|.
+1	g|reveals their hand:|a Wheelwright|,|2 Imps|,|a Cutpurse|,|and|a Fishing Village|.
+0	L|plays|a Silver|. (+$|2|)
+0	L|buys and gains|a Province|.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Copper|.
+0	L|plays|an Exorcist|.
+1	L|trashes|a Copper|.
+0	L|plays|an Exorcist|.
+1	L|trashes|an Exorcist|.
+1	L|gains|an Imp|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|starts their turn.
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+1	g|gets +|1|Action. (|Fishing Village|)
+1	g|gets +$|1|. (|Fishing Village|)
+0	g|plays|an Imp|.
+1	g|draws|a Wheelwright|and|a First Mate|.
+1	g|plays|a Wheelwright|.
+2	g|draws|a Destrier|.
+2	g|gets +|1|Action.
+2	g|discards|a First Mate|.
+2	g|gains|a First Mate|.
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|an Imp|.
+1	g|draws|a Destrier|and|a Wheelwright|.
+1	g|plays|a Destrier|.
+2	g|draws|a Province|and|a Destrier|.
+2	g|gets +|1|Action.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Peddler|.
+1	g|gets +|1|Action.
+1	g|discards|a Province|.
+1	g|gains|a First Mate|.
+0	g|plays|a Destrier|.
+1	g|draws|a Fishing Village|and|a First Mate|.
+1	g|gets +|1|Action.
+0	g|plays|a Wheelwright|.
+1	g|draws|a Student|.
+1	g|gets +|1|Action.
+1	g|discards|a First Mate|.
+1	g|gains|a Fishing Village|.
+0	g|plays|a Cutpurse|.
+1	g|gets +$|2|.
+1	L|discards|a Copper|.
+0	g|plays|a Peddler|.
+1	g|draws|an Imp|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Fishing Village|.
+1	g|gets +|2|Actions.
+1	g|gets +$|1|.
+0	g|plays|an Imp|.
+1	g|draws|a Wheelwright|and|a First Mate|.
+1	g|plays|a First Mate|.
+2	g|plays|a Destrier|.
+3	g|draws|2 First Mates|.
+3	g|gets +|1|Action.
+2	g|draws|a Peddler|and|a Will-o'-Wisp|.
+0	g|plays|a Peddler|.
+1	g|draws|a Peddler|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.

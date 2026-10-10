@@ -1,0 +1,467 @@
+# scrying-pool log v1
+0	Game #184528253, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Clerk|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Clerk|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Mountain Shrine|.
+0	g|repays|3|debt (|2|remaining).
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Clerk|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Mountain Shrine|.
+0	L|repays|3|debt (|2|remaining).
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+1	g|reacts with|a Clerk|, playing it.
+2	g|gets +$|2|.
+2	L|topdecks|a card|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|repays|2|debt.
+0	g|buys and gains|a Fishmonger|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Mountain Shrine|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+1	L|reacts with|a Clerk|, playing it.
+2	L|gets +$|2|.
+2	g|topdecks|a Copper|.
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|an Estate|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|repays|2|debt.
+0	L|buys and gains|a Mountain Shrine|.
+0	L|repays|3|debt (|2|remaining).
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Mountain Shrine|.
+0	g|repays|4|debt (|1|remaining).
+0	g|puts|a Fishmonger|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Mountain Shrine|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|repays|2|debt.
+0	L|buys and gains|a Pawn|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Fishmonger|using|Way of the Mule|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|an Estate|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|repays|1|debt.
+0	g|buys and gains|a Frigate|.
+0	g|draws|2 Coppers|,|an Estate|,|a Clerk|,|and|a Mountain Shrine|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Pawn|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Trail|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|reacts with|a Clerk|, playing it.
+2	g|gets +$|2|.
+2	L|topdecks|a card|.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|an Artisan|.
+0	g|puts|a Fishmonger|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Clerk|,|and|2 Mountain Shrines|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|reacts with|a Clerk|, playing it.
+2	L|gets +$|2|.
+2	g|topdecks|a Mountain Shrine|.
+0	L|plays|a Mountain Shrine|.
+1	Divine Wind|comes true.
+1	L|gets +$|2|.
+1	L|trashes|a Copper|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Barge|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+1	g|reacts with|a Clerk|, playing it.
+2	g|gets +$|2|.
+2	L|topdecks|a card|.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Barge|.
+0	g|draws|3 Coppers|,|a Frigate|,|and|a Mountain Shrine|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+1	L|reacts with|a Clerk|, playing it.
+2	L|gets +$|2|.
+2	g|topdecks|a Mountain Shrine|.
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|an Estate|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Bandit|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Frigate|.
+1	g|gets +$|3|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Figurine|.
+0	g|draws|2 Coppers|,|an Artisan|,|a Fishmonger|,|and|a Mountain Shrine|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Pawn|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Mountain Shrine|using|Way of the Mule|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Barge|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Coin of the Realm|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Fishmonger|using|Way of the Mule|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|an Artisan|.
+1	g|gains|a Crystal Ball|.
+1	g|topdecks|a Mountain Shrine|.
+0	g|plays|a Crystal Ball|.
+1	g|looks at|a Mountain Shrine|.
+1	g|plays|a Mountain Shrine|.
+2	g|gets +$|2|.
+2	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Tiara|.
+0	g|puts|a Fishmonger|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Tiara|,|a Crystal Ball|,|and|a Figurine|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|3 cards|. (|Barge|)
+1	L|gets +|1|Buy. (|Barge|)
+0	L|plays|a Pawn|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Bandit|.
+1	L|gains|a Gold|.
+1	g|reveals|a Frigate|and|a Mountain Shrine|.
+1	g|discards|a Frigate|and|a Mountain Shrine|.
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|plays|a Coin of the Realm|. (+$|1|)
+1	L|puts|a Coin of the Realm|on their|Tavern mat|.
+0	L|buys and gains|a Coin of the Realm|.
+0	L|buys and gains|a Tiara|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|plays|a Fishmonger|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Crystal Ball|.
+2	g|looks at|a Barge|.
+2	g|plays|a Barge|.
+1	g|plays|a Crystal Ball|again.
+2	g|looks at|an Artisan|.
+2	g|plays|an Artisan|.
+3	g|gains|a Coin of the Realm|.
+3	g|topdecks|a Copper|.
+0	g|plays|a Coin of the Realm|. (+$|1|)
+1	g|puts|a Coin of the Realm|on their|Tavern mat|.
+0	g|plays|a Figurine|.
+1	g|draws|2 Coppers|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Coin of the Realm|.
+0	g|buys and gains|a Barge|.
+0	g|puts|a Fishmonger|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Clerk|,|a Crystal Ball|,|and|a Mountain Shrine|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|reacts with|a Clerk|, playing it.
+2	L|gets +$|2|.
+2	g|topdecks|a Copper|.
+0	L|plays|a Trail|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|calls|a Coin of the Realm|.
+0	L|gets +|2|Actions.
+0	L|plays|a Barge|.
+1	L|draws|3 cards|.
+1	L|gets +|1|Buy.
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|a Copper|.
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|a Copper|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Gold|. (+$|3|)
+1	L|plays|a Gold|again. (+$|3|)
+0	L|buys and gains|a Figurine|.
+1	L|topdecks|a Figurine|with|Tiara|.
+0	L|buys and gains|a Barge|.
+1	L|topdecks|a Barge|with|Tiara|.
+0	L|buys and gains|a Coin of the Realm|.
+1	L|topdecks|a Coin of the Realm|with|Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|reacts with|a Clerk|, playing it.
+2	g|gets +$|2|.
+2	L|topdecks|a card|.
+1	g|draws|2 Coppers|and|a Mountain Shrine|. (|Barge|)
+1	g|gets +|1|Buy. (|Barge|)
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|a Copper|.
+0	g|calls|a Coin of the Realm|.
+0	g|gets +|2|Actions.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|a Copper|.
+0	g|plays|a Fishmonger|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|a Crystal Ball|.
+1	g|looks at|a Copper|.
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Bandit|.
+0	g|buys and gains|a Coin of the Realm|.
+0	g|buys and gains|a Raze|.
+0	g|draws|an Artisan|,|a Coin of the Realm|,|a Tiara|,|a Figurine|,|and|a Frigate|.
+0T	Turn 11 - Lord Rattington
+0	L|plays|a Barge|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|plays|a Figurine|.
+1	L|draws|2 cards|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|plays|a Coin of the Realm|. (+$|1|)
+1	L|puts|a Coin of the Realm|on their|Tavern mat|.
+0	L|plays|a Coin of the Realm|. (+$|1|)
+1	L|puts|a Coin of the Realm|on their|Tavern mat|.
+0	L|buys and gains|a Tiara|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|plays|an Artisan|.
+1	g|gains|a Crystal Ball|.
+1	g|topdecks|a Frigate|.
+0	g|plays|a Coin of the Realm|. (+$|1|)
+1	g|puts|a Coin of the Realm|on their|Tavern mat|.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Crystal Ball|.
+2	g|looks at|a Frigate|.
+2	g|plays|a Frigate|.
+3	g|gets +$|3|.
+1	g|plays|a Crystal Ball|again.
+2	g|looks at|a Barge|.
+2	g|plays|a Barge|.
+0	g|plays|a Figurine|.
+1	g|puts|a Fishmonger|on the bottom of their deck.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Barge|.
+1	g|topdecks|a Barge|with|Tiara|.
+0	g|buys and gains|a Coin of the Realm|.
+0	g|draws|a Coin of the Realm|,|a Raze|,|2 Barges|,|and|a Mountain Shrine|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|. (|Barge|)
+1	L|gets +|1|Buy. (|Barge|)
+0	L|plays|a Bandit|.
+1	L|gains|a Gold|.
+1	g|reveals|a Bandit|and|a Clerk|.
+1	g|discards|a Bandit|and|a Clerk|.
+1	L|calls|a Coin of the Realm|.
+1	L|gets +|2|Actions.
+1	L|discards|2 other cards|and|a Copper|.
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|a Pawn|.
+1	L|draws|2 cards|.
+0	L|plays|a Clerk|.
+1	L|gets +$|2|.
+1	g|topdecks|a Coin of the Realm|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|plays|a Coin of the Realm|. (+$|1|)
+1	L|puts|a Coin of the Realm|on their|Tavern mat|.
+0	L|buys and gains|a Barge|.
+0	L|buys and gains|a Coin of the Realm|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|draws|2 Coins of the Realm|and|a Mountain Shrine|. (|Barge|)
+1	g|gets +|1|Buy. (|Barge|)
+0	g|plays|a Fishmonger|using|Way of the Mule|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|calls|a Coin of the Realm|.
+0	g|gets +|2|Actions.
+0	g|plays|a Barge|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|,|an Artisan|,|and|a Crystal Ball|.
+1	g|gets +|1|Buy.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|trashes|a Copper|.
+1	g|draws|a Coin of the Realm|and|a Crystal Ball|.
+0	g|plays|a Raze|.
+1	g|gets +|1|Action.
+1	g|trashes|a Raze|.
+1	g|looks at|a Copper|and|a Bandit|.
+1	g|puts|a Copper|into their hand.
+1	g|discards|a Bandit|.
+0	g|plays|a Mountain Shrine|using|Way of the Mule|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|an Artisan|.
+1	g|gains|a Crystal Ball|.
+1	g|topdecks|a Barge|.
+0	g|plays|a Coin of the Realm|. (+$|1|)
+1	g|puts|a Coin of the Realm|on their|Tavern mat|.
+0	g|plays|a Coin of the Realm|. (+$|1|)
+1	g|puts|a Coin of the Realm|on their|Tavern mat|.
+0	g|plays|a Coin of the Realm|. (+$|1|)
+1	g|puts|a Coin of the Realm|on their|Tavern mat|.
+0	g|plays|a Crystal Ball|.
+1	g|looks at|a Barge|.
+1	g|plays|a Barge|.
+2	g|draws|a Clerk|,|a Tiara|,|and|a Figurine|.
+2	g|gets +|1|Buy.
+0	g|plays|a Tiara|.
+1	g|gets +|1|Buy.
+1	g|plays|a Crystal Ball|.
+2S	g|shuffles their deck.
+2	g|looks at|a Bandit|.
+2	g|plays|a Bandit|.
+3	g|gains|a Gold|.
+3	g|topdecks|a Gold|with|Tiara|.
+3	L|reveals|a Barge|and|a Trail|.
+3	L|discards|a Barge|and|a Trail|.
+3	L|reacts with|a Trail|, playing it.
+4	L|looks at|15 cards|.
+4S	L|shuffles their deck.
+4	L|draws|a card|.
+4	L|gets +|1|Action.
+1	g|plays|a Crystal Ball|again.
+2	g|looks at|a Gold|.
+2	g|plays|a Gold|. (+$|3|)
+0	g|plays|a Figurine|.
+1	g|discards|a Clerk|.
+1	g|gets +|1|Buy.
+0	g|plays|a Crystal Ball|.
+1S	g|shuffles their deck.
+1	g|looks at|a Clerk|.
+1	g|plays|a Clerk|.
+2	g|gets +$|2|.
+2	L|topdecks|a card|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys|a Windfall|.
+1	g|gains|3 Golds|.
+0	g|buys and gains|a Barge|.
+1	g|topdecks|a Barge|with|Tiara|.
+0	g|buys and gains|a Barge|.
+1	g|topdecks|a Barge|with|Tiara|.
+0	g|buys and gains|a Raze|.
+1	g|topdecks|a Raze|with|Tiara|.
+0	L|discards|a Trail|.
+0	g|puts|a Fishmonger|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|a Raze|,|3 Barges|,|and|a Tiara|.
+0T	Turn 13 - Lord Rattington
+0	L|plays|a Mountain Shrine|.
+1	L|gets +$|2|.
+1	L|trashes|an Estate|.
+1	L|draws|2 cards|.
+0	L|plays|a Tiara|.
+1	L|gets +|1|Buy.
+1	L|plays|a Tiara|.
+2	L|gets +|1|Buy.
+2	L|plays|a Figurine|.
+3	L|draws|2 cards|.
+3	L|discards|a Barge|.
+3	L|gets +|1|Buy.
+2	L|plays|a Figurine|again.
+3	L|draws|2 cards|.
+3	L|discards|a Clerk|.
+3	L|gets +|1|Buy.
+1	L|plays|a Tiara|again.
+2	L|gets +|1|Buy.
+2	L|plays|a Gold|. (+$|3|)
+2	L|plays|a Gold|again. (+$|3|)
+0	L|plays|a Copper|. (+$|1|)
+0	L|plays|a Coin of the Realm|. (+$|1|)
+1	L|puts|a Coin of the Realm|on their|Tavern mat|.
+0	L|buys and gains|a Barge|.
+1	L|topdecks|a Barge|with|Tiara|.
+0	L|buys and gains|a Crystal Ball|.
+0	L|buys and gains|a Coin of the Realm|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|plays|a Barge|.
+1	g|draws|a Bandit|,|a Coin of the Realm|,|and|a Crystal Ball|.
+1	g|gets +|1|Buy.
+0	g|calls|a Coin of the Realm|.
+0	g|gets +|2|Actions.
+0	g|plays|a Barge|.
+1	g|draws|a Gold|,|a Clerk|,|and|a Crystal Ball|.
+1	g|gets +|1|Buy.
+0	g|calls|a Coin of the Realm|.
+0	g|gets +|2|Actions.
+0	g|plays|a Barge|.
+1	g|draws|a Gold|,|a Barge|,|and|a Mountain Shrine|.
+1	g|gets +|1|Buy.
+0	g|plays|a Mountain Shrine|.
+1	g|gets +$|2|.
+1	g|draws|a Gold|and|a Figurine|.
+0	g|plays|a Raze|.
+1	g|gets +|1|Action.
+1	g|trashes|a Raze|.
+1	g|looks at|a Copper|and|a Mountain Shrine|.

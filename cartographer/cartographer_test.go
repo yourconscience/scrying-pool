@@ -186,14 +186,16 @@ func TestEveryTemplateMatchesItsOwnLines(t *testing.T) {
 		line := reArg.ReplaceAllStringFunc(tm.English, func(s string) string {
 			var n int
 			fmt.Sscan(strings.TrimPrefix(s, "Argument"), &n)
-			return sample[n]
+			return " " + sample[n] + " "
 		})
 		line = reCardRef.ReplaceAllStringFunc(line, func(s string) string {
 			if card := c.byKeyName(s[1 : len(s)-1]); card != nil {
-				return card.Name
+				return " " + card.Name + " "
 			}
-			return s[1 : len(s)-1]
+			return " " + s[1:len(s)-1] + " "
 		})
+		// like a copied log: spans joined by single spaces
+		line = strings.Join(strings.Fields(line), " ")
 		got, _ := c.matchLine(line, initials)
 		if got == nil {
 			t.Errorf("%s: %q matches no template", tm.Name, line)

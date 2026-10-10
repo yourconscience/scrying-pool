@@ -196,8 +196,8 @@ var (
 )
 
 // compileTemplate turns "Argument0 gains Argument1. (Argument2)" into a regexp.
-// "[The Skys Gift]" is a card key the client prints as the card's name. Log pieces
-// were trimmed when copied, so spaces between words are optional.
+// "[The Skys Gift]" is a card key the client prints as the card's name. Copied
+// logs join the client's spans with spaces, so spaces at any boundary are optional.
 func compileTemplate(name, english string, byKey map[string]*Card) (*Template, error) {
 	t := &Template{Name: name, English: english}
 	var b strings.Builder
@@ -215,7 +215,8 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 		}
 		lit := rest[:next]
 		t.literal += len(strings.TrimSpace(lit))
-		b.WriteString(reSpaces.ReplaceAllString(regexp.QuoteMeta(lit), `\s*`))
+		// copied logs put a space between every span, so any boundary may have one
+		b.WriteString(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(strings.TrimSpace(lit)), `\s*`) + `\s*`)
 		rest = rest[next:]
 		switch {
 		case rest == "":

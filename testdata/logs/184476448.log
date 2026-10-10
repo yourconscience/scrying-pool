@@ -1,0 +1,582 @@
+# scrying-pool log v1
+0	Game #184528206, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Vagrant|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Silver|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|buys and gains|a Butcher|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0	g|draws|3 Coppers|,|a Silver|,|and|an Estate|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|an Estate|.
+1	L|gains|a Vagrant|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Vagrant|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	g|buys and gains|a Butcher|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Silvers|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|uses|1|Coffers. (+$|1|)
+0	L|gets +$|1|.
+0	L|buys and gains|an Artisan|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|2 Silvers|and|3 Coppers|. (+$|7|)
+0	g|buys|Innovation|.
+0	g|draws|2 Coppers|,|a Silver|,|and|2 Estates|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys|a Plan|.
+1	L|moves|Trashing token|to|the Swamp Shacks pile|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|buys and gains|a Potion|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Butcher|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Artisan|.
+1	L|topdecks|an Artisan|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|a Vagrant|.
+1	L|uses|2|Coffers. (+$|2|)
+1	L|gains|a Swamp Shacks|.
+2	L|trashes|a Copper|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Vagrant|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Butcher|.
+1	g|gets +|2|Coffers.
+1	g|trashes|an Estate|.
+1	g|gains|a Vagrant|.
+2	g|plays|a Vagrant|.
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+3	g|reveals|a Copper|.
+3	g|topdecks|a Copper|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|uses|1|Coffers. (+$|1|)
+0	g|buys and gains|Dame Josephine|.
+0	g|draws|2 Coppers|,|a Silver|,|and|2 Estates|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Vagrant|.
+1	L|topdecks|a Vagrant|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|a card|.
+0	L|plays|an Artisan|.
+1	L|gains|Sir Michael|.
+1	L|topdecks|a card|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|Sir Michael|.
+1	g|discards|2 Estates|.
+1	g|reveals|a Silver|and|a Potion|.
+1	g|trashes|a Silver|.
+1	g|discards|a Potion|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|uses|1|Coffers. (+$|1|)
+0	g|buys and gains|Dame Sylvia|.
+1	g|plays|Dame Sylvia|.
+2	g|gets +$|2|.
+2S	L|shuffles their deck.
+2	L|reveals|a Copper|and|an Artisan|.
+2	L|trashes|an Artisan|.
+2	L|discards|a Copper|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Silver|,|an Estate|,|and|Dame Sylvia|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|uses|2|Coffers. (+$|2|)
+0	L|gets +$|2|.
+0	L|buys and gains|an Artisan|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|Dame Sylvia|.
+1	g|gets +$|2|.
+1	L|reveals|2 Estates|.
+1	L|discards|2 Estates|.
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|buys and gains|an Artisan|.
+1	g|plays|an Artisan|.
+2	g|gains|Sir Destry|.
+2	g|topdecks|Sir Destry|.
+0	g|draws|2 Coppers|,|an Estate|,|Dame Josephine|,|and|Sir Destry|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Butcher|.
+1	L|topdecks|a Butcher|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Estate|.
+1	L|puts|an Estate|into their hand.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|a card|.
+0	L|plays|Sir Michael|.
+1	g|discards|an Estate|and|Dame Josephine|.
+1	g|reveals|a Copper|and|a Silver|.
+1	g|trashes|a Silver|.
+1	g|discards|a Copper|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|uses|3|Coffers. (+$|3|)
+0	L|gets +$|3|.
+0	L|buys|Innovation|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|plays|Sir Destry|.
+1	g|draws|a Copper|and|a Potion|.
+1S	L|shuffles their deck.
+1	L|reveals|a Copper|and|Sir Michael|.
+1	L|trashes|Sir Michael|.
+1	L|discards|a Copper|.
+1	g|trashes|Sir Destry|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Potion|.
+0	g|buys and gains|a University|.
+1	g|plays|a University|.
+2	g|gets +|2|Actions.
+2	g|gains|Dame Anna|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|Dame Anna|,|a Vagrant|,|and|a Butcher|.
+0T	Turn 10 - Lord Rattington
+0	L|plays|an Artisan|.
+1	L|gains|a Frigate|.
+2	L|plays|a Frigate|.
+3	L|gets +$|3|.
+1	L|topdecks|a card|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|Dame Molly|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|plays|a Vagrant|.
+1	g|draws|a University|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|topdecks|a Copper|.
+1	g|discards|a Copper|.
+0	g|plays|a University|.
+1	g|gets +|2|Actions.
+1	g|gains|Sir Martin|.
+2	g|plays|Sir Martin|.
+3	g|gets +|2|Buys.
+3	L|reveals|a Butcher|and|a Swamp Shacks|.
+3	L|trashes|a Swamp Shacks|.
+3	L|discards|a Butcher|.
+0	g|plays|Dame Anna|.
+1	L|reveals|a Copper|and|a Vagrant|.
+1	L|discards|a Copper|and|a Vagrant|.
+0	g|plays|a Butcher|.
+1	g|gets +|2|Coffers.
+1	g|trashes|a Copper|.
+1	g|uses|2|Coffers. (+$|2|)
+1	g|gains|a Moat|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Potion|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Vagrant|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Vagrant|.
+1	L|topdecks|a Vagrant|.
+0	L|plays|an Artisan|.
+1	L|gains|a Swamp Shacks|.
+2	L|trashes|an Estate|.
+2	L|plays|a Swamp Shacks|.
+3	L|gets +|2|Actions.
+3	L|draws|a card|.
+1	L|topdecks|a card|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Moat|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Potion|.
+0	g|buys and gains|a University|.
+1	g|plays|a University|.
+2	g|gets +|2|Actions.
+2	g|gains|Dame Natalie|.
+0	g|draws|a Copper|,|a Silver|,|an Estate|,|an Artisan|,|and|Dame Josephine|.
+0T	Turn 12 - Lord Rattington
+0	L|plays|Dame Molly|.
+1	L|gets +|2|Actions.
+1	g|reveals|a Copper|and|Dame Sylvia|.
+1	g|trashes|Dame Sylvia|.
+1	g|discards|a Copper|.
+1	L|trashes|Dame Molly|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Potion|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|plays|an Artisan|.
+1	g|gains|Sir Bailey|.
+2	g|plays|Sir Bailey|.
+3S	g|shuffles their deck.
+3	g|draws|Sir Martin|.
+3	g|gets +|1|Action.
+3	L|reveals|a Vagrant|and|a Swamp Shacks|.
+3	L|trashes|a Swamp Shacks|.
+3	L|discards|a Vagrant|.
+1	g|topdecks|Dame Josephine|.
+0	g|plays|Sir Martin|.
+1	g|gets +|2|Buys.
+1	L|reveals|2 Coppers|.
+1	L|discards|2 Coppers|.
+0	g|plays|a Silver|and|a Copper|. (+$|3|)
+0	g|buys and gains|a Vagrant|.
+0	g|buys and gains|a City Quarter|.
+0	g|repays|1|debt (|7|remaining).
+0	g|draws|an Estate|,|a Potion|,|a University|,|Dame Anna|,|and|Dame Josephine|.
+0T	Turn 13 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Frigate|.
+1	L|topdecks|a Frigate|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Moat|.
+1	L|topdecks|a Moat|.
+0	L|plays|an Artisan|.
+1	L|gains|a Swamp Shacks|.
+2	L|plays|a Swamp Shacks|.
+3	L|gets +|2|Actions.
+3	L|draws|a card|.
+2	L|trashes|a Copper|.
+1	L|topdecks|a card|.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+0	L|plays|a Potion|.
+0	L|buys and gains|a University|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|plays|a University|.
+1	g|gets +|2|Actions.
+1	g|gains|Sir Vander|.
+2	g|plays|Sir Vander|.
+3	L|reacts with|a Moat|.
+0	g|plays|Dame Anna|.
+1	L|reacts with|a Moat|.
+1	g|trashes|an Estate|and|a Potion|.
+0	g|plays|Dame Josephine|.
+1	L|reacts with|a Moat|.
+0	g|draws|3 Coppers|,|Dame Natalie|,|and|a Butcher|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Moat|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|uses|2|Coffers. (+$|2|)
+0	L|gets +$|2|.
+0	L|buys and gains|an Artisan|.
+1	L|plays|an Artisan|.
+2	L|gains|a Moat|.
+2	L|topdecks|a card|.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|plays|Dame Natalie|.
+1	L|reacts with|a Moat|.
+1	g|gains|a Vagrant|.
+2	g|plays|a Vagrant|.
+3	g|draws|a Moat|.
+3	g|gets +|1|Action.
+3	g|reveals|a University|.
+3	g|topdecks|a University|.
+0	g|plays|a Butcher|.
+1	g|gets +|2|Coffers.
+1	g|trashes|a Copper|.
+1	g|uses|2|Coffers. (+$|2|)
+1	g|gains|a Moat|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|repays|2|debt (|5|remaining).
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a University|,|Dame Anna|,|and|a Vagrant|.
+0T	Turn 15 - Lord Rattington
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|an Artisan|.
+1	L|topdecks|an Artisan|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Butcher|.
+1	L|topdecks|a Butcher|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|a card|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|a Potion|.
+1	L|gains|a Swamp Shacks|.
+2	L|plays|a Swamp Shacks|.
+3	L|gets +|2|Actions.
+3	L|draws|a card|.
+2	L|trashes|a Copper|.
+0	L|plays|a Vagrant|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Frigate|.
+1	L|topdecks|a Frigate|.
+0	L|plays|a Moat|.
+1	L|draws|2 cards|.
+0	L|plays|an Artisan|.
+1	L|gains|a Swamp Shacks|.
+2	L|trashes|a Copper|.
+1	L|topdecks|a card|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|3 cards|.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|a University|.
+1	L|gets +|2|Actions.
+1	L|gains|a Frigate|.
+0	L|plays|an Artisan|.
+1	L|gains|a Swamp Shacks|.
+1	L|topdecks|a card|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|4 cards|.
+0	L|plays|a Moat|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 16 - gamrevinu
+0	g|plays|a University|.
+1	g|gets +|2|Actions.
+1	g|gains|a Frigate|.
+2	g|plays|a Frigate|.
+3	L|reacts with|a Moat|.
+3	g|gets +$|3|.
+0	g|plays|a Vagrant|.
+1	g|draws|a Silver|.
+1	g|gets +|1|Action.
+1	g|reveals|an Estate|.
+1	g|puts|an Estate|into their hand.
+1	g|discards|an Estate|.
+0	g|plays|Dame Anna|.
+1	L|reacts with|a Moat|.
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|repays|5|debt.
+0	g|buys and gains|a Vagrant|.
+0	g|draws|2 Coppers|,|Dame Natalie|,|Sir Vander|,|and|a Butcher|.
+0T	Turn 16 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a University|.
+1	L|gets +|2|Actions.
+1	L|gains|a Swamp Shacks|.
+0	L|plays|a Moat|.
+1	L|draws|2 cards|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|a card|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|an Artisan|.
+1	L|gains|a Swamp Shacks|.
+2	L|plays|a Swamp Shacks|.
+3	L|gets +|2|Actions.
+3	L|draws|2 cards|.
+2	L|trashes|a Copper|.
+1	L|topdecks|a card|.
+0	L|plays|an Artisan|.
+1	L|gains|a Frigate|.
+1	L|topdecks|a card|.
+0	L|plays|a Frigate|.
+1	L|gets +$|3|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|3 cards|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|4 cards|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|an Estate|.
+1	L|uses|3|Coffers. (+$|3|)
+1	L|gains|a Butcher|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|a Butcher|.
+1	L|topdecks|a Butcher|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|2 cards|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|a Province|.
+1	L|gains|a Province|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|uses|1|Coffers. (+$|1|)
+0	L|gets +$|1|.
+0	L|buys and gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 17 - gamrevinu
+0	g|plays|Dame Natalie|.
+1	L|reacts with|a Moat|.
+1	g|gains|a Vagrant|.
+2	g|plays|a Vagrant|.
+3	g|draws|a City Quarter|.
+3	g|gets +|1|Action.
+3	g|reveals|a University|.
+3	g|topdecks|a University|.
+3	g|discards|Sir Vander|.
+0	g|plays|a City Quarter|.
+1	g|gets +|2|Actions.
+1	g|reveals their hand:|2 Coppers|and|a Butcher|.
+1	g|draws|a University|.
+0	g|plays|a University|.
+1	g|gets +|2|Actions.
+1	g|gains|a Butcher|.
+0	g|plays|a Butcher|.
+1	g|gets +|2|Coffers.
+1	g|trashes|a Copper|.
+1	g|uses|2|Coffers. (+$|2|)
+1	g|gains|an Estate|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|draws|a Copper|,|an Artisan|,|Sir Bailey|,|and|2 Vagrants|.
+0T	Turn 17 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+0	L|plays|a Moat|.
+1	L|draws|2 cards|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|a card|.
+0	L|plays|a Moat|.
+1	L|draws|2 cards|.
+0	L|plays|a University|.
+1	L|gets +|2|Actions.
+1	L|gains|a Swamp Shacks|.
+2	L|plays|a Swamp Shacks|.
+3	L|gets +|2|Actions.
+3	L|draws|2 cards|.
+0	L|plays|a Butcher|.
+1	L|gets +|2|Coffers.
+1	L|trashes|a Swamp Shacks|.
+1	L|gains|a Swamp Shacks|.
+0	L|plays|a Vagrant|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|.
+0	L|plays|an Artisan|.
+1	L|gains|a Vagrant|.
+1	L|topdecks|a card|.
+0	L|plays|a Swamp Shacks|.
+1	L|gets +|2|Actions.
+1	L|draws|3 cards|.
+0	L|plays|a Copper|and|a Gold|. (+$|4|)
+0	L|uses|4|Coffers. (+$|4|)
+0	L|buys and gains|a Gold|.
+0	L|draws|5 cards|.

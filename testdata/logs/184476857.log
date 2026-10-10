@@ -1,0 +1,456 @@
+# scrying-pool log v1
+0	Game #184528190, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|City-state|)
+0	L|gets +|1|Favor. (|City-state|)
+0	The|Reckless|Trait is acquired by|the Collection pile|.
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Black Market|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Cutpurse|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Broker|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Broker|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Black Market|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Broker|.
+1	g|trashes|an Estate|.
+1	g|gets +|2|Favors. (|Broker|)
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Black Market|.
+1	L|gets +$|2|.
+1	L|plays|2 Coppers|. (+$|2|)
+1	L|gains|a Flagship|.
+1	L|puts|a Mill|and|an Experiment|on the bottom of|the Black Market Deck|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Silver|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Black Market|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Silver|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|3 Coppers|. (+$|3|)
+1	g|gains|a Wharf|.
+2	g|spends|2|Favors.
+2	g|plays|a Wharf|.
+3	g|draws|a Copper|and|a Broker|.
+3	g|gets +|1|Buy.
+1	g|puts|a Trading Post|and|a Courier|on the bottom of|the Black Market Deck|.
+0	g|draws|2 Coppers|,|2 Silvers|,|and|an Estate|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Cutpurse|.
+1	L|gets +$|2|.
+1	g|discards|a Copper|.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Border Village|.
+1	L|gains|a Collection|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|. (|Wharf|)
+1	g|gets +|1|Buy. (|Wharf|)
+0	g|plays|2 Silvers|and|3 Coppers|. (+$|7|)
+0	g|buys and gains|a Border Village|.
+1	g|gains|a Pirate|.
+0	g|draws|4 Coppers|and|a Black Market|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Flagship|.
+1	L|gets +$|2|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Broker|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|4 Coppers|. (+$|4|)
+1	g|puts|a Catacombs|,|a Sage|,|and|an Old Witch|on the bottom of|the Black Market Deck|.
+0	g|buys and gains|a Border Village|.
+1	g|gains|a Horn of Plenty|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|2 Estates|,|a Border Village|,|and|a Broker|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Broker|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Border Village|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Broker|.
+1	g|trashes|an Estate|.
+1	g|draws|a Copper|and|a Horn of Plenty|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Silver|.
+0	g|buys and gains|a Black Market|.
+0	g|draws|3 Coppers|,|a Black Market|,|and|a Pirate|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Broker|.
+1	L|trashes|a Silver|.
+1	L|draws|3 cards|.
+1	L|plays|a Broker|. (|Flagship|)
+2	L|trashes|an Estate|.
+2	L|gets +|2|Actions.
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Cutpurse|.
+1	L|gets +$|2|.
+1	g|discards|a Copper|.
+0	L|plays|3 Coppers|and|a Collection|. (+$|5|)
+2	L|gets +|2|Buys.
+0	L|buys and gains|a Border Village|.
+1	L|gets|2|VP from|Collection|.
+1	L|gains|a Council Room|.
+2	L|gets|2|VP from|Collection|.
+0	L|buys and gains|a Black Market|.
+1	L|gets|2|VP from|Collection|.
+0	L|begins their Cleanup phase.
+1	L|returns|a Collection|to|the Collection pile|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|2 Coppers|. (+$|2|)
+1	g|gains|a Maroon|.
+1	g|puts|a Lurker|and|a Menagerie|on the bottom of|the Black Market Deck|.
+0	g|buys and gains|a Copper|.
+1	g|reacts with|a Pirate|.
+1	g|plays|a Pirate|.
+0	g|draws|a Copper|,|2 Silvers|,|a Wharf|,|and|a Border Village|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Council Room|.
+1	L|draws|4 cards|.
+1	L|gets +|1|Buy.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+0	L|plays|a Black Market|.
+1	L|gets +$|2|.
+1	L|plays|3 Coppers|. (+$|3|)
+1	L|trashes|a Cutpurse|.
+1	L|gains|an Animal Fair|.
+1	L|puts|a Throne Room|and|a Barbarian|on the bottom of|the Black Market Deck|.
+0	L|buys and gains|a Pirate|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Collection|. (|Pirate|)
+0	g|plays|a Border Village|.
+1	g|draws|a Border Village|.
+1	g|gets +|2|Actions.
+0	g|plays|a Border Village|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Wharf|.
+1	g|draws|a Copper|and|a Black Market|.
+1	g|gets +|1|Buy.
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|a Collection|. (+$|2|)
+3	g|gets +|2|Buys.
+1	g|plays|2 Silvers|and|4 Coppers|. (+$|8|)
+1	g|gains|a Cartographer|.
+2	g|gets|2|VP from|Collection|.
+1	g|puts|a Pawn|and|a Warehouse|on the bottom of|the Black Market Deck|.
+0	g|buys and gains|a Border Village|.
+1	g|gets|2|VP from|Collection|.
+1	g|gains|a Pirate|.
+2	g|gets|2|VP from|Collection|.
+0	g|buys and gains|a Black Market|.
+1	g|gets|2|VP from|Collection|.
+0	g|begins their Cleanup phase.
+1	g|returns|a Collection|to|the Collection pile|.
+0	g|draws|a Copper|,|an Estate|,|a Black Market|,|a Broker|,|and|a Maroon|.
+0T	Turn 10 - Lord Rattington
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Flagship|.
+1	L|gets +$|2|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys|Piazza|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|draws|a Silver|and|a Horn of Plenty|. (|Wharf|)
+1	g|gets +|1|Buy. (|Wharf|)
+0	g|plays|a Broker|.
+1	g|trashes|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|a Maroon|.
+1	g|trashes|a Copper|.
+1	g|draws|2 Coppers|.
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+1	g|plays|a Horn of Plenty|.
+2	g|gains|a Border Village|.
+3	g|gains|a Collection|.
+1	g|gains|a Displace|.
+1	g|puts|an Expand|and|a Pendant|on the bottom of|the Black Market Deck|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Border Village|,|and|a Black Market|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|reveals|an Estate|.
+1	L|topdecks|an Estate|with|Piazza|.
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+1	L|plays|a Border Village|. (|Flagship|)
+2	L|draws|a card|.
+2	L|gets +|2|Actions.
+0	L|plays|a Broker|.
+1	L|trashes|an Estate|.
+1	L|draws|2 cards|.
+0	L|plays|an Animal Fair|.
+1	L|gets +$|4|.
+0	L|plays|a Black Market|.
+1	L|gets +$|2|.
+1	L|plays|2 Coppers|. (+$|2|)
+1	L|puts|a Harbinger|,|an Island|,|and|a Mastermind|on the bottom of|the Black Market Deck|.
+0	L|plays|a Broker|.
+1	L|trashes|a Copper|.
+0	L|buys and gains|a Border Village|.
+1	L|gains|a Pirate|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|plays|a Border Village|.
+1	g|draws|a Broker|.
+1	g|gets +|2|Actions.
+0	g|plays|a Broker|.
+1	g|trashes|a Copper|.
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|2 Coppers|. (+$|2|)
+1	g|gains|a Magpie|.
+1	g|puts|an Armory|and|a Sorceress|on the bottom of|the Black Market Deck|.
+0	g|draws|a Copper|,|a Horn of Plenty|,|a Black Market|,|a Pirate|,|and|a Maroon|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1	L|reveals|a Council Room|.
+1	L|plays|a Council Room|. (|)
+2S	L|shuffles their deck.
+2	L|draws|4 cards|.
+2	L|gets +|1|Buy.
+2	g|draws|a Collection|.
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Black Market|.
+1	L|gets +$|2|.
+2	L|gets a Coffers from|Patron|.
+1	L|plays|4 Coppers|. (+$|4|)
+1	L|puts|a Plaza|,|a Haunted Woods|,|and|a Patron|on the bottom of|the Black Market Deck|.
+0	L|plays|a Flagship|.
+1	L|gets +$|2|.
+0	L|buys and gains|a Border Village|.
+1	L|gains|a Horn of Plenty|.
+2	L|reacts with|a Pirate|.
+2	L|plays|a Pirate|.
+3	L|plays|a Pirate|. (|Flagship|)
+2	g|reacts with|a Pirate|.
+2	g|plays|a Pirate|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Collection|. (|Pirate|)
+2	L|reacts with|a Pirate|.
+2	L|plays|a Pirate|.
+0	g|plays|a Maroon|.
+1	g|trashes|a Copper|.
+1	g|draws|a Copper|and|a Wharf|.
+0	g|plays|a Collection|. (+$|2|)
+2	g|gets +|2|Buys.
+0	g|plays|a Collection|. (+$|2|)
+2	g|gets +|2|Buys.
+0	g|plays|a Copper|. (+$|1|)
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Pirate|.
+2	g|gets|4|VP from|Collection|.
+0	g|buys and gains|a Border Village|.
+1	g|gets|4|VP from|Collection|.
+1	g|gains|a Council Room|.
+2	g|gets|4|VP from|Collection|.
+0	g|buys and gains|a Black Market|.
+1	g|gets|4|VP from|Collection|.
+0	g|begins their Cleanup phase.
+1	g|returns|a Collection|to|the Collection pile|.
+0	g|returns|a Collection|to|the Collection pile|.
+0	g|draws|a Copper|,|a Border Village|,|a Cartographer|,|a Displace|,|and|a Pirate|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|reveals|a Copper|.
+1	L|topdecks|a Copper|with|Piazza|.
+1	L|gains|a Collection|. (|Pirate|)
+2	g|reacts with|a Pirate|.
+2	g|plays|a Pirate|.
+1	L|gains|a Horn of Plenty|and|a Collection|. (|Pirate|)
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Broker|.
+1	L|trashes|a Border Village|.
+1S	L|shuffles their deck.
+1	L|draws|6 cards|.
+0	L|plays|a Broker|.
+1	L|trashes|an Animal Fair|.
+1	L|gets +|7|Favors. (|Broker|)
+0	L|plays|4 Coppers|and|a Collection|. (+$|6|)
+2	L|gets +|2|Buys.
+0	L|plays|a Collection|. (+$|2|)
+2	L|gets +|2|Buys.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Border Village|.
+2	L|gets|4|VP from|Collection|.
+2	L|gains|a Council Room|.
+3	L|gets|4|VP from|Collection|.
+3	L|spends|2|Favors.
+3	L|plays|a Council Room|.
+3	L|draws|4 cards|.
+3	L|gets +|1|Buy.
+3	g|draws|a Silver|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Wheelwright|.
+2	L|gets|4|VP from|Collection|.
+2	L|spends|2|Favors.
+2	L|plays|a Wheelwright|.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+3	L|discards|a Border Village|.
+3	L|gains|a Pirate|.
+3	L|gets|4|VP from|Collection|.
+3	L|spends|2|Favors.
+3	L|plays|a Pirate|.
+0	L|buys and gains|a Black Market|.
+1	L|gets|4|VP from|Collection|.
+1	L|spends|2|Favors.
+1	L|plays|a Black Market|.
+2	L|gets +$|2|.
+2	L|puts|an Amulet|,|a Wayfarer|,|and|a Blockade|on the bottom of|the Black Market Deck|.
+0	L|buys and gains|a Black Market|.
+1	L|gets|4|VP from|Collection|.
+0	L|buys and gains|2 Collections|.
+0	L|begins their Cleanup phase.
+1	L|returns|a Collection|to|the Collection pile|.
+0	L|returns|a Collection|to|the Collection pile|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Gold|. (|Pirate|)
+0	g|plays|a Cartographer|.
+1	g|draws|a Border Village|.
+1	g|gets +|1|Action.
+1	g|looks at|a Copper|,|2 Silvers|,|and|a Black Market|.
+1	g|discards|a Copper|and|2 Silvers|.
+1	g|topdecks|a Black Market|.
+0	g|plays|a Border Village|.
+1	g|draws|a Black Market|.
+1	g|gets +|2|Actions.
+0	g|plays|a Border Village|.
+1	g|draws|a Border Village|.
+1	g|gets +|2|Actions.
+0	g|plays|a Border Village|.
+1S	g|shuffles their deck.
+1	g|draws|a Maroon|.
+1	g|gets +|2|Actions.
+0	g|plays|a Maroon|.
+1	g|trashes|a Copper|.
+1	g|draws|a Silver|and|a Black Market|.
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|puts|a Hoard|,|a Camel Train|,|and|a Crucible|on the bottom of|the Black Market Deck|.
+0	g|plays|a Black Market|.
+1	g|gets +$|2|.
+1	g|plays|a Silver|. (+$|2|)
+1	g|gains|a Bridge Troll|.
+1	g|puts|a Poacher|and|an Acting Troupe|on the bottom of|the Black Market Deck|.
+0	g|plays|a Displace|.
+1	g|exiles|a Gold|.
+1	g|gains|a Province|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a Silver|.
+0	g|draws|2 Coppers|,|a Wharf|,|a Magpie|,|and|a Pirate|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+1	L|reveals|a Horn of Plenty|.
+1	L|topdecks|a Horn of Plenty|with|Piazza|.
+1	L|gains|a Horn of Plenty|. (|Pirate|)
+2	g|reacts with|a Pirate|.
+2	g|plays|a Pirate|.
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Council Room|.
+1	L|draws|4 cards|.
+1	L|gets +|1|Buy.
+1	g|draws|a Horn of Plenty|.
+0	L|plays|a Border Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Broker|.
+1	L|trashes|a Black Market|.
+1	L|draws|3 cards|.
+0	L|plays|a Broker|.
+1	L|trashes|a Pirate|.
+1	L|gets +$|5|.
+0	L|plays|4 Coppers|and|a Collection|. (+$|6|)
+2	L|gets +|2|Buys.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Pirate|.
+2	L|gets|2|VP from|Collection|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Pirate|.
+2	L|gets|2|VP from|Collection|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Pirate|.
+2	L|gets|2|VP from|Collection|.
+0	L|buys and gains|a Pirate|.
+1	L|gets|2|VP from|Collection|.
+0	L|buys and gains|a Black Market|.
+1	L|gets|2|VP from|Collection|.
+0	L|buys and gains|a Black Market|.
+1	L|gets|2|VP from|Collection|.
+0	L|uses|1|Coffers. (+$|1|)
+0	L|buys and gains|a Silver|.
+0	L|begins their Cleanup phase.
+1	L|returns|a Collection|to|the Collection pile|.
+0	L|draws|5 cards|.

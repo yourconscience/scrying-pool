@@ -1,0 +1,61 @@
+# row: 2026-10-09 11:32 | jadelston | 57.06 | W | 0 - 0
+# original players: gamrevinu / jadelston
+You Resigned
+1
+Lord Rattington
+Turns: 13
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+4
+Copper
+2
+Mountain Shrine
+5
+Coin of the Realm
+1
+Clerk
+2
+Tiara
+1
+Trail
+1
+Bandit
+4
+Barge
+1
+Crystal Ball
+1
+Figurine
+2
+Gold
+gamrevinu
+1
+Copper
+2
+Mountain Shrine
+4
+Coin of the Realm
+1
+Fishmonger
+1
+Clerk
+1
+Tiara
+1
+Bandit
+5
+Barge
+3
+Crystal Ball
+1
+Figurine
+1
+Frigate
+1
+Artisan
+4
+Gold
+Ready
+Leave Table

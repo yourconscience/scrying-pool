@@ -1,0 +1,65 @@
+# row: 2026-10-09 11:41 | dimbo | 51.39 | L | -8 - -2
+# original players: gamrevinu / dimbo
+You Resigned
+1
+Lord Rattington
+Turns: 13
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+8
+Curse
+
+
+3
+Copper
+8
+Curse
+1
+Hovel
+1
+Market Square
+1
+Silver
+1
+Messenger
+2
+Research
+1
+Counterfeit
+2
+Coven
+2
+Cursed Village
+5
+Skirmisher
+gamrevinu
+2
+Curse
+
+
+1
+Copper
+2
+Curse
+5
+Market Square
+1
+Ironworks
+2
+Research
+1
+Counterfeit
+1
+Coven
+1
+Cursed Village
+1
+Legionary
+1
+Skirmisher
+4
+Gold
+Ready
+Leave Table

@@ -1,0 +1,81 @@
+# row: 2026-10-09 12:20 | BlooderX | 49.04 | W | 44 - 30
+# original players: gamrevinu / BlooderX
+You Lose
+1
+Lord Rattington
+Turns: 14
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+1
+Estate
+
+
+
+
+6
+Copper
+1
+Estate
+5
+Black Market
+1
+Silver
+2
+Broker
+1
+Flagship
+1
+Collection
+2
+Council Room
+3
+Horn of Plenty
+6
+Pirate
+1
+Wheelwright
+4
+Border Village
+gamrevinu
+1
+Province
+
+
+
+
+4
+Copper
+4
+Black Market
+4
+Silver
+1
+Broker
+1
+Magpie
+1
+Maroon
+1
+Bridge Troll
+1
+Cartographer
+1
+Council Room
+1
+Displace
+1
+Horn of Plenty
+3
+Pirate
+1
+Wharf
+5
+Border Village
+1
+Gold
+1
+Province
+Ready
+Leave Table

@@ -1,0 +1,87 @@
+# row: 2026-10-09 14:39 | Nikhec | 45.86 | W | 32 - 23
+# original players: gamrevinu / Nikhec
+You Lose
+1
+Lord Rattington
+Turns: 14
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+5
+Province
+
+
+2
+Estate
+
+
+7
+Copper
+1
+Will-o'-Wisp
+2
+Estate
+1
+Silver
+6
+Ironmonger
+2
+Patron
+3
+Smithy
+1
+Guildmaster
+1
+Outpost
+1
+Sacred Grove
+1
+Gold
+3
+Rice
+5
+Province
+gamrevinu
+3
+Province
+
+
+1
+Duchy
+
+
+2
+Estate
+
+
+7
+Copper
+1
+Will-o'-Wisp
+2
+Estate
+3
+Silver
+4
+Ironmonger
+2
+Patron
+1
+Smithy
+1
+Duchy
+1
+Guildmaster
+1
+Outpost
+1
+Sacred Grove
+1
+Gold
+1
+Rice
+3
+Province
+Ready
+Leave Table

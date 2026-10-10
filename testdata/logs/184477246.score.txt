@@ -1,0 +1,103 @@
+# row: 2026-10-09 12:31 | KatsuReitarou | 55.55 | W | 33 - 29
+# original players: gamrevinu / KatsuReitarou
+You Lose
+1
+Lord Rattington
+Turns: 16
+2
+gamrevinu
+Turns: 16
+Lord Rattington
+4
+Province
+
+
+1
+Duchy
+
+
+2
+Estate
+
+
+
+
+4
+Curse
+
+
+7
+Copper
+4
+Curse
+1
+Necropolis
+1
+Overgrown Estate
+2
+Estate
+2
+Scheme
+2
+Ironmonger
+1
+Swamp Shacks
+1
+Coven
+1
+Duchy
+1
+Governor
+1
+Soothsayer
+3
+Gold
+4
+Province
+gamrevinu
+4
+Province
+
+
+2
+Duchy
+
+
+5
+Estate
+
+
+6
+Curse
+
+
+6
+Copper
+6
+Curse
+1
+Overgrown Estate
+5
+Estate
+2
+Scheme
+2
+Ironmonger
+2
+Duchy
+1
+Governor
+1
+Soothsayer
+8
+Gold
+1
+Sack Of Loot
+1
+Hammer
+2
+Orb
+4
+Province
+Ready
+Leave Table
