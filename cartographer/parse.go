@@ -28,6 +28,7 @@ type Event struct {
 	TurnOf   string // whose turn it is
 	Extra    string // for NEW_TURN: what gave an extra turn, e.g. "Voyage"
 	Template string // the client's template name, e.g. "BUY_AND_GAIN"
+	Cause    string // the card of the nearest line one level up, e.g. "Invest" for an exile it caused
 	Player   string // Argument0 when it is a player
 	Args     map[int]Arg
 }
@@ -116,6 +117,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 	}
 
 	turn, turnOf, started := 0, "", false
+	var stack []string // card at each nesting level, for Cause
 	for _, r := range rows {
 		text := strings.Join(r.pieces, " ")
 		if r.kind == "T" {
@@ -123,6 +125,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 				turn, _ = strconv.Atoi(m[1])
 				turnOf, started = rename(m[2]), true
 				g.Events = append(g.Events, Event{Line: r.n, Turn: turn, TurnOf: turnOf, Player: turnOf, Extra: m[3], Template: "NEW_TURN"})
+				stack = stack[:0]
 				continue
 			}
 		}
@@ -148,6 +151,20 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 			e.Args[n] = a
 		}
 		e.Player = e.Args[0].Player
+		if r.level > 0 && r.level <= len(stack) {
+			e.Cause = stack[r.level-1]
+		}
+		card := ""
+		if cs := e.Args[1].Cards; len(cs) > 0 && cs[0].Card != nil {
+			card = cs[0].Card.Name
+		}
+		if r.level < len(stack) {
+			stack = stack[:r.level]
+		}
+		for len(stack) < r.level {
+			stack = append(stack, "")
+		}
+		stack = append(stack, card)
 		g.Events = append(g.Events, e)
 	}
 	return g, nil

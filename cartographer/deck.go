@@ -19,6 +19,11 @@ var (
 		"EXCHANGE_RETURN": true, "RETURN": true, // "returns a Peasant" when exchanging a Traveller
 	}
 	toPile = map[string]bool{"RETURN_TO": true, "PUT_ON_BOTTOM_OF": true} // only when the target is a pile
+
+	// The log doesn't say where an exiled card came from. These cards exile from
+	// the Supply, which makes the card the player's (Exile counts as owned);
+	// everything else exiles a card the player already has.
+	supplyExilers = map[string]bool{"Camel Train": true, "Transport": true, "Invest": true, "Way of the Worm": true, "Coven": true}
 )
 
 // FinalDecks replays every change of ownership.
@@ -57,6 +62,8 @@ func (g *Game) FinalDecks() map[string]Deck {
 			add(e.Player, cards, -1)
 		case toPile[e.Template] && strings.HasSuffix(strings.ToLower(e.Args[2].Text), "pile"):
 			add(e.Player, cards, -1)
+		case e.Template == "EXILE" && supplyExilers[e.Cause]:
+			add(e.Player, cards, 1)
 		case e.Template == "PASS":
 			add(e.Player, cards, -1)
 			add(e.Args[2].Player, cards, 1)
