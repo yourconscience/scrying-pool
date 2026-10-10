@@ -1,7 +1,7 @@
 const $ = (id) => document.getElementById(id);
-// The hosted build sets DOMBOT_STATIC and runs the formatter as WebAssembly in the
-// browser; the local app (dombot web) talks to its own server, which can also ask DomBot.
-const STATIC = window.DOMBOT_STATIC === true;
+// The hosted build sets SCRY_STATIC and runs the formatter as WebAssembly in the
+// browser; the local app (scry web) talks to its own server, which can also ask DomBot.
+const STATIC = window.SCRY_STATIC === true;
 let markdown = "";
 let fileName = "match.md";
 
@@ -9,7 +9,7 @@ let wasmReady = null;
 function loadWasm() {
   wasmReady ??= (async () => {
     const go = new Go();
-    const bytes = await (await fetch("dombot.wasm")).arrayBuffer();
+    const bytes = await (await fetch("scry.wasm")).arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
     go.run(instance);
   })();
@@ -25,8 +25,8 @@ function fromWasm(json) {
 const backend = STATIC
   ? {
       status: async () => ({ discord: false, art: false }),
-      sample: async () => (await loadWasm(), fromWasm(dombotSample())),
-      format: async (req) => (await loadWasm(), fromWasm(dombotFormat(req.chat, req.dombot))),
+      sample: async () => (await loadWasm(), fromWasm(scrySample())),
+      format: async (req) => (await loadWasm(), fromWasm(scryFormat(req.chat, req.dombot))),
     }
   : {
       status: () => api("/api/status"),

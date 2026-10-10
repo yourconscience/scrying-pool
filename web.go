@@ -16,7 +16,7 @@ import (
 var webFiles embed.FS
 
 func serve(addr string, timeout time.Duration) error {
-	fmt.Printf("dombot web UI: http://%s\n", addr)
+	fmt.Printf("Scrying Pool web UI: http://%s\n", addr)
 	return http.ListenAndServe(addr, newHandler(timeout))
 }
 

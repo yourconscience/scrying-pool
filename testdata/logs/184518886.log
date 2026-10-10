@@ -1,0 +1,872 @@
+# scrying-pool log v1
+0	Game #184519122, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|2 Coppers|and|3 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|starts their turn.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Shaman|.
+0	g|draws|5 Coppers|.
+0T	Turn 1 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Shaman|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Hostelry|.
+1	g|discards and reveals|a Copper|.
+1	g|gains|a Horse|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Shaman|.
+0T	Turn 2 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys|Sinister Plot|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys|Gamble|.
+1	g|gets +|1|Buy.
+1	g|discards|a Copper|.
+1	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Shaman|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Horse|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|an Estate|. (|Shaman|)
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys|Gamble|.
+1	L|gets +|1|Buy.
+1	L|discards|a Copper|.
+1	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Shaman|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+1	g|gains|an Estate|. (|Shaman|)
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Hostelry|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Destrier|.
+0	g|draws|a Copper|,|2 Estates|,|and|2 Shamans|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+1S	L|shuffles their deck.
+1	L|draws|a card|. (|Sinister Plot|)
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|buys|Gamble|.
+1	L|gets +|1|Buy.
+1	L|discards|a Copper|.
+1	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Groom|.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Silver|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Silver|,|and|a Hostelry|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|an Estate|. (|Shaman|)
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Menagerie|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|gains|an Estate|. (|Shaman|)
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|buys and gains|a Hostelry|.
+1	g|discards and reveals|2 Coppers|.
+1	g|gains|2 Horses|.
+0	g|draws|2 Coppers|,|an Estate|,|and|2 Shamans|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|an Estate|. (|Shaman|)
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|an Estate|and|a Copper|.
+1	L|draws|3 cards|.
+0	L|plays|a Groom|.
+1	L|gains|an Innkeeper|.
+1	L|gains|a Horse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Destrier|.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys|Gamble|.
+1	g|gets +|1|Buy.
+1	g|discards|a Copper|.
+1	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Shaman|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Hostelry|,|a Destrier|,|and|a Horse|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Menagerie|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|gains|an Estate|. (|Shaman|)
+0	g|plays|a Destrier|.
+1	g|draws|a Silver|and|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Horse|.
+1	g|draws|an Estate|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Shaman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a Hostelry|.
+1	g|discards and reveals|3 Coppers|.
+1	g|gains|3 Horses|.
+0	g|draws|3 Coppers|,|a Hostelry|,|and|a Shaman|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+1	L|draws|3 cards|. (|Sinister Plot|)
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	L|discards|2 other cards|and|a Copper|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Groom|,|an Estate|,|2 Coppers|,|and|a Menagerie|.
+1	L|draws|a card|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Groom|,|2 Estates|,|and|2 Coppers|.
+1	L|draws|a card|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|a Groom|.
+1	L|gains|an Innkeeper|.
+1	L|gains|a Horse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Destrier|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+0	g|plays|a Hostelry|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys|Sinister Plot|.
+0	g|draws|a Copper|,|2 Hostelries|,|a Horse|,|and|a Shaman|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Horse|,|an Innkeeper|,|and|a Copper|.
+1	L|draws|3 cards|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	L|discards|2 other cards|and|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Horse|,|a Groom|,|a Shaman|,|an Innkeeper|,|and|an Estate|.
+1	L|draws|3 cards|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|a Groom|.
+1	L|gains|a Shaman|.
+1	L|gains|a Horse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Destrier|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Destrier|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Destrier|.
+1	g|draws|a Silver|and|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a Groom|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|2 Hostelries|,|a Horse|,|and|a Shaman|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Groom|,|a Destrier|,|a Copper|,|and|a Menagerie|.
+1	L|draws|3 cards|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|3 cards|.
+1	L|discards|2 other cards|and|a Copper|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Groom|,|a Horse|,|an Innkeeper|,|and|a Copper|.
+1	L|draws|3 cards|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Groom|.
+1	L|gains|a Fortress|.
+1	L|gains|a Horse|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Groom|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Hostelry|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Silver|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|a Groom|.
+1	g|gets +|2|Actions.
+0	g|plays|a Groom|.
+1	g|gains|a Hostelry|.
+2	g|discards and reveals|3 Coppers|.
+2	g|gains|3 Horses|.
+1	g|gains|a Horse|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys|Gamble|.
+1	g|gets +|1|Buy.
+1	g|discards|a Copper|.
+1	g|plays|a Copper|. (+$|1|)
+0	g|buys|Gamble|.
+1	g|gets +|1|Buy.
+1	g|discards|a Copper|.
+1	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Destrier|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Destrier|,|a Horse|,|and|2 Shamans|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|5 cards|.
+1	L|discards|5 other cards|and|an Innkeeper|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Shaman|,|a Copper|,|and|a Menagerie|.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Horse|,|a Shaman|,|an Innkeeper|,|a Fortress|,|and|a Copper|.
+1	L|draws|3 cards|.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Groom|.
+1	L|gains|a Hostelry|.
+2	L|discards and reveals|3 Coppers|.
+2	L|gains|3 Horses|.
+1	L|gains|a Horse|.
+0	L|plays|a Horse|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Groom|.
+1	L|gains|a Destrier|.
+1	L|gains|a Horse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+1	g|draws|a Silver|and|a Hostelry|. (|Sinister Plot|)
+0	g|plays|a Destrier|.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+0	g|plays|a Horse|.
+1	g|draws|2 Hostelries|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Groom|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Horse|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Destrier|and|a Shaman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Destrier|.
+1	g|draws|a Copper|and|a Hostelry|.
+1	g|gets +|1|Action.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1S	g|shuffles their deck.
+1	g|draws|a Groom|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Horse|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Groom|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a Hostelry|.
+1	g|discards and reveals|4 Coppers|.
+1	g|gains|4 Horses|.
+0S	g|shuffles their deck.
+0	g|draws|a Groom|,|2 Hostelries|,|a Destrier|,|and|a Horse|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+1	L|draws|3 cards|. (|Sinister Plot|)
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Hostelry|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Groom|.
+1	L|gains|a Hostelry|.
+2	L|discards and reveals|a Copper|and|a Gold|.
+2	L|gains|2 Horses|.
+1	L|gains|a Horse|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Horse|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Groom|,|2 Horses|,|a Shaman|,|an Innkeeper|,|a Copper|,|and|a Menagerie|.
+1	L|draws|a card|.
+0	L|plays|a Hostelry|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+0	L|plays|a Groom|.
+1	L|gains|a Groom|.
+1	L|gains|a Horse|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Horse|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Groom|.
+1	L|gains|a Destrier|.
+1	L|gains|a Horse|.
+0	L|plays|a Copper|and|a Gold|. (+$|4|)
+0	L|buys and gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Copper|. (|Shaman|)
+0	g|plays|a Hostelry|.
+1	g|draws|a Hostelry|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|a Horse|.
+1	g|gets +|2|Actions.
+0	g|plays|a Destrier|.
+1	g|draws|a Horse|and|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Hostelry|.
+1	g|draws|a Groom|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Hostelry|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Hostelry|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|a Silver|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Groom|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Destrier|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Destrier|.
+1	g|draws|a Horse|and|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Horse|.
+1	g|draws|a Groom|and|a Shaman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|2 Coppers|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Groom|.
+1	g|gains|a Hostelry|.
+2	g|discards and reveals|4 Coppers|.
+2	g|gains|4 Horses|.
+1	g|gains|a Horse|.
+0	g|plays|a Groom|.
+1	g|gains|an Estate|.
+1S	g|shuffles their deck.
+1	g|draws|a Horse|.
+1	g|gets +|1|Action.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Groom|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Groom|.
+1	g|gains|an Estate|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|a Shaman|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Silver|. (+$|2|)
+0	g|buys and gains|a Duchy|.
+0	g|draws|2 Coppers|,|a Hostelry|,|and|2 Horses|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Copper|. (|Shaman|)
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Shaman|,|an Innkeeper|,|a Destrier|,|and|a Hostelry|.
+1	L|draws|3 cards|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Hostelry|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|an Innkeeper|.
+1	L|gets +|1|Action.
+1	L|draws|a card|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Groom|.
+1	L|gains|a Hostelry|.
+2	L|discards and reveals|a Gold|.
+2	L|gains|a Horse|.
+1	L|gains|a Horse|.
+0	L|plays|a Menagerie|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Horse|,|a Groom|,|a Shaman|,|an Innkeeper|,|a Destrier|,|and|a Hostelry|.
+1	L|draws|3 cards|.
+0	L|plays|a Destrier|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Hostelry|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Destrier|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Groom|.
+1	L|gains|a Destrier|.
+1	L|gains|a Horse|.
+0	L|plays|a Groom|.
+1	L|gains|a Destrier|.
+1	L|gains|a Horse|.
+0	L|plays|a Shaman|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Copper|.
+0	L|plays|a Hostelry|.
+1S	L|shuffles their deck.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+1	g|gains|an Estate|. (|Shaman|)
+1	g|draws|a Horse|. (|Sinister Plot|)
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|an Estate|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Groom|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1S	g|shuffles their deck.
+1	g|draws|a Destrier|.
+1	g|gets +|2|Actions.
+0	g|plays|a Destrier|.
+1	g|draws|2 Hostelries|.
+1	g|gets +|1|Action.
+0	g|plays|a Hostelry|.
+1	g|draws|a Hostelry|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hostelry|.
+1	g|draws|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Groom|and|a Shaman|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Duchy|and|a Hostelry|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Hostelry|.
+1	g|draws|a Groom|.
+1	g|gets +|2|Actions.
+0	g|plays|a Horse|.
+1	g|draws|a Silver|and|a Groom|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Groom|.
+1	g|gains|an Estate|.
+1	g|draws|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Groom|.
+1	g|gains|a Groom|.
+1	g|gains|a Horse|.
+0	g|plays|a Groom|.
+1	g|gains|an Estate|.
+1	g|draws|a Hostelry|.
+1	g|gets +|1|Action.
+0	g|plays|a Hostelry|.
+1	g|draws|a Destrier|.
+1	g|gets +|2|Actions.
+0	g|plays|a Destrier|.
+1	g|draws|2 Grooms|.
+1	g|gets +|1|Action.
+0	g|plays|a Groom|.
+1	g|gains|an Estate|.
+1	g|draws|a Shaman|.
+1	g|gets +|1|Action.
+0	g|plays|a Groom|.
+1	g|gains|a Destrier|.
+1	g|gains|a Horse|.
+0	g|plays|a Groom|.
+1	g|gains|a Hostelry|.

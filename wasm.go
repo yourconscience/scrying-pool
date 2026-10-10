@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-	js.Global().Set("dombotFormat", js.FuncOf(func(_ js.Value, args []js.Value) any {
+	js.Global().Set("scryFormat", js.FuncOf(func(_ js.Value, args []js.Value) any {
 		res, err := process(args[0].String(), args[1].String(), false, 0)
 		if err != nil {
 			return toJSON(map[string]string{"error": err.Error()})
 		}
 		return toJSON(res)
 	}))
-	js.Global().Set("dombotSample", js.FuncOf(func(js.Value, []js.Value) any {
+	js.Global().Set("scrySample", js.FuncOf(func(js.Value, []js.Value) any {
 		return toJSON(map[string]string{"chat": sampleChat, "dombot": sampleDomBot})
 	}))
 	select {}
@@ -30,5 +30,5 @@ func toJSON(v any) string {
 }
 
 func askDomBot(string, time.Duration) ([]message, error) {
-	return nil, errors.New("asking DomBot needs the local app (dombot web)")
+	return nil, errors.New("asking DomBot needs the local app (scry web)")
 }

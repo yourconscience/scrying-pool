@@ -48,7 +48,7 @@ func TestLookupAndCosts(t *testing.T) {
 }
 
 func TestArtRouteOnlyServesCardArt(t *testing.T) {
-	t.Setenv("DOMBOT_ART_DIR", t.TempDir())
+	t.Setenv("SCRY_ART_DIR", t.TempDir())
 	h := newHandler(0)
 	for _, path := range []string{"/art/..%2F..%2Fetc%2Fpasswd", "/art/NotACardArt.jpg"} {
 		w := httptest.NewRecorder()

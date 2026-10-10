@@ -22,17 +22,25 @@ import (
 
 const wikiImages = "https://wiki.dominionstrategy.com/images/thumb/"
 const artWidth = "240px"
-const userAgent = "dombot-notes (+https://github.com/yourconscience/dombot)"
+const userAgent = "scrying-pool (+https://github.com/yourconscience/scrying-pool)"
 
 func artDir() string {
-	if d := os.Getenv("DOMBOT_ART_DIR"); d != "" {
-		return d
+	for _, env := range []string{"SCRY_ART_DIR", "DOMBOT_ART_DIR"} {
+		if d := os.Getenv(env); d != "" {
+			return d
+		}
 	}
 	base, err := os.UserCacheDir()
 	if err != nil {
 		base = os.TempDir()
 	}
-	return filepath.Join(base, "dombot", "art")
+	dir := filepath.Join(base, "scrying-pool", "art")
+	// move art downloaded under the old name instead of fetching it again
+	if old := filepath.Join(base, "dombot", "art"); !exists(dir) && exists(old) {
+		os.MkdirAll(filepath.Dir(dir), 0o755)
+		os.Rename(old, dir)
+	}
+	return dir
 }
 
 // knownArt maps art file names to cards, so only real card art is ever fetched.
@@ -137,4 +145,9 @@ func syncArt(kinds map[string]bool) error {
 		return fmt.Errorf("%d downloads failed; run again to retry", failed)
 	}
 	return nil
+}
+
+func exists(p string) bool {
+	_, err := os.Stat(p)
+	return err == nil
 }

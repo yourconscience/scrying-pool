@@ -1,27 +1,29 @@
 //go:build !js
 
-// dombot turns dominion.games match chat into readable Markdown notes, optionally
-// enriched with game results fetched from DomBot over your own Discord DM.
+// scry is the command for Scrying Pool: reviews of finished Dominion Online games,
+// plus readable match notes from spectator chat and DomBot results.
 package main
 
 import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 	"time"
 )
 
 const usageText = `usage:
-  dombot web [-addr 127.0.0.1:8765]                  local web UI
-  dombot format [-dombot FILE | -ask] CHAT_FILE      chat (+ DomBot results) -> Markdown
-  dombot match PLAYER1 PLAYER2                       ask DomBot "!match PLAYER1, PLAYER2"
-  dombot ask '<command>'                             send any DomBot command, e.g. '!game 184206813'
-  dombot cards sync [-kinds kingdom,landscape]       download card art from the Dominion Strategy wiki
+  scry web [-addr 127.0.0.1:8765]                  local web UI
+  scry format [-dombot FILE | -ask] CHAT_FILE      chat (+ DomBot results) -> Markdown
+  scry match PLAYER1 PLAYER2                       ask DomBot "!match PLAYER1, PLAYER2"
+  scry ask '<command>'                             send any DomBot command, e.g. '!game 184206813'
+  scry cards sync [-kinds kingdom,landscape]       download card art from the Dominion Strategy wiki
+  scry bookmarklet                                 print the "Copy log" bookmark for dominion.games
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
-Run "dombot <command> -h" for flags.
+Run "scry <command> -h" for flags.
 `
 
 func main() {
@@ -88,6 +90,15 @@ func main() {
 			}
 		}
 		err = emit(*out, renderMessages(msgs, time.Local))
+	case "bookmarklet":
+		src, _ := webFiles.ReadFile("web/bookmarklet.js")
+		var code []string
+		for _, l := range strings.Split(string(src), "\n") {
+			if t := strings.TrimSpace(l); t != "" && !strings.HasPrefix(t, "//") {
+				code = append(code, t)
+			}
+		}
+		fmt.Println("javascript:" + url.PathEscape(strings.Join(code, "\n")))
 	case "cards":
 		kinds := fs.String("kinds", "", "comma-separated card kinds (kingdom, landscape, basic, other); empty means all")
 		if len(args) == 0 || args[0] != "sync" {
@@ -124,6 +135,6 @@ func emit(path, text string) error {
 }
 
 func fail(err error) {
-	fmt.Fprintln(os.Stderr, "dombot:", err)
+	fmt.Fprintln(os.Stderr, "scry:", err)
 	os.Exit(1)
 }

@@ -23,16 +23,18 @@ type client struct {
 }
 
 // token reads the Discord user token from $DISCORD_TOKEN, then the macOS Keychain
-// (service "dombot", account "discord"). It is never printed or logged.
+// (service "scrying-pool", or the older "dombot"; account "discord"). It is never printed or logged.
 func token() (string, error) {
 	if t := strings.TrimSpace(os.Getenv("DISCORD_TOKEN")); t != "" {
 		return t, nil
 	}
-	b, err := exec.Command("security", "find-generic-password", "-s", "dombot", "-a", "discord", "-w").Output()
-	if err != nil || strings.TrimSpace(string(b)) == "" {
-		return "", errors.New("no Discord token: set DISCORD_TOKEN (or on macOS: security add-generic-password -s dombot -a discord -w)")
+	for _, service := range []string{"scrying-pool", "dombot"} {
+		b, err := exec.Command("security", "find-generic-password", "-s", service, "-a", "discord", "-w").Output()
+		if t := strings.TrimSpace(string(b)); err == nil && t != "" {
+			return t, nil
+		}
 	}
-	return strings.TrimSpace(string(b)), nil
+	return "", errors.New("no Discord token: set DISCORD_TOKEN (or on macOS: security add-generic-password -s scrying-pool -a discord -w)")
 }
 
 // askDomBot sends one command to DomBot over DM and returns its replies.

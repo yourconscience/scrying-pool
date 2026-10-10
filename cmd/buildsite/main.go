@@ -2,7 +2,7 @@
 //
 //	site/index.html     full page with CSS and JS inlined (any static host)
 //	site/artifact.html  the same page without the html/head/body wrapper
-//	site/dombot.wasm    the formatter, compiled to WebAssembly
+//	site/scry.wasm    the formatter, compiled to WebAssembly
 //
 // Run from the repo root: go run ./cmd/buildsite
 package main
@@ -26,7 +26,7 @@ func run() error {
 	if err := os.MkdirAll("site", 0o755); err != nil {
 		return err
 	}
-	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/dombot.wasm", ".")
+	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", ".")
 	build.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	build.Stdout, build.Stderr = os.Stdout, os.Stderr
 	if err := build.Run(); err != nil {
@@ -61,7 +61,7 @@ func run() error {
 	html := string(page)
 	html = replaceOnce(html, `<link rel="stylesheet" href="style.css">`, "<style>\n"+string(css)+"</style>")
 	html = replaceOnce(html, `<script src="app.js"></script>`,
-		"<script>window.DOMBOT_STATIC = true;</script>\n<script>\n"+string(wasmExec)+"</script>\n<script>\n"+string(app)+"</script>")
+		"<script>window.SCRY_STATIC = true;</script>\n<script>\n"+string(wasmExec)+"</script>\n<script>\n"+string(app)+"</script>")
 	if err := os.WriteFile("site/index.html", []byte(html), 0o644); err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func run() error {
 	if err := os.WriteFile("site/artifact.html", []byte(strings.Join(kept, "\n")), 0o644); err != nil {
 		return err
 	}
-	fmt.Println("built site/index.html, site/artifact.html, site/dombot.wasm")
+	fmt.Println("built site/index.html, site/artifact.html, site/scry.wasm")
 	return nil
 }
 
