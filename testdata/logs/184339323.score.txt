@@ -1,0 +1,85 @@
+# row: 
+# original players: winwinwinwin / gamrevinu
+You Resigned
+1
+Lord Rattington
+Turns: 14
+2
+gamrevinu
+Turns: 15
+Lord Rattington
+2
+Province
+
+
+1
+Duchy
+
+
+1
+Estate
+
+
+6
+Curse
+
+
+5
+Copper
+6
+Curse
+1
+Renown
+1
+Estate
+1
+Haven
+1
+Student
+1
+Mining Village
+2
+Charlatan
+1
+Duchy
+2
+Fisherman
+3
+Joust
+1
+Lich
+2
+Province
+gamrevinu
+4
+Province
+
+
+1
+Curse
+
+
+6
+Copper
+1
+Coronet
+1
+Curse
+1
+Haven
+1
+Herbalist
+1
+Student
+2
+Mining Village
+2
+Charlatan
+1
+Fisherman
+2
+Joust
+4
+Province
+Ready
+Leave Table

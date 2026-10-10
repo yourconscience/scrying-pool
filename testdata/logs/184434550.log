@@ -1,0 +1,716 @@
+# scrying-pool log v1
+0	Game #184529275, unrated.
+0	Timer:|Off|Card Pool: level 9
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Conspirator|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|an Old Map|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|an Old Map|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|an Estate|,|and|an Old Map|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Conspirator|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|an Old Map|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+1	g|draws|a Copper|.
+1	g|rotates|2 Old Maps|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Voyage|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Conspirator|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Sage|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Spices|.
+1	g|gets +|2|Coffers.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Conspirator|,|and|an Old Map|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Spices|.
+1	L|gets +|2|Coffers.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|an Old Map|.
+1	g|draws|a Spices|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+1	g|draws|a Voyage|.
+1	g|rotates|3 Voyages|.
+0	g|plays|a Voyage|.
+1	g|gets +|1|Action.
+1	g|takes an extra Voyage turn after this one.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|buys|Crop Rotation|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 5 - gamrevinu [Voyage]
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|an Estate|. (|Crop Rotation|)
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|uses|2|Coffers. (+$|2|)
+0	g|buys and gains|a Sunken Treasure|.
+0	g|draws|2 Coppers|,|an Estate|,|a Spices|,|and|an Old Map|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|an Old Map|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+1	L|draws|a card|.
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|uses|1|Coffers. (+$|1|)
+0	L|gets +$|1|.
+0	L|buys|Crop Rotation|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|an Estate|and|a Conspirator|. (|Crop Rotation|)
+0	g|plays|an Old Map|.
+1S	g|shuffles their deck.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+1	g|draws|a Voyage|.
+1	g|rotates|3 Sunken Treasures|.
+0	g|plays|a Voyage|.
+1	g|gets +|1|Action.
+1	g|takes an extra Voyage turn after this one.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Squire|.
+0	g|buys and gains|a Capital City|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Sunken Treasure|.
+0T	Turn 6 - gamrevinu [Voyage]
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|. (|Crop Rotation|)
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Distant Shore|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Squire|.
+0	g|draws|a Copper|,|2 Estates|,|a Conspirator|,|and|a Squire|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|. (|Crop Rotation|)
+1	L|draws|2 cards|. (|Crop Rotation|)
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|a Copper|,|an Estate|,|and|an Old Map|.
+1	L|puts|an Old Map|into their hand.
+1	L|discards|a Copper|and|an Estate|.
+0	L|plays|an Old Map|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+1	L|draws|a card|.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|plays|a Spices|. (+$|2|)
+1	L|gets +|1|Buy.
+0	L|buys and gains|a Distant Shore|.
+0	L|buys and gains|a Squire|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|an Estate|and|an Old Map|. (|Crop Rotation|)
+0	g|plays|an Old Map|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+1	g|draws|a Spices|.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gets +|2|Actions.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Capital City|.
+1	g|gets +|1|Action.
+0	g|plays|a Capital City|.
+1S	g|shuffles their deck.
+1	g|draws|an Estate|.
+1	g|gets +|2|Actions.
+0	g|discards|2 Estates|.
+0	g|gets +$|2|.
+0	g|loses|2|Coins.
+0	g|draws|2 Coppers|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Distant Shore|.
+0	g|buys and gains|a Sage|.
+0	g|draws|2 Coppers|,|an Estate|,|a Squire|,|and|a Sunken Treasure|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|plays|a Spices|. (+$|2|)
+1	L|gets +|1|Buy.
+0	L|buys and gains|a Pickaxe|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|a Copper|and|a Distant Shore|. (|Crop Rotation|)
+0	g|plays|a Distant Shore|.
+1S	g|shuffles their deck.
+1	g|draws|a Capital City|and|a Voyage|.
+1	g|gets +|1|Action.
+1	g|gains|an Estate|.
+0	g|plays|a Capital City|.
+1	g|draws|a Spices|.
+1	g|gets +|2|Actions.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gains|a Silver|.
+0	g|plays|a Voyage|.
+1	g|gets +|1|Action.
+1	g|takes an extra Voyage turn after this one.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Crew|.
+0	g|buys and gains|a Distant Shore|.
+0	g|draws|2 Coppers|,|2 Estates|,|and|an Old Map|.
+0T	Turn 8 - gamrevinu [Voyage]
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|a Copper|and|a Distant Shore|. (|Crop Rotation|)
+0	g|plays|a Distant Shore|.
+1	g|draws|an Estate|and|a Squire|.
+1	g|gets +|1|Action.
+1	g|gains|an Estate|.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gains|a Silver|.
+0	g|plays|a Copper|. (+$|1|)
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Silver|,|a Conspirator|,|and|a Sage|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|. (|Crop Rotation|)
+1	L|draws|2 cards|. (|Crop Rotation|)
+0	L|plays|an Old Map|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+1	L|draws|a card|.
+1	L|rotates|2 Old Maps|.
+0	L|plays|a Distant Shore|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|gains|an Estate|.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|2 Coppers|,|2 Estates|,|and|a Pickaxe|.
+1	L|puts|a Pickaxe|into their hand.
+1	L|discards|2 Coppers|and|2 Estates|.
+0	L|plays|a Squire|.
+1	L|gets +$|1|.
+1	L|gains|a Silver|.
+0	L|plays|a Pickaxe|.
+1	L|trashes|an Estate|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Crew|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Sage|.
+1	g|gets +|1|Action.
+1	g|reveals|a Spices|.
+1	g|puts|a Spices|into their hand.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|buys and gains|2 Conspirators|.
+0	g|draws|a Copper|,|a Silver|,|2 Estates|,|and|a Sunken Treasure|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|. (|Crop Rotation|)
+1	L|draws|2 cards|. (|Crop Rotation|)
+0	L|plays|a Distant Shore|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|gains|an Estate|.
+0	L|plays|a Crew|.
+1	L|draws|3 cards|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|plays|a Spices|. (+$|2|)
+1	L|gets +|1|Buy.
+0	L|buys and gains|a Voyage|.
+0	L|uses|1|Coffers. (+$|1|)
+0	L|gets +$|1|.
+0	L|buys and gains|a Conspirator|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|an Old Map|and|a Voyage|. (|Crop Rotation|)
+0	g|plays|an Old Map|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+1	g|draws|a Distant Shore|.
+0	g|plays|a Distant Shore|.
+1	g|draws|a Squire|and|a Crew|.
+1	g|gets +|1|Action.
+1	g|gains|an Estate|.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gets +|2|Actions.
+0	g|plays|a Crew|.
+1	g|draws|2 Coppers|and|an Estate|.
+0	g|plays|a Voyage|.
+1	g|gets +|1|Action.
+1	g|takes an extra Voyage turn after this one.
+0	g|plays|a Silver|and|4 Coppers|. (+$|6|)
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Capital City|.
+0	g|buys and gains|a Rice|.
+0	g|draws|a Copper|,|2 Estates|,|and|2 Distant Shores|.
+0T	Turn 10 - gamrevinu [Voyage]
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|a Squire|and|a Capital City|. (|Crop Rotation|)
+1	g|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	g|plays|a Distant Shore|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|a Crew|.
+1	g|gets +|1|Action.
+1	g|gains|an Estate|.
+0	g|plays|a Distant Shore|.
+1	g|draws|a Spices|and|a Sunken Treasure|.
+1	g|gets +|1|Action.
+1	g|gains|an Estate|.
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Capital City|.
+0	g|draws|a Copper|,|3 Estates|,|and|a Conspirator|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	L|plays|an Old Map|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|a Copper|.
+1	L|draws|a card|.
+1	L|rotates|2 Voyages|.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+1S	L|shuffles their deck.
+1	L|reveals|an Estate|and|a Voyage|.
+1	L|puts|a Voyage|into their hand.
+1	L|discards|a Copper|and|an Estate|.
+0	L|plays|a Voyage|.
+1	L|gets +|1|Action.
+1	L|takes an extra Voyage turn after this one.
+0	L|plays|a Crew|.
+1	L|draws|3 cards|.
+0	L|plays|a Pickaxe|.
+1	L|trashes|a Silver|.
+1	L|reveals|a Sextant|.
+1	L|gains|a card|.
+0	L|plays|a Sextant|.
+1	L|gets +|1|Buy.
+1	L|gets +$|3|.
+1	L|looks at|5 cards|.
+1	L|discards|4 other cards|and|a Squire|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Rice|.
+0	L|draws|5 cards|.
+0T	Turn 10 - Lord Rattington [Voyage]
+0	L|starts their turn.
+1	L|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	L|plays|a Distant Shore|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|gains|an Estate|.
+0	L|plays|a Crew|.
+1	L|draws|3 cards|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|a Copper|and|a Distant Shore|. (|Crop Rotation|)
+0	g|plays|a Distant Shore|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Pickaxe|.
+0	g|draws|2 Silvers|,|a Conspirator|,|a Sage|,|and|a Capital City|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	L|plays|a Squire|.
+1	L|gets +$|1|.
+1	L|gains|a Silver|.
+0	L|plays|a Pickaxe|.
+1	L|trashes|a Spices|.
+1	L|reveals|a Doubloons|.
+1	L|gains|a card|.
+2	L|gains|a Gold|.
+0	L|plays|a Sextant|.
+1	L|gets +|1|Buy.
+1	L|gets +$|3|.
+1	L|looks at|5 cards|.
+1	L|discards|2 other cards|and|an Estate|.
+1	L|topdecks|2 cards|.
+0	L|plays|a Doubloons|and|a Copper|. (+$|4|)
+0	L|buys and gains|a Sunken Treasure|.
+0	L|buys and gains|a Conspirator|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Sage|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|,|an Estate|,|and|a Rice|.
+1	g|puts|a Rice|into their hand.
+1	g|discards|a Copper|and|an Estate|.
+0	g|plays|a Capital City|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+1	g|discards|a Copper|and|a Silver|.
+1	g|gets +$|2|.
+1	g|loses|2|Coins.
+1	g|draws|a Squire|and|an Old Map|.
+0	g|plays|an Old Map|.
+1	g|draws|a Conspirator|.
+1	g|gets +|1|Action.
+1	g|discards|a Squire|.
+1S	g|shuffles their deck.
+1	g|draws|a Distant Shore|.
+1	g|rotates|2 Sunken Treasures|.
+0	g|plays|a Distant Shore|.
+1	g|draws|a Spices|and|a Crew|.
+1	g|gets +|1|Action.
+0	g|plays|a Crew|.
+1	g|draws|a Copper|,|an Estate|,|and|a Distant Shore|.
+0	g|plays|a Distant Shore|.
+1	g|draws|an Estate|and|a Conspirator|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|plays|a Rice|. (+$|5|)
+1	g|gets +|1|Buy.
+0	g|buys and gains|2 Provinces|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Sunken Treasure|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|. (|Crop Rotation|)
+1S	L|shuffles their deck.
+1	L|draws|2 cards|. (|Crop Rotation|)
+0	L|plays|an Old Map|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|discards|an Estate|.
+1	L|draws|a card|.
+0	L|plays|a Crew|.
+1	L|draws|3 cards|.
+0	L|plays|a Doubloons|and|3 Coppers|. (+$|6|)
+0	L|plays|a Sunken Treasure|.
+1	L|gains|a Capital City|.
+0	L|plays|a Rice|. (+$|5|)
+1	L|gets +|1|Buy.
+0	L|buys and gains|a Province|.
+0	L|buys and gains|an Old Map|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|a Capital City|and|a Pickaxe|. (|Crop Rotation|)
+1	g|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	g|plays|a Capital City|.
+1	g|draws|a Crew|.
+1	g|gets +|2|Actions.
+1	g|discards|2 Coppers|.
+1	g|gets +$|2|.
+1	g|loses|2|Coins.
+1	g|draws|an Estate|and|a Voyage|.
+0	g|plays|a Crew|.
+1	g|draws|a Copper|,|an Estate|,|and|a Squire|.
+0	g|plays|a Voyage|.
+1	g|gets +|1|Action.
+1	g|takes an extra Voyage turn after this one.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gets +|2|Buys.
+0	g|plays|a Pickaxe|.
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Conspirator|.
+0	g|buys and gains|a Conspirator|.
+0	g|draws|a Silver|,|an Estate|,|a Squire|,|a Capital City|,|and|a Distant Shore|.
+0T	Turn 13 - gamrevinu [Voyage]
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|an Estate|. (|Crop Rotation|)
+1	g|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gains|a Silver|.
+0	g|plays|a Silver|and|a Copper|. (+$|3|)
+0	g|buys and gains|a Conspirator|.
+0	g|draws|a Copper|,|a Conspirator|,|a Squire|,|a Capital City|,|and|a Crew|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+0	L|plays|a Sextant|.
+1	L|gets +|1|Buy.
+1	L|gets +$|3|.
+1	L|looks at|5 cards|.
+1	L|discards|2 other cards|and|an Estate|.
+1	L|topdecks|2 cards|.
+0	L|plays|a Pickaxe|.
+1	L|trashes|a Copper|.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Province|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Capital City|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+1	g|discards|2 Coppers|.
+1	g|gets +$|2|.
+1	g|loses|2|Coins.
+1	g|draws|2 Provinces|.
+0	g|plays|a Crew|.
+1	g|draws|2 Coppers|and|a Conspirator|.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Sage|.
+1	g|gets +|1|Action.
+0	g|plays|a Sage|.
+1	g|gets +|1|Action.
+1	g|reveals|an Estate|and|a Capital City|.
+1	g|puts|a Capital City|into their hand.
+1	g|discards|an Estate|.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Conspirator|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|a Capital City|.
+1	g|draws|an Estate|.
+1	g|gets +|2|Actions.
+1	g|discards|2 Provinces|.
+1	g|gets +$|2|.
+1	g|loses|2|Coins.
+1	g|draws|a Copper|and|a Spices|.
+0	g|plays|a Squire|.
+1	g|gets +$|1|.
+1	g|gets +|2|Buys.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Spices|. (+$|2|)
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Province|.
+0	g|buys and gains|a Conspirator|.
+0	g|draws|a Silver|,|a Conspirator|,|a Sunken Treasure|,|a Distant Shore|,|and|a Pickaxe|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Squire|.
+1	L|gets +$|1|.
+1	L|gets +|2|Actions.
+0	L|plays|a Voyage|.
+1	L|gets +|1|Action.
+1	L|takes an extra Voyage turn after this one.
+0	L|plays|a Sage|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|and|a Silver|.
+1	L|puts|a Silver|into their hand.
+1	L|discards|a Copper|.
+0	L|plays|a Distant Shore|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Crew|.
+1S	L|shuffles their deck.
+1	L|draws|3 cards|.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Conspirator|.
+1	L|gets +$|2|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|buys and gains|a Province|.
+0	L|draws|5 cards|.
+0T	Turn 14 - Lord Rattington [Voyage]
+0	L|starts their turn.
+1	L|discards|a Province|. (|Crop Rotation|)
+1	L|draws|2 cards|. (|Crop Rotation|)
+1	L|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	L|plays|a Sextant|.
+1	L|gets +|1|Buy.
+1	L|gets +$|3|.
+1	L|looks at|5 cards|.
+1	L|discards|a card|and|a Province|.
+1	L|topdecks|3 cards|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Duchy|.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|starts their turn.
+1	g|topdecks|a Crew|with|Crew|.
+1	Crew|will stop functioning after this turn.
+0	g|plays|a Distant Shore|.
+1	g|draws|an Estate|and|a Crew|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+0	g|plays|a Pickaxe|.
+1	g|trashes|a Crew|.
+1	g|reveals|an Insignia|.
+1	g|gains|an Insignia|.
+0	g|plays|an Insignia|and|a Silver|. (+$|5|)
+0	g|plays|a Sunken Treasure|.
+1	g|gains|a Capital City|.
+2	g|topdecks|a Capital City|with|Insignia|.
+0	g|buys and gains|a Province|.
+0	g|draws|a Copper|,|an Estate|,|a Capital City|,|a Distant Shore|,|and|a Rice|.
+0T	Turn 15 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Crew|.
+1	L|draws|3 cards|.
+0	L|plays|a Pickaxe|.
+1	L|trashes|an Old Map|.
+1	L|reveals|a Sword|.
+1	L|gains|a card|.
+0	L|plays|a Sword|.
+1	L|gets +|1|Buy.
+1	L|gets +$|3|.
+1	g|discards|a Copper|.
+0	L|plays|a Doubloons|and|a Gold|. (+$|6|)
+0	L|plays|a Rice|. (+$|5|)
+1	L|gets +|1|Buy.
+0	L|buys and gains|3 Duchies|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 16 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|. (|Crop Rotation|)
+1	g|draws|an Estate|and|a Conspirator|. (|Crop Rotation|)
+0	g|plays|a Distant Shore|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|an Old Map|.
+1	g|gets +|1|Action.
+0	g|plays|a Capital City|.
+1	g|draws|a Conspirator|.
+1	g|gets +|2|Actions.
+1	g|discards|a Copper|and|an Estate|.
+1	g|gets +$|2|.
+1	g|loses|2|Coins.
+1	g|draws|a Copper|and|a Province|.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|a Conspirator|.
+1	g|gets +|1|Action.
+0	g|plays|a Conspirator|.
+1	g|gets +$|2|.
+1	g|draws|an Estate|.
+1	g|gets +|1|Action.
+0	g|plays|an Old Map|.
+1	g|draws|a Distant Shore|.
+1	g|gets +|1|Action.
+1	g|discards|an Estate|.
+1	g|draws|a Province|.
+0	g|plays|a Distant Shore|.
+1	g|draws|a Silver|and|a Conspirator|.
+1	g|gets +|1|Action.
+0	g|plays|a Silver|and|a Copper|. (+$|3|)
+0	g|plays|a Rice|. (+$|4|)
+1	g|gets +|1|Buy.

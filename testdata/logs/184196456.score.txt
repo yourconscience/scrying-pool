@@ -1,0 +1,65 @@
+# row: 
+# original players: gamrevinu / thepilferer
+You Resigned
+1
+Lord Rattington
+Turns: 13
+2
+gamrevinu
+Turns: 14
+Lord Rattington
+1
+Province
+
+
+3
+Estate
+
+
+7
+Copper
+3
+Estate
+6
+Shop
+1
+Blessed Village
+2
+Smithy
+1
+Carnival
+4
+City
+4
+Spices
+1
+Storyteller
+2
+Gold
+1
+Province
+gamrevinu
+3
+Estate
+
+
+1
+Duchy
+
+
+7
+Copper
+3
+Estate
+2
+Carnival
+5
+City
+1
+Duchy
+6
+Spices
+2
+Storyteller
+Ready
+Leave Table

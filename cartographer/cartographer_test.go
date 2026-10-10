@@ -50,7 +50,7 @@ func TestLogsMatchScoreScreens(t *testing.T) {
 			if err != nil {
 				return // older logs have no score screen
 			}
-			wantTurns, wantDecks := ParseScoreScreen(string(sb))
+			wantTurns, wantDecks := ParseScoreScreen(string(sb), func(n string) bool { return c.Cards[n] != nil })
 			last := map[string]int{}
 			for _, e := range g.Events {
 				if e.Template == "NEW_TURN" {

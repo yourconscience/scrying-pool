@@ -42,7 +42,7 @@ func (c *Client) Check(log, score string) CheckResult {
 	}
 	r.Turns = map[string]int{}
 	for _, e := range g.Events {
-		if e.Template == "NEW_TURN" {
+		if e.Template == "NEW_TURN" && e.Extra != "Fleet" { // the score screen doesn't count Fleet's extra turns
 			r.Turns[e.Player] = e.Turn
 		}
 	}
@@ -59,7 +59,7 @@ func (c *Client) Check(log, score string) CheckResult {
 		r.Problems = append(r.Problems, "no score screen")
 		return r
 	}
-	wantTurns, wantDecks := ParseScoreScreen(score)
+	wantTurns, wantDecks := ParseScoreScreen(score, func(name string) bool { return c.Cards[name] != nil })
 	if !reflect.DeepEqual(r.Turns, wantTurns) && !(len(r.Turns) == 0 && len(wantTurns) == 0) {
 		r.Problems = append(r.Problems, fmt.Sprintf("last turns %v, score screen says %v", r.Turns, wantTurns))
 	}

@@ -1,0 +1,503 @@
+# scrying-pool log v1
+0	Game #184530030, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Young Witch|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|5 Coppers|. (+$|5|)
+0	L|buys and gains|a Hunting Party|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Hermit|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Young Witch|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Ducat|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Young Witch|using|Way of the Sheep|.
+1	g|gets +$|2|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Fortress|.
+0	g|draws|5 Coppers|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Hermit|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Hunting Party|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|an Estate|,|a Hunting Party|,|and|a Hermit|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|an Estate|,|a Ducat|,|and|3 Coppers|.
+1	L|reveals|a Copper|.
+1S	L|shuffles their deck.
+1	L|reveals|2 Coppers|and|a Hermit|.
+1	L|puts|a Hermit|into their hand.
+1	L|discards|3 Coppers|.
+0	L|plays|a Hermit|.
+1	L|looks at|2 other cards|and|a Copper|.
+1	L|trashes|an Estate|.
+1	L|gains|a Develop|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|uses|1|Coffers. (+$|1|)
+0	L|buys and gains|a Fortress|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Hunting Party|.
+1	g|draws|a Fortress|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|a Fortress|,|an Estate|,|2 Coppers|,|and|a Hermit|.
+1	g|reveals|a Copper|and|a Young Witch|.
+1	g|puts|a Young Witch|into their hand.
+1	g|discards|a Copper|.
+0	g|plays|a Fortress|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Young Witch|.
+1	g|draws|2 Coppers|.
+1	g|discards|a Copper|and|an Estate|.
+1	L|gains|a Curse|.
+0	g|plays|a Hermit|.
+1	g|looks at|2 Coppers|and|an Estate|.
+1	g|looks at|an Estate|and|2 Coppers|.
+1	g|trashes|an Estate|.
+1	g|gains|a Develop|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Fortress|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Ducat|.
+1	L|trashes|a Copper|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Hermit|.
+0	g|draws|2 Coppers|,|a Develop|,|and|2 Fortresses|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Hermit|.
+1	L|looks at|5 other cards|and|a Curse|.
+1	L|looks at|6 cards|.
+1	L|trashes|a Curse|.
+1	L|gains|a Hermit|.
+0	L|buys|Delay|.
+1	L|sets|a Develop|aside.
+0	L|ends their buy phase.
+1	L|returns|a Hermit|.
+1	L|receives|a Madman|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Fortress|.
+1	g|draws|a Hermit|.
+1	g|gets +|2|Actions.
+0	g|plays|a Develop|.
+1	g|trashes|a Fortress|.
+2	g|puts|a Fortress|into their hand.
+1	g|gains|a Hunting Party|.
+1	g|gains|a Hermit|.
+0	g|plays|a Fortress|.
+1	g|draws|a Hermit|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hermit|.
+1	g|looks at|3 Coppers|,|2 Estates|,|and|a Hermit|.
+1	g|looks at|2 Estates|,|3 Coppers|,|and|a Hermit|.
+1	g|trashes|an Estate|.
+1	g|gains|a Hermit|.
+0	g|plays|a Hermit|.
+1	g|looks at|3 Coppers|,|an Estate|,|and|2 Hermits|.
+1	g|looks at|an Estate|,|3 Coppers|,|and|2 Hermits|.
+1	g|trashes|an Estate|.
+1	g|gains|a Ducat|.
+2	g|trashes|a Copper|.
+0	g|ends their buy phase.
+1	g|returns|a Hermit|.
+1	g|receives|a Madman|.
+1	g|returns|a Hermit|.
+1	g|receives|a Madman|.
+0	g|draws|2 Coppers|,|2 Hunting Parties|,|and|a Young Witch|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Develop|. (|Delay|)
+2	L|trashes|a Fortress|.
+3	L|puts|a Fortress|into their hand.
+2	L|gains|a Hunting Party|.
+2	L|gains|a Develop|.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Hunting Party|,|a Ducat|,|2 Coppers|,|and|a Develop|.
+1	L|reveals|an Estate|.
+1	L|puts|an Estate|into their hand.
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|an Estate|,|a Ducat|,|3 Coppers|,|and|a Develop|.
+1	L|reveals|3 Coppers|,|a Madman|,|and|a Ducat|.
+1	L|puts|a Madman|into their hand.
+1	L|discards|3 Coppers|and|a Ducat|.
+0	L|plays|a Madman|.
+1	L|gets +|2|Actions.
+1	L|returns|a Madman|to|the Madman pile|.
+1S	L|shuffles their deck.
+1	L|draws|6 cards|.
+0	L|plays|a Hermit|.
+1	L|trashes|an Estate|.
+1	L|gains|a Hermit|.
+0	L|plays|a Develop|.
+1	L|trashes|an Estate|.
+1	L|gains|a Silver|.
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|plays|6 Coppers|. (+$|6|)
+0	L|buys and gains|a Fortress|.
+0	L|uses|2|Coffers. (+$|2|)
+0	L|buys and gains|a Young Witch|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|plays|a Hunting Party|.
+1S	g|shuffles their deck.
+1	g|draws|a Hermit|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|a Hunting Party|,|2 Coppers|,|a Hermit|,|and|a Young Witch|.
+1	g|reveals|a Copper|,|a Fortress|,|and|a Hermit|.
+1	g|puts|a Fortress|into their hand.
+1	g|discards|a Copper|and|a Hermit|.
+0	g|plays|a Fortress|.
+1	g|draws|a Madman|.
+1	g|gets +|2|Actions.
+0	g|plays|a Madman|.
+1	g|gets +|2|Actions.
+1	g|returns|a Madman|to|the Madman pile|.
+1	g|draws|2 Coppers|,|a Develop|,|a Fortress|,|and|a Madman|.
+0	g|plays|a Young Witch|.
+1	g|draws|a Copper|and|a Ducat|.
+1	g|discards|2 Coppers|.
+1	L|gains|a Curse|.
+0	g|plays|a Develop|.
+1	g|trashes|a Hermit|.
+1	g|gains|a Young Witch|.
+1	g|gains|a Ducat|.
+2	g|trashes|a Copper|.
+0	g|plays|a Madman|.
+1	g|gets +|2|Actions.
+1	g|returns|a Madman|to|the Madman pile|.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|,|a Young Witch|,|a Hermit|,|and|a Ducat|.
+0	g|plays|a Young Witch|.
+1	g|draws|a Copper|.
+1	g|discards|2 Coppers|.
+1	L|gains|a Curse|.
+0	g|plays|a Fortress|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hermit|.
+1	g|gains|a Develop|.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|2 Ducats|and|5 Coppers|.
+1S	g|shuffles their deck.
+1	g|reveals|a Develop|.
+1	g|puts|a Develop|into their hand.
+0	g|plays|a Develop|using|Way of the Sheep|.
+1	g|gets +$|2|.
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|plays|a Ducat|.
+1	g|gets +|1|Coffers.
+1	g|gets +|1|Buy.
+0	g|plays|a Ducat|.
+1	g|gets +|1|Coffers.
+1	g|gets +|1|Buy.
+0	g|buys and gains|a Fortress|.
+0	g|uses|1|Coffers. (+$|1|)
+0	g|gets +$|1|.
+0	g|buys and gains|a Fortress|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Hunting Party|,|a Young Witch|,|and|a Fortress|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Hermit|.
+1	L|looks at|a card|and|a Curse|.
+1	L|trashes|a Curse|.
+1	L|gains|a Snake Witch|.
+0	L|plays|a Develop|.
+1	L|trashes|a Copper|.
+0	L|ends their buy phase.
+1	L|returns|a Hermit|.
+1	L|receives|a Madman|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|plays|a Fortress|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Young Witch|.
+1	g|draws|a Develop|and|a Hermit|.
+1	g|discards|2 Coppers|.
+1	L|blocks with|a Ducat|.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|2 Coppers|,|a Hermit|,|and|a Develop|.
+1	g|reveals|a Ducat|.
+1	g|puts|a Ducat|into their hand.
+0	g|plays|a Hermit|.
+1	g|looks at|2 Coppers|.
+1	g|gains|a Ducat|.
+2	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|plays|a Ducat|.
+1	g|gets +|1|Coffers.
+1	g|gets +|1|Buy.
+0	g|buys|Delay|.
+1	g|sets|a Develop|aside.
+0	g|ends their buy phase.
+1	g|returns|a Hermit|.
+1	g|receives|a Madman|.
+0	g|draws|a Copper|,|a Hunting Party|,|a Young Witch|,|and|2 Fortresses|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Hunting Party|,|a Ducat|,|a Copper|,|a Hermit|,|and|a Develop|.
+1	L|reveals|2 Coppers|and|a Fortress|.
+1	L|puts|a Fortress|into their hand.
+1	L|discards|2 Coppers|.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|2 Ducats|,|a Copper|,|a Hermit|,|a Develop|,|and|a Young Witch|.
+1	L|reveals|a Copper|.
+1S	L|shuffles their deck.
+1	L|reveals|a Develop|and|a Snake Witch|.
+1	L|puts|a Snake Witch|into their hand.
+1	L|discards|a Copper|and|a Develop|.
+0	L|plays|a Young Witch|.
+1	L|draws|2 cards|.
+1	L|discards|a card|and|a Copper|.
+1	g|gains|a Curse|.
+0	L|plays|a Snake Witch|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+0	L|plays|a Hermit|.
+1	L|looks at|3 other cards|and|a Copper|.
+1	L|gains|a Hermit|.
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|buys|Delay|.
+1	L|sets|a Develop|aside.
+0	L|buys|Delay|.
+1	L|sets|a Madman|aside.
+0	L|ends their buy phase.
+1	L|returns|a Hermit|.
+1	L|receives|a Madman|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Develop|. (|Delay|)
+2	g|trashes|a Fortress|.
+3	g|puts|a Fortress|into their hand.
+2	g|gains|a Hunting Party|.
+2	g|gains|a Develop|.
+0	g|plays|a Fortress|.
+1	g|draws|a Develop|.
+1	g|gets +|2|Actions.
+0	g|plays|a Develop|.
+1	g|trashes|a Fortress|.
+2	g|puts|a Fortress|into their hand.
+1	g|gains|a Hunting Party|.
+1	g|gains|a Hermit|.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Hermit|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|a Fortress|,|a Copper|,|a Hermit|,|and|a Young Witch|.
+1	g|reveals|a Hunting Party|.
+1	g|puts|a Hunting Party|into their hand.
+0	g|plays|a Fortress|.
+1	g|draws|a Hunting Party|.
+1	g|gets +|2|Actions.
+0	g|plays|a Hermit|.
+1	g|looks at|a Curse|,|3 Coppers|,|a Hunting Party|,|a Young Witch|,|a Fortress|,|a Madman|,|and|2 Ducats|.
+1	g|trashes|a Curse|.
+1	g|gains|a Ducat|.
+2	g|trashes|a Copper|.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Develop|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|a Hunting Party|,|a Develop|,|and|a Young Witch|.
+1	g|reveals|a Fortress|.
+1	g|puts|a Fortress|into their hand.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Ducat|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|a Fortress|,|a Ducat|,|a Develop|,|and|a Young Witch|.
+1S	g|shuffles their deck.
+1	g|reveals|a Copper|.
+1	g|puts|a Copper|into their hand.
+0	g|plays|a Fortress|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Young Witch|.
+1	g|draws|a Hunting Party|and|a Ducat|.
+1	g|discards|2 Coppers|.
+1	L|gains|a Curse|.
+0	g|plays|a Hunting Party|.
+1	g|draws|a Young Witch|.
+1	g|gets +|1|Action.
+1	g|reveals their hand:|2 Ducats|,|a Develop|,|and|a Young Witch|.
+1	g|reveals|a Copper|and|2 Ducats|.
+1	g|puts|a Copper|into their hand.
+1	g|discards|2 Ducats|.
+0	g|plays|a Young Witch|.
+1	g|draws|a Fortress|and|a Madman|.
+1	g|discards|a Copper|and|a Fortress|.
+1	L|gains|a Curse|.
+0	g|plays|a Ducat|.
+1	g|gets +|1|Coffers.
+1	g|gets +|1|Buy.
+0	g|plays|a Ducat|.
+1	g|gets +|1|Coffers.
+1	g|gets +|1|Buy.
+0	g|buys|Delay|.
+1	g|sets|a Madman|aside.
+0	g|buys|Delay|.
+1	g|sets|a Develop|aside.
+0	g|ends their buy phase.
+1	g|returns|a Hermit|.
+1	g|receives|a Madman|.
+0S	g|shuffles their deck.
+0	g|draws|a Young Witch|,|2 Fortresses|,|a Madman|,|and|a Ducat|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|plays|a Develop|. (|Delay|)
+2	L|trashes|a Fortress|.
+3	L|puts|a Fortress|into their hand.
+2	L|gains|a Carnival|.
+2	L|gains|a Hermit|.
+1	L|plays|a Madman|. (|Delay|)
+2	L|gets +|2|Actions.
+2	L|returns|a Madman|to|the Madman pile|.
+2	L|draws|5 cards|.
+0	L|plays|a Hermit|.
+1	L|looks at|a card|and|a Curse|.
+1	L|trashes|a Curse|.
+1	L|gains|a Ducat|.
+2	L|trashes|a Copper|.
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|2 Fortresses|,|a Silver|,|a Hunting Party|,|a Copper|,|a Curse|,|a Carnival|,|and|a Develop|.
+1	L|reveals|a Snake Witch|.
+1	L|puts|a Snake Witch|into their hand.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Develop|.
+1	L|trashes|a Fortress|.
+2	L|puts|a Fortress|into their hand.
+1	L|gains|a Hermit|.
+1	L|gains|a Library|.
+0	L|plays|a Snake Witch|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Fortress|,|a Silver|,|a Hunting Party|,|a Ducat|,|a Copper|,|a Curse|,|a Carnival|,|and|a Library|.
+1	L|returns|a Snake Witch|to|the Snake Witch pile|.
+1	g|gains|a Curse|.
+0	L|plays|a Fortress|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|plays|a Hermit|.
+1	L|looks at|a card|and|a Curse|.
+1	L|trashes|a Curse|.
+1	L|gains|a Hermit|.
+0	L|plays|a Hunting Party|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals their hand:|a Silver|,|a Ducat|,|2 Coppers|,|a Carnival|,|and|a Library|.
+1	L|reveals|a Madman|.
+1	L|puts|a Madman|into their hand.
+0	L|plays|a Carnival|.
+1	L|reveals|a Copper|,|a Young Witch|,|a Hermit|,|and|a Ducat|.
+1	L|puts|a Copper|,|a Young Witch|,|a Hermit|,|and|a Ducat|into their hand.
+0	L|plays|a Young Witch|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|discards|a card|and|a Madman|.
+1	g|blocks with|a Ducat|.
+0	L|plays|a Silver|and|4 Coppers|. (+$|6|)
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|plays|a Ducat|.
+1	L|gets +|1|Coffers.
+1	L|gets +|1|Buy.
+0	L|buys|Delay|.
+1	L|sets|a Hermit|aside.
+0	L|buys|Delay|.
+1	L|sets|a Hermit|aside.
+0	L|ends their buy phase.
+1	L|returns|a Hermit|.
+1	L|receives|a Madman|.
+1	L|returns|a Hermit|.
+1	L|receives|a Madman|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|plays|a Madman|. (|Delay|)
+2	g|gets +|2|Actions.
+2	g|returns|a Madman|to|the Madman pile|.
+2	g|draws|3 Coppers|,|a Hunting Party|,|and|a Ducat|.
+1	g|plays|a Develop|. (|Delay|)
+2	g|trashes|a Fortress|.
+3	g|puts|a Fortress|into their hand.
+2	g|gains|a Develop|.
+2	g|gains|a Hunting Party|.
+0	g|plays|a Young Witch|.
+1	g|draws|a Hunting Party|and|a Develop|.
+1	g|discards|2 Coppers|.
+1	L|blocks with|a Ducat|.
+0	g|plays|a Madman|.
+1	g|gets +|2|Actions.
+1	g|returns|a Madman|to|the Madman pile|.
+1	g|draws|2 Hunting Parties|,|a Young Witch|,|2 Develops|,|2 Fortresses|,|and|a Ducat|.

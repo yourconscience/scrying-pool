@@ -1,0 +1,101 @@
+# row: 
+# original players: gamrevinu / RachelXXX
+You Resigned
+1
+Lord Rattington
+Turns: 18
+2
+gamrevinu
+Turns: 19
+Lord Rattington
+1
+Province
+
+
+1
+Estate
+
+
+
+
+1
+Curse
+
+
+5
+Copper
+1
+Curse
+1
+Estate
+2
+Fishing Village
+3
+Cavalry
+3
+Clerk
+2
+Patron
+3
+Cauldron
+1
+Livery
+2
+Pickaxe
+2
+Vault
+2
+Rice
+1
+Shield
+1
+Province
+gamrevinu
+2
+Province
+
+
+1
+Estate
+
+
+
+
+2
+Curse
+
+
+7
+Copper
+2
+Curse
+1
+Estate
+7
+Fishing Village
+4
+Horse
+4
+Cavalry
+1
+Clerk
+1
+Patron
+2
+Livery
+2
+Pickaxe
+9
+Spices
+1
+Endless Chalice
+1
+Jewels
+1
+Shield
+1
+Sword
+2
+Province
+Ready
+Leave Table

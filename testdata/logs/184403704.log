@@ -1,0 +1,131 @@
+# scrying-pool log v1
+0	Game #184529654, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|Peaceful Cult|)
+0	L|gets +|1|Favor. (|Peaceful Cult|)
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|begins their buy phase.
+1	g|spends|1|Favor.
+1	g|trashes|an Estate|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Stockpile|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|begins their buy phase.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Blockade|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|begins their buy phase.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Blockade|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Stockpile|,|and|a Blockade|.
+0T	Turn 2 - Lord Rattington
+0	L|begins their buy phase.
+1	L|spends|1|Favor.
+1	L|trashes|an Estate|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Stockpile|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Blockade|.
+1	g|gains|an Inventor|setting it aside.
+0	g|begins their buy phase.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|plays|a Stockpile|.
+1	g|gets +|1|Buy.
+1	g|exiles|a Stockpile|.
+0	g|buys and gains|a Stockpile|.
+1	g|discards|a Stockpile|from Exile.
+0	g|buys and gains|a Gear|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Blockade|.
+1	L|gains|a Stockpile|setting it aside.
+0	L|begins their buy phase.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Silver|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+1	g|puts|an Inventor|in hand (|Blockade|).
+0	g|plays|an Inventor|.
+1	g|gains|a Landing Party|.
+0	g|begins their buy phase.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|an Alley|.
+0	g|puts|an Alley|on the bottom of their deck.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Stockpiles|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+1	L|puts|a Stockpile|in hand (|Blockade|).
+0	L|begins their buy phase.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|plays|a Stockpile|.
+1	L|gets +|1|Buy.
+1	L|exiles|a Stockpile|.
+0	L|buys|an Inheritance|.
+1	L|inherits|an Alley|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|an Alley|.
+1	g|draws|a Blockade|.
+1	g|gets +|1|Action.
+1	g|discards|a Copper|.
+0	g|plays|a Blockade|.
+1	g|gains|a Landing Party|setting it aside.
+0	g|begins their buy phase.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|plays|a Stockpile|.
+1	g|gets +|1|Buy.
+1	g|exiles|a Stockpile|.
+0	g|plays|a Stockpile|.
+1	g|gets +|1|Buy.
+1	g|exiles|a Stockpile|.
+0	g|buys|an Inheritance|.
+1	g|inherits|an Inventor|.
+0	g|draws|2 Coppers|,|a Gear|,|an Inventor|,|and|a Landing Party|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Blockade|.
+1	L|gains|an Inventor|setting it aside.
+0	L|begins their buy phase.
+0	L|plays|a Silver|and|2 Coppers|. (+$|4|)
+0	L|plays|a Stockpile|.
+1	L|gets +|1|Buy.
+1	L|exiles|a Stockpile|.
+0	L|buys and gains|a Capital City|.
+0	L|buys and gains|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|puts|a Landing Party|in hand (|Blockade|).
+0	g|plays|a Landing Party|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|an Estate|.
+1	g|plays|an Inventor|.
+2	g|gains|a Stockpile|.
+3	g|discards|2 Stockpiles|from Exile.
+0	g|plays|a Landing Party|.
+1	g|draws|a Copper|and|an Estate|.
+1	g|gets +|2|Actions.
+0	g|plays|an Inventor|.
+1	g|gains|a Capital City|.
+0	g|plays|an Estate|.
+1	g|plays|an Inventor|.
+2	g|gains|a Capital City|.
+0	g|begins their buy phase.
+0	g|plays|4 Coppers|. (+$|4|)

@@ -1,0 +1,407 @@
+# scrying-pool log v1
+0	Game #184530066, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|Order of Astrologers|)
+0	L|gets +|1|Favor. (|Order of Astrologers|)
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys|Sinister Plot|.
+0	g|draws|3 Coppers|and|2 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Fisherman|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Student|.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Student|.
+1	L|spends|1|Favor.
+1	L|topdecks|a card|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Fisherman|.
+0	g|draws|3 Coppers|,|an Estate|,|and|a Student|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|trashes|an Estate|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Fisherman|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|rotates|2 Students|.
+1	g|trashes|an Estate|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Herbalist|.
+1	g|spends|1|Favor.
+1	g|topdecks|a Herbalist|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Herbalist|.
+0T	Turn 4 - Lord Rattington
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Charlatan|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+1	g|draws|2 Coppers|and|a Student|. (|Sinister Plot|)
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|rotates|4 Conjurers|.
+1	g|trashes|an Estate|.
+0	g|plays|a Herbalist|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Charlatan|.
+0	g|begins their Cleanup phase.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|a Fisherman|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Mining Village|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Fisherman|.
+1	g|draws|a Student|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Copper|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Mining Village|.
+0	g|draws|2 Coppers|,|a Herbalist|,|a Charlatan|,|and|a Student|.
+0T	Turn 6 - Lord Rattington
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|rotates|4 Sorcerers|.
+1	L|trashes|an Estate|.
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+1	g|gains|a Curse|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|buys and gains|a Lich|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Charlatan|.
+1	g|gets +$|3|.
+1	L|gains|a Curse|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Joust|.
+1	g|spends|1|Favor.
+1	g|topdecks|a Charlatan|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|an Estate|,|a Charlatan|,|and|a Student|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|rotates|3 Liches|.
+1	L|trashes|a Copper|.
+1	L|gets +|1|Favor. (|Student|)
+1	L|topdecks|a Student|.
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+1	g|gains|a Curse|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Joust|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|rotates|2 Students|.
+1	g|trashes|an Estate|.
+0	g|plays|a Charlatan|.
+1	g|gets +$|3|.
+1	L|gains|a Curse|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Charlatan|.
+0	g|draws|a Copper|,|a Mining Village|,|a Herbalist|,|a Fisherman|,|and|a Joust|.
+0T	Turn 8 - Lord Rattington
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Mining Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+1	L|trashes|a Mining Village|.
+1	L|gets +$|2|.
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|trashes|a Lich|.
+2	L|discards|a Lich|.
+2	L|gains|a Mining Village|.
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Charlatan|.
+1	L|spends|1|Favor.
+1	L|topdecks|a card|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|draws|a Curse|and|2 Coppers|. (|Sinister Plot|)
+0	g|plays|a Fisherman|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Joust|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Mining Village|.
+1	g|draws|a Student|.
+1	g|gets +|2|Actions.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|rotates|4 Conjurers|.
+1	g|trashes|a Curse|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Herbalist|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Province|.
+0	g|begins their Cleanup phase.
+0	g|draws|a Curse|,|a Copper|,|2 Charlatans|,|and|a Student|.
+0T	Turn 9 - Lord Rattington
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+1	g|gains|a Curse|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Joust|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|rotates|4 Sorcerers|.
+1	g|trashes|a Curse|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|a Charlatan|.
+1	g|gets +$|3|.
+1	L|gains|a Curse|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Mining Village|.
+1	g|spends|1|Favor.
+1	g|topdecks|a Charlatan|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Charlatan|,|and|a Student|.
+0T	Turn 10 - Lord Rattington
+0	L|plays|a Joust|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Mining Village|.
+1	L|draws|a card|.
+1	L|gets +|2|Actions.
+0	L|trashes|a Mining Village|.
+0	L|gets +$|2|.
+0	L|plays|2 Coppers|and|a Curse|. (+$|3|)
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Charlatan|.
+1	g|gets +$|3|.
+1	L|gains|a Curse|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Joust|.
+0	g|draws|2 Coppers|,|a Province|,|a Charlatan|,|and|a Joust|.
+0T	Turn 11 - Lord Rattington
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|rotates|3 Liches|.
+1	L|trashes|a Copper|.
+1	L|gets +|1|Favor. (|Student|)
+1	L|topdecks|a Student|.
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+1	g|gains|a Curse|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys|Sinister Plot|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Joust|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|sets|a Province|aside.
+1	g|gains|a Coronet|.
+0	g|plays|a Coronet|.
+1	g|plays|a Charlatan|.
+2	g|gets +$|3|.
+2	L|gains|a Curse|.
+1	g|plays|a Charlatan|again.
+2	g|gets +$|3|.
+2	L|gains|a Curse|.
+1	g|plays|a Copper|. (+$|1|)
+1	g|plays|a Copper|again. (+$|1|)
+0	g|buys and gains|a Province|.
+0	g|begins their Cleanup phase.
+1	g|discards|a Province|.
+0	g|draws|a Copper|,|2 Mining Villages|,|a Herbalist|,|and|a Fisherman|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Student|.
+1	L|gets +|1|Action.
+1	L|rotates|2 Students|.
+1	L|trashes|a Lich|.
+2	L|discards|a Lich|.
+2	L|gains|a Mining Village|.
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+0	L|plays|a Curse|. (+$|1|)
+0	L|buys and gains|a Joust|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+2	g|spends|1|Favor.
+2	g|topdecks|a Joust|.
+1S	g|shuffles their deck.
+1	g|draws|a Curse|,|a Copper|,|and|a Joust|. (|Sinister Plot|)
+0	g|plays|a Fisherman|.
+1	g|draws|a Joust|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Mining Village|.
+1	g|draws|a Charlatan|.
+1	g|gets +|2|Actions.
+0	g|plays|a Mining Village|.
+1	g|draws|a Copper|.
+1	g|gets +|2|Actions.
+0	g|plays|a Joust|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Joust|.
+1	g|draws|a Coronet|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Coronet|.
+1	g|plays|a Charlatan|.
+2	g|gets +$|3|.
+1	g|plays|a Charlatan|again.
+2	g|gets +$|3|.
+1	g|plays|a Copper|. (+$|1|)
+1	g|plays|a Copper|again. (+$|1|)
+0	g|plays|a Herbalist|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|3 Coppers|and|a Curse|. (+$|4|)
+0	g|buys and gains|2 Provinces|.
+0	g|begins their Cleanup phase.
+0	g|draws|a Curse|,|2 Coppers|,|a Province|,|and|a Student|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+1	L|draws|a card|. (|Sinister Plot|)
+0	L|plays|a Fisherman|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Joust|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|sets|a Province|aside.
+1	L|gains|a Renown|.
+0	L|plays|a Renown|.
+1	L|gets +|1|Buy.
+0	L|plays|3 Coppers|and|2 Curses|. (+$|5|)
+0	L|buys and gains|a Province|.
+0	L|buys and gains|a Haven|.
+0	L|begins their Cleanup phase.
+1	L|discards|a Province|.
+1	L|spends|1|Favor.
+1	L|topdecks|a card|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Student|.
+1	g|gets +|1|Action.
+1	g|trashes|a Curse|.
+1	g|gets +|1|Favor. (|Student|)
+1	g|topdecks|a Student|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Haven|.
+1	g|spends|1|Favor.
+1	g|topdecks|a Joust|.
+0S	g|shuffles their deck.
+0	g|draws|a Province|,|a Fisherman|,|a Charlatan|,|a Student|,|and|a Joust|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Joust|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Joust|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+0	L|plays|a Charlatan|.
+1	L|gets +$|3|.
+0	L|plays|a Copper|and|a Curse|. (+$|2|)
+0	L|buys and gains|a Duchy|.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|starts their turn.

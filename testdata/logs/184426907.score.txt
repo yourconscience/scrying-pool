@@ -1,0 +1,108 @@
+# row: 
+# original players: gamrevinu / GarlicRamen
+You Resigned
+1
+Lord Rattington
+Turns: 12
+2
+gamrevinu
+Turns: 13
+Lord Rattington
+1
+Tower
+
+
+0
+2
+Curse
+Curse
+1
+Estate
+
+
+2
+Curse
+
+
+1
+Wolf Den
+
+
+2
+1
+Estate
+Victory
+5
+1
+Kitsune
++1
+Choose two different options:
++
+2
+;
++2 Actions
+; each other
+player gains a Curse; gain
+a Silver.
+Action - Attack - Omen
+6
+Copper
+2
+Curse
+1
+Estate
+2
+Silver
+3
+Herald
+2
+Imperial Envoy
+2
+Junk Dealer
+1
+Kitsune
+2
+Animal Fair
+gamrevinu
+1
+Tower
+
+
+0
+3
+Curse
+Curse
+3
+Curse
+
+
+1
+Wolf Den
+
+
+5
+1
+Imperial Envoy
++5 Cards
++1 Buy
++
+2
+Action
+6
+Copper
+3
+Curse
+2
+Cargo Ship
+3
+Herald
+1
+Imperial Envoy
+2
+Junk Dealer
+2
+Kitsune
+2
+Animal Fair
+Ready
+Leave Table

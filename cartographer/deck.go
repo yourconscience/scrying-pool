@@ -13,6 +13,7 @@ var (
 		"STARTS_WITH": true, "GAIN": true, "GAIN_WITH": true, "BUY_AND_GAIN": true,
 		"GAIN_ON_DRAWPILE": true, "GAIN_FROM_TRASH": true, "GAIN_SETTING_ASIDE": true, "GAIN_TO_HAND": true,
 		"EXCHANGE_RECEIVE": true, "RECEIVES": true, // Travellers exchange; Boons are filtered by InDeck
+		"INHERITS": true, // Inheritance sets a Supply card aside for the player; the score screen counts it
 	}
 	losses = map[string]bool{
 		"TRASH": true, "TRASH_WITH": true,
@@ -23,7 +24,14 @@ var (
 	// The log doesn't say where an exiled card came from. These cards exile from
 	// the Supply, which makes the card the player's (Exile counts as owned);
 	// everything else exiles a card the player already has.
-	supplyExilers = map[string]bool{"Camel Train": true, "Transport": true, "Invest": true, "Way of the Worm": true, "Coven": true}
+	supplyExilers = map[string]bool{"Camel Train": true, "Transport": true, "Invest": true, "Coven": true, "Enclave": true, "Way of the Worm": true, "Way of the Camel": true}
+
+	// Likewise these trash a card from the Supply, not one the player owns.
+	supplyTrashers = map[string]bool{"Gladiator": true, "Lurker": true, "Salt the Earth": true}
+
+	// A trashed card that moves itself back to its owner (Fortress into the hand,
+	// Lich into the discard pile) was never lost.
+	backFromTrash = map[string]bool{"PUT_IN_HAND": true, "PUT_IN_HAND_FROM": true, "DISCARD": true, "PUT_IN_DISCARD": true, "TOPDECK": true}
 )
 
 // Change is one change of ownership: Sign is +1 for cards gained, -1 for cards lost.
@@ -39,10 +47,12 @@ func (e Event) Changes() []Change {
 	switch {
 	case gains[e.Template]:
 		return []Change{{e.Player, cards, 1}}
-	case losses[e.Template]:
+	case losses[e.Template] && !(strings.HasPrefix(e.Template, "TRASH") && supplyTrashers[e.Cause]):
 		return []Change{{e.Player, cards, -1}}
-	case toPile[e.Template] && strings.HasSuffix(strings.ToLower(e.Args[2].Text), "pile"):
+	case toPile[e.Template] && toSupplyPile(e.Args[2].Text):
 		return []Change{{e.Player, cards, -1}}
+	case backFromTrash[e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == e.Cause:
+		return []Change{{e.Player, cards, 1}}
 	case e.Template == "EXILE" && supplyExilers[e.Cause]:
 		return []Change{{e.Player, cards, 1}}
 	case e.Template == "PASS":
@@ -53,6 +63,13 @@ func (e Event) Changes() []Change {
 
 // Decks holds every player's deck by player name.
 type Decks map[string]Deck
+
+// toSupplyPile is true for "the Horse pile" and "the Box" (out of the game),
+// false for the player's own "Draw Pile".
+func toSupplyPile(target string) bool {
+	t := strings.ToLower(strings.TrimSpace(target))
+	return t == "the box" || strings.HasPrefix(t, "the ") && strings.HasSuffix(t, " pile")
+}
 
 // Apply adds an event's changes to the decks.
 func (decks Decks) Apply(e Event) {

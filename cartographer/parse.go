@@ -29,6 +29,7 @@ type Event struct {
 	Extra    string // for NEW_TURN: what gave an extra turn, e.g. "Voyage"
 	Template string // the client's template name, e.g. "BUY_AND_GAIN"
 	Cause    string // the card of the nearest line one level up, e.g. "Invest" for an exile it caused
+	CauseOf  string // that line's template, e.g. "TRASH" when a trashed Lich discards itself
 	Player   string // Argument0 when it is a player
 	Args     map[int]Arg
 }
@@ -117,9 +118,15 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 	}
 
 	turn, turnOf, started := 0, "", false
-	var stack []string // card at each nesting level, for Cause
+	type parent struct{ card, template string }
+	var stack []parent // line at each nesting level, for Cause
 	for _, r := range rows {
 		text := strings.Join(r.pieces, " ")
+		if r.kind == "T" && text == "Between Turns" { // effects between turns, e.g. Mission
+			g.Events = append(g.Events, Event{Line: r.n, Turn: turn, Template: "BETWEEN_TURNS"})
+			stack = stack[:0]
+			continue
+		}
 		if r.kind == "T" {
 			if m := reTurn.FindStringSubmatch(text); m != nil {
 				turn, _ = strconv.Atoi(m[1])
@@ -151,23 +158,50 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 			e.Args[n] = a
 		}
 		e.Player = e.Args[0].Player
-		if r.level > 0 && r.level <= len(stack) {
-			e.Cause = stack[r.level-1]
+		// the nearest line above with a card; levels can skip ("plays a Coven. (Royal Galley)" at 0, its effects at 2)
+		for i := min(r.level, len(stack)) - 1; i >= 0; i-- {
+			if stack[i].card != "" {
+				e.Cause, e.CauseOf = stack[i].card, stack[i].template
+				break
+			}
 		}
 		card := ""
 		if cs := e.Args[1].Cards; len(cs) > 0 && cs[0].Card != nil {
 			card = cs[0].Card.Name
 		}
+		if e.Template == "PLAY_USING_WAY" { // the Way's text applies, e.g. Way of the Camel exiles a Gold
+			if cs := e.Args[2].Cards; len(cs) > 0 && cs[0].Card != nil {
+				card = cs[0].Card.Name
+			}
+		}
 		if r.level < len(stack) {
 			stack = stack[:r.level]
 		}
 		for len(stack) < r.level {
-			stack = append(stack, "")
+			stack = append(stack, parent{})
 		}
-		stack = append(stack, card)
+		stack = append(stack, parent{card, e.Template})
 		g.Events = append(g.Events, e)
 	}
+	revealHiddenGains(g)
 	return g, nil
+}
+
+// revealHiddenGains names cards the log hides from this seat when the line just
+// before revealed them: Pickaxe logs "L reveals a Sextant" then "L gains a card".
+func revealHiddenGains(g *Game) {
+	for i := 1; i < len(g.Events); i++ {
+		e, prev := &g.Events[i], g.Events[i-1]
+		cs := e.Args[1].Cards
+		if !gains[e.Template] || len(cs) != 1 || cs[0].Card != nil || prev.Template != "REVEAL" || prev.Player != e.Player {
+			continue
+		}
+		if rc := prev.Args[1].Cards; len(rc) == 1 && rc[0].Card != nil && rc[0].N == cs[0].N {
+			a := e.Args[1]
+			a.Cards = []CardN{rc[0]}
+			e.Args[1] = a
+		}
+	}
 }
 
 // matchLine finds the most specific template for a line. A template that starts

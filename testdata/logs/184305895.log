@@ -1,0 +1,931 @@
+# scrying-pool log v1
+0	Game #184530239, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|Mountain Folk|)
+0	L|gets +|1|Favor. (|Mountain Folk|)
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|5 Coppers|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|starts their turn.
+0	g|plays|5 Coppers|. (+$|5|)
+0	g|buys and gains|a Kitsune|.
+0	g|draws|2 Coppers|and|3 Estates|.
+0T	Turn 1 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Secluded Shrine|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Kitsune|.
+0T	Turn 2 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Broker|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Rats|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Secluded Shrine|.
+1	L|gets +$|1|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Market Square|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Broker|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Rats|,|and|a Kitsune|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Rats|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Kitsune|.
+0	g|draws|2 Coppers|and|3 Estates|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Rats|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Stonemason|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|an Estate|,|a Rats|,|and|a Broker|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+0	L|buys and gains|a Copper|.
+1	L|trashes|a Curse|and|an Estate|.
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|.
+2	L|gains|a Gold|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Rats|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+0	g|plays|a Broker|.
+1	g|trashes|an Estate|.
+1	g|gets +$|2|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Market Square|.
+0	g|draws|2 Coppers|,|an Estate|,|a Stonemason|,|and|a Kitsune|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Broker|.
+1	L|trashes|an Estate|.
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|.
+2	L|gains|a Gold|.
+1	L|gets +|2|Favors. (|Broker|)
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Market Square|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|an Estate|,|2 Rats|,|and|a Kitsune|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	L|buys and gains|a Kitsune|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Rats|.
+1	g|draws|a Kitsune|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|an Estate|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	L|gains|a Curse|.
+0	g|plays|a Kitsune|.
+1	Enlightenment|comes true.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Stonemason|.
+3	g|gets +|1|Action.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Rats|.
+2	g|draws|a Market Square|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1	g|gains|2 Market Squares|.
+0	g|buys and gains|a Copper|.
+0	g|draws|3 Coppers|,|a Market Square|,|and|a Broker|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Broker|.
+1	L|trashes|a Rats|.
+2	L|draws|a card|.
+1	L|gets +|4|Favors. (|Broker|)
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Hoard|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|an Estate|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Rats|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	g|shuffles their deck.
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Stonemason|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Broker|.
+1	g|trashes|an Estate|.
+1	g|gets +|2|Favors. (|Broker|)
+0	g|draws|a Copper|,|a Gold|,|2 Market Squares|,|and|a Kitsune|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|5|Favors.
+1	L|draws|3 cards|. (|Mountain Folk|)
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Hoard|and|2 Golds|. (+$|8|)
+1	L|gets +$|2|.
+0	L|buys|Enclave|.
+1	L|gains|a Gold|.
+1	L|exiles|a Duchy|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Rats|.
+1	g|draws|a Kitsune|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Rats|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	L|gains|a Curse|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Rats|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Gold|.
+0	g|buys and gains|a Copper|.
+0	g|buys and gains|a Stonemason|.
+0S	g|shuffles their deck.
+0	g|draws|a Gold|,|3 Rats|,|and|a Broker|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	g|gains|a Curse|.
+0	L|plays|a Secluded Shrine|.
+1	L|gets +$|1|.
+0	L|plays|a Broker|.
+1	L|trashes|a Curse|.
+0	L|buys and gains|a Copper|.
+1	L|trashes|a Curse|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Stonemason|.
+1	g|gets +|4|Actions.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Rats|.
+2	g|draws|a Kitsune|.
+1	g|gains|2 Market Squares|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|a Gold|. (+$|3|)
+0	g|buys and gains|a Broker|.
+0	g|draws|a Copper|,|2 Market Squares|,|and|2 Rats|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Farm|.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Rats|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Rats|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Copper|.
+0	g|plays|a Rats|.
+1	g|draws|a Stonemason|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Stonemason|.
+0	g|buys and gains|2 Coppers|.
+0	g|draws|2 Coppers|,|a Market Square|,|a Rats|,|and|a Kitsune|.
+0T	Turn 13 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Farm|,|a Hoard|,|and|a Gold|. (+$|7|)
+1	L|gets +$|2|.
+0	L|buys and gains|a Farm|.
+1	L|gains|a Gold|.
+0	L|draws|5 cards|.
+0T	Turn 14 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3S	g|shuffles their deck.
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Stonemason|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	L|gains|a Curse|.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Rats|.
+2	g|draws|a Broker|.
+1	g|gains|2 Market Squares|.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Broker|.
+1	g|gets +|4|Actions.
+0	g|plays|a Broker|.
+1	g|trashes|a Gold|.
+1	g|draws|a Copper|,|a Market Square|,|and|4 Rats|.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Gold|. (+$|3|)
+0	g|buys and gains|a Market Square|.
+0	g|buys and gains|a Copper|.
+0	g|draws|a Curse|,|a Gold|,|2 Market Squares|,|and|a Kitsune|.
+0T	Turn 14 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	L|gets +$|2|.
+0	L|plays|a Broker|.
+1	L|trashes|a Gold|.
+2	L|reacts with|a Market Square|.
+2	L|discards|a Market Square|.
+2	L|gains|a Gold|.
+1	L|draws|6 cards|.
+0	L|plays|a Secluded Shrine|.
+1	L|gets +$|1|.
+0	L|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	L|buys|Enclave|.
+1	L|gains|a Gold|.
+2	L|trashes|2 Curses|.
+1	L|exiles|a Duchy|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 15 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Rats|.
+1S	g|shuffles their deck.
+1	g|draws|a Broker|.
+1	g|gets +|1|Action.
+1	g|gains|a Rats|.
+1	g|trashes|a Curse|.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Market Square|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1	g|draws|2 Market Squares|and|2 Rats|.
+0	g|plays|a Market Square|.
+1	g|draws|a Stonemason|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Rats|.
+2	g|draws|a Copper|.
+1	g|gains|2 Silvers|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Stonemason|.
+0	g|draws|a Copper|,|a Gold|,|2 Market Squares|,|and|a Kitsune|.
+0T	Turn 15 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Hoard|and|3 Golds|. (+$|11|)
+1	L|gets +$|2|.
+0	L|buys and gains|a Province|.
+1	L|gains|a Gold|.
+0	L|draws|5 cards|.
+0T	Turn 16 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Broker|.
+3	g|gets +|1|Action.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Broker|.
+1	g|trashes|a Gold|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|,|4 Market Squares|,|and|a Rats|.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Broker|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Silver|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Silver|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Silver|. (+$|2|)
+2	Silver|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Silver|. (+$|2|)
+2	Silver|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Rats|.
+1	g|gets +$|4|.
+0	g|plays|a Gold|. (+$|3|)
+0	g|buys and gains|a Province|.
+0	g|draws|a Gold|,|2 Market Squares|,|a Stonemason|,|and|a Kitsune|.
+0T	Turn 16 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Broker|.
+1	L|trashes|an Estate|.
+1	L|gets +$|2|.
+0	L|plays|2 Golds|. (+$|6|)
+0	L|buys and gains|a Province|.
+0	L|draws|5 cards|.
+0T	Turn 17 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Stonemason|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Stonemason|.
+1	g|gains|2 Coppers|.
+0	g|plays|2 Golds|. (+$|6|)
+0	g|buys and gains|a Province|.
+0S	g|shuffles their deck.
+0	g|draws|2 Golds|,|a Province|,|and|2 Market Squares|.
+0T	Turn 17 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Market Square|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +|1|Buy.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	L|gets +$|2|.
+0	L|plays|a Secluded Shrine|.
+1	L|gets +$|1|.
+0	L|plays|a Farm|. (+$|2|)
+2	Farm|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Farm|. (+$|2|)
+2	Farm|plays|Enlightenment|for +1 Card +1 Action
+3S	L|shuffles their deck.
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Gold|. (+$|3|)
+0	L|buys and gains|a Farm|.
+1	L|trashes|2 Curses|.
+0	L|draws|5 cards|.
+0T	Turn 18 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|3 Golds|. (+$|9|)
+0	g|buys and gains|a Province|.
+0	g|draws|2 Coppers|,|2 Market Squares|,|and|a Broker|.
+0T	Turn 18 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|3 Coppers|and|2 Golds|. (+$|9|)
+0	L|buys and gains|a Province|.
+0	L|draws|5 cards|.
+0T	Turn 19 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Stonemason|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Silver|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Rats|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Market Square|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Silver|. (+$|2|)
+2	Silver|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Kitsune|.
+3	g|gets +|1|Action.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Copper|.
+1	g|draws|a Province|,|a Market Square|,|a Broker|,|and|a Kitsune|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Silver|.
+3	g|gets +|1|Action.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Copper|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1S	g|shuffles their deck.
+1	g|draws|2 Coppers|,|a Province|,|and|a Rats|.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Rats|.
+2	g|draws|a Market Square|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1	g|gains|2 Estates|.
+0	g|plays|a Silver|and|3 Golds|. (+$|11|)
+0	g|buys and gains|3 Duchies|.
+0	g|buys and gains|2 Coppers|.
+0	g|draws|a Province|and|4 Market Squares|.
+0T	Turn 19 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|a Broker|.
+1	L|trashes|a Curse|.
+0	L|draws|5 cards|.
+0T	Turn 20 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Rats|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Market Square|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Duchy|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Gold|.
+3	g|gets +|1|Action.
+0	g|plays|a Gold|. (+$|3|)
+2	Gold|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Broker|.
+3	g|gets +|1|Action.
+0	g|plays|a Broker|.
+1	g|trashes|a Rats|.
+2	g|draws|a Market Square|.
+2	g|reacts with|a Market Square|.
+2	g|discards|a Market Square|.
+2	g|gains|a Gold|.
+1	g|gets +|4|Favors. (|Broker|)
+0	g|plays|a Gold|. (+$|3|)
+0	g|buys and gains|an Estate|.
+0	g|buys and gains|5 Coppers|.
+0	g|draws|a Duchy|,|a Market Square|,|a Stonemason|,|and|2 Kitsunes|.
+0T	Turn 20 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	L|draws|a card|.
+3	L|gets +|1|Action.
+0	L|plays|2 Coppers|,|a Hoard|,|and|2 Golds|. (+$|10|)
+1	L|gets +$|2|.
+0	L|buys|Enclave|.
+1	L|gains|a Gold|.
+1	L|exiles|a Duchy|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 21 - gamrevinu
+0	g|starts their turn.
+1	g|spends|5|Favors.
+1	g|draws|2 Coppers|and|a Province|. (|Mountain Folk|)
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Duchy|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Province|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Copper|.
+3	g|gets +|1|Action.
+0	g|plays|a Copper|. (+$|1|)
+2	Copper|plays|Enlightenment|for +1 Card +1 Action
+3	g|draws|a Market Square|.
+3	g|gets +|1|Action.
+0	g|plays|a Market Square|.
+1	g|draws|a Gold|.
+1	g|gets +|1|Action.
+1	g|gets +|1|Buy.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Stonemason|.
+1	g|trashes|a Gold|.
+1	g|gains|2 Duchies|.
+0	g|buys and gains|2 Estates|.

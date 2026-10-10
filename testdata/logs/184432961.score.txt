@@ -1,0 +1,119 @@
+# row: 
+# original players: gamrevinu / MattyM
+You Resigned
+1
+Lord Rattington
+Turns: 18
+2
+gamrevinu
+Turns: 19
+Lord Rattington
+2
+Province
+
+
+2
+Duchy
+
+
+3
+Nobles
+
+
+3
+Estate
+
+
+1
+Pasture
+
+
+2
+3
+Estate
+Victory
+2
+Copper
+3
+Estate
+1
+Pasture
+1
+Pouch
+3
+Scrying Pool
+2
+Gear
+7
+Silver
+10
+Stowaway
+1
+Lucky Coin
+1
+Potion
+2
+Skulk
+2
+Duchy
+2
+Gold
+3
+Nobles
+2
+Province
+gamrevinu
+4
+Province
+
+
+5
+Nobles
+
+
+3
+Estate
+
+
+1
+Duchy
+
+
+1
+Pasture
+
+
+2
+3
+Estate
+Victory
+3
+Estate
+1
+Pasture
+1
+Pouch
+2
+Scrying Pool
+1
+Gear
+8
+Silver
+1
+Lucky Coin
+1
+Potion
+2
+Shepherd
+1
+Duchy
+1
+Trading Post
+2
+Gold
+5
+Nobles
+4
+Province
+Ready
+Leave Table

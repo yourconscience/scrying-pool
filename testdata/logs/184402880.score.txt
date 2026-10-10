@@ -1,0 +1,63 @@
+# row: 
+# original players: Reef97 / gamrevinu
+You Lose
+1
+Lord Rattington
+Turns: 10
+2
+gamrevinu
+Turns: 10
+Lord Rattington
+4
+Province
+
+
+
+
+1
+Gladiator
+1
+Village
+1
+Sacrifice
+2
+Capital
+2
+Catacombs
+1
+Legionary
+2
+Border Village
+1
+Gold
+4
+Province
+1
+Fortune
+gamrevinu
+4
+Province
+
+
+1
+Copper
+1
+Gladiator
+1
+Capital
+4
+Catacombs
+1
+Legionary
+6
+Border Village
+1
+Gold
+2
+Rice
+4
+Province
+1
+Fortune
+Ready
+Leave Table

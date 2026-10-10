@@ -1,0 +1,59 @@
+# row: 
+# original players: gamrevinu / Lyokunn
+You Resigned
+1
+Lord Rattington
+Turns: 10
+2
+gamrevinu
+Turns: 11
+Lord Rattington
+1
+Curse
+
+
+4
+Copper
+1
+Curse
+3
+Madman
+3
+Ducat
+2
+Develop
+2
+Hermit
+1
+Silver
+2
+Fortress
+1
+Young Witch
+1
+Carnival
+2
+Hunting Party
+1
+Library
+gamrevinu
+1
+Curse
+
+
+3
+Copper
+1
+Curse
+4
+Ducat
+4
+Develop
+4
+Fortress
+2
+Young Witch
+5
+Hunting Party
+Ready
+Leave Table

@@ -1,0 +1,326 @@
+# scrying-pool log v1
+0	Game #184529428, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|starts with|3 Estates|.
+0	g|starts with|7 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|7 Coppers|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|3 Coppers|and|2 Estates|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Cargo Ship|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 1 - Lord Rattington
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Cargo Ship|.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Herald|.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|a Cargo Ship|.
+0T	Turn 2 - Lord Rattington
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Herald|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|plays|a Cargo Ship|.
+1	g|gets +$|2|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Kitsune|.
+1	g|sets|a Kitsune|aside with|Cargo Ship|.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Herald|.
+0T	Turn 3 - Lord Rattington
+0	L|plays|a Cargo Ship|.
+1	L|gets +$|2|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Kitsune|.
+1	L|sets|a card|aside with|Cargo Ship|.
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+1	g|puts|a Kitsune|in hand (|Cargo Ship|).
+0	g|plays|a Herald|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|an Estate|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Junk Dealer|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|2 Estates|,|a Junk Dealer|,|and|a Cargo Ship|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+1	L|puts|a Kitsune|in hand (|Cargo Ship|).
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+0	L|plays|a Kitsune|.
+1	L|gets +$|2|.
+1	g|gains|a Curse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Junk Dealer|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Cargo Ship|.
+1	g|gets +$|2|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Junk Dealer|.
+1	g|sets|a Junk Dealer|aside with|Cargo Ship|.
+0	g|draws|2 Coppers|,|an Estate|,|a Herald|,|and|a Kitsune|.
+0T	Turn 5 - Lord Rattington
+0	L|plays|a Junk Dealer|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	g|gains|a Curse|.
+0	L|plays|a Cargo Ship|.
+1	L|gets +$|2|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|a Junk Dealer|.
+1	L|sets|a card|aside with|Cargo Ship|.
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|puts|a Junk Dealer|in hand (|Cargo Ship|).
+0	g|plays|a Herald|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Kitsune|.
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Junk Dealer|,|and|a Herald|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|puts|a Junk Dealer|in hand (|Cargo Ship|).
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+0	L|plays|a Junk Dealer|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Curse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Herald|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|plays|a Herald|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|reveals|a Curse|.
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Curse|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Herald|.
+0	g|draws|4 Coppers|and|an Estate|.
+0T	Turn 7 - Lord Rattington
+0	L|plays|a Kitsune|.
+1	Sickness|comes true.
+1	L|gets +$|2|.
+1	g|gains|a Curse|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Kitsune|.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Curse|. (|Sickness|)
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Herald|.
+0	g|draws|a Curse|,|a Junk Dealer|,|a Cargo Ship|,|and|2 Kitsunes|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|gains|a Curse|. (|Sickness|)
+0	L|plays|a Junk Dealer|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Curse|.
+0	L|plays|a Cargo Ship|.
+1	L|gets +$|2|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|buys and gains|an Imperial Envoy|.
+1	L|sets|a card|aside with|Cargo Ship|.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|gains|a Curse|. (|Sickness|)
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Curse|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Curse|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|a Cargo Ship|.
+1	g|gets +$|2|.
+0	g|buys and gains|an Animal Fair|.
+1	g|sets|an Animal Fair|aside with|Cargo Ship|.
+0S	g|shuffles their deck.
+0	g|draws|a Curse|,|2 Coppers|,|a Herald|,|and|a Kitsune|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|puts|an Imperial Envoy|in hand (|Cargo Ship|).
+1	L|discards|2 other cards|and|a Copper|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1S	L|shuffles their deck.
+1	L|reveals|a Junk Dealer|.
+1	L|plays|a Junk Dealer|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|gets +$|1|.
+2	L|trashes|a Copper|.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Copper|.
+0	L|plays|an Imperial Envoy|.
+1	L|draws|5 cards|.
+1	L|gets +|1|Buy.
+1	L|takes|2|debt.
+0	L|plays|a Junk Dealer|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|an Estate|.
+0	L|plays|6 Coppers|. (+$|6|)
+0	L|repays|2|debt.
+0	L|buys and gains|an Imperial Envoy|.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Curse|and|2 Coppers|.
+1	g|puts|an Animal Fair|in hand (|Cargo Ship|).
+0	g|plays|a Herald|.
+1	g|draws|a Kitsune|.
+1	g|gets +|1|Action.
+1	g|reveals|a Junk Dealer|.
+1	g|plays|a Junk Dealer|.
+2	g|draws|a Herald|.
+2	g|gets +|1|Action.
+2	g|gets +$|1|.
+2	g|trashes|a Herald|.
+0	g|plays|a Kitsune|.
+1	g|gets +$|2|.
+1	L|gains|a Curse|.
+0	g|plays|a Kitsune|.
+1	g|gets +|2|Actions.
+1	g|gets +$|2|.
+0	g|plays|an Animal Fair|.
+1	g|gets +$|4|.
+1	g|gets +|1|Buy.
+0	g|buys and gains|an Imperial Envoy|.
+0	g|buys and gains|a Herald|.
+0	g|draws|2 Curses|and|3 Coppers|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Kitsune|.
+1	L|gets +|2|Actions.
+1	L|gets +$|2|.
+0	L|plays|a Kitsune|.
+1	L|gets +$|2|.
+1	L|gains|a Silver|.
+0	L|buys and gains|a Herald|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Cargo Ship|.
+0	g|draws|2 Coppers|,|an Estate|,|a Junk Dealer|,|and|a Herald|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Junk Dealer|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|gets +$|1|.
+1	L|trashes|a Curse|.
+0	L|plays|an Imperial Envoy|.
+1	L|draws|5 cards|.
+1	L|gets +|1|Buy.
+1	L|takes|2|debt.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|repays|2|debt.
+0	L|buys|an Animal Fair|.
+1	L|trashes|a Cargo Ship|.
+0	L|gains|an Animal Fair|.
+0	L|buys|an Animal Fair|.
+1	L|trashes|a Kitsune|.
+0	L|gains|an Animal Fair|.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+0	g|plays|a Herald|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Cargo Ship|.
+1	g|plays|a Cargo Ship|.
+2	g|gets +$|2|.
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Junk Dealer|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|an Estate|.
+0	g|plays|a Junk Dealer|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|trashes|a Copper|.
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|an Animal Fair|.
+1	g|sets|an Animal Fair|aside with|Cargo Ship|.
+0	g|draws|2 Curses|,|a Copper|,|a Herald|,|and|an Imperial Envoy|.
+0T	Turn 12 - Lord Rattington
+0	L|starts their turn.
+0	L|plays|a Herald|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|reveals|a Herald|.
+1	L|plays|a Herald|.
+2	L|draws|a card|.
+2	L|gets +|1|Action.
+2	L|reveals|a Curse|.
+0	L|plays|a Silver|and|3 Coppers|. (+$|5|)
+0	L|buys and gains|a Silver|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 13 - gamrevinu
+0	g|starts their turn.

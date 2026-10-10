@@ -1,0 +1,628 @@
+# scrying-pool log v1
+0	Game #184529522, unrated.
+0	Timer:|Off|Card Pool: level 10
+0	
+0	g|gets +|1|Favor. (|Gang of Pickpockets|)
+0	L|gets +|1|Favor. (|Gang of Pickpockets|)
+0	The|Inherited|Trait is acquired by|the Gear pile|.
+0	g|starts with|3 Estates|.
+0	g|starts with|a Goat|.
+0	g|starts with|6 Coppers|.
+0	L|starts with|3 Estates|.
+0	L|starts with|a Goat|.
+0	L|starts with|6 Coppers|.
+1	g|returns|an Estate|to|the Box|.
+1	g|starts with|a Gear|.
+1	L|returns|an Estate|to|the Box|.
+1	L|starts with|a Gear|.
+0S	g|shuffles their deck.
+0S	L|shuffles their deck.
+0	g|draws|2 Coppers|,|2 Estates|,|and|a Goat|.
+0	L|draws|5 cards|.
+0T	Turn 1 - gamrevinu
+0	g|starts their turn.
+1	g|discards|an Estate|.
+0	g|plays|a Goat|. (+$|1|)
+1	g|trashes|an Estate|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|buys and gains|a Pixie|.
+0	g|draws|4 Coppers|and|a Gear|.
+0T	Turn 1 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|an Estate|.
+0	L|plays|a Gear|.
+1	L|draws|2 cards|.
+0	L|plays|a Goat|. (+$|1|)
+1	L|trashes|an Estate|.
+0	L|plays|3 Coppers|. (+$|3|)
+0	L|buys and gains|a Change|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 2 - gamrevinu
+0	g|starts their turn.
+1	g|spends|1|Favor.
+0	g|plays|a Gear|.
+1S	g|shuffles their deck.
+1	g|draws|an Estate|and|a Pixie|.
+1	g|sets|an Estate|and|a Pixie|aside with|Gear|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|buys and gains|a Change|.
+0S	g|shuffles their deck.
+0	g|draws|4 Coppers|and|a Goat|.
+0T	Turn 2 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+0	L|plays|a Gear|.
+1	L|draws|2 cards|.
+0	L|plays|a Goat|. (+$|1|)
+1	L|trashes|a Copper|.
+0	L|plays|4 Coppers|. (+$|4|)
+0	L|buys and gains|a Livery|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 3 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Copper|.
+1	g|puts|an Estate|and|a Pixie|in hand (|Gear|).
+0	g|plays|a Pixie|.
+1	g|draws|a Change|.
+1	g|gets +|1|Action.
+1	g|takes|The Earth's Gift|.
+1	g|trashes|a Pixie|.
+1	g|discards|a Copper|.
+1	g|gains|a Pixie|.
+1	g|receives|The Earth's Gift|.
+1	g|discards|a Copper|.
+1	g|gains|a Pixie|.
+1	g|discards|The Earth's Gift|.
+0	g|plays|a Change|.
+1	g|trashes|an Estate|.
+1	g|gains|a Livery|.
+1	g|takes|3|debt.
+0	g|plays|a Goat|. (+$|1|)
+1	g|trashes|a Copper|.
+0	g|repays|1|debt (|2|remaining).
+0S	g|shuffles their deck.
+0	g|draws|3 Coppers|,|a Pixie|,|and|a Livery|.
+0T	Turn 3 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|a Copper|.
+0	L|plays|a Change|.
+1	L|trashes|an Estate|.
+1	L|gains|a Contract|.
+1	L|takes|3|debt.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|repays|2|debt (|1|remaining).
+0	L|draws|5 cards|.
+0T	Turn 4 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Copper|.
+0	g|plays|a Pixie|.
+1	g|draws|a Change|.
+1	g|gets +|1|Action.
+1	g|takes|The Swamp's Gift|.
+1	g|trashes|a Pixie|.
+1	g|gains|a Will-o'-Wisp|.
+1	g|receives|The Swamp's Gift|.
+1	g|gains|a Will-o'-Wisp|.
+1	g|discards|The Swamp's Gift|.
+0	g|plays|a Livery|.
+1	g|gets +$|3|.
+0	g|plays|2 Coppers|. (+$|2|)
+0	g|repays|2|debt.
+0	g|buys and gains|a Pixie|.
+0	g|draws|2 Coppers|,|a Gear|,|a Pixie|,|and|a Goat|.
+0T	Turn 4 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|a Gear|.
+0	L|plays|a Livery|.
+1	L|gets +$|3|.
+0	L|plays|a Goat|. (+$|1|)
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|repays|1|debt.
+0	L|buys and gains|a Contract|.
+1	L|gains|a Horse|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 5 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Copper|.
+0	g|plays|a Pixie|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|takes|The Flame's Gift|.
+1	g|discards|The Flame's Gift|.
+0	g|plays|a Gear|.
+1	g|draws|a Copper|and|a Livery|.
+1	g|sets|a Copper|and|a Livery|aside with|Gear|.
+0	g|plays|a Goat|. (+$|1|)
+1	g|trashes|a Copper|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|buys and gains|a Pixie|.
+0	g|draws|2 Coppers|,|a Pixie|,|a Will-o'-Wisp|,|and|a Change|.
+0T	Turn 5 - Lord Rattington
+0	L|starts their turn.
+1	L|discards|a Copper|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Change|.
+1	L|trashes|a Copper|.
+1	L|gains|a Livery|.
+1	L|takes|5|debt.
+0	L|plays|a Goat|. (+$|1|)
+1	L|trashes|a Copper|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+0	L|repays|3|debt (|2|remaining).
+0	L|draws|5 cards|.
+0T	Turn 6 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Change|.
+1	g|puts|a Copper|and|a Livery|in hand (|Gear|).
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Will-o'-Wisp|.
+1	g|gets +|1|Action.
+1S	g|shuffles their deck.
+1	g|reveals|a Pixie|.
+1	g|puts|a Pixie|into their hand.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Pixie|.
+1	g|gets +|1|Action.
+1	g|reveals|a Change|.
+1	g|topdecks|a Change|.
+0	g|plays|a Pixie|.
+1	g|draws|a Change|.
+1	g|gets +|1|Action.
+1	g|takes|The River's Gift|.
+1	g|discards|The River's Gift|.
+0	g|plays|a Pixie|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|takes|The Field's Gift|.
+1	g|trashes|a Pixie|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+1	g|receives|The Field's Gift|.
+1	g|gets +|1|Action.
+1	g|gets +$|1|.
+0	g|plays|a Pixie|.
+1	g|draws|a Goat|.
+1	g|gets +|1|Action.
+1	g|takes|The Forest's Gift|.
+1	g|trashes|a Pixie|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+1	g|receives|The Forest's Gift|.
+1	g|gets +|1|Buy.
+1	g|gets +$|1|.
+0	g|plays|a Livery|.
+1	g|gets +$|3|.
+0	g|plays|a Change|.
+1	g|trashes|a Goat|.
+1	g|gains|a Contract|.
+2	g|gains|a Horse|.
+1	g|takes|3|debt.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|repays|3|debt.
+0	g|buys and gains|a Pixie|.
+0	g|buys and gains|a Horn of Plenty|.
+1	g|gains|a Horse|.
+0	g|discards|The Field's Gift|.
+0	g|discards|The Forest's Gift|.
+0S	g|shuffles their deck.
+0	g|draws|a Copper|,|a Horn of Plenty|,|a Pixie|,|a Will-o'-Wisp|,|and|a Horse|.
+0T	Turn 6 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+0	L|plays|a Livery|.
+1	L|gets +$|3|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Gear|aside with|Contract|.
+0	L|plays|2 Coppers|. (+$|2|)
+0	L|repays|2|debt.
+0	L|buys and gains|a Horn of Plenty|.
+1	L|gains|a Horse|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 7 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Copper|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|puts|a Copper|into their hand.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Horse|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Will-o'-Wisp|and|a Change|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Livery|.
+1	g|gets +|1|Action.
+1	g|reveals|a Pixie|.
+1	g|puts|a Pixie|into their hand.
+0	g|plays|a Pixie|.
+1	g|draws|a Contract|.
+1	g|gets +|1|Action.
+1	g|takes|The Sky's Gift|.
+1	g|trashes|a Pixie|.
+1	g|discards|2 Coppers|and|a Change|.
+1	g|gains|a Gold|.
+1	g|receives|The Sky's Gift|.
+1	g|fails to discard for|The Sky's Gift
+1	g|discards|The Sky's Gift|.
+0	g|plays|a Pixie|.
+1	g|draws|a Gear|.
+1	g|gets +|1|Action.
+1	g|takes|The Mountain's Gift|.
+1	g|discards|The Mountain's Gift|.
+0	g|plays|a Livery|.
+1	g|gets +$|3|.
+0	g|plays|a Copper|. (+$|1|)
+0	g|plays|a Contract|.
+1	g|gets +$|2|.
+1	g|gets +|1|Favor. (|Contract|)
+1	g|sets|a Gear|aside with|Contract|.
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Livery|.
+2	g|gains|a Horse|.
+0	g|buys and gains|a Contract|.
+1	g|gains|a Horse|.
+0S	g|shuffles their deck.
+0	g|draws|a Gold|,|a Will-o'-Wisp|,|a Livery|,|and|2 Horses|.
+0T	Turn 7 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+1	L|plays|a Gear|. (|Contract|)
+2	L|draws|2 cards|.
+2	L|sets|a card|aside with|Gear|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Livery|.
+1	L|gets +$|3|.
+0	L|plays|a Goat|. (+$|1|)
+1	L|trashes|a Copper|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Livery|aside with|Contract|.
+0	L|plays|a Copper|. (+$|1|)
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Horn of Plenty|.
+2	L|gains|a Horse|.
+0	L|buys and gains|a Contract|.
+1	L|gains|a Horse|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 8 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Gold|.
+1	g|plays|a Gear|. (|Contract|)
+2	g|draws|a Horn of Plenty|and|a Pixie|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|reveals|a Copper|.
+1	g|puts|a Copper|into their hand.
+0	g|plays|a Pixie|.
+1	g|draws|a Livery|.
+1	g|gets +|1|Action.
+1	g|takes|The Moon's Gift|.
+1	g|discards|The Moon's Gift|.
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Contract|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1	g|draws|a Will-o'-Wisp|and|a Change|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1S	g|shuffles their deck.
+1	g|reveals|a Gold|.
+1	g|topdecks|a Gold|.
+0	g|plays|a Livery|.
+1	g|gets +$|3|.
+0	g|plays|a Contract|.
+1	g|gets +$|2|.
+1	g|gets +|1|Favor. (|Contract|)
+1	g|sets|a Livery|aside with|Contract|.
+0	g|plays|4 Coppers|. (+$|4|)
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Horn of Plenty|.
+2	g|gains|a Horse|.
+0	g|buys and gains|a Province|.
+1	g|gains|a Horse|.
+0S	g|shuffles their deck.
+0	g|draws|2 Coppers|,|a Gold|,|a Province|,|and|a Contract|.
+0T	Turn 8 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+1	L|puts|a card|in hand (|Gear|).
+1	L|plays|a Livery|. (|Contract|)
+2	L|gets +$|3|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Change|.
+1	L|trashes|a Copper|.
+1	L|gains|a Horn of Plenty|.
+2	L|gains|a Horse|.
+1	L|takes|5|debt.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Livery|aside with|Contract|.
+0	L|plays|a Goat|. (+$|1|)
+1	L|trashes|a Copper|.
+0	L|repays|5|debt.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Horn of Plenty|.
+2	L|gains|a Horse|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 9 - gamrevinu
+0	g|starts their turn.
+1	g|discards|a Province|.
+1	g|plays|a Livery|. (|Contract|)
+2	g|gets +$|3|.
+0	g|plays|a Gold|. (+$|3|)
+0	g|plays|a Contract|.
+1	g|gets +$|2|.
+1	g|gets +|1|Favor. (|Contract|)
+0	g|buys and gains|a Province|.
+1	g|gains|a Horse|.
+0	g|draws|a Copper|,|a Horn of Plenty|,|a Will-o'-Wisp|,|a Horse|,|and|a Change|.
+0T	Turn 9 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+1	L|plays|a Livery|. (|Contract|)
+2	L|gets +$|3|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Gear|.
+1	L|draws|2 cards|.
+1	L|sets|2 cards|aside with|Gear|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Horse|aside with|Contract|.
+0	L|plays|a Goat|. (+$|1|)
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Contract|.
+2	L|gains|a Horse|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Horn of Plenty|.
+2	L|gains|a Horse|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Horn of Plenty|.
+2	L|gains|a Horse|.
+0	L|buys and gains|a Livery|.
+1	L|gains|a Horse|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 10 - gamrevinu
+0	g|starts their turn.
+1	g|spends|1|Favor.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Pixie|.
+1	g|gets +|1|Action.
+1	g|reveals|a Will-o'-Wisp|.
+1	g|puts|a Will-o'-Wisp|into their hand.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Horn of Plenty|.
+1	g|gets +|1|Action.
+1	g|reveals|a Gear|.
+1	g|topdecks|a Gear|.
+0	g|plays|a Horse|.
+1	g|draws|a Gear|and|a Livery|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Pixie|.
+1	g|draws|a Copper|.
+1	g|gets +|1|Action.
+1	g|takes|The Sun's Gift|.
+1	g|discards|The Sun's Gift|.
+0	g|plays|a Gear|.
+1S	g|shuffles their deck.
+1	g|draws|a Gold|and|a Horse|.
+1	g|sets|a Horse|and|a Livery|aside with|Gear|.
+0	g|plays|2 Coppers|and|a Gold|. (+$|5|)
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Horn of Plenty|.
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Horn of Plenty|.
+0	g|buys and gains|a Duchy|.
+0	g|draws|a Copper|,|a Province|,|a Horse|,|and|2 Contracts|.
+0T	Turn 10 - Lord Rattington
+0	L|starts their turn.
+1	L|puts|2 cards|in hand (|Gear|).
+1	L|spends|1|Favor.
+1	L|plays|a Horse|. (|Contract|)
+2	L|draws|2 cards|.
+2	L|gets +|1|Action.
+2	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Livery|.
+1	L|gets +$|3|.
+0	L|plays|a Livery|.
+1	L|gets +$|3|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Change|aside with|Contract|.
+0	L|plays|a Goat|. (+$|1|)
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Pixie|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Minion|.
+2	L|gains|2 Horses|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Pixie|.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Contract|.
+2	L|gains|2 Horses|.
+0	L|buys and gains|a Province|.
+1	L|gains|2 Horses|.
+0	L|draws|5 cards|.
+0T	Turn 11 - gamrevinu
+0	g|starts their turn.
+1	g|spends|1|Favor.
+1	g|puts|a Livery|and|a Horse|in hand (|Gear|).
+0	g|plays|a Horse|.
+1	g|draws|a Copper|and|a Livery|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Horse|.
+1S	g|shuffles their deck.
+1	g|draws|a Copper|and|a Province|.
+1	g|gets +|1|Action.
+1	g|returns|a Horse|to|the Horse pile|.
+0	g|plays|a Livery|.
+1	g|gets +$|3|.
+0	g|plays|a Contract|.
+1	g|gets +$|2|.
+1	g|gets +|1|Favor. (|Contract|)
+1	g|sets|a Livery|aside with|Contract|.
+0	g|plays|a Contract|.
+1	g|gets +$|2|.
+1	g|gets +|1|Favor. (|Contract|)
+0	g|plays|3 Coppers|. (+$|3|)
+0	g|buys and gains|a Province|.
+1	g|gains|a Horse|.
+0	g|draws|a Copper|,|a Gold|,|a Horn of Plenty|,|a Pixie|,|and|a Will-o'-Wisp|.
+0T	Turn 11 - Lord Rattington
+0	L|starts their turn.
+1	L|spends|1|Favor.
+1	L|plays|a Change|. (|Contract|)
+2	L|trashes|a Livery|.
+2	L|gains|a Province|.
+2	L|takes|3|debt.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1S	L|shuffles their deck.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Pixie|.
+1	L|draws|a card|.
+1	L|gets +|1|Action.
+1	L|takes|The Sea's Gift|.
+1	L|discards|The Sea's Gift|.
+0	L|plays|a Horse|.
+1	L|draws|2 cards|.
+1	L|gets +|1|Action.
+1	L|returns|a Horse|to|the Horse pile|.
+0	L|plays|a Minion|.
+1	L|gets +|1|Action.
+1	L|gets +$|2|.
+0	L|plays|a Gear|.
+1	L|draws|2 cards|.
+1	L|sets|2 cards|aside with|Gear|.
+0	L|plays|a Goat|. (+$|1|)
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+1	L|sets|a Livery|aside with|Contract|.
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+0	L|plays|a Contract|.
+1	L|gets +$|2|.
+1	L|gets +|1|Favor. (|Contract|)
+0	L|repays|3|debt.
+0	L|plays|a Horn of Plenty|.
+1	L|gains|a Gold|.
+0	L|buys and gains|a Province|.
+0S	L|shuffles their deck.
+0	L|draws|5 cards|.
+0T	Turn 12 - gamrevinu
+0	g|starts their turn.
+1	g|spends|1|Favor.
+1	g|plays|a Livery|. (|Contract|)
+2	g|gets +$|3|.
+0	g|plays|a Will-o'-Wisp|.
+1	g|draws|a Horn of Plenty|.
+1	g|gets +|1|Action.
+1	g|reveals|a Duchy|.
+1	g|topdecks|a Duchy|.
+0	g|plays|a Pixie|.
+1	g|draws|a Duchy|.
+1	g|gets +|1|Action.
+1	g|takes|The Wind's Gift|.
+1	g|trashes|a Pixie|.
+1	g|draws|a Horn of Plenty|and|a Will-o'-Wisp|.
+1	g|discards|a Copper|and|a Duchy|.
+1	g|receives|The Wind's Gift|.
+1	g|draws|a Horn of Plenty|and|a Change|.
+1	g|discards|a Will-o'-Wisp|and|a Change|.
+1	g|discards|The Wind's Gift|.
+0	g|plays|a Gold|. (+$|3|)
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Contract|.
+2	g|gains|a Horse|.
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Contract|.
+2	g|gains|a Horse|.
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Contract|.
+2	g|gains|a Horse|.
+0	g|plays|a Horn of Plenty|.
+1	g|gains|a Pixie|.

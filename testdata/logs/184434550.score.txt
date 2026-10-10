@@ -1,0 +1,113 @@
+# row: 
+# original players: Sharapopovamaria / gamrevinu
+You Resigned
+1
+Lord Rattington
+Turns: 15
+2
+gamrevinu
+Turns: 16
+Lord Rattington
+3
+Province
+
+
+4
+Duchy
+
+
+5
+Estate
+
+
+1
+Distant Shore
+
+
+6
+Copper
+5
+Estate
+1
+Squire
+1
+Old Map
+1
+Sage
+1
+Silver
+3
+Conspirator
+1
+Voyage
+1
+Capital City
+1
+Crew
+4
+Duchy
+1
+Pickaxe
+1
+Sunken Treasure
+1
+Distant Shore
+1
+Gold
+1
+Doubloons
+1
+Rice
+1
+Sextant
+1
+Sword
+3
+Province
+gamrevinu
+4
+Province
+
+
+7
+Estate
+
+
+3
+Distant Shore
+
+
+7
+Copper
+7
+Estate
+2
+Squire
+1
+Old Map
+1
+Sage
+3
+Silver
+7
+Conspirator
+1
+Voyage
+4
+Capital City
+1
+Pickaxe
+1
+Spices
+1
+Sunken Treasure
+3
+Distant Shore
+1
+Insignia
+1
+Rice
+4
+Province
+Ready
+Leave Table

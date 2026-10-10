@@ -215,8 +215,9 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 		}
 		lit := rest[:next]
 		t.literal += len(strings.TrimSpace(lit))
-		// copied logs put a space between every span, so any boundary may have one
-		b.WriteString(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(strings.TrimSpace(lit)), `\s*`) + `\s*`)
+		// Copied logs join spans with a space, so a boundary between text and an
+		// argument may gain a space; a space inside the template is always there.
+		b.WriteString(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(lit), `\s+`) + `\s*`)
 		rest = rest[next:]
 		switch {
 		case rest == "":
