@@ -117,3 +117,13 @@ Phase 0, 2026-10-10:
   - turn lines carry `new-turn-line` and shuffle lines `shuffles-line`.
 - **Test log:** `testdata/logs/184518886.log`, captured in the format `<level><T|S>\t<pieces joined by |>`. It has 871 lines and 27 turns, and ends mid-turn 14, where UtagawaLk resigned.
 - **Bookmarklet:** `web/bookmarklet.js`, printed by `scry bookmarklet`. Its extraction is the code that produced the test log. Not yet tested: clicking the saved bookmark on a live page and its clipboard write. The dominion.games session logged out before that check.
+
+Phase 1, 2026-10-10 (partial):
+
+- `gamelog.go` parses copied logs into events and tracks each deck through gains, trashes and returns to piles. `scry review -names "Lord Rattington=UtagawaLk" LOG` prints the final decks and a turn table: $, buys, other gains, trashes, Actions played, cards drawn, deck size, VP.
+- Acceptance met on `184518886`:
+  - no unknown lines;
+  - both final decks equal DomBot's `!game` picture, which shows final decks, not gains;
+  - 9 to 6 VP;
+  - last turns 14 and 13.
+- Not done yet: the review page in the web UI, and more test logs. The dominion.games session logged out, and I don't sign in for the user.

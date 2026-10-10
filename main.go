@@ -21,6 +21,7 @@ const usageText = `usage:
   scry ask '<command>'                             send any DomBot command, e.g. '!game 184206813'
   scry cards sync [-kinds kingdom,landscape]       download card art from the Dominion Strategy wiki
   scry bookmarklet                                 print the "Copy log" bookmark for dominion.games
+  scry review [-names "Bot=Player"] LOG_FILE       turn table and final decks for a copied game log
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -90,6 +91,27 @@ func main() {
 			}
 		}
 		err = emit(*out, renderMessages(msgs, time.Local))
+	case "review":
+		namesFlag := fs.String("names", "", `rename players, e.g. "Lord Rattington=UtagawaLk" (comma-separated)`)
+		fs.Parse(args)
+		if fs.NArg() != 1 {
+			fail(fmt.Errorf("review needs one LOG_FILE"))
+		}
+		text, rerr := os.ReadFile(fs.Arg(0))
+		if rerr != nil {
+			fail(rerr)
+		}
+		names := map[string]string{}
+		for _, pair := range strings.Split(*namesFlag, ",") {
+			if from, to, ok := strings.Cut(pair, "="); ok {
+				names[strings.TrimSpace(from)] = strings.TrimSpace(to)
+			}
+		}
+		g, perr := parseGameLog(string(text), names)
+		if perr != nil {
+			fail(perr)
+		}
+		err = emit(*out, g.reviewMarkdown())
 	case "bookmarklet":
 		src, _ := webFiles.ReadFile("web/bookmarklet.js")
 		var code []string
