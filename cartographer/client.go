@@ -236,3 +236,13 @@ func (t *Template) match(text string) map[int]string {
 	}
 	return args
 }
+
+// byKeyName finds a card by the client's key ("The Skys Gift").
+func (c *Client) byKeyName(key string) *Card {
+	for _, card := range c.Cards {
+		if card.Key == key {
+			return card
+		}
+	}
+	return nil
+}

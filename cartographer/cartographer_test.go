@@ -1,6 +1,7 @@
 package cartographer
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -169,4 +170,76 @@ func TestFinalDecksMatchDomBot(t *testing.T) {
 	if got := g.FinalDecks(); !reflect.DeepEqual(got, want) {
 		t.Errorf("decks:\n got  %v\n want %v", got, want)
 	}
+}
+
+// Every template must be reachable: a line built from it must match it, or a
+// template with the same English, and not some other template.
+func TestEveryTemplateMatchesItsOwnLines(t *testing.T) {
+	c := loadClient(t)
+	initials := map[string]string{"g": "gamrevinu", "L": "Lord Rattington"}
+	sample := map[int]string{0: "g", 1: "a Copper", 2: "L", 3: "a Silver"}
+	checked := 0
+	for _, tm := range c.Templates {
+		if tm.generic() {
+			continue
+		}
+		line := reArg.ReplaceAllStringFunc(tm.English, func(s string) string {
+			var n int
+			fmt.Sscan(strings.TrimPrefix(s, "Argument"), &n)
+			return sample[n]
+		})
+		line = reCardRef.ReplaceAllStringFunc(line, func(s string) string {
+			if card := c.byKeyName(s[1 : len(s)-1]); card != nil {
+				return card.Name
+			}
+			return s[1 : len(s)-1]
+		})
+		got, _ := c.matchLine(line, initials)
+		if got == nil {
+			t.Errorf("%s: %q matches no template", tm.Name, line)
+			continue
+		}
+		if got.English != tm.English {
+			t.Errorf("%s: %q is read as %s (%q)", tm.Name, line, got.Name, got.English)
+		}
+		checked++
+	}
+	t.Logf("%d templates checked", checked)
+}
+
+// Every card must be readable in every form the log uses.
+func TestEveryCardForm(t *testing.T) {
+	c := loadClient(t)
+	bad := 0
+	for _, card := range c.Cards {
+		if card.Key == "Back" {
+			continue
+		}
+		for _, f := range []struct {
+			text string
+			n    int
+		}{{card.Name, 1}, {card.Noun, 1}, {"2 " + card.Plural, 2}} {
+			if strings.TrimSpace(f.text) == "" || f.text == "2 " {
+				continue
+			}
+			cs, ok := c.cardList(f.text)
+			if !ok || len(cs) != 1 || cs[0].Card == nil || cs[0].N != f.n || cs[0].Card.Name != card.Name {
+				if bad < 15 {
+					got := "nothing"
+					if ok && len(cs) > 0 {
+						got = cs[0].String()
+						if len(cs) > 1 {
+							got += fmt.Sprintf(" and %d more", len(cs)-1)
+						}
+					}
+					t.Errorf("%q (%s) reads as %s", f.text, card.Name, got)
+				}
+				bad++
+			}
+		}
+	}
+	if bad > 0 {
+		t.Errorf("%d card forms misread in all", bad)
+	}
+	t.Logf("%d cards checked", len(c.Cards))
 }
