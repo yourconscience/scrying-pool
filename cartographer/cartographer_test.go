@@ -35,40 +35,19 @@ func TestLogsMatchScoreScreens(t *testing.T) {
 		id := strings.TrimSuffix(filepath.Base(lp), ".log")
 		t.Run(id, func(t *testing.T) {
 			b, _ := os.ReadFile(lp)
-			g, err := c.Parse(string(b), nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			for i, u := range g.Unknown {
-				if i == 5 {
-					t.Errorf("... %d unknown lines in all", len(g.Unknown))
-					break
-				}
-				t.Errorf("unknown line %d: %s", u.Line, u.Text)
-			}
 			sb, err := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".score.txt")
-			if err != nil {
-				return // older logs have no score screen
-			}
-			wantTurns, wantDecks := ParseScoreScreen(string(sb), func(n string) bool { return c.Cards[n] != nil })
-			last := map[string]int{}
-			for _, e := range g.Events {
-				if e.Template == "NEW_TURN" {
-					last[e.Player] = e.Turn
+			if err != nil { // older logs have no score screen: they must still parse completely
+				g, err := c.Parse(string(b), nil)
+				if err != nil {
+					t.Fatal(err)
 				}
-			}
-			if !reflect.DeepEqual(last, wantTurns) {
-				t.Errorf("last turns %v, score screen says %v", last, wantTurns)
-			}
-			got := g.FinalDecks()
-			for p, want := range wantDecks {
-				have, ok := got[p]
-				if !ok {
-					have = got[p[:1]] // a player with no turns is known only by initial
+				if len(g.Unknown) > 0 {
+					t.Errorf("%d unknown lines, first: line %d %q", len(g.Unknown), g.Unknown[0].Line, g.Unknown[0].Text)
 				}
-				if !reflect.DeepEqual(have, want) {
-					t.Errorf("%s deck:\n got  %v\n want %v", p, have, want)
-				}
+				return
+			}
+			for _, p := range c.Check(string(b), string(sb)).Problems {
+				t.Error(p)
 			}
 		})
 	}
