@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dominion Match Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@18.0.14/lib/marked.umd.js"
+        integrity="sha384-2vpGtuKqJvFlwJqYnf/wUMuzUfhUnYBt9oay0e2yaFcq0Dh6/aEbQ8YAOeKGzlYo"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+<header>
+  <h1>Dominion Match Notes</h1>
+  <p>Paste the chat from a finished dominion.games match. You get readable notes split by game, with each game's kingdom and result from DomBot when available.</p>
+</header>
+
+<main>
+  <p id="static-note" class="note" hidden>This page runs entirely in your browser and sends nothing anywhere. For game results, DM <strong>DomBot</strong> on Discord with <code>!match player1, player2</code> and paste its reply in the second box. The <a href="https://github.com/yourconscience/scrying-pool">local app</a> can ask DomBot for you.</p>
+
+  <form id="form">
+    <label for="chat">Match chat <span class="hint">(copy the chat box after the match; starts with "Match #… created")</span></label>
+    <textarea id="chat" rows="12" required placeholder="Match #8605 created&#10;Alice: Good luck and have fun!&#10;…&#10;Match: Alice 1, Bob 0"></textarea>
+
+    <fieldset>
+      <legend>Game results from DomBot (optional)</legend>
+      <label class="check" id="ask-row">
+        <input type="checkbox" id="ask">
+        <span>Ask DomBot automatically from my Discord account <span class="hint" id="ask-hint"></span></span>
+      </label>
+      <details id="paste-box">
+        <summary>…or paste DomBot's <code>!match player1, player2</code> reply</summary>
+        <textarea id="dombot" rows="8" placeholder="Alice v. Bob&#10;4–2&#10;Games beginning …"></textarea>
+      </details>
+    </fieldset>
+
+    <div class="buttons">
+      <button type="submit" id="go">Format notes</button>
+      <button type="button" id="demo" class="secondary">Load demo match</button>
+    </div>
+  </form>
+
+  <section id="output" hidden>
+    <div class="toolbar">
+      <span id="source"></span>
+      <button type="button" id="copy" class="secondary">Copy Markdown</button>
+      <button type="button" id="download" class="secondary">Download .md</button>
+      <button type="button" id="toggle" class="secondary">Show Markdown source</button>
+    </div>
+    <div id="warnings"></div>
+    <article id="rendered"></article>
+    <pre id="source-md" hidden></pre>
+  </section>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

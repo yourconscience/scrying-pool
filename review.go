@@ -42,22 +42,26 @@ func deckSize(d cartographer.Deck) int {
 
 // scoresByTurn scores the game after each turn (index i is turns[i]) and at the end.
 func scoresByTurn(c *cartographer.Client, g *cartographer.Game, in cartographer.ScoreInput) (byTurn []map[string]cartographer.VPBreakdown, final map[string]cartographer.VPBreakdown) {
-	var starts []int
-	for i, e := range g.Events {
-		if e.Template == "NEW_TURN" {
-			starts = append(starts, i)
-		}
-	}
-	for k := range starts {
-		end := len(g.Events)
-		if k+1 < len(starts) {
-			end = starts[k+1]
-		}
+	for _, end := range turnEnds(g) {
 		prefix := *g
 		prefix.Events = g.Events[:end]
 		byTurn = append(byTurn, c.Score(&prefix, in))
 	}
 	return byTurn, c.Score(g, in)
+}
+
+// turnEnds gives, for each turn, the index of the first event after it.
+func turnEnds(g *cartographer.Game) []int {
+	var ends []int
+	for i, e := range g.Events {
+		if e.Template == "NEW_TURN" {
+			ends = append(ends, i)
+		}
+	}
+	if len(ends) == 0 {
+		return nil
+	}
+	return append(ends[1:], len(g.Events))
 }
 
 // reviewMarkdown is the first version of a game review: final decks and the turn table.

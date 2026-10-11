@@ -11,6 +11,10 @@
   --treasure: #8a6100;
   --warn: #f6ecc9;
   --code: #e7eadf;
+  --p0: #2f62a8;
+  --p1: #b4462f;
+  --p2: #6b4fa0;
+  --p3: #1f7a6d;
   --display: "Cinzel", "Trajan Pro", Georgia, serif;
   --body: system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -27,6 +31,10 @@
     --treasure: #e3b54a;
     --warn: #3a3420;
     --code: #262b22;
+    --p0: #7aa7e8;
+    --p1: #ee8a6f;
+    --p2: #b49be0;
+    --p3: #5cc3b2;
     color-scheme: dark;
   }
 }
@@ -41,6 +49,10 @@
   --treasure: #e3b54a;
   --warn: #3a3420;
   --code: #262b22;
+  --p0: #7aa7e8;
+  --p1: #ee8a6f;
+  --p2: #b49be0;
+  --p3: #5cc3b2;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -195,3 +207,42 @@ article li > strong:first-child { color: var(--treasure); }
 .tile.chip .info { display: grid; min-width: 0; }
 .tile.chip .name { padding: 0; font-size: 0.86rem; line-height: 1.2; }
 .tile.chip .meta { font-size: 0.7rem; opacity: 0.78; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Site navigation, shared by the landing and analysis pages. */
+.top {
+  display: flex;
+  gap: 4px 18px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 16px 0;
+}
+.top a { color: var(--muted); text-decoration: none; }
+.top a:hover, .top a[aria-current="page"] { color: var(--ink); }
+.top .brand { font-family: var(--display); font-weight: 700; color: var(--ink); margin-right: auto; letter-spacing: 0.03em; }
+
+/* Landing page */
+.hero { max-width: 1180px; margin: 0 auto; padding: 48px 16px 24px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: center; }
+.hero h1 { font-family: var(--display); font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1.05; margin: 0 0 12px; }
+.hero .lede { font-size: 1.15rem; color: var(--muted); max-width: 46ch; margin: 0 0 24px; }
+.hero svg { width: 100%; height: auto; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.cta a { text-decoration: none; padding: 10px 18px; border-radius: 6px; border: 1px solid var(--victory); font-weight: 600; }
+.cta a.primary { background: var(--victory); color: var(--on-victory); }
+.modules, .steps { max-width: 1180px; margin: 0 auto; padding: 8px 16px 24px; }
+.modules h2, .steps h2 { font-family: var(--display); font-size: 1.35rem; margin: 24px 0 12px; }
+.module-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.module { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px 18px; }
+.module h3 { margin: 0 0 2px; font-size: 1.05rem; }
+.module .tag { font: 0.78rem var(--mono); color: var(--muted); }
+.module p { margin: 10px 0 0; }
+.module.soon { border-style: dashed; }
+.steps ol { padding-left: 22px; max-width: 72ch; }
+.steps li { margin: 8px 0; }
+.steps code, .module code { font: 0.88em var(--mono); background: var(--code); padding: 1px 5px; border-radius: 4px; }
+.site-foot { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; padding-top: 28px; }
+  .hero svg { max-width: 420px; }
+}

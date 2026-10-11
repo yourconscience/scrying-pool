@@ -39,21 +39,11 @@ func importGames(file, dir string, minTurns int) error {
 		defer f.Close()
 		in = f
 	}
-	if dir == "" {
-		base, err := os.UserConfigDir()
-		if err != nil {
-			return err
-		}
-		dir = filepath.Join(base, "scrying-pool", "games")
-	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	dir, err := gamesDir(dir)
+	if err != nil {
 		return err
 	}
-	cpath := cartographer.DefaultClientPath()
-	if cpath == "" {
-		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
-	}
-	client, err := cartographer.LoadClient(cpath)
+	client, err := loadClient()
 	if err != nil {
 		return err
 	}
@@ -69,27 +59,14 @@ func importGames(file, dir string, minTurns int) error {
 		if err := json.Unmarshal([]byte(line), &g); err != nil {
 			return fmt.Errorf("not a capture export line: %w", err)
 		}
-		score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
-		if g.Markers {
-			score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+		r, saved, err := saveGame(client, dir, g, minTurns)
+		if err != nil {
+			return err
 		}
-		score += g.Score
-		r := client.Check(g.Log+g.Bot, score)
-		if r.MinTurns < minTurns {
+		if !saved {
 			short++
 			fmt.Printf("SHORT %s: a player had %d turns, skipped (%s)\n", g.ID, r.MinTurns, g.Row)
 			continue
-		}
-		if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
-			return err
-		}
-		if g.Bot != "" {
-			if err := os.WriteFile(filepath.Join(dir, g.ID+".bot.log"), []byte(g.Bot), 0o644); err != nil {
-				return err
-			}
-		}
-		if err := os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644); err != nil {
-			return err
 		}
 		if r.OK() {
 			pass++
@@ -104,6 +81,55 @@ func importGames(file, dir string, minTurns int) error {
 	}
 	fmt.Printf("%d passed, %d failed, %d short games skipped; files in %s\n", pass, fail, short, dir)
 	return nil
+}
+
+var reGameID = regexp.MustCompile(`^\d{1,12}$`)
+
+// saveGame checks one exported game against its score screen and writes
+// <id>.log, <id>.score.txt and, when the bot played on, <id>.bot.log. Games
+// where a player had fewer than minTurns turns aren't saved.
+func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns int) (r cartographer.CheckResult, saved bool, err error) {
+	if !reGameID.MatchString(g.ID) {
+		return r, false, fmt.Errorf("bad game id %q", g.ID)
+	}
+	score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
+	if g.Markers {
+		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+	}
+	score += g.Score
+	r = client.Check(g.Log+g.Bot, score)
+	if r.MinTurns < minTurns {
+		return r, false, nil
+	}
+	if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
+		return r, false, err
+	}
+	if g.Bot != "" {
+		if err := os.WriteFile(filepath.Join(dir, g.ID+".bot.log"), []byte(g.Bot), 0o644); err != nil {
+			return r, false, err
+		}
+	}
+	return r, true, os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644)
+}
+
+// gamesDir is where saved games live: dir, or <user config>/scrying-pool/games.
+func gamesDir(dir string) (string, error) {
+	if dir == "" {
+		base, err := os.UserConfigDir()
+		if err != nil {
+			return "", err
+		}
+		dir = filepath.Join(base, "scrying-pool", "games")
+	}
+	return dir, os.MkdirAll(dir, 0o755)
+}
+
+func loadClient() (*cartographer.Client, error) {
+	cpath := cartographer.DefaultClientPath()
+	if cpath == "" {
+		return nil, fmt.Errorf("no dominion.games client tables found; export them first (see README)")
+	}
+	return cartographer.LoadClient(cpath)
 }
 
 // checkGames runs the cartographer check on saved logs: each <id>.log with its
@@ -145,21 +171,17 @@ func checkGames(args []string, priorPath string) error {
 			return err
 		}
 	}
-	cpath := cartographer.DefaultClientPath()
-	if cpath == "" {
-		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
-	}
-	client, err := cartographer.LoadClient(cpath)
+	client, err := loadClient()
 	if err != nil {
 		return err
 	}
 	var logs []string
 	if len(args) == 0 {
-		base, err := os.UserConfigDir()
+		dir, err := gamesDir("")
 		if err != nil {
 			return err
 		}
-		args = []string{filepath.Join(base, "scrying-pool", "games")}
+		args = []string{dir}
 	}
 	for _, a := range args {
 		if st, err := os.Stat(a); err == nil && st.IsDir() {

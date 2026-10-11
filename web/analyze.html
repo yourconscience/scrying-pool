@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analyze a Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="analyze.css">
+</head>
+<body>
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a href="analyze.html" aria-current="page">Analyze a game</a>
+  <a href="notes.html">Match notes</a>
+</nav>
+
+<main class="wide">
+  <section id="pick" class="pick">
+    <form id="find">
+      <label for="gid">Game number <span class="hint">(from your dominion.games profile, or a "Game #184518886" log line)</span></label>
+      <div class="row">
+        <input id="gid" inputmode="numeric" autocomplete="off" placeholder="184518886" required pattern="\s*#?\d+\s*">
+        <button type="submit">Show game</button>
+      </div>
+    </form>
+    <details id="saved">
+      <summary>Saved games <span id="saved-count"></span></summary>
+      <input type="search" id="filter" placeholder="Filter by player, date or number" aria-label="Filter saved games">
+      <ul id="saved-list"></ul>
+    </details>
+  </section>
+
+  <section id="fetch" class="panel fetch" hidden>
+    <h2>Game <span class="gid"></span> isn't saved yet</h2>
+    <p>Load it from dominion.games in the browser you're logged in with:</p>
+    <ol>
+      <li>One time: drag this to your bookmarks bar: <a id="bookmark" class="bookmark" href="#" draggable="true">Scry game</a></li>
+      <li>In your dominion.games tab, on the lobby screen, click <strong>Scry game</strong> and enter <code class="gid"></code> <button type="button" id="copy-id" class="secondary small">Copy</button>. No tab open? <button type="button" id="open-dg" class="secondary small">Open dominion.games</button></li>
+      <li>The tab loads the game at its last decision with a bot in the other seat, ends it and sends the log here. This page opens the game as soon as it arrives.</li>
+    </ol>
+    <p class="waiting" id="waiting"><span class="dot" aria-hidden="true"></span> Waiting for game <span class="gid"></span>…</p>
+    <details>
+      <summary>Or paste a game the bookmark copied</summary>
+      <textarea id="paste" rows="5" placeholder='{"id":"184518886","log":"# scrying-pool log v1…"}'></textarea>
+      <div class="buttons"><button type="button" id="paste-go">Add game</button></div>
+    </details>
+  </section>
+
+  <section id="game" hidden>
+    <div class="game-head">
+      <div>
+        <h1 id="title"></h1>
+        <p id="meta" class="hint"></p>
+      </div>
+      <div id="scores" class="scores"></div>
+    </div>
+    <div id="problems"></div>
+
+    <section class="charts" aria-label="The game by turn">
+      <figure class="chart"><figcaption>VP after each turn</figcaption><div id="chart-vp"></div></figure>
+      <figure class="chart"><figcaption>$ each turn</figcaption><div id="chart-coins"></div></figure>
+      <figure class="chart"><figcaption>Cards owned</figcaption><div id="chart-deck"></div></figure>
+    </section>
+
+    <div class="turn-nav" role="group" aria-label="Turn">
+      <button type="button" id="prev" class="secondary" aria-label="Previous turn">‹</button>
+      <input type="range" id="turn" min="0" value="0" aria-label="Turn">
+      <button type="button" id="next" class="secondary" aria-label="Next turn">›</button>
+      <span id="turn-label" class="turn-label" aria-live="polite"></span>
+    </div>
+
+    <div class="turn-grid">
+      <section class="panel" aria-labelledby="log-h">
+        <h2 id="log-h">Log</h2>
+        <div id="turn-sum" class="turn-sum"></div>
+        <div id="turn-log" class="log"></div>
+      </section>
+      <section class="panel" aria-labelledby="zones-h">
+        <h2 id="zones-h">After the turn</h2>
+        <div id="zones"></div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="supply-h">
+      <h2 id="supply-h">Supply <span class="hint" id="supply-note"></span></h2>
+      <div id="supply" class="supply"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="decks-h">
+      <h2 id="decks-h">Final decks</h2>
+      <div id="decks" class="decks"></div>
+    </section>
+
+    <section class="panel advisor" aria-labelledby="advisor-h">
+      <h2 id="advisor-h">Advisor <span class="tag">coming</span></h2>
+      <p>The next module will read this replay against strategy for the kingdom: the opening, when to add draw and economy, when to start buying Victory cards, and turns where a different buy was clearly better. Its notes will appear here, next to the turns they are about.</p>
+    </section>
+  </section>
+
+  <p id="error" role="alert" hidden></p>
+</main>
+<script src="analyze.js"></script>
+</body>
+</html>

@@ -3,11 +3,15 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
 func TestParseSampleChat(t *testing.T) {
@@ -120,10 +124,102 @@ func TestWebFormatAndCSRF(t *testing.T) {
 	if w := post("", `{"chat":"no results here"}`); w.Code != 422 {
 		t.Fatalf("bad chat: %d", w.Code)
 	}
-	r := httptest.NewRequest("GET", "/", nil)
-	w := httptest.NewRecorder()
-	h.ServeHTTP(w, r)
-	if w.Code != 200 || !strings.Contains(w.Body.String(), "Dominion Match Notes") {
-		t.Fatalf("index: %d", w.Code)
+	for path, want := range map[string]string{"/": "Scrying Pool", "/notes.html": "Dominion Match Notes", "/analyze.html": "Analyze a Game"} {
+		r := httptest.NewRequest("GET", path, nil)
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, r)
+		if w.Code != 200 || !strings.Contains(w.Body.String(), want) {
+			t.Fatalf("%s: %d", path, w.Code)
+		}
 	}
+}
+
+// The Scry game bookmark posts a game from the dominion.games tab; the analysis
+// page then reads it back turn by turn.
+func TestWebGames(t *testing.T) {
+	cpath := cartographer.DefaultClientPath()
+	if cpath == "" {
+		t.Skip("no exported dominion.games client tables")
+	}
+	t.Setenv("SCRY_CLIENT", cpath)
+	t.Setenv("HOME", t.TempDir()) // the saved games go to a temporary user config folder
+	t.Setenv("XDG_CONFIG_HOME", "")
+	h := newHandler(time.Second)
+	call := func(method, path, origin, body string) *httptest.ResponseRecorder {
+		r := httptest.NewRequest(method, "http://127.0.0.1:8765"+path, strings.NewReader(body))
+		r.Header.Set("Content-Type", "text/plain")
+		if origin != "" {
+			r.Header.Set("Origin", origin)
+		}
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, r)
+		return w
+	}
+	log, _ := os.ReadFile("testdata/logs/184426907.log")
+	saved, _ := os.ReadFile("testdata/logs/184426907.score.txt")
+	var score []string // the score screen as the capture copies it, without the lines import adds
+	for _, l := range strings.Split(string(saved), "\n") {
+		if !strings.HasPrefix(l, "# ") {
+			score = append(score, l)
+		}
+	}
+	rec, _ := json.Marshal(exportedGame{ID: "184426907", Original: []string{"gamrevinu", "GarlicRamen"}, Log: string(log), Score: strings.Join(score, "\n")})
+	if w := call("GET", "/api/games/184426907", "", ""); w.Code != 404 {
+		t.Fatalf("unsaved game: %d %s", w.Code, w.Body)
+	}
+	if w := call("POST", "/api/games", "https://evil.example", string(rec)); w.Code != 403 {
+		t.Fatalf("cross-origin post: %d", w.Code)
+	}
+	if w := call("POST", "/api/games", "", `{"id":"../x","log":""}`); w.Code != 400 {
+		t.Fatalf("bad id: %d", w.Code)
+	}
+	w := call("POST", "/api/games", "https://dominion.games", string(rec))
+	if w.Code != 200 || w.Header().Get("Access-Control-Allow-Origin") != "https://dominion.games" {
+		t.Fatalf("post from dominion.games: %d %s", w.Code, w.Body)
+	}
+	w = call("GET", "/api/games/184426907", "", "")
+	var v struct { // the fields the test reads; cards in turns are written as names
+		Players []string
+		FinalVP map[string]cartographer.VPBreakdown `json:"final_vp"`
+		Setup   []logLine
+		Turns   []struct {
+			VP  map[string]int
+			Log []logLine
+		}
+		Cards map[string]Card
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &v); err != nil || w.Code != 200 {
+		t.Fatalf("game view: %d %v", w.Code, err)
+	}
+	if len(v.Turns) == 0 || len(v.Turns) != len(turnEnds(mustParse(t, string(log)))) {
+		t.Fatalf("%d turns in the view", len(v.Turns))
+	}
+	last := v.Turns[len(v.Turns)-1]
+	for _, p := range v.Players {
+		if last.VP[p] != v.FinalVP[p].Total() {
+			t.Errorf("%s: %d VP after the last turn, %d final", p, last.VP[p], v.FinalVP[p].Total())
+		}
+	}
+	lines := len(v.Setup)
+	for _, t := range v.Turns {
+		lines += len(t.Log)
+	}
+	if want := strings.Count(string(log), "\n") - 2; lines < want*9/10 {
+		t.Errorf("only %d log lines in the view", lines)
+	}
+	if _, ok := v.Cards["Copper"]; !ok {
+		t.Error("the view doesn't describe Copper")
+	}
+}
+
+func mustParse(t *testing.T, log string) *cartographer.Game {
+	c, err := loadClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	g, err := c.Parse(log, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return g
 }

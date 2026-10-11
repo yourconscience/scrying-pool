@@ -132,7 +132,7 @@ func TestEveryCardForm(t *testing.T) {
 			if strings.TrimSpace(f.text) == "" || f.text == "2 " {
 				continue
 			}
-			cs, ok := c.cardList(f.text)
+			cs, ok := c.CardList(f.text)
 			if !ok || len(cs) != 1 || cs[0].Card == nil || cs[0].N != f.n || cs[0].Card.Name != card.Name {
 				if bad < 15 {
 					got := "nothing"

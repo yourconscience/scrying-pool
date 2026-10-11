@@ -155,13 +155,7 @@ func main() {
 			file = "web/bookmarklet-client.js"
 		}
 		src, _ := webFiles.ReadFile(file)
-		var code []string
-		for _, l := range strings.Split(string(src), "\n") {
-			if t := strings.TrimSpace(l); t != "" && !strings.HasPrefix(t, "//") {
-				code = append(code, t)
-			}
-		}
-		fmt.Println("javascript:" + url.PathEscape(strings.Join(code, "\n")))
+		fmt.Println(bookmarklet(string(src)))
 	case "import":
 		dir := fs.String("dir", "", "where to write <id>.log and <id>.score.txt (default: <user config>/scrying-pool/games)")
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
@@ -235,6 +229,22 @@ func emit(path, text string) error {
 	}
 	fmt.Fprintln(os.Stderr, "wrote", path)
 	return nil
+}
+
+// bookmarklet turns a script into a javascript: link.
+func bookmarklet(src string) string {
+	return "javascript:" + url.PathEscape(stripComments(src))
+}
+
+// stripComments drops a script's comment lines, blank lines and indentation.
+func stripComments(src string) string {
+	var code []string
+	for _, l := range strings.Split(src, "\n") {
+		if t := strings.TrimSpace(l); t != "" && !strings.HasPrefix(t, "//") {
+			code = append(code, t)
+		}
+	}
+	return strings.Join(code, "\n")
 }
 
 func fail(err error) {

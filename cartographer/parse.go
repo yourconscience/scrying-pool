@@ -41,10 +41,11 @@ type Unknown struct {
 }
 
 type Game struct {
-	Header  []string // the lines before the game starts, e.g. "Game #184519122, unrated."
-	Players []string // in turn order
-	Events  []Event
-	Unknown []Unknown
+	Header   []string          // the lines before the game starts, e.g. "Game #184519122, unrated."
+	Players  []string          // in turn order
+	Initials map[string]string // how log lines show each player, e.g. "g" for "gamrevinu"
+	Events   []Event
+	Unknown  []Unknown
 }
 
 // "Turn 11 - Alice [Voyage]" is an extra turn; extra turns share the turn numbering.
@@ -117,6 +118,8 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 		}
 	}
 
+	g.Initials = initials
+
 	turn, turnOf, started := 0, "", false
 	type parent struct{ card, template string }
 	var stack []parent // line at each nesting level, for Cause
@@ -152,7 +155,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 				a.Player = p
 			} else if v, err := strconv.Atoi(s); err == nil {
 				a.Number = &v
-			} else if cs, ok := c.cardList(s); ok {
+			} else if cs, ok := c.CardList(s); ok {
 				a.Cards = cs
 			}
 			e.Args[n] = a
@@ -219,7 +222,7 @@ func (c *Client) matchLine(text string, initials map[string]string) (*Template, 
 		if strings.HasPrefix(t.English, "Argument0 ") {
 			a0 := args[0]
 			if _, ok := initials[a0]; !ok {
-				if _, ok := c.cardList(a0); !ok {
+				if _, ok := c.CardList(a0); !ok {
 					continue
 				}
 			}
