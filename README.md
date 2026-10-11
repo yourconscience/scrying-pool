@@ -42,7 +42,7 @@ How loading a finished game works, as tested on 2026-10-11:
 - **Where it stops.** "Load from End" gives the highest decision index the server takes (one more is reset to it). The game is replayed up to that decision, and the seat that owns it decides next.
 - **Bot moves.** When the next decision is the bot's seat's (the game ended with a resignation), the bot answers and plays on. The client's log model marks every decision (`decisionIndex`, `playerIndex`), so the capture keeps the log up to the loaded decision and saves the bot's lines apart, as `<id>.bot.log`. The checks compare the score screen with both together, since the score screen counts the bot's moves.
 - **The last move.** When the next decision is yours, nothing is played, and the game's last move is missing from the log.
-- **Old games.** The oldest games tried (2026-01-30 and 2026-02-01) no longer load: Load from End leaves the decision index at 0. A game from 2026-03-01 still loads.
+- **Games that don't load.** For some finished games the server answers "Internal error." and Load from End sets the decision index to -1 (or leaves it at 0). On 2026-10-11 that happened for 18 of 49 games tried, from 2026-01-30 to 2026-10-08. Games saved the day before, back to 2026-09-30, still loaded, so it depends on the game, not its age. The capture now drops such a game in seconds.
 
 The capture clicks only the client's own buttons (My Table, Load Old Game, Load from End, the bot seat, Ready, Resign, Yes, Ok, Leave Table) and reads the page. Use it on finished games only: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
 
@@ -76,9 +76,10 @@ Not covered yet: Possession, and cards played from other players' decks.
 
 ### What the saved games showed
 
-- **Seats.** In 108 of the first 220 imported games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there. `SeatNames` maps the names back.
-- **Checks.** `scry check` compares saved logs with their score screens. Every line must be read, and each player's last turn and final deck must match. On 2026-10-11 all 220 imported games and all test logs passed.
-- **Final scores.** Computed VP equal DomBot's final scores in 184 of 220 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) The other 36:
+- **The corpus.** DomBot's `!prior` lists 462 rated games of gamrevinu in 2026. On 2026-10-11, 242 are saved, the server can't load 18, 6 are AFK games, 3 failed during capture and 193 (2026-03-01 to 2026-09-30) were never tried. `manifest-2026.json` in the games folder lists every game with its status.
+- **Seats.** In 119 of the 242 saved games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there and your own draws are hidden. `SeatNames` maps the names back.
+- **Checks.** `scry check` compares saved logs with their score screens. Every line must be read, and each player's last turn and final deck must match. On 2026-10-11 all 242 saved games and all test logs passed.
+- **Final scores.** Computed VP equal DomBot's final scores in 198 of 242 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) The 8 mismatches among the 22 games added on 2026-10-11 aren't classified yet. The other 36, from the first 220:
   - **The game's last decision is missing (33 games).** The replay never contains it. Usually it was the buy that ended the game: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate. In 32 games it was your seat's decision. In 184163893 it was the bot's seat's, which bought a Gold instead.
   - **Both players are short (2 games, 184149206 and 184162961).** The game went on past the decisions the server keeps.
   - **8 VP more than DomBot (1 game, 184308261).** Not explained yet.

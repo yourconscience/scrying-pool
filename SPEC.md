@@ -156,3 +156,12 @@ Phase 1, 2026-10-10 (partial):
   - The client's log model (`LogEntriesChange.execute` -> `game.logModel.entries`) holds `DecisionEntry` records between the log entries. The capture now keeps the log up to the loaded decision and saves the bot's lines as `<id>.bot.log`. The 24 affected games were recaptured; all 24 logs plus bot lines match their score screens, and final scores match DomBot in 184 of 220 games (was 164).
   - A bot can hang mid-turn ("Waiting for Lord Rattington"); the capture goes on once the bot's first move is in.
   - When a bot's move ends the game, the client sometimes stops rendering its templates; the capture stops and asks for a reload.
+
+2026-10-11, afternoon: analysis page, corpus fixed.
+
+- **Web UI.** `/` is a start page; `/analyze.html#ID` shows a saved game turn by turn: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones, the Supply with changes and the final decks. `/notes.html` is the match-notes page that used to be `/`.
+- **Getting a game from the logged-in browser.** The page builds a "Scry game" bookmark (`web/capture.js` + `web/scry-game.js`, with the app's address). In the dominion.games tab it loads one game like the capture script and posts it to `/api/games`, which accepts the `https://dominion.games` origin only for that route and only saves a log under a numeric ID. In Brave 155 the post from the dominion.games tab waited for the browser's local-access answer; after a minute the bookmark copies the game for the page's paste box instead. Not yet tested end to end in a real tab.
+- **Kingdom.** The client's `kingdomViewer.cardGroups` holds the kingdom, the landscapes and the non-Supply cards. The capture saves them as `# kingdom`, `# landscapes` and `# other cards` lines in the score file. None of the 242 saved games has them yet.
+- **Corpus.** Of 462 rated 2026 games: 242 saved (all pass `scry check`, 198 match DomBot's final scores), 18 the server can't load ("Internal error.", decision index -1), 6 AFK, 3 capture errors, 193 not tried (March to September). `manifest-2026.json` in the games folder records each one.
+- **Next:** the Advisor plan (luck and shuffles, rule-based mistake hints, strategy), published as an artifact on 2026-10-11.
+
