@@ -29,6 +29,16 @@ type exportedGame struct {
 	Score    string   `json:"score"`
 	// the client's kingdom viewer, e.g. {"Cards in Supply": ["Craftsman", ...], "Loot": [...]}
 	Kingdom map[string][]string `json:"kingdom"`
+	Profile *gameProfile        `json:"profile"` // what a player's profile said about the game
+}
+
+// gameProfile is a game as a dominion.games profile lists it.
+type gameProfile struct {
+	Time    string             `json:"time"` // when it was played, e.g. "2026-10-10T23:44:12.000Z"
+	Rated   bool               `json:"rated"`
+	Players []string           `json:"players"`
+	Levels  map[string]float64 `json:"levels"` // each player's rating level
+	Scores  map[string]int     `json:"scores"`
 }
 
 // importGames saves exported games and checks each one against its score screen.
@@ -52,7 +62,7 @@ func importGames(file, dir string, minTurns int) error {
 	}
 	sc := bufio.NewScanner(in)
 	sc.Buffer(make([]byte, 0, 1<<20), 64<<20)
-	var pass, fail, short int
+	var pass, fail, short, kingdoms int
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" {
@@ -61,6 +71,15 @@ func importGames(file, dir string, minTurns int) error {
 		var g exportedGame
 		if err := json.Unmarshal([]byte(line), &g); err != nil {
 			return fmt.Errorf("not a capture export line: %w", err)
+		}
+		if g.Log == "" && len(g.Kingdom) > 0 { // only the kingdom, for a game saved before it was read
+			if err := addKingdom(dir, g.ID, g.Kingdom); err != nil {
+				fmt.Printf("SKIP  %s: %v\n", g.ID, err)
+				continue
+			}
+			kingdoms++
+			fmt.Printf("KINGDOM %s\n", g.ID)
+			continue
 		}
 		r, saved, err := saveGame(client, dir, g, minTurns)
 		if err != nil {
@@ -82,8 +101,33 @@ func importGames(file, dir string, minTurns int) error {
 	if err := sc.Err(); err != nil {
 		return err
 	}
-	fmt.Printf("%d passed, %d failed, %d short games skipped; files in %s\n", pass, fail, short, dir)
+	fmt.Printf("%d passed, %d failed, %d short games skipped, %d kingdoms added; files in %s\n", pass, fail, short, kingdoms, dir)
 	return nil
+}
+
+// addKingdom writes the kingdom lines into a saved game's score file, replacing old ones.
+func addKingdom(dir, id string, groups map[string][]string) error {
+	if !reGameID.MatchString(id) {
+		return fmt.Errorf("bad game id %q", id)
+	}
+	path := filepath.Join(dir, id+".score.txt")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("game not saved: %w", err)
+	}
+	var head, rest []string
+	lines := strings.Split(string(b), "\n")
+	for i, l := range lines {
+		if !strings.HasPrefix(l, "# ") {
+			rest = lines[i:]
+			break
+		}
+		if !strings.HasPrefix(l, "# kingdom: ") && !strings.HasPrefix(l, "# landscapes: ") && !strings.HasPrefix(l, "# other cards: ") {
+			head = append(head, l)
+		}
+	}
+	out := strings.Join(head, "\n") + "\n" + kingdomLines(groups) + strings.Join(rest, "\n")
+	return os.WriteFile(path, []byte(out), 0o644)
 }
 
 var reGameID = regexp.MustCompile(`^\d{1,12}$`)
@@ -98,6 +142,13 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 	score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
 	if g.Markers {
 		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+	}
+	if p := g.Profile; p != nil {
+		var levels []string
+		for _, name := range p.Players {
+			levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
+		}
+		score += fmt.Sprintf("# played: %s\n# rated: %v\n# levels: %s\n", p.Time, p.Rated, strings.Join(levels, " / "))
 	}
 	score += kingdomLines(g.Kingdom)
 	score += g.Score
@@ -183,19 +234,36 @@ func priorScores(path string) (map[string]map[string]int, error) {
 	if err := json.Unmarshal(b, &rows); err != nil {
 		return nil, err
 	}
-	re := regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
 	out := map[string]map[string]int{}
 	for _, r := range rows {
-		// DomBot's minus sign comes through as "−" or, in copied text, as "?": "R4D4: ?5" is -5
-		m := re.FindStringSubmatch(strings.NewReplacer("\u2212", "-", "?", "-").Replace(r.Result))
-		if m == nil {
-			continue
+		if sc, ok := resultScores(r.Result); ok {
+			out[r.ID] = sc
 		}
-		a, _ := strconv.Atoi(m[2])
-		b, _ := strconv.Atoi(m[4])
-		out[r.ID] = map[string]int{m[1]: a, m[3]: b}
 	}
 	return out, nil
+}
+
+var reResult = regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
+
+// resultScores reads "Nikhec: 23, gamrevinu: 32". DomBot's minus sign comes
+// through as "−" or, in copied text, as "?": "R4D4: ?5" is -5.
+func resultScores(result string) (map[string]int, bool) {
+	m := reResult.FindStringSubmatch(strings.NewReplacer("\u2212", "-", "?", "-").Replace(strings.TrimSpace(result)))
+	if m == nil {
+		return nil, false
+	}
+	a, _ := strconv.Atoi(m[2])
+	b, _ := strconv.Atoi(m[4])
+	return map[string]int{m[1]: a, m[3]: b}, true
+}
+
+// rowScores reads the final scores from a score file's row, "2026-Oct-09 | Nikhec: 23, gamrevinu: 32".
+func rowScores(row string) (map[string]int, bool) {
+	_, result, ok := strings.Cut(row, " | ")
+	if !ok {
+		return nil, false
+	}
+	return resultScores(result)
 }
 
 func checkGames(args []string, priorPath string) error {
@@ -245,7 +313,11 @@ func checkGames(args []string, priorPath string) error {
 		bot, _ := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".bot.log") // the score screen counts the bot's moves
 		r := client.Check(string(b)+string(bot), string(sb))
 		problems := r.Problems
-		if final, ok := prior[id]; ok {
+		final, ok := prior[id]
+		if !ok {
+			final, ok = rowScores(scoreHeader(string(sb), "row"))
+		}
+		if ok {
 			scored++
 			_, sp := client.CheckScore(string(b), string(sb), final)
 			problems = append(problems, sp...)
@@ -261,7 +333,7 @@ func checkGames(args []string, priorPath string) error {
 		}
 	}
 	fmt.Printf("%d passed, %d failed, %d without a score screen (of %d logs)\n", pass, fail, noScore, len(logs))
-	if prior != nil {
+	if scored > 0 {
 		fmt.Printf("final scores: %d of %d games match the known scores\n", scored-scoreFail, scored)
 	}
 	return nil

@@ -42,16 +42,32 @@ How loading a finished game works, as tested on 2026-10-11:
 - **Where it stops.** "Load from End" gives the highest decision index the server takes (one more is reset to it). The game is replayed up to that decision, and the seat that owns it decides next.
 - **Bot moves.** When the next decision is the bot's seat's (the game ended with a resignation), the bot answers and plays on. The client's log model marks every decision (`decisionIndex`, `playerIndex`), so the capture keeps the log up to the loaded decision and saves the bot's lines apart, as `<id>.bot.log`. The checks compare the score screen with both together, since the score screen counts the bot's moves.
 - **The last move.** When the next decision is yours, nothing is played, and the game's last move is missing from the log.
-- **Games that don't load.** For some finished games the server answers "Internal error." and Load from End sets the decision index to -1 (or leaves it at 0). On 2026-10-11 that happened for 18 of 49 games tried, from 2026-01-30 to 2026-10-08. Games saved the day before, back to 2026-09-30, still loaded, so it depends on the game, not its age. The capture now drops such a game in seconds.
+- **Games that don't load.** For some finished games the server answers "Internal error." and Load from End sets the decision index to -1. The field keeps that -1 until the next answer, so the capture resets it before each load; without the reset, a game after a failed one looked failed too. The 18 games counted as not loading on 2026-10-11 may include such false failures; all are being tried again. Games saved the day before still loaded, so it depends on the game, not its age.
+- **Kingdom.** Once a loaded game starts, the client's kingdom viewer (`kingdomViewer.cardGroups`) holds the kingdom, the landscapes and the cards outside the Supply. The capture saves them as `# kingdom`, `# landscapes` and `# other cards` lines in the score file. For games saved before that, `run(ids, { mode: "kingdom" })` starts each game, reads the kingdom and resigns: about 10 seconds a game.
+- **Profiles.** A player's Profile tab lists their 25 latest games (`ProfileResult`): game number, time, whether it was rated, both players' rating levels, the scores and the kingdom. The search on that tab opens anyone's profile.
 
-The capture clicks only the client's own buttons (My Table, Load Old Game, Load from End, the bot seat, Ready, Resign, Yes, Ok, Leave Table) and reads the page. Use it on finished games only: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
+The capture clicks only the client's own buttons (My Table, Load Old Game, Load from End, the bot seat, Ready, Resign, Yes, Ok, Leave Table, the Profile tab and its player search) and reads the page. Use it on finished games only: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A). Loading hundreds of games a night is heavy use of the client, and the account carries that risk.
 
 ### Many games at once
 
-1. Paste `web/capture.js` into the console of your dominion.games tab, then run `scryCapture.run(ids)` with a list of game numbers. It drops AFK games (a player with fewer than 3 turns).
-2. Run `scryCapture.exportNext(25)`, press Cmd+C in the page, then `pbpaste > batch.jsonl`.
-3. `scry import batch.jsonl` saves each game to `<user config>/scrying-pool/games` and checks it against its score screen. On macOS that's `~/Library/Application Support/scrying-pool/games`.
-4. `scry check` checks all saved games again. `scry check -prior FILE` also compares the computed final VP with a saved DomBot `!prior` list.
+1. Paste `web/capture.js` into the console of your dominion.games tab while logged in.
+2. Queue games:
+   - `scryCapture.run(ids)` captures games by number, dropping AFK games (a player with fewer than 3 turns);
+   - `scryCapture.run(ids, { mode: "kingdom" })` only reads the kingdoms of games saved earlier;
+   - `scryCapture.harvest({ minLevel: 50, skip })` visits profiles, starting from your own and following opponents above `minLevel`. It queues their rated two-player games where a player is above `minLevel`, except the numbers in `skip`. Each game keeps the profile's date, scores and levels.
+
+   `run` adds to a running queue. `scryCapture.status()` shows progress.
+3. Run `scryCapture.exportNext(25)`, press Cmd+C in the page, then `pbpaste > batch.jsonl`.
+4. `scry import batch.jsonl` saves each game to `<user config>/scrying-pool/games` and checks it against its score screen. On macOS that's `~/Library/Application Support/scrying-pool/games`. Kingdom-only lines update the saved games' score files.
+5. `scry check` checks all saved games again. It compares the computed final VP with the scores in each game's row, or in a saved DomBot `!prior` list with `-prior FILE`.
+
+For an unattended run (overnight):
+
+- Results and the queue live in the page's IndexedDB. After a reload, paste the script again and call `scryCapture.resume()`.
+- Each game has a 6-minute limit, after which the page is reset and the next game starts. A logout or a lost connection is waited out for 15 minutes.
+- In a hidden tab each game took about a minute while the waits inside it took seconds, which matches Chrome's throttling of chained timers in hidden tabs (at most one wake-up a minute). The script now waits on a worker's timers, and a kingdom-only game takes about 10 seconds.
+- The machine must not sleep. On m4 on 2026-10-11 Amphetamine kept it awake, and captures ran in a hidden tab.
+- With `scryCapture.server = "http://127.0.0.1:8765"`, each game is posted to a `scry web` on the same machine as soon as it's captured. The browser may first ask whether dominion.games may connect to apps on the device.
 
 For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`) copies the log of a game you loaded yourself: `pbpaste > game.log`, then `scry review game.log`.
 

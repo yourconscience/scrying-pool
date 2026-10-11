@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -222,4 +223,31 @@ func mustParse(t *testing.T, log string) *cartographer.Game {
 		t.Fatal(err)
 	}
 	return g
+}
+
+// A kingdom read later is written into the saved game's score file, replacing an old one.
+func TestAddKingdom(t *testing.T) {
+	dir := t.TempDir()
+	score := "# row: 2026-Oct-09 | Nikhec: 23, gamrevinu: 32\n# original players: Nikhec / gamrevinu\n# kingdom: Old\nYou Win\n"
+	if err := os.WriteFile(filepath.Join(dir, "184479482.score.txt"), []byte(score), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	k := map[string][]string{"Cards in Supply": {"Patron", "Smithy"}, "Events, Landmarks, Projects, Ways, Allies, Traits, and Prophecies": {"Rice"}}
+	if err := addKingdom(dir, "184479482", k); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(filepath.Join(dir, "184479482.score.txt"))
+	want := "# row: 2026-Oct-09 | Nikhec: 23, gamrevinu: 32\n# original players: Nikhec / gamrevinu\n# kingdom: Patron, Smithy\n# landscapes: Rice\nYou Win\n"
+	if string(b) != want {
+		t.Fatalf("score file:\n%s\nwant:\n%s", b, want)
+	}
+	if err := addKingdom(dir, "../x", k); err == nil {
+		t.Fatal("a bad id was accepted")
+	}
+	if got, ok := rowScores(scoreHeader(want, "row")); !ok || got["Nikhec"] != 23 || got["gamrevinu"] != 32 {
+		t.Fatalf("row scores %v", got)
+	}
+	if got, ok := resultScores("R4D4: ?5, gamrevinu: 9"); !ok || got["R4D4"] != -5 {
+		t.Fatalf("DomBot minus: %v", got)
+	}
 }

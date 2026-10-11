@@ -384,3 +384,20 @@ func TestScoreMatchesDomBot(t *testing.T) {
 		t.Errorf("scores %v and %v, DomBot says 9 and 6", vp["gamrevinu"], vp["UtagawaLk"])
 	}
 }
+
+// The loading account sits in seat 1 (the first original player's), the bot in seat 2.
+func TestSeatNames(t *testing.T) {
+	for _, c := range []struct {
+		log, original []string
+		want          map[string]string
+	}{
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"gamrevinu", "Wtrrch"}, map[string]string{"gamrevinu": "gamrevinu", "Lord Rattington": "Wtrrch"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"Nikhec", "gamrevinu"}, map[string]string{"gamrevinu": "Nikhec", "Lord Rattington": "gamrevinu"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"agoo03", "jers"}, map[string]string{"gamrevinu": "agoo03", "Lord Rattington": "jers"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"agoo03"}, nil},
+	} {
+		if got := SeatNames(c.log, c.original); !reflect.DeepEqual(got, c.want) {
+			t.Errorf("SeatNames(%v, %v) = %v, want %v", c.log, c.original, got, c.want)
+		}
+	}
+}

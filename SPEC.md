@@ -165,3 +165,12 @@ Phase 1, 2026-10-10 (partial):
 - **Corpus.** Of 462 rated 2026 games: 242 saved (all pass `scry check`, 198 match DomBot's final scores), 18 the server can't load ("Internal error.", decision index -1), 6 AFK, 3 capture errors, 193 not tried (March to September). `manifest-2026.json` in the games folder records each one.
 - **Next:** the Advisor plan (luck and shuffles, rule-based mistake hints, strategy), published as an artifact on 2026-10-11.
 
+
+2026-10-11, evening: unattended capture and more games.
+
+- **Kingdom.** DomBot's token in the Keychain had expired (401), so kingdoms come from dominion.games: the capture's kingdom-only mode starts each saved game, reads `kingdomViewer.cardGroups` and resigns, about 10 seconds a game.
+- **Profiles as a source.** The Profile tab's `ProfileResult` objects give a player's 25 latest games with game number, time, rated, both players' levels, scores and kingdom; the tab's search opens any player. `harvest()` starts from your profile, follows opponents above level 50 and queues their rated two-player games with a player above 50. 30 profiles took 108 seconds, saw 261 players above 50 and found 651 games; 502 of them (total score 10 or more, not yours) were queued.
+- **Unattended runs.** Results and the queue persist in IndexedDB (`resume()` after a reload); a 6-minute limit per game; logouts waited out for 15 minutes; `run` adds to a running queue; optional posting to `scry web`.
+- **Two capture bugs fixed.** The decision field keeps its last value, so a stale -1 failed the game after an unloadable one; the field is now reset before each load. Chained timers in the hidden tab woke about once a minute; waits now run on a worker's timers.
+- **Other players' games.** `SeatNames` maps seat 1 to the first original player even when the loading account isn't one of them. `scry check` takes the final scores from each game's row when no `!prior` list is given.
+- Queued for the night of 2026-10-11: kingdoms for 237 saved games, 8 new games of yours, the 214 not yet saved, and 502 games of strong players.
