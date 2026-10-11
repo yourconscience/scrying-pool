@@ -68,3 +68,33 @@ func ParseScoreScreen(text string, isCard func(string) bool) (turns map[string]i
 	}
 	return turns, decks
 }
+
+// ScoreScreenSources lists the names in the score screen's VP section: every VP
+// card, landmark or ally that scored, e.g. "Province", "Wall", "Plateau Shepherds".
+func ScoreScreenSources(text string) []string {
+	var lines []string
+	for _, l := range strings.Split(text, "\n") {
+		if !strings.HasPrefix(l, "#") {
+			lines = append(lines, strings.TrimSpace(l))
+		}
+	}
+	seen := map[string]bool{}
+	var out []string
+	for i := 0; i+2 < len(lines); i++ {
+		if _, err := strconv.Atoi(lines[i]); err != nil {
+			continue
+		}
+		name := lines[i+1]
+		if name == "" || strings.HasPrefix(name, "Turns: ") || lines[i+2] != "" {
+			continue
+		}
+		if _, err := strconv.Atoi(name); err == nil {
+			continue
+		}
+		if !seen[name] {
+			seen[name] = true
+			out = append(out, name)
+		}
+	}
+	return out
+}

@@ -25,6 +25,11 @@ type Turn struct {
 	Shuffles int                 `json:"shuffles"`
 	Decks    Decks               `json:"decks"`    // every player's owned cards after the turn
 	Counters map[string]Counters `json:"counters"` // every player's tokens after the turn
+	// where every player's cards are after the turn's Clean-up: the next hand,
+	// the draw pile, the discard pile, cards staying in play, mats
+	Zones map[string]Zones `json:"zones"`
+	// for players whose cards the log doesn't all name: what the unnamed ones can be
+	Unnamed map[string]Deck `json:"unnamed,omitempty"`
 }
 
 // Templates by turn column. The number is the argument that holds the amount.
@@ -90,9 +95,23 @@ func (g *Game) Turns() []Turn {
 	}
 	var turns []Turn
 	var cur *Turn
+	zones := newZoneReplay(g)
 	finish := func() {
 		if cur == nil {
 			return
+		}
+		cur.Zones = zones.snapshot()
+		for p, z := range cur.Zones {
+			hidden := false
+			for _, c := range z {
+				hidden = hidden || c.Unknown > 0
+			}
+			if hidden {
+				if cur.Unnamed == nil {
+					cur.Unnamed = map[string]Deck{}
+				}
+				cur.Unnamed[p] = z.Pool(decks[p])
+			}
 		}
 		cur.Decks = Decks{}
 		cur.Counters = map[string]Counters{}
@@ -109,7 +128,8 @@ func (g *Game) Turns() []Turn {
 		turns = append(turns, *cur)
 		cur = nil
 	}
-	for _, e := range g.Events {
+	for i, e := range g.Events {
+		zones.step(i, e)
 		if e.Template == "NEW_TURN" {
 			finish()
 			cur = &Turn{Number: e.Turn, Player: e.Player, Extra: e.Extra, Bought: []CardN{}, Gained: []CardN{}, Trashed: []CardN{}}

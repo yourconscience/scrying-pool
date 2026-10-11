@@ -9,6 +9,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/yourconscience/scrying-pool/cartographer"
@@ -94,7 +96,42 @@ func importGames(file, dir string, minTurns int) error {
 
 // checkGames runs the cartographer check on saved logs: each <id>.log with its
 // <id>.score.txt, from a folder (default: the saved games) or a list of files.
-func checkGames(args []string) error {
+// priorScores reads final scores from a saved DomBot !prior list:
+// [{"id": "184479482", "result": "Nikhec: 23, gamrevinu: 32"}, ...].
+func priorScores(path string) (map[string]map[string]int, error) {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var rows []struct {
+		ID     string `json:"id"`
+		Result string `json:"result"`
+	}
+	if err := json.Unmarshal(b, &rows); err != nil {
+		return nil, err
+	}
+	re := regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
+	out := map[string]map[string]int{}
+	for _, r := range rows {
+		m := re.FindStringSubmatch(strings.ReplaceAll(r.Result, "\u2212", "-"))
+		if m == nil {
+			continue
+		}
+		a, _ := strconv.Atoi(m[2])
+		b, _ := strconv.Atoi(m[4])
+		out[r.ID] = map[string]int{m[1]: a, m[3]: b}
+	}
+	return out, nil
+}
+
+func checkGames(args []string, priorPath string) error {
+	var prior map[string]map[string]int
+	if priorPath != "" {
+		var err error
+		if prior, err = priorScores(priorPath); err != nil {
+			return err
+		}
+	}
 	cpath := cartographer.DefaultClientPath()
 	if cpath == "" {
 		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
@@ -119,7 +156,7 @@ func checkGames(args []string) error {
 			logs = append(logs, a)
 		}
 	}
-	var pass, fail, noScore int
+	var pass, fail, noScore, scored, scoreFail int
 	for _, lp := range logs {
 		id := strings.TrimSuffix(filepath.Base(lp), ".log")
 		b, err := os.ReadFile(lp)
@@ -131,13 +168,26 @@ func checkGames(args []string) error {
 			noScore++
 			continue
 		}
-		if r := client.Check(string(b), string(sb)); r.OK() {
+		r := client.Check(string(b), string(sb))
+		problems := r.Problems
+		if final, ok := prior[id]; ok {
+			scored++
+			_, sp := client.CheckScore(string(b), string(sb), final)
+			problems = append(problems, sp...)
+			if len(sp) > 0 {
+				scoreFail++
+			}
+		}
+		if len(problems) == 0 {
 			pass++
 		} else {
 			fail++
-			fmt.Printf("FAIL %s: %s\n", id, strings.Join(r.Problems, "; "))
+			fmt.Printf("FAIL %s: %s\n", id, strings.Join(problems, "; "))
 		}
 	}
 	fmt.Printf("%d passed, %d failed, %d without a score screen (of %d logs)\n", pass, fail, noScore, len(logs))
+	if prior != nil {
+		fmt.Printf("final scores: %d of %d games match the known scores\n", scored-scoreFail, scored)
+	}
 	return nil
 }

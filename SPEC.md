@@ -134,7 +134,19 @@ Phase 1, 2026-10-10 (partial):
   - It replays ownership and gives a per-turn state: decks and counters for Coffers, Villagers, Favors, debt and VP tokens.
   - `scry check` passes on all 220 imported games and all test logs: no unknown lines, and last turns and final decks equal the score screens.
   - Fixes driven by real games: score screens read as trailing card pairs; Supply exiles and trashes decided by the causing card (including Ways); Loot named by a preceding reveal; Fortress, Lich and Trail returning from the trash; Inheritance; the Box; Fleet turns not counted; Tax debt and debt-cost buys.
-  - Not done: zones within a player's deck, Supply pile sizes, variable-VP cards.
+  - Not done: zones within a player's deck, Supply pile sizes, variable-VP cards (done on 2026-10-11, below).
 - **Capture.** `web/capture.js` plus `scry import` (AFK games dropped).
   - Checked on 10 games that were captured by hand: byte-identical logs, all 10 pass.
   - From DomBot `!prior`: 462 rated games in 2026. 220 imported (`<user config>/scrying-pool/games`); the rest were not captured when the run was stopped.
+
+2026-10-11: zones, Supply and VP, from the saved games only (no dominion.games).
+
+- **VP** (`cartographer/vp.go`): fixed values from the cards' printed VP, the variable cards, Misery, Distant Lands, the scoring landmarks (read from the score screen) and Plateau Shepherds.
+  - 153 of 207 games match DomBot's final scores. The other 54 are capture problems, not scoring ones: the log misses the game's last decision, or has extra bot moves.
+  - The seat mapping explains much of the earlier gap. The loading account sits in seat 1, the first original player's seat. With it, matches went from 84 to 153.
+- **Supply** (`cartographer/supply.go`): pile sizes from the setup rules, replayed through gains, returns, Supply trashes and exiles, and gains from the trash. It matches the client at the end of 184518886.
+- **Zones** (`cartographer/zones.go`): hand, draw pile, discard pile, in play, set aside, mats and Exile per player, in `Turns()`.
+  - Checked on every saved game: zones always add up to the owned cards. 270 of 137,923 lines found a card out of place. The next hand equals the Clean-up draw in 3,638 of 3,641 turns.
+  - Rules that came from the games: implicit gain destinations; Hexes and Boons whose effects follow at the same level; Mastermind's three plays; Royal Galley's silent set-aside; Prince returning its card; Avoid and Order of Masons keeping cards out of a shuffle; Shadow cards going under the deck; "now or next turn" Durations; cards that stay until they fire; Flagship and Throne Room holding Durations; plays from the Supply or trash.
+- `scry review` names the seats from the saved score screen. It scores with `Client.Score`, and `-json` adds zones, final VP, Supply piles and the trash.
+- Open: the capture should cut the log at the recorded decision and stop the bot from moving. That needs dominion.games again.

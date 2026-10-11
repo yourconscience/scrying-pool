@@ -27,7 +27,7 @@ const usageText = `usage:
   scry bookmarklet [-client]                       print the "Copy log" (or "Copy client tables") bookmark
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
-  scry check [DIR or LOG_FILES]                    check saved logs against their score screens (default: saved games)
+  scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
@@ -99,8 +99,8 @@ func main() {
 		}
 		err = emit(*out, renderMessages(msgs, time.Local))
 	case "review":
-		namesFlag := fs.String("names", "", `rename players, e.g. "Lord Rattington=UtagawaLk" (comma-separated)`)
-		asJSON := fs.Bool("json", false, "print players, turns (with decks and counters) and final decks as JSON")
+		namesFlag := fs.String("names", "", `rename players, e.g. "Lord Rattington=UtagawaLk" (comma-separated); by default the seats' original players from the saved score screen next to the log`)
+		asJSON := fs.Bool("json", false, "print players, turns (with decks, zones and counters), final decks, VP and Supply piles as JSON")
 		fs.Parse(args)
 		if fs.NArg() != 1 {
 			fail(fmt.Errorf("review needs one LOG_FILE"))
@@ -127,11 +127,25 @@ func main() {
 		if perr != nil {
 			fail(perr)
 		}
+		// the saved score screen names the game's landmarks, and a reloaded game's
+		// seats belong to its original players: the one who loaded it sits in the
+		// first player's seat, the bot in the second's
+		var in cartographer.ScoreInput
+		if score, err := os.ReadFile(strings.TrimSuffix(fs.Arg(0), ".log") + ".score.txt"); err == nil {
+			in.Landscapes = client.Landscapes(string(score))
+			if seats := cartographer.SeatNames(g.Players, cartographer.OriginalPlayers(string(score))); seats != nil && *namesFlag == "" {
+				if g, perr = client.Parse(string(text), seats); perr != nil {
+					fail(perr)
+				}
+			}
+		}
 		if *asJSON {
-			b, _ := json.MarshalIndent(map[string]any{"header": g.Header, "players": g.Players, "turns": g.Turns(), "final_decks": g.FinalDecks()}, "", " ")
+			supply := g.Supply(client)
+			b, _ := json.MarshalIndent(map[string]any{"header": g.Header, "players": g.Players, "turns": g.Turns(), "final_decks": g.FinalDecks(),
+				"final_vp": client.Score(g, in), "supply_left": supply.Left, "empty_piles": supply.EmptyPiles(), "trash": supply.Trash}, "", " ")
 			err = emit(*out, string(b)+"\n")
 		} else {
-			err = emit(*out, reviewMarkdown(client, g))
+			err = emit(*out, reviewMarkdown(client, g, in))
 		}
 	case "bookmarklet":
 		clientTables := fs.Bool("client", false, `print the "Copy client tables" bookmark instead of "Copy log"`)
@@ -154,8 +168,9 @@ func main() {
 		fs.Parse(args)
 		err = importGames(fs.Arg(0), *dir, *minTurns)
 	case "check":
+		priorFlag := fs.String("prior", "", "also compare final VP with a saved DomBot !prior list (JSON)")
 		fs.Parse(args)
-		err = checkGames(fs.Args())
+		err = checkGames(fs.Args(), *priorFlag)
 	case "client":
 		if len(args) == 0 || args[0] != "save" {
 			fmt.Fprint(os.Stderr, usageText)

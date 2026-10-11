@@ -99,3 +99,71 @@ func deckDiff(have, want Deck) string {
 	sort.Strings(out)
 	return strings.Join(out, ", ")
 }
+
+// CheckScore compares computed final VP with known final scores (e.g. DomBot's).
+// final is keyed by the players' real names; a bot that took a seat is matched to
+// the remaining name. The game's scoring landmarks and allies come from the score
+// screen's VP section.
+func (c *Client) CheckScore(log, score string, final map[string]int) (got map[string]int, problems []string) {
+	g, err := c.Parse(log, nil)
+	if err != nil {
+		return nil, []string{err.Error()}
+	}
+	vp := c.Score(g, ScoreInput{Landscapes: c.Landscapes(score)})
+	seats := SeatNames(g.Players, OriginalPlayers(score))
+	if seats == nil {
+		return nil, []string{"can't tell which seat was which player (no \"# original players\" line)"}
+	}
+	got = map[string]int{}
+	for p, b := range vp {
+		name := seats[p]
+		got[name] = b.Total()
+		if want, ok := final[name]; !ok {
+			problems = append(problems, fmt.Sprintf("no known score for %s", name))
+		} else if got[name] != want {
+			problems = append(problems, fmt.Sprintf("%s: computed %d VP %v, final score %d", name, got[name], b, want))
+		}
+	}
+	sort.Strings(problems)
+	return got, problems
+}
+
+// Landscapes lists the landmarks and allies a score screen scores, e.g. "Wall".
+func (c *Client) Landscapes(score string) []string {
+	var out []string
+	for _, name := range ScoreScreenSources(score) {
+		if card := c.Cards[name]; card != nil && (card.Is("Landmark") || card.Is("Ally")) {
+			out = append(out, name)
+		}
+	}
+	return out
+}
+
+// SeatNames maps the names in a reloaded game's log to the real players. The
+// player who reloads the game sits in seat 1, which belonged to the first
+// original player; the bot sits in seat 2, the second original player. The
+// reloading player is the one whose name is among the original players.
+func SeatNames(logPlayers, original []string) map[string]string {
+	if len(original) != 2 || len(logPlayers) != 2 {
+		return nil
+	}
+	in := func(n string) bool { return n == original[0] || n == original[1] }
+	viewer, bot := logPlayers[0], logPlayers[1]
+	if !in(viewer) && in(bot) {
+		viewer, bot = bot, viewer
+	}
+	if !in(viewer) || in(bot) {
+		return nil
+	}
+	return map[string]string{viewer: original[0], bot: original[1]}
+}
+
+// OriginalPlayers reads "# original players: a / b" from a saved score screen.
+func OriginalPlayers(score string) []string {
+	for _, l := range strings.Split(score, "\n") {
+		if v, ok := strings.CutPrefix(l, "# original players: "); ok {
+			return strings.Split(strings.TrimSpace(v), " / ")
+		}
+	}
+	return nil
+}

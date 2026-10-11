@@ -24,7 +24,7 @@ Click **Load demo match** to see a full example. It uses a real six-game match, 
 1. One time: export the client's log grammar and card list. Run `scry bookmarklet -client`, save the printed `javascript:` link as a bookmark, click it on dominion.games, then run `pbpaste | scry client save`. These tables belong to 2nd Shuffle, so they stay on your machine instead of in this repo.
 2. On dominion.games, open **Profile** and click the Load Game icon next to a game in Recent Results (or use **My Table** > **Load Old Game** with a game ID). Press **Load from End**, then **Ready**.
 3. Click the **Copy log** bookmark (`scry bookmarklet` prints it), then save the clipboard to a file: `pbpaste > game.log`.
-4. `scry review game.log` prints the final decks and a turn table (`-json` for the full per-turn state).
+4. `scry review game.log` prints the final decks, VP and a turn table (`-json` for the full per-turn state). When the capture's `game.score.txt` sits next to the log, the seats get their original players' names and the score screen's landmarks are scored.
 
 For many games at once, `web/capture.js` loads finished games by ID in your logged-in tab, drops AFK games (a player with fewer than 3 turns), and exports them as JSON lines for `scry import`, which saves and checks each one.
 
@@ -40,22 +40,46 @@ The bookmarks only read the page. Copy log refuses rated games, because a game y
   - cards that come back right after being trashed (Fortress, Lich, a Trail played from the trash);
   - Loot hidden from your seat but revealed just before (Pickaxe).
 - **Per turn.** `Turns()` gives coins, buys, gains, trashes, Actions played, cards drawn and shuffles for each turn. It also gives every player's deck and counters after the turn: Coffers, Villagers, Favors, debt, VP tokens.
-- **Checks.** `scry check` compares saved logs with their score screens: every line must be read, and each player's last turn and final deck must match. On 2026-10-10 all 220 imported games and all test logs pass.
+- **Zones.** Each turn also says where every card is after its Clean-up: hand (the next hand), draw pile, discard pile, in play, set aside, the Tavern, Island and Native Village mats, Exile.
+  - Where the log doesn't say where a card comes from, the template and the card that caused the line decide. Mine gains to the hand, Supplies gains onto the deck, a Horse returns itself rather than the Horse it drew, Wandering Minstrel topdecks what it revealed.
+  - Durations stay in play until their last effect. A Throne Room stays as long as the Duration it played twice; "the next time" cards (Secluded Shrine, Cutthroat, Search, Flagship) stay until they fire; Gear, Haven and the like leave at once if they set nothing aside.
+  - Cards the log doesn't name, such as an opponent's "draws 5 cards", are counted per zone as unnamed, and the turn lists what they can be. Known cards on top of a deck (topdecks) and at its bottom (Shadow cards) are tracked, so a hidden draw of a known top card is named.
+  - The log hides some of your own moves: Scheme's and Merchant Camp's "topdecks a card" in Clean-up. These are guessed from the cards in play.
+- **Supply.** `Supply()` gives each pile's starting size and what's left, plus the trash. Sizes follow the setup rules: split and rotating piles, Knights, Castles, Ruins, and piles outside the Supply. Every gain, return, Supply trash and exile changes them.
+- **VP.** `Client.Score()` scores each player from their deck, VP tokens and Misery, including:
+  - the cards whose worth depends on the deck: Gardens, Duke, Fairgrounds, Feodum, Silk Road, Vineyard, the Castles, Pasture, Marchland, Territory, Demesne, Distant Lands on the Tavern mat;
+  - the landmarks that score at the end, and Plateau Shepherds.
+- **Checks.** `scry check` compares saved logs with their score screens: every line must be read, and each player's last turn and final deck must match. On 2026-10-11 all 220 imported games and all test logs pass. `scry check -prior FILE` also compares computed VP with the final scores in a saved DomBot `!prior` list.
+
+### What the saved games showed
+
+- **Seats.** The account that loads a game takes the first player's seat, and the bot takes the second. In 108 of the 220 games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there. `SeatNames` maps the names back using the table's "Original Player" lines.
+- **Final scores.** Computed VP equal DomBot's final scores in 153 of 207 games. In the other 54, the captured log doesn't end where the game did:
+  - the game's last decision is missing, often the buy that ended it (6 VP short: the last Province);
+  - or the bot kept playing its seat after the load. In 20 of these games, a shorter part of the log scores exactly what DomBot reports.
+
+  Fixing this needs a change to the capture on dominion.games.
+- **Zones.** On the 220 games plus the test logs (137,923 log lines):
+  - every player's zones always hold exactly the cards they own;
+  - 270 moves didn't find the card where the replay expected it, 116 of them for seats whose cards the log names in full;
+  - after a turn, the hand equals the Clean-up draw in 3,638 of 3,641 checked turns.
+- **Supply.** At the end of game 184518886 every pile matches the client's piles.
 
 The tests check that:
 
 - every test log passes `scry check`'s rules;
 - the turn-by-turn replay ends at the final decks, and no balance ever goes negative;
+- every player's zones add up to their deck after every turn, the next hand is the Clean-up draw, and cards out of place stay rare;
+- Supply piles and final VP match the client and DomBot for 184518886;
 - every template is reachable;
 - every card reads in every form.
 
-Set `SCRY_GAMES` to a folder of saved games to run the replay test on those too.
+Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too.
 
 Not covered yet:
 
-- where cards are within a player's deck (hand, draw pile, discard);
-- Supply pile sizes;
-- VP from cards like Gardens.
+- getting the log to end exactly where the game ended;
+- Possession, and cards played from other players' decks.
 
 ## Hosted version
 
