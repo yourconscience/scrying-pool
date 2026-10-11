@@ -63,8 +63,8 @@ func (c *Client) PileOf(card string) string {
 	return card
 }
 
-// initialSize is a pile's size at the start of a game with n players.
-func (c *Client) initialSize(pile string, n int) int {
+// InitialSize is a pile's size at the start of a game with n players.
+func (c *Client) InitialSize(pile string, n int) int {
 	if s, ok := nonSupply[pile]; ok {
 		return s
 	}
@@ -140,7 +140,7 @@ func (g *Game) Supply(c *Client) SupplyState {
 	take := func(card string, k int) {
 		pile := c.PileOf(card)
 		if _, ok := s.Initial[pile]; !ok {
-			s.Initial[pile] = c.initialSize(pile, n)
+			s.Initial[pile] = c.InitialSize(pile, n)
 			s.Left[pile] = s.Initial[pile]
 		}
 		s.Left[pile] -= k

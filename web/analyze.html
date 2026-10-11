@@ -38,7 +38,7 @@
     <ol>
       <li>One time: drag this to your bookmarks bar: <a id="bookmark" class="bookmark" href="#" draggable="true">Scry game</a></li>
       <li>In your dominion.games tab, on the lobby screen, click <strong>Scry game</strong> and enter <code class="gid"></code> <button type="button" id="copy-id" class="secondary small">Copy</button>. No tab open? <button type="button" id="open-dg" class="secondary small">Open dominion.games</button></li>
-      <li>The tab loads the game at its last decision with a bot in the other seat, ends it and sends the log here. This page opens the game as soon as it arrives.</li>
+      <li>The tab loads the game at its last decision with a bot in the other seat, ends it and sends the log here. The first time, the browser may ask whether dominion.games may connect to apps on this device: allow it. This page opens the game as soon as it arrives.</li>
     </ol>
     <p class="waiting" id="waiting"><span class="dot" aria-hidden="true"></span> Waiting for game <span class="gid"></span>…</p>
     <details>
@@ -86,6 +86,7 @@
     <section class="panel" aria-labelledby="supply-h">
       <h2 id="supply-h">Supply <span class="hint" id="supply-note"></span></h2>
       <div id="supply" class="supply"></div>
+      <p id="lands" class="lands" hidden></p>
     </section>
 
     <section class="panel" aria-labelledby="decks-h">

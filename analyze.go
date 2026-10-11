@@ -44,8 +44,10 @@ type gameView struct {
 	Setup    []logLine                           `json:"setup"`
 	Turns    []turnView                          `json:"turns"`
 	FinalVP  map[string]cartographer.VPBreakdown `json:"final_vp"`
-	Piles    map[string]int                      `json:"piles"` // starting size of each pile the game touched
-	Cards    map[string]Card                     `json:"cards"` // every card the view names
+	Piles    map[string]int                      `json:"piles"`      // starting size of each kingdom pile and each pile the game touched
+	Kingdom  []string                            `json:"kingdom"`    // the kingdom piles, when the capture read them
+	Lands    []string                            `json:"landscapes"` // Events, Landmarks, Projects, Ways, Allies, Traits, Prophecies
+	Cards    map[string]Card                     `json:"cards"`      // every card the view names
 }
 
 type savedGame struct {
@@ -67,7 +69,7 @@ func listGames(dir string) ([]savedGame, error) {
 			continue
 		}
 		id := strings.TrimSuffix(filepath.Base(f), ".score.txt")
-		out = append(out, savedGame{ID: id, Row: scoreRow(string(b)), Original: cartographer.OriginalPlayers(string(b))})
+		out = append(out, savedGame{ID: id, Row: scoreHeader(string(b), "row"), Original: cartographer.OriginalPlayers(string(b))})
 	}
 	sort.Slice(out, func(i, j int) bool {
 		a, _ := strconv.Atoi(out[i].ID)
@@ -77,14 +79,22 @@ func listGames(dir string) ([]savedGame, error) {
 	return out, nil
 }
 
-// scoreRow reads "# row: ..." from a saved score screen.
-func scoreRow(score string) string {
+// scoreHeader reads a "# key: ..." line from a saved score screen.
+func scoreHeader(score, key string) string {
 	for _, l := range strings.Split(score, "\n") {
-		if v, ok := strings.CutPrefix(l, "# row: "); ok {
+		if v, ok := strings.CutPrefix(l, "# "+key+": "); ok {
 			return strings.TrimSpace(v)
 		}
 	}
 	return ""
+}
+
+// scoreCards reads a "# key: A, B, C" card list from a saved score screen.
+func scoreCards(score, key string) []string {
+	if v := scoreHeader(score, key); v != "" {
+		return strings.Split(v, ", ")
+	}
+	return nil
 }
 
 func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error) {
@@ -102,7 +112,8 @@ func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error
 	if err != nil {
 		return nil, err
 	}
-	v := &gameView{ID: id, Row: scoreRow(string(score)), Header: g.Header, Cards: map[string]Card{}}
+	v := &gameView{ID: id, Row: scoreHeader(string(score), "row"), Header: g.Header, Cards: map[string]Card{},
+		Kingdom: scoreCards(string(score), "kingdom"), Lands: scoreCards(string(score), "landscapes")}
 	if len(g.Players) > 0 {
 		v.Account = g.Players[0]
 	}
@@ -133,6 +144,11 @@ func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error
 		v.Turns = append(v.Turns, tv)
 	}
 	v.Piles = g.Supply(client).Initial
+	for _, card := range v.Kingdom {
+		if pile := client.PileOf(card); v.Piles[pile] == 0 {
+			v.Piles[pile] = client.InitialSize(pile, len(g.Players))
+		}
+	}
 
 	add := func(name string) {
 		if _, ok := v.Cards[name]; ok || name == "" {
@@ -155,6 +171,9 @@ func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error
 	}
 	for pile := range v.Piles {
 		add(pile)
+	}
+	for _, c := range v.Lands {
+		add(c)
 	}
 	for _, t := range v.Turns {
 		for _, d := range t.Decks {

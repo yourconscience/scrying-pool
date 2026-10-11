@@ -36,17 +36,25 @@
   rec.row = "";
   const body = JSON.stringify(rec);
   if (window.opener) window.opener.postMessage({ scryGame: rec }, ORIGIN);
+  // The browser may first ask whether dominion.games may connect to apps on this
+  // device; the request waits for that answer.
+  say("Scrying Pool: sending the game to the app. If the browser asks whether dominion.games may connect to apps on this device, allow it.", 0);
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 60000);
   try {
-    const r = await fetch(ORIGIN + "/api/games", { method: "POST", headers: { "Content-Type": "text/plain" }, body });
+    const r = await fetch(ORIGIN + "/api/games", { method: "POST", headers: { "Content-Type": "text/plain" }, body, signal: ac.signal });
     if (!r.ok) throw new Error((await r.json()).error || "HTTP " + r.status);
     return say(`Scrying Pool: game ${id} is saved. See it at ${ORIGIN}/analyze.html#${id}`, 10000);
   } catch (e) {
     window.scryGame = body;
+    const why = ac.signal.aborted ? "no answer in a minute" : e.message || e;
     try {
       await navigator.clipboard.writeText(body);
-      say(`Scrying Pool: couldn't reach the app (${e.message || e}). The game is copied: paste it on the analysis page.`, 12000);
+      say(`Scrying Pool: couldn't reach the app (${why}). The game is copied: paste it on the analysis page.`, 15000);
     } catch (e2) {
-      say("Scrying Pool: couldn't reach the app or the clipboard. Is scry web running?", 12000);
+      say(`Scrying Pool: couldn't reach the app (${why}) or the clipboard. Is scry web running?`, 15000);
     }
+  } finally {
+    clearTimeout(timer);
   }
 })();

@@ -73,6 +73,17 @@
       for (let i = at - 1; i >= 0; i--) if (es[i].renderedLines && es[i].renderedLines.length) return es[i].renderedLines[es[i].renderedLines.length - 1];
       return null;
     },
+    // The game's kingdom as the client's kingdom viewer groups it, e.g.
+    // {"Cards in Supply": ["Craftsman", ...], "Events, Landmarks, ...": ["Peril"], "Loot": [...]}.
+    kingdom() {
+      const groups = (C.game && C.game.kingdomViewer && C.game.kingdomViewer.cardGroups) || [];
+      const out = {};
+      for (const g of groups) {
+        const name = typeof g.name === "string" ? g.name : (g.name && (g.name.name || g.name.key)) || String(g.name);
+        if (g.cards && g.cards.length) out[name] = g.cards.map((c) => c.name);
+      }
+      return out;
+    },
     minTurnsIn(log) {
       const last = {};
       for (const l of log.split("\n")) {
@@ -122,7 +133,12 @@
       this.setInput(input, id);
       await this.sleep(500);
       this.byText("Load from End").click();
-      await this.waitFor(() => { const d = this.decisionInput(); return d && /^\d+$/.test(d.value) && d.value !== "0"; }, 15000, "the decision index");
+      await this.waitFor(() => {
+        const d = this.decisionInput();
+        // -1: the server answered "Internal error." Some finished games never load.
+        if (d && d.value === "-1") throw new Error("the server can't load this game (decision index -1)");
+        return d && /^\d+$/.test(d.value) && d.value !== "0";
+      }, 15000, "the decision index");
       await this.sleep(800);
       const decision = +this.decisionInput().value;
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
@@ -156,9 +172,10 @@
       await this.waitFor(() => resultRe.test(document.body.innerText), 10000, "the score screen");
       const t = document.body.innerText, k = t.search(resultRe);
       const score = t.slice(k, t.indexOf("Players (", k));
+      const kingdom = this.kingdom();
       await this.leave();
       await this.sleep(1200);
-      return { id, original, decision, markers, log, bot, score };
+      return { id, original, decision, markers, log, bot, score, kingdom };
     },
     // Leaves the table; its button may show an unrendered label after a game the bot ended.
     async leave() {

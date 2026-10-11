@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,8 @@ type exportedGame struct {
 	Decision int      `json:"decision"` // the decision the game was loaded at
 	Markers  bool     `json:"markers"`  // whether the client's decision markers were read
 	Score    string   `json:"score"`
+	// the client's kingdom viewer, e.g. {"Cards in Supply": ["Craftsman", ...], "Loot": [...]}
+	Kingdom map[string][]string `json:"kingdom"`
 }
 
 // importGames saves exported games and checks each one against its score screen.
@@ -96,6 +99,7 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 	if g.Markers {
 		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
 	}
+	score += kingdomLines(g.Kingdom)
 	score += g.Score
 	r = client.Check(g.Log+g.Bot, score)
 	if r.MinTurns < minTurns {
@@ -110,6 +114,37 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 		}
 	}
 	return r, true, os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644)
+}
+
+// kingdomLines writes the kingdom viewer's groups as "# kingdom: ...",
+// "# landscapes: ..." and "# other cards: ..." lines for the score file.
+func kingdomLines(groups map[string][]string) string {
+	var names []string
+	for name := range groups {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	var kingdom, landscapes, other []string
+	for _, name := range names {
+		switch {
+		case name == "Cards in Supply":
+			kingdom = groups[name]
+		case strings.HasPrefix(name, "Events"): // "Events, Landmarks, Projects, Ways, ..."
+			landscapes = append(landscapes, groups[name]...)
+		default:
+			other = append(other, groups[name]...)
+		}
+	}
+	var out string
+	for _, l := range []struct {
+		key   string
+		cards []string
+	}{{"kingdom", kingdom}, {"landscapes", landscapes}, {"other cards", other}} {
+		if len(l.cards) > 0 {
+			out += "# " + l.key + ": " + strings.Join(l.cards, ", ") + "\n"
+		}
+	}
+	return out
 }
 
 // gamesDir is where saved games live: dir, or <user config>/scrying-pool/games.

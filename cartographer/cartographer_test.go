@@ -219,7 +219,7 @@ func TestSupplyMatchesClient(t *testing.T) {
 	for pile, n := range want {
 		got, ok := s.Left[pile]
 		if !ok { // never touched: still full
-			got = c.initialSize(pile, 2)
+			got = c.InitialSize(pile, 2)
 		}
 		if got != n {
 			t.Errorf("%s: %d left, the client showed %d", pile, got, n)

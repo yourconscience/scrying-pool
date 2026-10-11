@@ -429,7 +429,10 @@ function renderSupply() {
     a.append(el("span", "name", name), count);
     box.append(a);
   }
-  $("supply-note").textContent = "(the piles this game touched, after the turn)";
+  $("supply-note").textContent = game.kingdom && game.kingdom.length ? "(after the turn)" : "(the piles this game touched, after the turn)";
+  const lands = game.landscapes || [];
+  $("lands").hidden = !lands.length;
+  $("lands").replaceChildren(document.createTextNode("Also in the game: "), ...lands.flatMap((c) => [chip(c, c), document.createTextNode(" ")]));
 }
 
 function renderDecks() {

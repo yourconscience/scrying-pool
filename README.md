@@ -31,8 +31,8 @@ Then open http://127.0.0.1:8765. From a clone, `go run . web` does the same.
 
 The tab then loads the game, plays it out against a bot and sends it to the app, and the analysis page opens it.
 
-- The bookmark posts to `http://127.0.0.1:8765/api/games`. Chrome may first ask whether dominion.games may reach apps on this device.
-- If the post doesn't get through, the bookmark copies the game to the clipboard instead. Paste it into the page's **Or paste a game** box.
+- The bookmark posts to `http://127.0.0.1:8765/api/games`. The first time, the browser may ask whether dominion.games may connect to apps on this device: allow it. Until you answer, the request waits. (In Brave 155 on 2026-10-11 the request from the dominion.games tab hung like this.)
+- If the post doesn't get through in a minute, the bookmark copies the game to the clipboard instead. Paste it into the page's **Or paste a game** box.
 
 ## Capture
 

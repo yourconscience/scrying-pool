@@ -143,6 +143,7 @@ a.chip:hover { outline: 2px solid var(--victory); outline-offset: 0; }
 .pile .delta { margin-left: auto; font-weight: 700; background: rgba(0, 0, 0, 0.72); color: #fff; border-radius: 9px; padding: 0 6px; font-size: 0.75rem; }
 .pile.empty { opacity: 0.5; }
 .pile.empty .count b::after { content: " empty"; font-size: 0.75rem; font-weight: 600; }
+.lands { margin: 12px 0 0; font-size: 0.9rem; color: var(--muted); }
 .pile:hover { outline: 2px solid var(--victory); outline-offset: 1px; }
 
 .decks { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
