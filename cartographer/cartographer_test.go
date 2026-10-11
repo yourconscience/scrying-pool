@@ -159,7 +159,11 @@ func corpus(t *testing.T) []string {
 	logs, _ := filepath.Glob("../testdata/logs/*.log")
 	if dir := os.Getenv("SCRY_GAMES"); dir != "" {
 		more, _ := filepath.Glob(filepath.Join(dir, "*.log"))
-		logs = append(logs, more...)
+		for _, f := range more {
+			if !strings.HasSuffix(f, ".bot.log") { // moves a bot played after loading, not a game
+				logs = append(logs, f)
+			}
+		}
 	}
 	return logs
 }

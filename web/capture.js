@@ -4,6 +4,12 @@
 // Load Old Game, Load from End, the bot seat, Ready, Resign, Yes, Ok, Leave Table) and
 // reads the page. Games where a player took fewer than minTurns turns (AFK) are dropped.
 //
+// A loaded game stops at the original game's last decision. When that decision is the
+// bot's seat's (the game ended with a resignation), the bot answers it and plays on. The
+// client's log model marks every decision, so the lines after the loaded decision are cut
+// off and exported separately as "bot": they are not part of the game, but the score
+// screen counts them.
+//
 // Use: paste into the console (or a javascript_tool call) on dominion.games while logged in, then
 //   scryCapture.run(["184518886", ...])      // runs in the background; progress: scryCapture.status()
 //   scryCapture.exportNext(25)               // then press Cmd+C in the page; `pbpaste | scry import`
@@ -34,15 +40,38 @@
     // The lobby menu shows "My Table" at a table and "New Table" elsewhere; the login page shows neither.
     loggedIn() { return !!this.byText("Logout") || !!document.querySelector(".log-scroll-container"); },
 
-    extractLog() {
-      const rows = [...document.querySelectorAll(".log-scroll-container .log-line")];
-      const lines = rows.map((r) => {
+    lines(rows) {
+      return rows.map((r) => {
         const m = /padding-left:\s*([\d.]+)%/.exec(r.getAttribute("style") || "");
         const level = m ? Math.round(parseFloat(m[1]) / 4.54545) : 0;
         const kind = r.classList.contains("new-turn-line") ? "T" : r.classList.contains("shuffles-line") ? "S" : "";
         return level + kind + "\t" + [...r.children].map((c) => c.textContent.trim()).filter(Boolean).join("|");
       });
-      return "# scrying-pool log v1\n" + lines.join("\n") + "\n";
+    },
+    // The log up to and including last (a log line element), and the lines after it.
+    extractLog(last) {
+      const rows = [...document.querySelectorAll(".log-scroll-container .log-line")];
+      const k = last ? rows.indexOf(last) : -1;
+      const keep = k >= 0 ? rows.slice(0, k + 1) : rows, bot = k >= 0 ? rows.slice(k + 1) : [];
+      return { log: "# scrying-pool log v1\n" + this.lines(keep).join("\n") + "\n", bot: bot.length ? this.lines(bot).join("\n") + "\n" : "" };
+    },
+    // Keeps a reference to the game the client is showing: its log model holds the
+    // decisions (index, decisionIndex, playerIndex) between the log entries.
+    watchLog() {
+      const proto = window.LogEntriesChange && window.LogEntriesChange.prototype;
+      if (!proto || proto.scryWatched) return;
+      const execute = proto.execute;
+      proto.execute = function (game) { C.game = game; return execute.call(this, game); };
+      proto.scryWatched = true;
+    },
+    entries() { return (C.game && C.game.logModel && C.game.logModel.entries) || []; },
+    // The last log line of the original game: the one before decision n's marker. Null
+    // when decision n was never made (the game ended on your seat's decision).
+    lastOriginalLine(n) {
+      const es = this.entries();
+      const at = es.findIndex((e) => e.decisionIndex === n);
+      for (let i = at - 1; i >= 0; i--) if (es[i].renderedLines && es[i].renderedLines.length) return es[i].renderedLines[es[i].renderedLines.length - 1];
+      return null;
     },
     minTurnsIn(log) {
       const last = {};
@@ -95,29 +124,48 @@
       this.byText("Load from End").click();
       await this.waitFor(() => { const d = this.decisionInput(); return d && /^\d+$/.test(d.value) && d.value !== "0"; }, 15000, "the decision index");
       await this.sleep(800);
+      const decision = +this.decisionInput().value;
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
       await this.seatBot();
+      this.watchLog();
+      C.game = null;
       (await this.waitFor(() => this.byText("Ready"), 8000, "Ready")).click();
+      // done when the log stops growing: the bot has played up to your seat's next
+      // decision, or the loaded decision is yours, or the bot ended the game
       let n = 0, same = 0;
-      await this.waitFor(() => {
-        const m = document.querySelectorAll(".log-scroll-container .log-line").length;
-        if (m > 3 && m === n) same++; else same = 0;
-        n = m;
-        return same >= 6 || (m > 3 && resultRe.test(document.body.innerText) && same >= 2);
-      }, 45000, "the log to finish loading");
-      const log = this.extractLog();
-      if (!resultRe.test(document.body.innerText)) {
-        (this.byLabel("Resign") || this.byText("Resign")).click();
+      try {
+        await this.waitFor(() => {
+          const m = document.querySelectorAll(".log-scroll-container .log-line").length;
+          if (m > 3 && m === n) same++; else same = 0;
+          n = m;
+          return same >= 8 || (m > 3 && resultRe.test(document.body.innerText) && same >= 2);
+        }, 90000, "the log to finish loading");
+      } catch (e) {
+        // the bot can get stuck ("Waiting for Lord Rattington"); past its first move the
+        // game's own log is complete anyway
+        if (!this.entries().some((x) => x.decisionIndex === decision)) throw e;
+      }
+      const { log, bot } = this.extractLog(this.lastOriginalLine(decision));
+      const markers = !!(C.game && C.game.logModel);
+      const resign = this.byLabel("Resign") || this.byText("Resign");
+      if (!resultRe.test(document.body.innerText) && resign) {
+        resign.click();
         (await this.waitFor(() => this.byText("Yes"), 8000, "Yes")).click();
         (await this.waitFor(() => this.byText("Ok"), 8000, "Ok")).click();
       }
       await this.waitFor(() => resultRe.test(document.body.innerText), 10000, "the score screen");
       const t = document.body.innerText, k = t.search(resultRe);
       const score = t.slice(k, t.indexOf("Players (", k));
-      (await this.waitFor(() => this.byText("Leave Table"), 8000, "Leave Table")).click();
+      await this.leave();
       await this.sleep(1200);
-      return { id, original, log, score };
+      return { id, original, decision, markers, log, bot, score };
     },
+    // Leaves the table; its button may show an unrendered label after a game the bot ended.
+    async leave() {
+      (await this.waitFor(() => this.byText("Leave Table") || document.querySelector('[ng-click="$ctrl.leave()"]'), 8000, "Leave Table")).click();
+    },
+    // The client stops rendering its templates after some game endings; only a reload fixes it.
+    broken() { return document.body.innerText.includes("{{$ctrl."); },
     // Puts the page back on the lobby after an error: finishes an open game and leaves the table.
     async recover() {
       try {
@@ -127,7 +175,7 @@
           (await this.waitFor(() => this.byText("Ok"), 5000))?.click();
         }
       } catch (e) { /* not in a game */ }
-      try { (await this.waitFor(() => this.byText("Leave Table"), 4000))?.click(); } catch (e) { /* no table */ }
+      try { await this.leave(); } catch (e) { /* no table */ }
       await this.sleep(1500);
     },
 
@@ -137,6 +185,7 @@
       this.running = true; this.stopRequested = false;
       (async () => {
         while (this.queue.length && !this.stopRequested) {
+          if (this.broken()) { this.lastError = "the page stopped rendering; reload it and run again"; break; }
           if (!this.loggedIn()) { this.lastError = "logged out"; break; }
           const id = this.queue.shift();
           try {

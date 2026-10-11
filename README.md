@@ -28,6 +28,13 @@ Click **Load demo match** to see a full example. It uses a real six-game match, 
 
 For many games at once, `web/capture.js` loads finished games by ID in your logged-in tab, drops AFK games (a player with fewer than 3 turns), and exports them as JSON lines for `scry import`, which saves and checks each one.
 
+How loading a finished game works, as tested on 2026-10-11:
+
+- **Seats.** The account that loads a game always takes the first player's seat, and the bot the second. The table has no way to swap: sitting down from Spectate, or adding the bot first, still puts you first, and Randomize Player Order drops the loaded game.
+- **Where it stops.** "Load from End" gives the highest decision index the server takes (one more is reset to it). The game is replayed up to that decision, and the seat that owns it decides next.
+- **Bot moves.** When that seat is the bot's (the game ended with a resignation), the bot answers and plays on. The client's log model marks every decision (`decisionIndex`, `playerIndex`), so the capture keeps the log up to the loaded decision and saves the bot's lines apart, as `<id>.bot.log`. `scry import` and `scry check` compare the score screen with both together, since the score screen counts the bot's moves.
+- When the decision is yours, nothing is played, and the game's last move is missing from the log.
+
 The bookmarks only read the page. Copy log refuses rated games, because a game you load to review is always unrated. Don't use it on games in progress: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A).
 
 ## How logs are read (cartographer)
@@ -56,12 +63,10 @@ The bookmarks only read the page. Copy log refuses rated games, because a game y
 ### What the saved games showed
 
 - **Seats.** The account that loads a game takes the first player's seat, and the bot takes the second. In 108 of the 220 games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there. `SeatNames` maps the names back using the table's "Original Player" lines.
-- **Final scores.** Computed VP equal DomBot's final scores in 164 of 220 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) In the other 56, a loaded game stops at the original game's last decision, and that decision belongs to one of the seats:
-  - **Your seat (32 games).** The decision never happens, so the log lacks it. These games ended on the end condition, and the missing decision was the last buy: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate.
-  - **The bot's seat (21 games).** The bot answers that decision and keeps playing until your seat has to decide. These games ended with a resignation, and a shorter part of the log scores exactly what DomBot reports.
-  - 3 games fit neither.
-
-  Fixing this needs a change to the capture on dominion.games: stop the bot, or take the seat that has the last decision.
+- **Final scores.** Computed VP equal DomBot's final scores in 184 of 220 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) The 21 games where the bot used to play on were captured again with the bot's moves cut off, and all of them match now. The other 36:
+  - **The game's last decision is missing (33 games).** The replay never contains it. Usually it was the buy that ended the game: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate. In 32 games it was your seat's decision; in 184163893 it was the bot's seat's, which bought a Gold instead.
+  - **Both players are short (2 games, 184149206 and 184162961).** The game went on past the decisions the server keeps.
+  - **8 VP more than DomBot (1 game, 184308261).** Not explained yet.
 - **Zones.** On the 220 games plus the test logs (137,923 log lines):
   - every player's zones always hold exactly the cards they own;
   - 270 moves didn't find the card where the replay expected it, 116 of them for seats whose cards the log names in full;

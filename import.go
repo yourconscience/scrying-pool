@@ -22,6 +22,9 @@ type exportedGame struct {
 	Row      string   `json:"row"`      // e.g. "2026-10-09 | Nikhec: 23, gamrevinu: 32" from DomBot or the profile
 	Original []string `json:"original"` // the seats' original players
 	Log      string   `json:"log"`
+	Bot      string   `json:"bot"`      // lines the bot played after the load; the score screen counts them
+	Decision int      `json:"decision"` // the decision the game was loaded at
+	Markers  bool     `json:"markers"`  // whether the client's decision markers were read
 	Score    string   `json:"score"`
 }
 
@@ -66,8 +69,12 @@ func importGames(file, dir string, minTurns int) error {
 		if err := json.Unmarshal([]byte(line), &g); err != nil {
 			return fmt.Errorf("not a capture export line: %w", err)
 		}
-		score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n" + g.Score
-		r := client.Check(g.Log, score)
+		score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
+		if g.Markers {
+			score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+		}
+		score += g.Score
+		r := client.Check(g.Log+g.Bot, score)
 		if r.MinTurns < minTurns {
 			short++
 			fmt.Printf("SHORT %s: a player had %d turns, skipped (%s)\n", g.ID, r.MinTurns, g.Row)
@@ -75,6 +82,11 @@ func importGames(file, dir string, minTurns int) error {
 		}
 		if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
 			return err
+		}
+		if g.Bot != "" {
+			if err := os.WriteFile(filepath.Join(dir, g.ID+".bot.log"), []byte(g.Bot), 0o644); err != nil {
+				return err
+			}
 		}
 		if err := os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644); err != nil {
 			return err
@@ -152,7 +164,11 @@ func checkGames(args []string, priorPath string) error {
 	for _, a := range args {
 		if st, err := os.Stat(a); err == nil && st.IsDir() {
 			found, _ := filepath.Glob(filepath.Join(a, "*.log"))
-			logs = append(logs, found...)
+			for _, f := range found {
+				if !strings.HasSuffix(f, ".bot.log") {
+					logs = append(logs, f)
+				}
+			}
 		} else {
 			logs = append(logs, a)
 		}
@@ -169,7 +185,8 @@ func checkGames(args []string, priorPath string) error {
 			noScore++
 			continue
 		}
-		r := client.Check(string(b), string(sb))
+		bot, _ := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".bot.log") // the score screen counts the bot's moves
+		r := client.Check(string(b)+string(bot), string(sb))
 		problems := r.Problems
 		if final, ok := prior[id]; ok {
 			scored++

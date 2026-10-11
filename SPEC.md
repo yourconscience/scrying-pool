@@ -150,4 +150,9 @@ Phase 1, 2026-10-10 (partial):
   - Checked on every saved game: zones always add up to the owned cards. 270 of 137,923 lines found a card out of place. The next hand equals the Clean-up draw in 3,638 of 3,641 turns.
   - Rules that came from the games: implicit gain destinations; Hexes and Boons whose effects follow at the same level; Mastermind's three plays; Royal Galley's silent set-aside; Prince returning its card; Avoid and Order of Masons keeping cards out of a shuffle; Shadow cards going under the deck; "now or next turn" Durations; cards that stay until they fire; Flagship and Throne Room holding Durations; plays from the Supply or trash.
 - `scry review` names the seats from the saved score screen. It scores with `Client.Score`, and `-json` adds zones, final VP, Supply piles and the trash.
-- Open: the capture should cut the log at the recorded decision and stop the bot from moving. That needs dominion.games again.
+- Capture, tested on dominion.games the same day:
+  - You can't choose a seat: the loading account always takes seat 1. Spectate and re-sit, or a bot added first, change nothing; Randomize Player Order drops the loaded game.
+  - The decision index can't go past "Load from End".
+  - The client's log model (`LogEntriesChange.execute` -> `game.logModel.entries`) holds `DecisionEntry` records between the log entries. The capture now keeps the log up to the loaded decision and saves the bot's lines as `<id>.bot.log`. The 24 affected games were recaptured; 22 log-plus-bot captures match their score screens, and final scores match DomBot in 184 of 220 games (was 164).
+  - A bot can hang mid-turn ("Waiting for Lord Rattington"); the capture goes on once the bot's first move is in.
+  - When a bot's move ends the game, the client sometimes stops rendering its templates; the capture stops and asks for a reload.
