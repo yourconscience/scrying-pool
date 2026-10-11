@@ -143,7 +143,7 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 	if g.Markers {
 		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
 	}
-	if p := g.Profile; p != nil {
+	if p := g.Profile; p != nil && p.Time != "" {
 		var levels []string
 		for _, name := range p.Players {
 			levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
