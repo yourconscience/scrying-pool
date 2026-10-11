@@ -45,6 +45,15 @@ func newHandler(timeout time.Duration) http.Handler {
 		w.Header().Set("Cache-Control", "max-age=604800")
 		http.ServeFile(w, r, p)
 	})
+	mux.HandleFunc("GET /card-image/{name}", func(w http.ResponseWriter, r *http.Request) {
+		p, ok := cardImage(r.PathValue("name"))
+		if !ok {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Cache-Control", "max-age=604800")
+		http.ServeFile(w, r, p)
+	})
 	mux.HandleFunc("GET /api/games", func(w http.ResponseWriter, r *http.Request) {
 		dir, err := gamesDir("")
 		if err != nil {

@@ -56,6 +56,18 @@ function paint(node, name) {
   node.href = wikiURL(name);
   node.target = "_blank";
   node.rel = "noopener";
+  if (card && card.image) node.dataset.image = card.image;
+}
+
+// A card face: the image from card-images/ when the app has it.
+function face(name, cls) {
+  const card = game.cards[name];
+  if (!card || !card.image) return null;
+  const img = el("img", cls);
+  img.alt = name;
+  img.loading = "lazy";
+  img.src = card.image;
+  return img;
 }
 
 function chip(name, text) {
@@ -413,7 +425,11 @@ function renderSupply() {
     const a = el("a", "pile");
     paint(a, name);
     if (left <= 0) a.classList.add("empty");
-    if (card && card.art && card.kind !== "basic") { // the wiki has no art pages for basic cards
+    const img = face(name);
+    if (img) {
+      a.classList.add("face");
+      a.append(img);
+    } else if (card && card.art && card.kind !== "basic") { // the wiki has no art pages for basic cards
       const art = el("span", "art");
       const img = el("img");
       img.alt = "";
@@ -432,7 +448,14 @@ function renderSupply() {
   $("supply-note").textContent = game.kingdom && game.kingdom.length ? "(after the turn)" : "(the piles this game touched, after the turn)";
   const lands = game.landscapes || [];
   $("lands").hidden = !lands.length;
-  $("lands").replaceChildren(document.createTextNode("Also in the game: "), ...lands.flatMap((c) => [chip(c, c), document.createTextNode(" ")]));
+  $("lands").replaceChildren(document.createTextNode("Also in the game: "), ...lands.flatMap((c) => {
+    const img = face(c, "land");
+    if (!img) return [chip(c, c), document.createTextNode(" ")];
+    const a = el("a", "land-link");
+    paint(a, c);
+    a.append(img);
+    return [a];
+  }));
 }
 
 function renderDecks() {
@@ -531,6 +554,30 @@ function drawCharts() {
   chart($("chart-vp"), { lines: ps.map((p) => ({ color: color(p), values: game.turns.map((t) => t.vp[p] ?? 0) })) });
   chart($("chart-coins"), { bars: game.turns.map((t, i) => ({ i, value: t.coins, color: color(t.player) })) });
   chart($("chart-deck"), { lines: ps.map((p) => ({ color: color(p), values: game.turns.map((t) => sum(t.decks[p])) })) });
+}
+
+// Hovering a card shows its face next to the pointer.
+if (matchMedia("(hover: hover)").matches) {
+  const preview = el("img", "preview");
+  preview.alt = "";
+  preview.hidden = true;
+  document.body.append(preview);
+  document.addEventListener("mouseover", (e) => {
+    const t = e.target.closest && e.target.closest("[data-image]");
+    if (!t || t.classList.contains("face")) return;
+    preview.src = t.dataset.image;
+    preview.classList.toggle("wide", t.classList.contains("land-link") || /_(event|landmark|project|way|ally|trait|prophecy)_/.test(t.dataset.image));
+    preview.hidden = false;
+  });
+  document.addEventListener("mouseout", (e) => {
+    if (e.target.closest && e.target.closest("[data-image]")) preview.hidden = true;
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (preview.hidden) return;
+    const w = preview.offsetWidth || 220, h = preview.offsetHeight || 350;
+    preview.style.left = Math.min(e.clientX + 18, innerWidth - w - 8) + "px";
+    preview.style.top = Math.max(8, Math.min(e.clientY - h / 2, innerHeight - h - 8)) + "px";
+  });
 }
 
 loadSaved();

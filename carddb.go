@@ -19,6 +19,7 @@ type Card struct {
 	Debt   int      `json:"debt,omitempty"`
 	Set    string   `json:"set"`
 	Art    string   `json:"art"`
+	Image  string   `json:"image,omitempty"` // the card face, when card-images/ has it
 }
 
 func (c Card) Landscape() bool {

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -154,11 +155,18 @@ func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error
 		if _, ok := v.Cards[name]; ok || name == "" {
 			return
 		}
-		if c, ok := lookupCard(name); ok {
-			v.Cards[name] = c
-		} else if c := client.Cards[name]; c != nil {
-			v.Cards[name] = Card{Name: c.Name, Kind: "other", Types: c.Types, Cost: strconv.Itoa(c.Coin), Potion: c.Potion, Debt: c.Debt, Set: c.Expansion}
+		c, ok := lookupCard(name)
+		if !ok {
+			cc := client.Cards[name]
+			if cc == nil {
+				return
+			}
+			c = Card{Name: cc.Name, Kind: "other", Types: cc.Types, Cost: strconv.Itoa(cc.Coin), Potion: cc.Potion, Debt: cc.Debt, Set: cc.Expansion}
 		}
+		if _, ok := cardImage(name); ok {
+			c.Image = "/card-image/" + url.PathEscape(name)
+		}
+		v.Cards[name] = c
 	}
 	for _, ls := range append([][]logLine{setup}, logs...) {
 		for _, l := range ls {

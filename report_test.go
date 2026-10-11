@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -249,5 +250,41 @@ func TestAddKingdom(t *testing.T) {
 	}
 	if got, ok := resultScores("R4D4: ?5, gamrevinu: 9"); !ok || got["R4D4"] != -5 {
 		t.Fatalf("DomBot minus: %v", got)
+	}
+}
+
+// Every real card of the client has a card image, and the current edition's wins.
+func TestCardImagesCoverClientCards(t *testing.T) {
+	if _, err := os.Stat(cardImageDir()); err != nil {
+		t.Skip("no card-images/ folder")
+	}
+	c, err := loadClient()
+	if err != nil {
+		t.Skip("no exported dominion.games client tables")
+	}
+	var missing []string
+	n := 0
+	for name, card := range c.Cards {
+		if len(card.Types) == 0 || strings.HasSuffix(name, " Pile") || strings.HasSuffix(name, "pile") || name == "State Limbo" || name == "Druid Boons" {
+			continue // the client's own placeholders: card backs, pile markers, unused slots
+		}
+		n++
+		if _, ok := cardImage(name); !ok {
+			missing = append(missing, name)
+		}
+	}
+	sort.Strings(missing)
+	if len(missing) > 0 {
+		t.Errorf("%d of %d cards have no image: %v", len(missing), n, missing)
+	}
+	for name, want := range map[string]string{
+		"Estate": "baseset2_estate_2nd", "Moneylender": "baseset2_moneylender", "Farm": "harem",
+		"Way of the Mouse": "way_wayofthemouse", "The Earth's Gift": "boon_theearthsgift", "Will-o'-Wisp": "willowisp",
+		"Harbinger": "baseset2_harbinger", "Avoid": "event_avoid", "Fortune Teller": "guildscornucopia_fortuneteller",
+		"Augur Pile": "allies_augurs", "Augurs": "allies_augurs", "Way Of The Rat": "way_wayoftherat",
+	} {
+		if p, _ := cardImage(name); !strings.Contains(p, want) {
+			t.Errorf("%s: image %q, want one named like %q", name, p, want)
+		}
 	}
 }

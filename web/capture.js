@@ -221,20 +221,26 @@
       (await this.waitFor(() => this.byText("Ready"), 8000, "Ready")).click();
     },
     // Resigns if the game is still on, reads the score screen and leaves the table.
+    // A replayed game can be showing its own Yes/No question, so only a Yes that
+    // appears after clicking Resign confirms it; Resign is clicked again until it takes.
     async finish() {
       const resultRe = /You (Resigned|Lose|Win|Won|Tie)/;
-      const resign = this.byLabel("Resign") || this.byText("Resign");
-      if (!resultRe.test(document.body.innerText) && resign) {
-        resign.click();
-        (await this.waitFor(() => this.byText("Yes"), 8000, "Yes")).click();
-      }
-      // the resignation and the game's end each show a dialog with Ok
+      const yeses = () => [...document.querySelectorAll("*")].filter((e) => this.visible(e) && e.textContent.trim() === "Yes" && ![...e.children].some((c) => c.textContent.trim() === "Yes"));
+      let before = null, clickedAt = 0;
       await this.waitFor(() => {
         if (resultRe.test(document.body.innerText)) return true;
-        const ok = this.byText("Ok");
-        if (ok) ok.click();
+        const ok = this.byText("Ok"); // the resignation and the game's end each show a dialog with Ok
+        if (ok) { ok.click(); return false; }
+        if (before) {
+          const yes = yeses().find((e) => !before.includes(e));
+          if (yes) { yes.click(); before = null; return false; }
+          if (Date.now() - clickedAt < 3000) return false;
+          before = null;
+        }
+        const resign = this.byLabel("Resign") || this.byText("Resign");
+        if (resign && Date.now() - clickedAt > 3000) { before = yeses(); resign.click(); clickedAt = Date.now(); }
         return false;
-      }, 20000, "the score screen");
+      }, 40000, "the score screen");
       const t = document.body.innerText, k = t.search(resultRe);
       const score = t.slice(k, t.indexOf("Players (", k));
       const kingdom = this.kingdom();

@@ -162,6 +162,15 @@ scry cards sync                                       # download all card art th
 - **Client tables** (log templates, card names and types) come from your own dominion.games client through the Copy client tables bookmark and stay in `<user config>/scrying-pool/client`. `SCRY_CLIENT` points to another file.
 - **Saved games** live in `<user config>/scrying-pool/games`: `<id>.log`, `<id>.score.txt` (with the row, the original players and the loaded decision) and, when the bot played on, `<id>.bot.log`.
 - **Card facts:** `cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
+- **Card images** (full card faces) for the analysis page live in `card-images/`, which git ignores, or in `$SCRY_CARD_IMAGES`. They are the English images from [KingdomCreator](https://github.com/blakevanlan/KingdomCreator) (`docs/img/cards`, 1,010 files, 89 MB), fetched with a sparse clone:
+
+  ```bash
+  git clone --depth 1 --filter=blob:none --sparse https://github.com/blakevanlan/KingdomCreator.git /tmp/kc
+  git -C /tmp/kc sparse-checkout set docs/img/cards
+  cp -R /tmp/kc/docs/img/cards/. card-images/
+  ```
+
+  Files are named `<set>_<name>.jpg` (`plunder_buriedtreasure.jpg`, landscapes `plunder_event_avoid.jpg`, new art `_2nd`). `scry web` matches them to cards by name with letters and digits only, preferring second-edition sets and art. A test checks that every real card in the client's tables (832 on 2026-10-11) has an image. Every name in the saved kingdoms has one too.
 - **Card art** belongs to Rio Grande Games, so it isn't in this repo or the hosted page. The local app downloads thumbnails from the wiki the first time it shows each card. It keeps them in your user cache folder (`~/Library/Caches/scrying-pool/art` on macOS; `SCRY_ART_DIR` overrides it).
 
 ## Security notes

@@ -23,12 +23,13 @@ var pileGroups = func() map[string]string {
 	add("Patrician", "Patrician", "Emporium")
 	add("Settlers", "Settlers", "Bustling Village")
 	add("Sauna", "Sauna", "Avanto")
-	add("Augurs", "Herb Gatherer", "Acolyte", "Sorceress", "Sibyl")
-	add("Clashes", "Battle Plan", "Archer", "Warlord", "Territory")
-	add("Forts", "Tent", "Garrison", "Hill Fort", "Stronghold")
-	add("Odysseys", "Old Map", "Voyage", "Sunken Treasure", "Distant Shore")
-	add("Townsfolk", "Town Crier", "Blacksmith", "Miller", "Elder")
-	add("Wizards", "Student", "Conjurer", "Sorcerer", "Lich")
+	// the client's kingdom viewer names the rotating piles "Augur Pile" and so on
+	add("Augurs", "Augur Pile", "Herb Gatherer", "Acolyte", "Sorceress", "Sibyl")
+	add("Clashes", "Clash Pile", "Battle Plan", "Archer", "Warlord", "Territory")
+	add("Forts", "Fort Pile", "Tent", "Garrison", "Hill Fort", "Stronghold")
+	add("Odysseys", "Odyssey Pile", "Old Map", "Voyage", "Sunken Treasure", "Distant Shore")
+	add("Townsfolk", "Townsfolk Pile", "Town Crier", "Blacksmith", "Miller", "Elder")
+	add("Wizards", "Wizard Pile", "Student", "Conjurer", "Sorcerer", "Lich")
 	add("Knights", "Dame Anna", "Dame Josephine", "Dame Molly", "Dame Natalie", "Dame Sylvia",
 		"Sir Bailey", "Sir Destry", "Sir Martin", "Sir Michael", "Sir Vander")
 	add("Castles", "Humble Castle", "Crumbling Castle", "Small Castle", "Haunted Castle",
