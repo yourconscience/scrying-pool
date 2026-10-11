@@ -113,7 +113,8 @@ func priorScores(path string) (map[string]map[string]int, error) {
 	re := regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
 	out := map[string]map[string]int{}
 	for _, r := range rows {
-		m := re.FindStringSubmatch(strings.ReplaceAll(r.Result, "\u2212", "-"))
+		// DomBot's minus sign comes through as "−" or, in copied text, as "?": "R4D4: ?5" is -5
+		m := re.FindStringSubmatch(strings.NewReplacer("\u2212", "-", "?", "-").Replace(r.Result))
 		if m == nil {
 			continue
 		}

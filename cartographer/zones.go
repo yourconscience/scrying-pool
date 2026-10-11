@@ -98,26 +98,29 @@ type ZoneMiss struct {
 // Cards that look at or reveal cards from the top of a deck (their own, or an
 // attacked player's). Their reveals take the cards out of the deck until they
 // go somewhere; the rest go back on top.
-var deckLookers = names("Adventurer", "Advisor", "Apothecary", "Archive", "Bandit", "Border Guard", "Cardinal",
-	"Carnival", "Cartographer", "Catacombs", "Crystal Ball", "Doctor", "Duchess", "Envoy",
-	"Famine", "Farming Village", "Foresight", "Forest Dwellers", "Fortune Hunter", "Fortune Teller", "Gamble", "Ghost",
-	"Giant", "Golem", "Harvest", "Herald", "Hunter", "Hunting Party", "Ironmonger", "Jack of All Trades", "Journeyman",
-	"Library", "Loan", "Locusts", "Lookout", "Magpie", "Mapmaker", "Miller", "Mystic", "Native Village", "Navigator",
-	"Night Watchman", "Noble Brigand", "Oracle", "Patrician", "Patrol", "Piazza", "Pirate Ship", "Poet", "Pursue",
-	"Rabble", "Raze", "Rebuild", "Rogue", "Saboteur", "Sage", "Scout", "Scouting Party", "Scrying Pool",
-	"Sea Chart", "Seer", "Sentinel", "Sentry", "Sextant", "Sorcerer", "Sorceress", "Spy", "Survivors", "Swindler",
-	"The Sun's Gift", "Thief", "Tribute", "Vagrant", "Venture", "Wandering Minstrel", "War", "Will-o'-Wisp",
+//
+// These lists cover current cards only: the cards the second editions removed
+// (Adventurer, Sea Hag, ...) don't come up on dominion.games.
+var deckLookers = names("Advisor", "Apothecary", "Archive", "Bandit", "Border Guard", "Cardinal",
+	"Carnival", "Cartographer", "Catacombs", "Crystal Ball", "Envoy",
+	"Famine", "Foresight", "Forest Dwellers", "Fortune Hunter", "Gamble", "Ghost",
+	"Giant", "Golem", "Herald", "Hunter", "Hunting Party", "Ironmonger", "Jack of All Trades", "Journeyman",
+	"Library", "Locusts", "Lookout", "Magpie", "Mapmaker", "Miller", "Mystic", "Native Village",
+	"Night Watchman", "Patrician", "Patrol", "Piazza", "Poet", "Pursue",
+	"Rabble", "Raze", "Rebuild", "Rogue", "Sage", "Scouting Party", "Scrying Pool",
+	"Sea Chart", "Seer", "Sentinel", "Sentry", "Sextant", "Sorcerer", "Sorceress", "Survivors", "Swindler",
+	"The Sun's Gift", "Vagrant", "Wandering Minstrel", "War", "Will-o'-Wisp",
 	"Wishing Well", "Zombie Spy", "Zombie Mason",
 	"Dame Anna", "Dame Josephine", "Dame Molly", "Dame Natalie", "Dame Sylvia",
 	"Sir Bailey", "Sir Destry", "Sir Martin", "Sir Michael", "Sir Vander")
 
 // Cards that look through a discard pile: what they reveal stays there.
-var discardLookers = names("Annex", "Bury", "Bustling Village", "Counting House", "Courier", "Harbinger", "Herald",
+var discardLookers = names("Annex", "Bury", "Bustling Village", "Courier", "Harbinger", "Herald",
 	"Hermit", "Inn", "March", "Mountain Village", "Orb", "Scavenger", "Settlers", "The Moon's Gift")
 
 // Cards that discard or trash the top card of a deck without revealing it first.
 var (
-	topDiscarders = names("Courier", "Gamble", "Jester", "Page", "Sea Hag", "Tribute", "Vassal", "Warrior")
+	topDiscarders = names("Courier", "Gamble", "Jester", "Page", "Vassal", "Warrior")
 	topTrashers   = names("Barbarian", "Locusts", "Swindler", "Zombie Mason")
 )
 
@@ -125,12 +128,11 @@ var (
 // by the card gained, or by what gained it (the line above, or "(Sickness)").
 var (
 	gainedToHand = names("Den of Sin", "Ghost Town", "Guardian", "Night Watchman")
-	gainsToHand  = names("Artisan", "Beggar", "Explorer", "Falconer", "Ill-Gotten Gains", "Joust", "Kind Emperor",
+	gainsToHand  = names("Artisan", "Beggar", "Falconer", "Joust", "Kind Emperor",
 		"Mine", "Pickaxe", "Pirate", "Plague", "Sculptor", "Silver Mine", "Swap", "Torturer", "Trading Post",
 		"Transmogrify", "Treasurer", "Wish")
-	gainedOntoDeck = names("Nomad Camp")
-	gainsOntoDeck  = names("Armory", "Artificer", "Bag of Gold", "Bureaucrat", "Demand", "Develop", "Fool's Gold",
-		"Greed", "Invasion", "Sea Hag", "Sickness", "Stampede", "Supplies", "Taxman", "Tournament")
+	gainsOntoDeck = names("Armory", "Artificer", "Bureaucrat", "Demand", "Develop", "Fool's Gold",
+		"Greed", "Invasion", "Sickness", "Stampede", "Supplies")
 	gainsSettingAside = names("Quartermaster")
 	// Research sets cards aside from the deck, not the hand
 	setsAsideFromDeck = names("Research")
@@ -442,7 +444,7 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 			switch {
 			case gainedToHand[name] || gainsToHand[by]:
 				dest = ZoneHand
-			case gainedOntoDeck[name] || gainsOntoDeck[by] || by == "Replace" && cn.Card != nil && (cn.Card.Is("Action") || cn.Card.Is("Treasure")):
+			case gainsOntoDeck[by] || by == "Replace" && cn.Card != nil && (cn.Card.Is("Action") || cn.Card.Is("Treasure")):
 				dest = ZoneDeck
 			case gainsSettingAside[by]:
 				dest = ZoneSetAside

@@ -142,7 +142,8 @@ Phase 1, 2026-10-10 (partial):
 2026-10-11: zones, Supply and VP, from the saved games only (no dominion.games).
 
 - **VP** (`cartographer/vp.go`): fixed values from the cards' printed VP, the variable cards, Misery, Distant Lands, the scoring landmarks (read from the score screen) and Plateau Shepherds.
-  - 153 of 207 games match DomBot's final scores. The other 54 are capture problems, not scoring ones: the log misses the game's last decision, or has extra bot moves.
+  - 164 of 220 games match DomBot's final scores (DomBot's minus arrives as "?"). The other 56 are capture problems, not scoring ones. The load stops at the last decision: 32 times it was the viewer's (the final buy is missing), 21 times the bot's (it played on after the resignation that ended the game), 3 unclear.
+  - Cards removed in the second editions are left out of the rules (wiki "Removed cards"); none appears in the saved games.
   - The seat mapping explains much of the earlier gap. The loading account sits in seat 1, the first original player's seat. With it, matches went from 84 to 153.
 - **Supply** (`cartographer/supply.go`): pile sizes from the setup rules, replayed through gains, returns, Supply trashes and exiles, and gains from the trash. It matches the client at the end of 184518886.
 - **Zones** (`cartographer/zones.go`): hand, draw pile, discard pile, in play, set aside, mats and Exile per player, in `Turns()`.

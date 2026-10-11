@@ -47,18 +47,21 @@ The bookmarks only read the page. Copy log refuses rated games, because a game y
   - The log hides some of your own moves: Scheme's and Merchant Camp's "topdecks a card" in Clean-up. These are guessed from the cards in play.
 - **Supply.** `Supply()` gives each pile's starting size and what's left, plus the trash. Sizes follow the setup rules: split and rotating piles, Knights, Castles, Ruins, and piles outside the Supply. Every gain, return, Supply trash and exile changes them.
 - **VP.** `Client.Score()` scores each player from their deck, VP tokens and Misery, including:
-  - the cards whose worth depends on the deck: Gardens, Duke, Fairgrounds, Feodum, Silk Road, Vineyard, the Castles, Pasture, Marchland, Territory, Demesne, Distant Lands on the Tavern mat;
+  - the cards whose worth depends on the deck: Gardens, Duke, Fairgrounds, Feodum, Vineyard, the Castles, Pasture, Marchland, Territory, Demesne, Distant Lands on the Tavern mat;
   - the landmarks that score at the end, and Plateau Shepherds.
+
+  The rules cover current cards only. Cards the second editions removed (Silk Road, Great Hall, Sea Hag, the Prizes...) appear in none of the 260 saved and test games.
 - **Checks.** `scry check` compares saved logs with their score screens: every line must be read, and each player's last turn and final deck must match. On 2026-10-11 all 220 imported games and all test logs pass. `scry check -prior FILE` also compares computed VP with the final scores in a saved DomBot `!prior` list.
 
 ### What the saved games showed
 
 - **Seats.** The account that loads a game takes the first player's seat, and the bot takes the second. In 108 of the 220 games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there. `SeatNames` maps the names back using the table's "Original Player" lines.
-- **Final scores.** Computed VP equal DomBot's final scores in 153 of 207 games. In the other 54, the captured log doesn't end where the game did:
-  - the game's last decision is missing, often the buy that ended it (6 VP short: the last Province);
-  - or the bot kept playing its seat after the load. In 20 of these games, a shorter part of the log scores exactly what DomBot reports.
+- **Final scores.** Computed VP equal DomBot's final scores in 164 of 220 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) In the other 56, a loaded game stops at the original game's last decision, and that decision belongs to one of the seats:
+  - **Your seat (32 games).** The decision never happens, so the log lacks it. These games ended on the end condition, and the missing decision was the last buy: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate.
+  - **The bot's seat (21 games).** The bot answers that decision and keeps playing until your seat has to decide. These games ended with a resignation, and a shorter part of the log scores exactly what DomBot reports.
+  - 3 games fit neither.
 
-  Fixing this needs a change to the capture on dominion.games.
+  Fixing this needs a change to the capture on dominion.games: stop the bot, or take the seat that has the last decision.
 - **Zones.** On the 220 games plus the test logs (137,923 log lines):
   - every player's zones always hold exactly the cards they own;
   - 270 moves didn't find the card where the replay expected it, 116 of them for seats whose cards the log names in full;
