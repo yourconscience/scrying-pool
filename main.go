@@ -31,6 +31,8 @@ const usageText = `usage:
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
+  scry db [-o FILE] [-dir DIR]                     build an SQLite database of the saved games
+  scry site [-o DIR] [-players "a,b"]              the My games page as a static site, one profile per player
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -176,20 +178,51 @@ func main() {
 		if derr != nil {
 			fail(derr)
 		}
-		who, ps, features, ferr := advisor.Corpus(client, d, *me)
+		account, ps, features, ferr := advisor.Corpus(client, d)
 		if ferr != nil {
 			fail(ferr)
+		}
+		who := *me
+		if who == "" {
+			who = account
 		}
 		var b strings.Builder
 		if *profiles {
 			err = writeProfiles(&b, ps)
 		} else {
-			err = writeFeatures(&b, features)
-			fmt.Fprintf(os.Stderr, "%d games of %s\n", len(features), who)
+			mine := advisor.Of(who, features)
+			err = writeFeatures(&b, mine)
+			fmt.Fprintf(os.Stderr, "%d games of %s\n", len(mine), who)
 		}
 		if err == nil {
 			err = emit(*out, b.String())
 		}
+	case "db":
+		dir := fs.String("dir", "", "saved games (default: <user config>/scrying-pool/games)")
+		fs.Parse(args)
+		d, derr := gamesDir(*dir)
+		if derr != nil {
+			fail(derr)
+		}
+		path := *out
+		if path == "" {
+			path = filepath.Join(filepath.Dir(d), "scrying-pool.db")
+		}
+		err = buildDB(path, d)
+	case "site":
+		players := fs.String("players", "", "comma-separated profiles to include (default: the account that loaded most games)")
+		fs.Parse(args)
+		dir := *out
+		if dir == "" {
+			dir = filepath.Join("site", "my-games")
+		}
+		var ps []string
+		for _, p := range strings.Split(*players, ",") {
+			if p = strings.TrimSpace(p); p != "" {
+				ps = append(ps, p)
+			}
+		}
+		err = buildSite(dir, ps)
 	case "check":
 		priorFlag := fs.String("prior", "", "also compare final VP with a saved DomBot !prior list (JSON)")
 		fs.Parse(args)

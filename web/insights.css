@@ -1,28 +1,73 @@
-/* "My games" page: rate rows with a 95% range bar, over the analysis page's panels. */
-.method { max-width: 80ch; margin: 10px 0 4px; }
-.splits { display: grid; gap: 6px; margin-top: 8px; }
-.split { display: grid; grid-template-columns: minmax(8em, 14em) minmax(0, 1fr) 7.5em; gap: 10px; align-items: center; font-size: 0.9rem; }
-.split .what { min-width: 0; }
-.split .what small { display: block; color: var(--muted); font-size: 0.75rem; }
-.split .num { text-align: right; font-variant-numeric: tabular-nums; }
-.split .num small { color: var(--muted); }
-.range { position: relative; height: 18px; background: var(--code); border-radius: 4px; }
-.range .band { position: absolute; top: 5px; height: 8px; border-radius: 4px; opacity: 0.45; }
-.range .dot { position: absolute; top: 2px; width: 4px; height: 14px; border-radius: 2px; margin-left: -2px; }
-.range .base { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--muted); opacity: 0.6; }
-.with .band, .with .dot { background: var(--victory); }
-.without .band, .without .dot { background: var(--treasure); }
-.pair { display: grid; gap: 2px; }
-.card-tables { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-.card-tables h3 { margin: 6px 0; font-size: 0.95rem; }
+/* Profiles page. Layout: a header with pickers, summary tiles, then a two-column grid of small charts.
+   Palette: cool slate paper; teal for the player, violet for the compared player, green and coral for wins and losses. */
+:root {
+  --paper: #f3f5f7;
+  --panel: #ffffff;
+  --ink: #18212c;
+  --muted: #5d6978;
+  --rule: #e1e6ec;
+  --code: #eef1f5;
+  --victory: #0b7f87;
+  --treasure: #b07a10;
+  --a: #0b7f87;
+  --b: #7656d8;
+  --win: #2c8a58;
+  --loss: #cf5f39;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f141b; --panel: #161e28; --ink: #e6ecf3; --muted: #93a1b1; --rule: #253142; --code: #1d2733;
+    --victory: #39c2c8; --treasure: #e0b04f; --a: #39c2c8; --b: #a68dff; --win: #5ccb8d; --loss: #f08d66;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f141b; --panel: #161e28; --ink: #e6ecf3; --muted: #93a1b1; --rule: #253142; --code: #1d2733;
+  --victory: #39c2c8; --treasure: #e0b04f; --a: #39c2c8; --b: #a68dff; --win: #5ccb8d; --loss: #f08d66;
+  color-scheme: dark;
+}
+body.insights { background: var(--paper); color: var(--ink); }
+.static .local-only { display: none !important; }
+.ins { max-width: 1180px; margin: 0 auto; padding: 8px 16px 64px; }
+.ins h1 { font: 700 1.7rem/1.15 var(--body); margin: 16px 0 4px; letter-spacing: -0.01em; }
+.ins h2 { font: 650 1.02rem/1.3 var(--body); margin: 0 0 2px; }
+.ins h3 { font: 600 0.9rem var(--body); margin: 4px 0 6px; color: var(--muted); }
+.ins .hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 10px; max-width: 75ch; }
+.ins code { font: 0.85em var(--mono); background: var(--code); padding: 1px 5px; border-radius: 4px; }
+.ins-head { max-width: none; margin: 0; padding: 0; display: flex; gap: 12px 24px; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; }
+.pickers { display: flex; gap: 12px; flex-wrap: wrap; }
+.pickers label { display: grid; gap: 3px; font: 600 0.75rem var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+.pickers select { font: 0.95rem var(--body); padding: 6px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--panel); color: var(--ink); min-width: 12em; }
+#player { border-left: 4px solid var(--a); }
+#compare { border-left: 4px solid var(--b); }
+
+.kpis { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 16px 0; }
+.kpi { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.kpi .label { font: 600 0.72rem var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.kpi .value { font: 700 1.6rem/1.2 var(--body); font-variant-numeric: tabular-nums; color: var(--a); }
+.kpi .value.b { font-size: 1.05rem; color: var(--b); }
+.kpi .sub { font-size: 0.8rem; color: var(--muted); }
+
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px 16px; min-width: 0; margin-bottom: 12px; }
+.grid .card { margin-bottom: 0; }
+.card.wide { grid-column: 1 / -1; }
+.card svg { display: block; width: 100%; height: auto; }
+.card svg text { fill: var(--muted); font: 11px var(--body); }
+.card svg .label { fill: var(--ink); font-size: 12px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+.tables { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .table-wrap { overflow-x: auto; }
-.card-tables table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-.card-tables th, .card-tables td { padding: 4px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
-.card-tables th:first-child, .card-tables td:first-child { text-align: left; }
-.card-tables th { color: var(--muted); font-weight: 600; font-size: 0.75rem; }
-.legend-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-.legend-row i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
-@media (max-width: 600px) {
-  .split { grid-template-columns: 1fr 6.5em; }
-  .split .range, .split .pair { grid-column: 1 / -1; grid-row: 2; }
+.tables table { border-collapse: collapse; width: 100%; font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+.tables th, .tables td { padding: 5px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+.tables th:first-child, .tables td:first-child { text-align: left; }
+.tables th { color: var(--muted); font-weight: 600; font-size: 0.75rem; }
+.tables a { color: var(--ink); text-decoration-color: var(--rule); }
+.how ol { padding-left: 20px; max-width: 80ch; margin: 6px 0 10px; }
+.how li { margin: 6px 0; }
+#error { background: var(--code); padding: 10px 14px; border-radius: 6px; }
+@media (max-width: 760px) {
+  .grid { grid-template-columns: 1fr; }
 }

@@ -37,97 +37,92 @@ type Features struct {
 	Coins         []int    `json:"coins"`          // Me's $ on each of their turns
 }
 
-// Feature computes a saved game's features for player me. It returns nil when
-// me didn't play the game or it has no turns.
-func Feature(client *cartographer.Client, s *Saved, me string, profiles map[string]*Profile) *Features {
+// GameFeatures computes a saved two-player game's features for both players.
+func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Profile) []*Features {
 	g := s.Game
-	if len(g.Players) != 2 || (g.Players[0] != me && g.Players[1] != me) {
+	if len(g.Players) != 2 {
 		return nil
-	}
-	opp := g.Players[0]
-	if opp == me {
-		opp = g.Players[1]
 	}
 	turns := g.Turns()
 	if len(turns) == 0 {
 		return nil
 	}
-	f := &Features{ID: s.ID, Me: me, Opponent: opp, Kingdom: s.Kingdom, Landscapes: s.Landscapes,
-		Roles: map[string]bool{}, Took: map[string]bool{}}
-	if len(s.Original) > 0 {
-		f.First = s.Original[0] == me // seat 1 is the first original player's
-	}
-	if d, _, ok := strings.Cut(s.Row, " | "); ok {
-		f.Date = d
-	}
-
 	vp := client.Score(g, cartographer.ScoreInput{Landscapes: client.Landscapes(s.Score)})
-	f.MyVP, f.OppVP = vp[me].Total(), vp[opp].Total()
-	mine, theirs := f.MyVP, f.OppVP
-	if sc := s.Scores; sc != nil {
-		if a, ok := sc[me]; ok {
-			if b, ok := sc[opp]; ok {
-				f.Complete = a == f.MyVP && b == f.OppVP
-				mine, theirs = a, b
-			}
-		}
-	}
-	switch {
-	case mine > theirs:
-		f.Result = 1
-	case mine == theirs:
-		f.Result = 0.5
-	}
-	f.Ending = ending(g.Supply(client))
-
+	end := ending(g.Supply(client))
+	roles := map[string]bool{}
 	for _, card := range s.Kingdom {
 		var types []string
 		if c := client.Cards[card]; c != nil {
 			types = c.Types
 		}
 		for _, r := range CardRoles(card, profiles, types) {
-			f.Roles[r] = true
+			roles[r] = true
 		}
 	}
 	kingdomPile := map[string]string{} // pile -> kingdom card
 	for _, card := range s.Kingdom {
 		kingdomPile[client.PileOf(card)] = card
 	}
-	for _, t := range turns {
-		for card, n := range t.Decks[me] {
-			if k, ok := kingdomPile[client.PileOf(card)]; ok && n > 0 {
-				f.Took[k] = true
+	date, _, _ := strings.Cut(s.Row, " | ")
+
+	var out []*Features
+	for k, me := range g.Players {
+		opp := g.Players[1-k]
+		f := &Features{ID: s.ID, Date: date, Me: me, Opponent: opp, Kingdom: s.Kingdom, Landscapes: s.Landscapes,
+			Roles: roles, Took: map[string]bool{}, Ending: end, MyVP: vp[me].Total(), OppVP: vp[opp].Total()}
+		if len(s.Original) > 0 {
+			f.First = s.Original[0] == me // seat 1 is the first original player's
+		}
+		mine, theirs := f.MyVP, f.OppVP
+		if a, ok := s.Scores[me]; ok {
+			if b, ok := s.Scores[opp]; ok {
+				f.Complete = a == f.MyVP && b == f.OppVP
+				mine, theirs = a, b
 			}
 		}
-		if t.Player != me || t.Extra != "" {
-			continue
+		switch {
+		case mine > theirs:
+			f.Result = 1
+		case mine == theirs:
+			f.Result = 0.5
 		}
-		f.Turns++
-		f.Coins = append(f.Coins, t.Coins)
-		for _, c := range append(append([]cartographer.CardN{}, t.Bought...), t.Gained...) {
-			if c.Card == nil {
+		for _, t := range turns {
+			for card, n := range t.Decks[me] {
+				if kc, ok := kingdomPile[client.PileOf(card)]; ok && n > 0 {
+					f.Took[kc] = true
+				}
+			}
+			if t.Player != me || t.Extra != "" {
 				continue
 			}
-			if f.Turns <= 2 {
-				f.OpeningBuys = append(f.OpeningBuys, c.Card.Name)
-			}
-			if c.Card.Name == "Gold" && f.FirstGold == 0 {
-				f.FirstGold = f.Turns
-			}
-			if c.Card.Name == "Province" && f.FirstProvince == 0 {
-				f.FirstProvince = f.Turns
+			f.Turns++
+			f.Coins = append(f.Coins, t.Coins)
+			for _, c := range append(append([]cartographer.CardN{}, t.Bought...), t.Gained...) {
+				if c.Card == nil {
+					continue
+				}
+				if f.Turns <= 2 {
+					f.OpeningBuys = append(f.OpeningBuys, c.Card.Name)
+				}
+				if c.Card.Name == "Gold" && f.FirstGold == 0 {
+					f.FirstGold = f.Turns
+				}
+				if c.Card.Name == "Province" && f.FirstProvince == 0 {
+					f.FirstProvince = f.Turns
+				}
 			}
 		}
-	}
-	if len(f.Coins) >= 2 {
-		a, b := f.Coins[0], f.Coins[1]
-		if b > a {
-			a, b = b, a
+		if len(f.Coins) >= 2 {
+			a, b := f.Coins[0], f.Coins[1]
+			if b > a {
+				a, b = b, a
+			}
+			f.Opening = fmt.Sprintf("%d/%d", a, b)
 		}
-		f.Opening = fmt.Sprintf("%d/%d", a, b)
+		sort.Strings(f.OpeningBuys)
+		out = append(out, f)
 	}
-	sort.Strings(f.OpeningBuys)
-	return f
+	return out
 }
 
 // ending classifies how a game ended, as markus did for logs that miss the last

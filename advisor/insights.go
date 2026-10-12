@@ -30,12 +30,43 @@ func rate(results []float64) Rate {
 	return r
 }
 
-// Split compares games with and without something.
+// Split compares games with and without something. Diff is With minus Without
+// with a 95% range from the normal approximation.
 type Split struct {
-	Name    string `json:"name"`
-	Desc    string `json:"desc,omitempty"`
-	With    Rate   `json:"with"`
-	Without Rate   `json:"without"`
+	Name     string  `json:"name"`
+	Desc     string  `json:"desc,omitempty"`
+	With     Rate    `json:"with"`
+	Without  Rate    `json:"without"`
+	Diff     float64 `json:"diff"`
+	DiffLow  float64 `json:"diff_low"`
+	DiffHigh float64 `json:"diff_high"`
+}
+
+func split(name, desc string, with, without []float64) Split {
+	s := Split{Name: name, Desc: desc, With: rate(with), Without: rate(without)}
+	a, b := s.With, s.Without
+	if a.Games == 0 || b.Games == 0 {
+		return s
+	}
+	s.Diff = a.Rate - b.Rate
+	se := math.Sqrt(a.Rate*(1-a.Rate)/float64(a.Games) + b.Rate*(1-b.Rate)/float64(b.Games))
+	s.DiffLow, s.DiffHigh = s.Diff-1.96*se, s.Diff+1.96*se
+	return s
+}
+
+// FormPoint is the win rate over the window of games ending at game Index.
+type FormPoint struct {
+	Index int     `json:"index"`
+	Date  string  `json:"date"`
+	Rate  float64 `json:"rate"`
+}
+
+// Histogram counts games by a turn number, in wins and losses (ties left out).
+type Histogram struct {
+	Turn   []int  `json:"turn"`
+	Wins   []int  `json:"wins"`
+	Losses []int  `json:"losses"`
+	Never  [2]int `json:"never"` // wins, losses without one
 }
 
 // CardRow is a kingdom card's record: games with it in the kingdom, and among
@@ -50,9 +81,10 @@ type CardRow struct {
 	Shrunk  float64 `json:"shrunk"`
 }
 
-// Tempo is the player's average $ on each of their turns, in wins and in losses.
+// Tempo is the player's average $ on each of their turns, in all games, wins and losses.
 type Tempo struct {
 	Turn   []int     `json:"turn"`
+	All    []float64 `json:"all"`
 	Wins   []float64 `json:"wins"`
 	Losses []float64 `json:"losses"`
 	NWins  []int     `json:"n_wins"`
@@ -63,26 +95,34 @@ type Tempo struct {
 type Insights struct {
 	Me       string          `json:"me"`
 	Overall  Rate            `json:"overall"`
-	Complete int             `json:"complete"` // games whose computed VP match the row
+	AvgTurns float64         `json:"avg_turns"` // the player's turns per game
+	Complete int             `json:"complete"`  // games whose computed VP match the row
 	Seat     []Split         `json:"seat"`
 	Endings  map[string]Rate `json:"endings"`
 	Roles    []Split         `json:"roles"`
 	Openings map[string]Rate `json:"openings"`
 	Cards    []CardRow       `json:"cards"`
 	Tempo    Tempo           `json:"tempo"`
+	Form     []FormPoint     `json:"form"`           // win rate over the last formWindow games, in game order
+	Province Histogram       `json:"first_province"` // turn of the first Province
+	First    string          `json:"first_date"`
+	Last     string          `json:"last_date"`
 	MinGames int             `json:"min_games"` // cards seen in fewer games are left out
-	Games    []*Features     `json:"games"`
+	Games    []*Features     `json:"games,omitempty"`
 }
 
 const (
 	prior       = 10 // pseudo-games of shrinkage toward the overall rate
 	minCardGame = 8
 	tempoTurns  = 15
+	formWindow  = 30
+	maxTurn     = 20 // histogram turns past this go in the last bin
 )
 
 // Summarize computes the page's statistics from a player's game features.
 func Summarize(me string, games []*Features) *Insights {
-	in := &Insights{Me: me, Endings: map[string]Rate{}, Openings: map[string]Rate{}, MinGames: minCardGame, Games: games}
+	in := &Insights{Me: me, Endings: map[string]Rate{}, Openings: map[string]Rate{}, MinGames: minCardGame, Games: games,
+		Cards: []CardRow{}, Form: []FormPoint{}}
 	var all []float64
 	byEnd, byOpen := map[string][]float64{}, map[string][]float64{}
 	var first, second []float64
@@ -100,9 +140,13 @@ func Summarize(me string, games []*Features) *Insights {
 		if f.Complete {
 			in.Complete++
 		}
+		in.AvgTurns += float64(f.Turns)
+	}
+	if len(games) > 0 {
+		in.AvgTurns /= float64(len(games))
 	}
 	in.Overall = rate(all)
-	in.Seat = []Split{{Name: "first player", With: rate(first), Without: rate(second)}}
+	in.Seat = []Split{split("first player", "", first, second)}
 	for k, v := range byEnd {
 		in.Endings[k] = rate(v)
 	}
@@ -125,7 +169,7 @@ func Summarize(me string, games []*Features) *Insights {
 				without = append(without, f.Result)
 			}
 		}
-		in.Roles = append(in.Roles, Split{Name: role, Desc: descs[role], With: rate(with), Without: rate(without)})
+		in.Roles = append(in.Roles, split(role, descs[role], with, without))
 	}
 
 	type acc struct{ present, took, skipped []float64 }
@@ -158,11 +202,13 @@ func Summarize(me string, games []*Features) *Insights {
 
 	t := Tempo{}
 	for turn := 1; turn <= tempoTurns; turn++ {
-		var w, l, nw, nl float64
+		var w, l, nw, nl, a, na float64
 		for _, f := range games {
 			if turn > len(f.Coins) {
 				continue
 			}
+			a += float64(f.Coins[turn-1])
+			na++
 			switch f.Result {
 			case 1:
 				w += float64(f.Coins[turn-1])
@@ -173,12 +219,57 @@ func Summarize(me string, games []*Features) *Insights {
 			}
 		}
 		t.Turn = append(t.Turn, turn)
+		t.All = append(t.All, avg(a, na))
 		t.Wins = append(t.Wins, avg(w, nw))
 		t.Losses = append(t.Losses, avg(l, nl))
 		t.NWins = append(t.NWins, int(nw))
 		t.NLoss = append(t.NLoss, int(nl))
 	}
 	in.Tempo = t
+
+	// games come in saved order, which is game-number order: oldest first
+	for i := range games {
+		if i+1 < formWindow {
+			continue
+		}
+		var w []float64
+		for _, f := range games[i+1-formWindow : i+1] {
+			w = append(w, f.Result)
+		}
+		in.Form = append(in.Form, FormPoint{Index: i + 1, Date: games[i].Date, Rate: rate(w).Rate})
+	}
+	if len(games) > 0 {
+		in.First, in.Last = games[0].Date, games[len(games)-1].Date
+	}
+
+	h := Histogram{}
+	for turn := 1; turn <= maxTurn; turn++ {
+		h.Turn = append(h.Turn, turn)
+	}
+	h.Wins, h.Losses = make([]int, maxTurn), make([]int, maxTurn)
+	for _, f := range games {
+		k := -1
+		switch f.Result {
+		case 1:
+			k = 0
+		case 0:
+			k = 1
+		}
+		if k < 0 {
+			continue
+		}
+		if f.FirstProvince == 0 {
+			h.Never[k]++
+			continue
+		}
+		i := min(f.FirstProvince, maxTurn) - 1
+		if k == 0 {
+			h.Wins[i]++
+		} else {
+			h.Losses[i]++
+		}
+	}
+	in.Province = h
 	return in
 }
 

@@ -91,3 +91,22 @@ func TestProfilesMatchCardText(t *testing.T) {
 		t.Errorf("Market Square roles %v", r)
 	}
 }
+
+func TestSplitAndPlayers(t *testing.T) {
+	s := split("x", "", []float64{1, 1, 1, 0}, []float64{1, 0, 0, 0})
+	if !near(s.Diff, 0.5, 1e-9) || s.DiffLow >= s.Diff || s.DiffHigh <= s.Diff {
+		t.Fatalf("split %+v", s)
+	}
+	fs := []*Features{{Me: "a"}, {Me: "b"}, {Me: "a"}, {Me: "c"}, {Me: "a"}, {Me: "b"}}
+	got := Players(fs, 2)
+	if len(got) != 2 || got[0] != (PlayerCount{"a", 3}) || got[1] != (PlayerCount{"b", 2}) {
+		t.Fatalf("players %v", got)
+	}
+	if n := len(Of("b", fs)); n != 2 {
+		t.Fatalf("Of(b) = %d games", n)
+	}
+	in := Summarize("a", Of("a", fs))
+	if in.Form == nil || in.Cards == nil {
+		t.Fatal("empty lists must be [] in JSON, not null")
+	}
+}

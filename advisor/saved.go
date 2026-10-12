@@ -118,34 +118,67 @@ func Load(client *cartographer.Client, dir string) ([]*Saved, error) {
 }
 
 // Corpus loads the saved games in dir, measures the cards over all of them and
-// computes the features of me's games. An empty me means the account that
-// loaded most of the games.
-func Corpus(client *cartographer.Client, dir, me string) (string, map[string]*Profile, []*Features, error) {
+// computes every player's features in every game. Account is the account that
+// loaded most of the games: usually whoever collected them.
+func Corpus(client *cartographer.Client, dir string) (account string, profiles map[string]*Profile, features []*Features, err error) {
 	saved, err := Load(client, dir)
 	if err != nil {
 		return "", nil, nil, err
 	}
-	if me == "" {
-		n := map[string]int{}
-		for _, s := range saved {
-			n[s.Account]++
-		}
-		for a, k := range n {
-			if k > n[me] {
-				me = a
-			}
+	n := map[string]int{}
+	for _, s := range saved {
+		n[s.Account]++
+	}
+	for a, k := range n {
+		if k > n[account] {
+			account = a
 		}
 	}
 	games := make([]*cartographer.Game, len(saved))
 	for i, s := range saved {
 		games[i] = s.Game
 	}
-	profiles := Profiles(games)
-	var features []*Features
+	profiles = Profiles(games)
 	for _, s := range saved {
-		if f := Feature(client, s, me, profiles); f != nil {
-			features = append(features, f)
+		features = append(features, GameFeatures(client, s, profiles)...)
+	}
+	return account, profiles, features, nil
+}
+
+// Of picks one player's games.
+func Of(player string, features []*Features) []*Features {
+	var out []*Features
+	for _, f := range features {
+		if f.Me == player {
+			out = append(out, f)
 		}
 	}
-	return me, profiles, features, nil
+	return out
+}
+
+// PlayerCount is a player and how many saved games they played.
+type PlayerCount struct {
+	Name  string `json:"name"`
+	Games int    `json:"games"`
+}
+
+// Players lists the players with at least min games, most games first.
+func Players(features []*Features, min int) []PlayerCount {
+	n := map[string]int{}
+	for _, f := range features {
+		n[f.Me]++
+	}
+	var out []PlayerCount
+	for p, k := range n {
+		if k >= min {
+			out = append(out, PlayerCount{p, k})
+		}
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Games != out[j].Games {
+			return out[i].Games > out[j].Games
+		}
+		return out[i].Name < out[j].Name
+	})
+	return out
 }

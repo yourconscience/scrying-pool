@@ -56,8 +56,16 @@ func newHandler(timeout time.Duration) http.Handler {
 		w.Header().Set("Cache-Control", "max-age=604800")
 		http.ServeFile(w, r, p)
 	})
+	mux.HandleFunc("GET /api/players", func(w http.ResponseWriter, r *http.Request) {
+		c, err := loadCorpus()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, map[string]any{"default": c.account, "players": advisor.Players(c.features, minProfileGames)})
+	})
 	mux.HandleFunc("GET /api/insights", func(w http.ResponseWriter, r *http.Request) {
-		in, err := insights(r.URL.Query().Get("me"))
+		in, err := insights(r.URL.Query().Get("player"))
 		if err != nil {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
 			return
@@ -65,7 +73,7 @@ func newHandler(timeout time.Duration) http.Handler {
 		writeJSON(w, 200, in)
 	})
 	mux.HandleFunc("GET /api/features.csv", func(w http.ResponseWriter, r *http.Request) {
-		in, err := insights(r.URL.Query().Get("me"))
+		in, err := insights(r.URL.Query().Get("player"))
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
@@ -202,15 +210,24 @@ var (
 	clientMu     sync.Mutex
 	cachedClient *cartographer.Client
 
-	insightsMu    sync.Mutex
-	insightsCache = map[string]*advisor.Insights{}
-	insightsStamp time.Time // the newest score file when the cache was filled
+	corpusMu    sync.Mutex
+	corpusCache *corpus
 )
 
-// insights summarizes the saved games of me (default: the account that loaded
-// most of them). Reading every game takes a while, so the result is kept until
-// a game is added.
-func insights(me string) (*advisor.Insights, error) {
+// corpus is every saved game's features, kept until a game is added.
+type corpus struct {
+	stamp    time.Time // the newest score file when it was read
+	account  string
+	features []*advisor.Features
+	insights map[string]*advisor.Insights
+}
+
+// minProfileGames is how many saved games a player needs for a profile.
+const minProfileGames = 20
+
+// loadCorpus reads the saved games, or returns the copy from the last read when
+// no score file changed since. Reading every game takes a while.
+func loadCorpus() (*corpus, error) {
 	client, err := webClient()
 	if err != nil {
 		return nil, err
@@ -226,20 +243,36 @@ func insights(me string) (*advisor.Insights, error) {
 			newest = st.ModTime()
 		}
 	}
-	insightsMu.Lock()
-	defer insightsMu.Unlock()
-	if !newest.Equal(insightsStamp) {
-		insightsCache, insightsStamp = map[string]*advisor.Insights{}, newest
+	corpusMu.Lock()
+	defer corpusMu.Unlock()
+	if c := corpusCache; c != nil && c.stamp.Equal(newest) {
+		return c, nil
 	}
-	if in, ok := insightsCache[me]; ok {
-		return in, nil
-	}
-	who, _, features, err := advisor.Corpus(client, dir, me)
+	account, _, features, err := advisor.Corpus(client, dir)
 	if err != nil {
 		return nil, err
 	}
-	in := advisor.Summarize(who, features)
-	insightsCache[me] = in
+	corpusCache = &corpus{stamp: newest, account: account, features: features, insights: map[string]*advisor.Insights{}}
+	return corpusCache, nil
+}
+
+// insights summarizes one player's saved games (default: the account that
+// loaded most of them).
+func insights(player string) (*advisor.Insights, error) {
+	c, err := loadCorpus()
+	if err != nil {
+		return nil, err
+	}
+	if player == "" {
+		player = c.account
+	}
+	corpusMu.Lock()
+	defer corpusMu.Unlock()
+	if in, ok := c.insights[player]; ok {
+		return in, nil
+	}
+	in := advisor.Summarize(player, advisor.Of(player, c.features))
+	c.insights[player] = in
 	return in, nil
 }
 

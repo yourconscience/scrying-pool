@@ -181,4 +181,5 @@ Phase 1, 2026-10-10 (partial):
 - **advisor/**: card profiles measured from the logs, kingdom roles from them, per-game features and a summary; `scry features` (CSV) and the **My games** page (`/insights.html`, `/api/insights`, `/api/features.csv`).
 - Rows: 196 saved games had an empty "# row:" (imported before rows were written); they were filled from manifest-2026.json, so results come from final scores. 198 of 243 games' replays end at those scores.
 - Not yet: rating-adjusted expectations, top players' baselines, luck.
+- Same day, later: features for both players of every game; Profiles page with a player picker and a second player to compare; differences with 95% ranges, form over the last 30 games, first-Province histogram, new palette. `scry db` (SQLite via modernc.org/sqlite v1.60.1, published 2026-09-29; it needs Go 1.26) and `scry site` (static copy). The site was published as a private Claude Artifact with gamrevinu's profile only.
 
