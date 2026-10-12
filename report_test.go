@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -245,10 +246,10 @@ func TestAddKingdom(t *testing.T) {
 	if err := addKingdom(dir, "../x", k); err == nil {
 		t.Fatal("a bad id was accepted")
 	}
-	if got, ok := rowScores(scoreHeader(want, "row")); !ok || got["Nikhec"] != 23 || got["gamrevinu"] != 32 {
+	if got, ok := advisor.RowScores(advisor.Header(want, "row")); !ok || got["Nikhec"] != 23 || got["gamrevinu"] != 32 {
 		t.Fatalf("row scores %v", got)
 	}
-	if got, ok := resultScores("R4D4: ?5, gamrevinu: 9"); !ok || got["R4D4"] != -5 {
+	if got, ok := advisor.ResultScores("R4D4: ?5, gamrevinu: 9"); !ok || got["R4D4"] != -5 {
 		t.Fatalf("DomBot minus: %v", got)
 	}
 }

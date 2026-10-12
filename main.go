@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -29,6 +30,7 @@ const usageText = `usage:
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
+  scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
 
 -ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -161,6 +163,33 @@ func main() {
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
 		fs.Parse(args)
 		err = importGames(fs.Arg(0), *dir, *minTurns)
+	case "features":
+		me := fs.String("me", "", "the player whose games to describe (default: the account that loaded most games)")
+		profiles := fs.Bool("profiles", false, "print what each card does per play, measured from the logs, instead")
+		dir := fs.String("dir", "", "saved games (default: <user config>/scrying-pool/games)")
+		fs.Parse(args)
+		client, cerr := loadClient()
+		if cerr != nil {
+			fail(cerr)
+		}
+		d, derr := gamesDir(*dir)
+		if derr != nil {
+			fail(derr)
+		}
+		who, ps, features, ferr := advisor.Corpus(client, d, *me)
+		if ferr != nil {
+			fail(ferr)
+		}
+		var b strings.Builder
+		if *profiles {
+			err = writeProfiles(&b, ps)
+		} else {
+			err = writeFeatures(&b, features)
+			fmt.Fprintf(os.Stderr, "%d games of %s\n", len(features), who)
+		}
+		if err == nil {
+			err = emit(*out, b.String())
+		}
 	case "check":
 		priorFlag := fs.String("prior", "", "also compare final VP with a saved DomBot !prior list (JSON)")
 		fs.Parse(args)

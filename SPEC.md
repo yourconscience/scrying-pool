@@ -174,3 +174,11 @@ Phase 1, 2026-10-10 (partial):
 - **Two capture bugs fixed.** The decision field keeps its last value, so a stale -1 failed the game after an unloadable one; the field is now reset before each load. Chained timers in the hidden tab woke about once a minute; waits now run on a worker's timers.
 - **Other players' games.** `SeatNames` maps seat 1 to the first original player even when the loading account isn't one of them. `scry check` takes the final scores from each game's row when no `!prior` list is given.
 - Queued for the night of 2026-10-11: kingdoms for 237 saved games, 8 new games of yours, the 214 not yet saved, and 502 games of strong players.
+
+2026-10-12: research, then the first Advisor slice.
+
+- **Research** (artifact "Обзор аналитики Dominion"): dominion.games has a Stats tab in beta (announced 2026-09-24 in 2nd Shuffle's #news) with per-card stats by skill tier and a per-player view. On 2026-10-12 its server (acceptance-dominion-alpha.dominion.games) refused connections, and the production client 2.3.5 hides the tab behind the server feature CARD_STATS_VIEW. markus's Woodcutter statistics (2018-2022) are the model for skill-adjusted results: P(win) = 1/(1+exp(-Δμ)). We build our own tool and don't duplicate the card table.
+- **advisor/**: card profiles measured from the logs, kingdom roles from them, per-game features and a summary; `scry features` (CSV) and the **My games** page (`/insights.html`, `/api/insights`, `/api/features.csv`).
+- Rows: 196 saved games had an empty "# row:" (imported before rows were written); they were filled from manifest-2026.json, so results come from final scores. 198 of 243 games' replays end at those scores.
+- Not yet: rating-adjusted expectations, top players' baselines, luck.
+

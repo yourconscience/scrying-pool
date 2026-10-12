@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -236,34 +236,11 @@ func priorScores(path string) (map[string]map[string]int, error) {
 	}
 	out := map[string]map[string]int{}
 	for _, r := range rows {
-		if sc, ok := resultScores(r.Result); ok {
+		if sc, ok := advisor.ResultScores(r.Result); ok {
 			out[r.ID] = sc
 		}
 	}
 	return out, nil
-}
-
-var reResult = regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
-
-// resultScores reads "Nikhec: 23, gamrevinu: 32". DomBot's minus sign comes
-// through as "−" or, in copied text, as "?": "R4D4: ?5" is -5.
-func resultScores(result string) (map[string]int, bool) {
-	m := reResult.FindStringSubmatch(strings.NewReplacer("\u2212", "-", "?", "-").Replace(strings.TrimSpace(result)))
-	if m == nil {
-		return nil, false
-	}
-	a, _ := strconv.Atoi(m[2])
-	b, _ := strconv.Atoi(m[4])
-	return map[string]int{m[1]: a, m[3]: b}, true
-}
-
-// rowScores reads the final scores from a score file's row, "2026-Oct-09 | Nikhec: 23, gamrevinu: 32".
-func rowScores(row string) (map[string]int, bool) {
-	_, result, ok := strings.Cut(row, " | ")
-	if !ok {
-		return nil, false
-	}
-	return resultScores(result)
 }
 
 func checkGames(args []string, priorPath string) error {
@@ -315,7 +292,7 @@ func checkGames(args []string, priorPath string) error {
 		problems := r.Problems
 		final, ok := prior[id]
 		if !ok {
-			final, ok = rowScores(scoreHeader(string(sb), "row"))
+			final, ok = advisor.RowScores(advisor.Header(string(sb), "row"))
 		}
 		if ok {
 			scored++

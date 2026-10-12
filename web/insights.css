@@ -1,0 +1,28 @@
+/* "My games" page: rate rows with a 95% range bar, over the analysis page's panels. */
+.method { max-width: 80ch; margin: 10px 0 4px; }
+.splits { display: grid; gap: 6px; margin-top: 8px; }
+.split { display: grid; grid-template-columns: minmax(8em, 14em) minmax(0, 1fr) 7.5em; gap: 10px; align-items: center; font-size: 0.9rem; }
+.split .what { min-width: 0; }
+.split .what small { display: block; color: var(--muted); font-size: 0.75rem; }
+.split .num { text-align: right; font-variant-numeric: tabular-nums; }
+.split .num small { color: var(--muted); }
+.range { position: relative; height: 18px; background: var(--code); border-radius: 4px; }
+.range .band { position: absolute; top: 5px; height: 8px; border-radius: 4px; opacity: 0.45; }
+.range .dot { position: absolute; top: 2px; width: 4px; height: 14px; border-radius: 2px; margin-left: -2px; }
+.range .base { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--muted); opacity: 0.6; }
+.with .band, .with .dot { background: var(--victory); }
+.without .band, .without .dot { background: var(--treasure); }
+.pair { display: grid; gap: 2px; }
+.card-tables { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.card-tables h3 { margin: 6px 0; font-size: 0.95rem; }
+.table-wrap { overflow-x: auto; }
+.card-tables table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.card-tables th, .card-tables td { padding: 4px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+.card-tables th:first-child, .card-tables td:first-child { text-align: left; }
+.card-tables th { color: var(--muted); font-weight: 600; font-size: 0.75rem; }
+.legend-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+.legend-row i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 600px) {
+  .split { grid-template-columns: 1fr 6.5em; }
+  .split .range, .split .pair { grid-column: 1 / -1; grid-row: 2; }
+}

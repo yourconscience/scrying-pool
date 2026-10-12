@@ -113,9 +113,15 @@ type SupplyState struct {
 
 // Empty reports whether a Supply pile was emptied.
 func (s SupplyState) Empty(pile string) bool {
+	return s.InSupply(pile) && s.Initial[pile] > 0 && s.Left[pile] <= 0
+}
+
+// InSupply reports whether a pile the game touched is a Supply pile (Horses,
+// Spoils and the like are not).
+func (s SupplyState) InSupply(pile string) bool {
 	_, outside := nonSupply[pile]
-	init, touched := s.Initial[pile]
-	return touched && !outside && init > 0 && s.Left[pile] <= 0
+	_, touched := s.Initial[pile]
+	return touched && !outside
 }
 
 // EmptyPiles lists the emptied Supply piles.

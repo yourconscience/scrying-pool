@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="analyze.css">
+<link rel="stylesheet" href="insights.css">
+</head>
+<body>
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a href="analyze.html">Analyze a game</a>
+  <a href="insights.html" aria-current="page">My games</a>
+  <a href="notes.html">Match notes</a>
+</nav>
+
+<main class="wide">
+  <div class="game-head">
+    <div>
+      <h1 id="title">My games</h1>
+      <p id="meta" class="hint">Reading the saved games… the first time this takes up to half a minute.</p>
+    </div>
+    <div class="scores" id="overall"></div>
+  </div>
+  <p class="hint method">Win rates count ties as half a win. The ranges are 95% intervals: two rates whose ranges overlap a lot may differ only by chance. Opponents' ratings aren't taken into account yet.</p>
+
+  <section class="panel">
+    <h2>Kingdoms</h2>
+    <p class="hint">Games whose kingdom had a card that fills each role, measured from what cards did when played in the saved logs.</p>
+    <div id="roles" class="splits"></div>
+  </section>
+
+  <div class="turn-grid">
+    <section class="panel">
+      <h2>Seat and endings</h2>
+      <div id="seat" class="splits"></div>
+      <div id="endings" class="splits"></div>
+    </section>
+    <section class="panel">
+      <h2>Openings</h2>
+      <p class="hint">$ on turns 1 and 2, larger first; splits seen in at least 3 games.</p>
+      <div id="openings" class="splits"></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>$ per turn in wins and losses</h2>
+    <div id="tempo"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Kingdom cards</h2>
+    <p class="hint" id="cards-note"></p>
+    <div class="card-tables">
+      <div><h3>Worst for you</h3><div class="table-wrap"><table id="worst"></table></div></div>
+      <div><h3>Best for you</h3><div class="table-wrap"><table id="best"></table></div></div>
+    </div>
+  </section>
+
+  <p><a id="csv" href="/api/features.csv">Download all games as CSV</a></p>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script src="insights.js"></script>
+</body>
+</html>

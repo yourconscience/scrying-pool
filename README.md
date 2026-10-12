@@ -11,7 +11,7 @@ Work in progress; the plan is in [SPEC.md](SPEC.md). Not affiliated with Shuffle
 | **Capture** | `web/capture.js`, `web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
 | **Cartographer** | `cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
 | **Analysis page** | `web/analyze.*`, `analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
-| **Advisor** | next | Will compare buys and plays with strategy for the kingdom and point at the turns where another choice was clearly better. |
+| **Advisor** | `advisor/`, `web/insights.*` | `scry web`'s **My games** page: how often you win by kingdom role, seat, ending, opening and kingdom card, with 95% ranges, and your $ per turn in wins and losses. `scry features` writes the same per-game table as CSV. |
 | **Match notes** | `web/notes.html`, `notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Quick start
@@ -118,6 +118,20 @@ Not covered yet: Possession, and cards played from other players' decks.
 
 Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too.
 
+## Advisor: what your games say
+
+`advisor/` reads every saved game and describes the ones you played (the account that loaded most games, or `-me NAME`).
+
+- **What cards do** comes from the logs, not card text: every "plays X" line is followed by the lines one level under it (+Actions, +Buys, cards drawn, +$, trashing, Curses given). `scry features -profiles` prints these averages. A card played twice without a second "plays" line (Royal Galley) counts as two plays. On the test logs Market Square measures +1 Card +1 Action +1 Buy and Horse +2 Cards +1 Action.
+- **Kingdom roles** come from those profiles, with coarse rules per play: a village gives +2 Actions or more, draw draws 2 cards or more, +Buy gives a Buy on most plays, a trasher trashes a card or more, a curser gives Curses on a third of plays or more, plus Attacks by type. A card needs 5 plays to count.
+- **Each game** gets: the result from the row's final scores (DomBot `!prior` or the profile), whether the replay's VP match them, who went first, the ending, the kingdom and its roles, which kingdom cards you took, your opening split, the turns of your first Gold and first Province, and your $ on each turn.
+- **Endings** follow markus's rule for logs that miss the last decision: at most one Province or Colony left is a Province ending, at most one card from three empty Supply piles is a three-pile ending, anything else a resignation.
+- **Win rates** count ties as half, with 95% Wilson ranges. Kingdom cards seen in at least 8 games are ranked by a win rate pulled toward your overall rate, as if 10 average games were added.
+
+Not yet: opponents' ratings (an expected result per game), comparison with top players' games, luck.
+
+On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59% going first against 45% second, and 57% with a village in the kingdom against 44% without. With these sample sizes the ranges overlap a lot; treat single numbers as leads, not findings.
+
 ## Match notes
 
 `notes.html` (linked from the start page) turns a match's spectator chat into notes split by game. Each game shows its result, kingdom, landscapes and empty piles from DomBot, then that game's chat, with the players' lines in bold. **Load demo match** shows a real six-game match.
@@ -151,6 +165,7 @@ scry bookmarklet [-client]                            # print the Copy log (or C
 scry import [-dir DIR] [-min-turns 3] batch.jsonl     # save captured games and check each one
 scry check [-prior prior.json] [DIR or LOGS]          # check saved games against score screens (and final scores)
 scry review [-json] game.log                          # final decks, VP and a turn table (JSON: every turn's state)
+scry features [-me NAME] [-profiles] > games.csv      # one row per saved game (or what each card does per play)
 scry format -dombot reply.txt chat.txt > notes.md     # match notes with a pasted DomBot reply
 scry format -ask chat.txt > notes.md                  # match notes, asking DomBot
 scry match Alice Bob                                  # print DomBot's !match reply as text

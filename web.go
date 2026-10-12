@@ -10,10 +10,12 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -53,6 +55,24 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		w.Header().Set("Cache-Control", "max-age=604800")
 		http.ServeFile(w, r, p)
+	})
+	mux.HandleFunc("GET /api/insights", func(w http.ResponseWriter, r *http.Request) {
+		in, err := insights(r.URL.Query().Get("me"))
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, in)
+	})
+	mux.HandleFunc("GET /api/features.csv", func(w http.ResponseWriter, r *http.Request) {
+		in, err := insights(r.URL.Query().Get("me"))
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.Header().Set("Content-Type", "text/csv; charset=utf-8")
+		w.Header().Set("Content-Disposition", `attachment; filename="scrying-pool-games.csv"`)
+		writeFeatures(w, in.Games)
 	})
 	mux.HandleFunc("GET /api/games", func(w http.ResponseWriter, r *http.Request) {
 		dir, err := gamesDir("")
@@ -181,7 +201,47 @@ func allowGamePost(w http.ResponseWriter, r *http.Request) bool {
 var (
 	clientMu     sync.Mutex
 	cachedClient *cartographer.Client
+
+	insightsMu    sync.Mutex
+	insightsCache = map[string]*advisor.Insights{}
+	insightsStamp time.Time // the newest score file when the cache was filled
 )
+
+// insights summarizes the saved games of me (default: the account that loaded
+// most of them). Reading every game takes a while, so the result is kept until
+// a game is added.
+func insights(me string) (*advisor.Insights, error) {
+	client, err := webClient()
+	if err != nil {
+		return nil, err
+	}
+	dir, err := gamesDir("")
+	if err != nil {
+		return nil, err
+	}
+	var newest time.Time
+	files, _ := filepath.Glob(filepath.Join(dir, "*.score.txt"))
+	for _, f := range files {
+		if st, err := os.Stat(f); err == nil && st.ModTime().After(newest) {
+			newest = st.ModTime()
+		}
+	}
+	insightsMu.Lock()
+	defer insightsMu.Unlock()
+	if !newest.Equal(insightsStamp) {
+		insightsCache, insightsStamp = map[string]*advisor.Insights{}, newest
+	}
+	if in, ok := insightsCache[me]; ok {
+		return in, nil
+	}
+	who, _, features, err := advisor.Corpus(client, dir, me)
+	if err != nil {
+		return nil, err
+	}
+	in := advisor.Summarize(who, features)
+	insightsCache[me] = in
+	return in, nil
+}
 
 // webClient loads the client tables once they exist.
 func webClient() (*cartographer.Client, error) {

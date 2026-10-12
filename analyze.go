@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -70,7 +71,7 @@ func listGames(dir string) ([]savedGame, error) {
 			continue
 		}
 		id := strings.TrimSuffix(filepath.Base(f), ".score.txt")
-		out = append(out, savedGame{ID: id, Row: scoreHeader(string(b), "row"), Original: cartographer.OriginalPlayers(string(b))})
+		out = append(out, savedGame{ID: id, Row: advisor.Header(string(b), "row"), Original: cartographer.OriginalPlayers(string(b))})
 	}
 	sort.Slice(out, func(i, j int) bool {
 		a, _ := strconv.Atoi(out[i].ID)
@@ -78,24 +79,6 @@ func listGames(dir string) ([]savedGame, error) {
 		return a > b
 	})
 	return out, nil
-}
-
-// scoreHeader reads a "# key: ..." line from a saved score screen.
-func scoreHeader(score, key string) string {
-	for _, l := range strings.Split(score, "\n") {
-		if v, ok := strings.CutPrefix(l, "# "+key+": "); ok {
-			return strings.TrimSpace(v)
-		}
-	}
-	return ""
-}
-
-// scoreCards reads a "# key: A, B, C" card list from a saved score screen.
-func scoreCards(score, key string) []string {
-	if v := scoreHeader(score, key); v != "" {
-		return strings.Split(v, ", ")
-	}
-	return nil
 }
 
 func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error) {
@@ -113,8 +96,8 @@ func loadGameView(client *cartographer.Client, dir, id string) (*gameView, error
 	if err != nil {
 		return nil, err
 	}
-	v := &gameView{ID: id, Row: scoreHeader(string(score), "row"), Header: g.Header, Cards: map[string]Card{},
-		Kingdom: scoreCards(string(score), "kingdom"), Lands: scoreCards(string(score), "landscapes")}
+	v := &gameView{ID: id, Row: advisor.Header(string(score), "row"), Header: g.Header, Cards: map[string]Card{},
+		Kingdom: advisor.Cards(string(score), "kingdom"), Lands: advisor.Cards(string(score), "landscapes")}
 	if len(g.Players) > 0 {
 		v.Account = g.Players[0]
 	}
