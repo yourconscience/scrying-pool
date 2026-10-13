@@ -183,3 +183,10 @@ Phase 1, 2026-10-10 (partial):
 - Not yet: rating-adjusted expectations, top players' baselines, luck.
 - Same day, later: features for both players of every game; Profiles page with a player picker and a second player to compare; differences with 95% ranges, form over the last 30 games, first-Province histogram, new palette. `scry db` (SQLite via modernc.org/sqlite v1.60.1, published 2026-09-29; it needs Go 1.26) and `scry site` (static copy). The site was published as a private Claude Artifact with gamrevinu's profile only.
 
+2026-10-13: Profiles page redesign.
+
+- The 2026-10-12 palette (teal on navy) made ranges hard to see. The page now uses the project palette with more contrast and Source Sans 3. Green and brick red only mean a range that excludes the reference; grey and a hollow point mean it doesn't.
+- "What stands out" lists, in sentences, only the differences whose 95% range leaves no doubt about the direction.
+- Charts are drawn at their container's width, so chart text keeps its real size; they redraw when the width changes.
+- Kingdom cards are tiles with the card's art, cropped from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
+

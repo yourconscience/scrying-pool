@@ -56,6 +56,9 @@ func buildSite(out string, players []string) error {
 		}
 		in := advisor.Summarize(p, mine)
 		in.Games = nil
+		// the static page links the images where KingdomCreator publishes them
+		// rather than copying them: they belong to Rio Grande Games
+		in.Images = cardImages(in, func(_, rel string) string { return kingdomCreatorImages + rel })
 		file := "data/" + slug(p) + ".json"
 		b, _ := json.Marshal(in)
 		if err := os.WriteFile(filepath.Join(out, file), b, 0o644); err != nil {
@@ -99,6 +102,10 @@ func buildSite(out string, players []string) error {
 	fmt.Printf("wrote %s: %d profiles\n", out, len(list.Players))
 	return nil
 }
+
+// kingdomCreatorImages is where the files in card-images/ come from, pinned to
+// the commit they were copied at.
+const kingdomCreatorImages = "https://raw.githubusercontent.com/blakevanlan/KingdomCreator/d9a802db2e41d52786eaa02097279cbf1b64c778/docs/img/cards/"
 
 var reSlug = regexp.MustCompile(`[^a-z0-9]+`)
 

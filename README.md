@@ -11,7 +11,7 @@ Work in progress; the plan is in [SPEC.md](SPEC.md). Not affiliated with Shuffle
 | **Capture** | `web/capture.js`, `web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
 | **Cartographer** | `cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
 | **Analysis page** | `web/analyze.*`, `analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
-| **Advisor** | `advisor/`, `web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (going first, kingdom roles), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards, with 95% ranges; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
+| **Advisor** | `advisor/`, `web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (going first, kingdom roles), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 95% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
 | **Match notes** | `web/notes.html`, `notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Quick start
@@ -131,7 +131,7 @@ Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too
 Every game is described from both players' sides, so any player with enough saved games has a profile, and two profiles can be compared.
 
 - `scry db` builds `<user config>/scrying-pool/scrying-pool.db` (SQLite) from the saved files: `games`, `player_games` (one row per player per game), `cards` (the profiles) and a `player_summary` view. Lists are JSON text, so `json_each` unpacks them; `db.go` has an example query.
-- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. `artifact.html` is the same page for a Claude Artifact.
+- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`). `artifact.html` is the same page for a Claude Artifact, where outside images are blocked, so its cards show no art.
 
 Not yet: opponents' ratings (an expected result per game), comparison with top players' games, luck.
 
@@ -185,7 +185,7 @@ scry cards sync                                       # download all card art th
 - **Client tables** (log templates, card names and types) come from your own dominion.games client through the Copy client tables bookmark and stay in `<user config>/scrying-pool/client`. `SCRY_CLIENT` points to another file.
 - **Saved games** live in `<user config>/scrying-pool/games`: `<id>.log`, `<id>.score.txt` (with the row, the original players and the loaded decision) and, when the bot played on, `<id>.bot.log`.
 - **Card facts:** `cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
-- **Card images** (full card faces) for the analysis page live in `card-images/`, which git ignores, or in `$SCRY_CARD_IMAGES`. They are the English images from [KingdomCreator](https://github.com/blakevanlan/KingdomCreator) (`docs/img/cards`, 1,010 files, 89 MB), fetched with a sparse clone:
+- **Card images** (full card faces) for the Analyze and Profiles pages live in `card-images/`, which git ignores, or in `$SCRY_CARD_IMAGES`. They are the English images from [KingdomCreator](https://github.com/blakevanlan/KingdomCreator) (`docs/img/cards`, 1,010 files, 89 MB), fetched with a sparse clone:
 
   ```bash
   git clone --depth 1 --filter=blob:none --sparse https://github.com/blakevanlan/KingdomCreator.git /tmp/kc
@@ -194,7 +194,7 @@ scry cards sync                                       # download all card art th
   ```
 
   Files are named `<set>_<name>.jpg` (`plunder_buriedtreasure.jpg`, landscapes `plunder_event_avoid.jpg`, new art `_2nd`). `scry web` matches them to cards by name with letters and digits only, preferring second-edition sets and art. A test checks that every real card in the client's tables (832 on 2026-10-11) has an image. Every name in the saved kingdoms has one too.
-- **Card art** belongs to Rio Grande Games, so it isn't in this repo or the hosted page. The local app downloads thumbnails from the wiki the first time it shows each card. It keeps them in your user cache folder (`~/Library/Caches/scrying-pool/art` on macOS; `SCRY_ART_DIR` overrides it).
+- **Card art** belongs to Rio Grande Games, so it isn't in this repo. A static site from `scry site` links to KingdomCreator's public copies instead of carrying them. The local app downloads thumbnails from the wiki the first time it shows each card. It keeps them in your user cache folder (`~/Library/Caches/scrying-pool/art` on macOS; `SCRY_ART_DIR` overrides it).
 
 ## Security notes
 

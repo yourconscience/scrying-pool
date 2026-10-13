@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -272,8 +273,25 @@ func insights(player string) (*advisor.Insights, error) {
 		return in, nil
 	}
 	in := advisor.Summarize(player, advisor.Of(player, c.features))
+	in.Images = cardImages(in, func(name, _ string) string { return "/card-image/" + url.PathEscape(name) })
 	c.insights[player] = in
 	return in, nil
+}
+
+// cardImages maps the profile's kingdom cards that have an image in
+// card-images/ to a URL; the function gets the card and the image's path there.
+func cardImages(in *advisor.Insights, link func(name, rel string) string) map[string]string {
+	out := map[string]string{}
+	for _, c := range in.Cards {
+		if p, ok := cardImage(c.Card); ok {
+			rel, err := filepath.Rel(cardImageDir(), p)
+			if err != nil {
+				continue
+			}
+			out[c.Card] = link(c.Card, filepath.ToSlash(rel))
+		}
+	}
+	return out
 }
 
 // webClient loads the client tables once they exist.

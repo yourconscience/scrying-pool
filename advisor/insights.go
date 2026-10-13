@@ -108,7 +108,9 @@ type Insights struct {
 	First    string          `json:"first_date"`
 	Last     string          `json:"last_date"`
 	MinGames int             `json:"min_games"` // cards seen in fewer games are left out
-	Games    []*Features     `json:"games,omitempty"`
+	// card -> image URL, filled by whoever serves the page (the local app or a static site)
+	Images map[string]string `json:"images,omitempty"`
+	Games  []*Features       `json:"games,omitempty"`
 }
 
 const (
@@ -198,7 +200,12 @@ func Summarize(me string, games []*Features) *Insights {
 		in.Cards = append(in.Cards, CardRow{Card: k, Present: p, Took: rate(a.took), Skipped: rate(a.skipped),
 			Shrunk: (p.Wins + prior*base) / (float64(p.Games) + prior)})
 	}
-	sort.Slice(in.Cards, func(i, j int) bool { return in.Cards[i].Shrunk < in.Cards[j].Shrunk })
+	sort.Slice(in.Cards, func(i, j int) bool {
+		if in.Cards[i].Shrunk != in.Cards[j].Shrunk {
+			return in.Cards[i].Shrunk < in.Cards[j].Shrunk
+		}
+		return in.Cards[i].Card < in.Cards[j].Card // the same order on every run
+	})
 
 	t := Tempo{}
 	for turn := 1; turn <= tempoTurns; turn++ {
