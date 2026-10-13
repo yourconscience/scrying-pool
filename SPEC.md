@@ -189,4 +189,5 @@ Phase 1, 2026-10-10 (partial):
 - "What stands out" lists, in sentences, only the differences whose 95% range leaves no doubt about the direction.
 - Charts are drawn at their container's width, so chart text keeps its real size; they redraw when the width changes.
 - Kingdom cards are rows with a small image of the whole card, from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
+- Reading the saved games took 25 s, two thirds of it trying every log template's regexp on every line. Each template now keeps its longest fixed word and skips the regexp when the line lacks it: 3 s for 244 games, the same features CSV byte for byte. `scry web` reads them at start.
 

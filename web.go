@@ -25,6 +25,7 @@ var webFiles embed.FS
 
 func serve(addr string, timeout time.Duration) error {
 	fmt.Printf("Scrying Pool web UI: http://%s\n", addr)
+	go loadCorpus() // read the saved games now, so the Profiles page doesn't wait for them
 	return http.ListenAndServe(addr, newHandler(timeout))
 }
 
@@ -227,7 +228,7 @@ type corpus struct {
 const minProfileGames = 20
 
 // loadCorpus reads the saved games, or returns the copy from the last read when
-// no score file changed since. Reading every game takes a while.
+// no score file changed since. Reading 244 games takes about 3 seconds.
 func loadCorpus() (*corpus, error) {
 	client, err := webClient()
 	if err != nil {
