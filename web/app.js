@@ -63,7 +63,7 @@ backend.status().then((s) => {
   $("ask").disabled = !s.discord;
   $("ask-hint").textContent = s.discord
     ? "(DMs DomBot as you; against Discord's ToS for automation)"
-    : "(needs a Discord token on this machine, see README)";
+    : "(needs a Discord token on this machine, see docs/match-notes.md)";
 });
 
 async function loadDemo() {
