@@ -191,3 +191,8 @@ Phase 1, 2026-10-10 (partial):
 - Kingdom cards are rows with a small image of the whole card, from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
 - Reading the saved games took 25 s, two thirds of it trying every log template's regexp on every line. Each template now keeps its longest fixed word and skips the regexp when the line lacks it: 3 s for 244 games, the same features CSV byte for byte. `scry web` reads them at start.
 
+2026-10-13, later: hosting.
+
+- The repo is public and the Profiles page is on GitHub Pages (https://yourconscience.github.io/scrying-pool/). GitHub Pages wasn't available for the private repo on this plan.
+- `.github/workflows/site.yml` runs `go vet` and `go test` on every pull request and every push to `main`; on `main` it also runs `scry site -data site-data` and publishes the result. Without the client tables, 13 of 31 tests skip in CI.
+- `site-data/` holds the published profiles (win rates only). `scry site -data DIR` copies them instead of reading saved games, so CI doesn't need them; the output is the same file for file.

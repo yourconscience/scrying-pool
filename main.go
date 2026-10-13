@@ -32,7 +32,7 @@ const usageText = `usage:
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
   scry db [-o FILE] [-dir DIR]                     build an SQLite database of the saved games
-  scry site [-o DIR] [-players "a,b"]              the My games page as a static site, one profile per player
+  scry site [-o DIR] [-players "a,b"] [-data DIR]  the My games page as a static site, one profile per player
 
 -ask, match and ask DM DomBot from your Discord account (see docs/match-notes.md for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -211,6 +211,7 @@ func main() {
 		err = buildDB(path, d)
 	case "site":
 		players := fs.String("players", "", "comma-separated profiles to include (default: the account that loaded most games)")
+		data := fs.String("data", "", "copy the profiles from this folder (players.json and the files it lists) instead of making them from the saved games")
 		fs.Parse(args)
 		dir := *out
 		if dir == "" {
@@ -222,7 +223,7 @@ func main() {
 				ps = append(ps, p)
 			}
 		}
-		err = buildSite(dir, ps)
+		err = buildSite(dir, ps, *data)
 	case "check":
 		priorFlag := fs.String("prior", "", "also compare final VP with a saved DomBot !prior list (JSON)")
 		fs.Parse(args)
