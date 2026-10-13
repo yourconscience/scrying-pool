@@ -90,18 +90,20 @@ body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(
 .takeaways li.down::before { background: var(--down); }
 .takeaways b { font-variant-numeric: tabular-nums; }
 
-.tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-.card-tile { display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--soft); color: var(--ink); text-decoration: none; border-top: 4px solid var(--none); }
-.card-tile.up { border-top-color: var(--up); }
-.card-tile.down { border-top-color: var(--down); }
+.tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+/* a row: the whole card, small, then its numbers; the left edge says better or worse than usual */
+.card-tile { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: center; padding: 8px 12px 8px 8px; border: 1px solid var(--rule); border-left: 4px solid var(--none); border-radius: 10px; background: var(--soft); color: var(--ink); text-decoration: none; }
+.card-tile.up { border-left-color: var(--up); }
+.card-tile.down { border-left-color: var(--down); }
+.card-tile.up .rate b { color: var(--up); }
+.card-tile.down .rate b { color: var(--down); }
 .card-tile:hover, .card-tile:focus-visible { outline: 2px solid var(--a); outline-offset: 1px; }
-/* the images are whole cards (296×473); show just the art: about 86% of the width, from 10% to 50% of the height */
-.card-tile .art { position: relative; aspect-ratio: 4 / 3; background: var(--code); overflow: hidden; }
-.card-tile .art img { position: absolute; left: -8%; top: -25%; width: 116%; max-width: none; height: auto; display: block; }
-.card-tile .body { padding: 8px 10px 10px; display: grid; gap: 2px; }
-.card-tile .name { font-weight: 700; font-size: 0.98rem; line-height: 1.2; }
+.card-tile .art { aspect-ratio: 296 / 473; border-radius: 5px; overflow: hidden; background: var(--code); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); }
+.card-tile .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-tile .body { display: grid; gap: 2px; }
+.card-tile .name { font-weight: 700; font-size: 1rem; line-height: 1.2; }
 .card-tile .rate { font-variant-numeric: tabular-nums; font-size: 0.95rem; }
-.card-tile .rate b { font-size: 1.15rem; }
+.card-tile .rate b { font-size: 1.2rem; }
 .card-tile .split { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .how ol { padding-left: 22px; max-width: 82ch; margin: 6px 0 10px; }
@@ -113,5 +115,6 @@ body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .kpi { padding: 12px; }
   .kpi .value { font-size: 1.55rem; }
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .tiles { grid-template-columns: 1fr; }
+  .card-tile { grid-template-columns: 60px minmax(0, 1fr); }
 }

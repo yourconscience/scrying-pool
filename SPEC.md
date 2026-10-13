@@ -188,5 +188,5 @@ Phase 1, 2026-10-10 (partial):
 - The 2026-10-12 palette (teal on navy) made ranges hard to see. The page now uses the project palette with more contrast and Source Sans 3. Green and brick red only mean a range that excludes the reference; grey and a hollow point mean it doesn't.
 - "What stands out" lists, in sentences, only the differences whose 95% range leaves no doubt about the direction.
 - Charts are drawn at their container's width, so chart text keeps its real size; they redraw when the width changes.
-- Kingdom cards are tiles with the card's art, cropped from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
+- Kingdom cards are rows with a small image of the whole card, from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
 
