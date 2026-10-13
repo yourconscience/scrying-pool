@@ -16,7 +16,7 @@
   --p2: #6b4fa0;
   --p3: #1f7a6d;
   --display: "Cinzel", "Trajan Pro", Georgia, serif;
-  --body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
@@ -63,10 +63,11 @@ body {
   color: var(--ink);
   font: 16px/1.5 var(--body);
 }
-header, main { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+/* every page: the same 1180px column as the navigation and the footer */
+header, main { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
 header { padding-block: 32px 8px; }
 h1, article h1, article h2 { font-family: var(--display); font-weight: 700; letter-spacing: 0.02em; text-wrap: balance; }
-header h1 { margin: 0 0 4px; font-size: 1.9rem; }
+header h1 { margin: 0 0 4px; font-size: 2rem; }
 header p, .note { margin: 0 0 20px; color: var(--muted); max-width: 65ch; }
 .note code, header code { font-family: var(--mono); font-size: 0.9em; }
 a { color: var(--victory); }
@@ -208,7 +209,9 @@ article li > strong:first-child { color: var(--treasure); }
 .tile.chip .name { padding: 0; font-size: 0.86rem; line-height: 1.2; }
 .tile.chip .meta { font-size: 0.7rem; opacity: 0.78; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Site navigation, shared by the landing and analysis pages. */
+/* Site navigation and footer, the same on every page. A static copy of a page
+   (scry site, cmd/buildsite) has body.static and hides the links to pages it lacks. */
+.static .local-only { display: none !important; }
 .top {
   display: flex;
   gap: 4px 18px;

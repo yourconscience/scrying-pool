@@ -43,9 +43,8 @@
   color-scheme: dark;
 }
 body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(--sans); }
-.static .local-only { display: none !important; }
 .ins { max-width: 1180px; margin: 0 auto; padding: 8px 16px 64px; }
-.ins h1 { font: 700 2rem/1.15 var(--sans); margin: 2px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+.ins h1 { font: 700 2rem/1.15 var(--display); margin: 2px 0 6px; letter-spacing: 0.02em; text-wrap: balance; }
 .ins h2 { font: 700 1.12rem/1.3 var(--sans); margin: 0 0 4px; }
 .ins h3 { font: 600 0.82rem var(--sans); margin: 18px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
 .ins .hint { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; max-width: 78ch; }

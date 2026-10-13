@@ -51,6 +51,9 @@ function showError(msg) {
 }
 
 if (STATIC) {
+  // a static copy is just this page: the brand leads back to it, the app's other pages aren't there
+  document.body.classList.add("static");
+  document.querySelector(".top .brand").href = "./";
   $("ask-row").hidden = true;
   $("download").hidden = true; // the hosted viewer blocks downloads; Copy works
   $("paste-box").open = true;
