@@ -191,7 +191,9 @@ a.chip:hover { outline: 2px solid var(--victory); outline-offset: 0; }
   .turn-grid { grid-template-columns: 1fr; }
   .log { max-height: none; }
 }
+@media (max-width: 800px) {
+  .game-head h1 { font-size: 1.6rem; }
+}
 @media (max-width: 480px) {
   .zone { grid-template-columns: 1fr; gap: 2px; }
-  .game-head h1 { font-size: 1.35rem; }
 }

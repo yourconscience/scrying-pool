@@ -223,6 +223,7 @@ $("copy").addEventListener("click", () => {
       // clipboard refused: show the source selected so the viewer can copy it
       $("source-md").hidden = false;
       $("rendered").hidden = true;
+      $("toggle").textContent = "Show rendered";
       getSelection().selectAllChildren($("source-md"));
     },
   );

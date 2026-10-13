@@ -1,17 +1,9 @@
 /* Profiles page.
    Layout: a header with the pickers, summary tiles, plain-language takeaways, one wide chart, a grid of small charts, card tiles.
-   Palette: the project's own (grey-green paper, Victory green, Treasure gold), with higher contrast; green and brick red only
+   Palette: style.css's (grey-green paper, Victory green, Treasure gold) plus the tokens below; green and brick red only
    mean "clearly better" and "clearly worse", grey means "can't tell". */
 :root {
-  --paper: #f2f3ee;
-  --panel: #ffffff;
-  --ink: #1d2219;
-  --muted: #586152;
-  --rule: #d8dccf;
   --soft: #eceee6;
-  --code: #e7eadf;
-  --victory: #2f6a35;
-  --treasure: #8a6100;
   --a: #2f6a35;
   --a-soft: rgba(47, 106, 53, 0.16);
   --b: #9a6a00;
@@ -26,8 +18,7 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #121510; --panel: #1b1f18; --ink: #edf0e7; --muted: #a7af9c; --rule: #343a2e; --soft: #252a21; --code: #262b22;
-    --victory: #8acd7f; --treasure: #e6b94f;
+    --soft: #252a21;
     --a: #8acd7f; --a-soft: rgba(138, 205, 127, 0.2); --b: #e6b94f; --b-soft: rgba(230, 185, 79, 0.2);
     --up: #8acd7f; --up-soft: rgba(138, 205, 127, 0.2); --down: #f08a6c; --down-soft: rgba(240, 138, 108, 0.2);
     --none: #959c8b; --none-soft: rgba(149, 156, 139, 0.2);
@@ -35,8 +26,7 @@
   }
 }
 :root[data-theme="dark"] {
-  --paper: #121510; --panel: #1b1f18; --ink: #edf0e7; --muted: #a7af9c; --rule: #343a2e; --soft: #252a21; --code: #262b22;
-  --victory: #8acd7f; --treasure: #e6b94f;
+  --soft: #252a21;
   --a: #8acd7f; --a-soft: rgba(138, 205, 127, 0.2); --b: #e6b94f; --b-soft: rgba(230, 185, 79, 0.2);
   --up: #8acd7f; --up-soft: rgba(138, 205, 127, 0.2); --down: #f08a6c; --down-soft: rgba(240, 138, 108, 0.2);
   --none: #959c8b; --none-soft: rgba(149, 156, 139, 0.2);
@@ -45,7 +35,7 @@
 body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(--sans); }
 .ins { max-width: 1180px; margin: 0 auto; padding: 8px 16px 64px; }
 .ins h1 { font: 700 2rem/1.15 var(--display); margin: 2px 0 6px; letter-spacing: 0.02em; text-wrap: balance; }
-.ins h2 { font: 700 1.12rem/1.3 var(--sans); margin: 0 0 4px; }
+.ins h2 { font: 700 1.1rem/1.3 var(--display); margin: 0 0 4px; letter-spacing: 0.02em; }
 .ins h3 { font: 600 0.82rem var(--sans); margin: 18px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
 .ins .hint { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; max-width: 78ch; }
 .ins code { font: 0.86em var(--mono); background: var(--code); padding: 1px 5px; border-radius: 4px; }
