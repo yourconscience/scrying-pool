@@ -1,0 +1,10 @@
+{
+ "default": "gamrevinu",
+ "players": [
+  {
+   "name": "gamrevinu",
+   "games": 243,
+   "file": "data/gamrevinu.json"
+  }
+ ]
+}
