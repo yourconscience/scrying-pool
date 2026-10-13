@@ -2,10 +2,10 @@
    Victory green for actions, Treasure gold for the players' names, parchment-grey paper. */
 :root {
   --paper: #f2f3ee;
-  --panel: #fbfbf8;
-  --ink: #23271f;
-  --muted: #646b5c;
-  --rule: #d4d8cb;
+  --panel: #ffffff;
+  --ink: #1d2219;
+  --muted: #586152;
+  --rule: #d8dccf;
   --victory: #2f6a35;
   --on-victory: #ffffff;
   --treasure: #8a6100;
@@ -16,19 +16,19 @@
   --p2: #6b4fa0;
   --p3: #1f7a6d;
   --display: "Cinzel", "Trajan Pro", Georgia, serif;
-  --body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #141712;
-    --panel: #1c201a;
-    --ink: #e5e8de;
-    --muted: #9ba393;
-    --rule: #343a2f;
-    --victory: #7cbf72;
+    --paper: #121510;
+    --panel: #1b1f18;
+    --ink: #edf0e7;
+    --muted: #a7af9c;
+    --rule: #343a2e;
+    --victory: #8acd7f;
     --on-victory: #10140e;
-    --treasure: #e3b54a;
+    --treasure: #e6b94f;
     --warn: #3a3420;
     --code: #262b22;
     --p0: #7aa7e8;
@@ -39,14 +39,14 @@
   }
 }
 :root[data-theme="dark"] {
-  --paper: #141712;
-  --panel: #1c201a;
-  --ink: #e5e8de;
-  --muted: #9ba393;
-  --rule: #343a2f;
-  --victory: #7cbf72;
+  --paper: #121510;
+  --panel: #1b1f18;
+  --ink: #edf0e7;
+  --muted: #a7af9c;
+  --rule: #343a2e;
+  --victory: #8acd7f;
   --on-victory: #10140e;
-  --treasure: #e3b54a;
+  --treasure: #e6b94f;
   --warn: #3a3420;
   --code: #262b22;
   --p0: #7aa7e8;
@@ -63,12 +63,14 @@ body {
   color: var(--ink);
   font: 16px/1.5 var(--body);
 }
-header, main { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+/* every page: the same 1180px column as the navigation and the footer */
+header, main { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
 header { padding-block: 32px 8px; }
 h1, article h1, article h2 { font-family: var(--display); font-weight: 700; letter-spacing: 0.02em; text-wrap: balance; }
-header h1 { margin: 0 0 4px; font-size: 1.9rem; }
+header h1 { margin: 0 0 4px; font-size: 2rem; }
 header p, .note { margin: 0 0 20px; color: var(--muted); max-width: 65ch; }
-.note code, header code { font-family: var(--mono); font-size: 0.9em; }
+code { font-family: var(--mono); font-size: 0.9em; }
+::placeholder { color: var(--muted); opacity: 1; }
 a { color: var(--victory); }
 label { display: block; font-weight: 600; margin-bottom: 6px; }
 .hint { font-weight: 400; color: var(--muted); font-size: 0.9em; }
@@ -116,7 +118,8 @@ article, #source-md {
 #source-md { white-space: pre-wrap; font: 13px/1.45 var(--mono); padding: 16px; margin: 0; }
 article h1 { font-size: 1.6rem; }
 article h2 { font-size: 1.2rem; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); }
-article table { border-collapse: collapse; font-size: 0.92em; font-variant-numeric: tabular-nums; }
+/* a wide table scrolls by itself instead of the whole article */
+article table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 0.92em; font-variant-numeric: tabular-nums; }
 article th, article td { border: 1px solid var(--rule); padding: 4px 10px; }
 article code { background: var(--code); padding: 1px 5px; border-radius: 4px; font: 0.85em var(--mono); }
 article ul { padding-left: 20px; }
@@ -124,6 +127,9 @@ article li { margin: 2px 0; }
 article li > strong:first-child { color: var(--treasure); }
 @media (max-width: 600px) {
   article { padding: 4px 12px 16px; }
+}
+@media (max-width: 800px) {
+  header h1 { font-size: 1.6rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; }
@@ -191,7 +197,7 @@ article li > strong:first-child { color: var(--treasure); }
   color: #1f1d18;
 }
 .coin { border-radius: 50%; background: #f2c83b; border: 1px solid #a07b10; }
-.potion { border-radius: 50% 50% 45% 45%; background: #6f9be0; border: 1px solid #36598f; color: #fff !important; }
+.potion { border-radius: 50% 50% 45% 45%; background: #3f6fb8; border: 1px solid #2c4f86; color: #fff !important; }
 .debt { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); background: #c98b5a; }
 
 /* Without art (hosted page): one-line chips, two per row on a phone. */
@@ -208,7 +214,9 @@ article li > strong:first-child { color: var(--treasure); }
 .tile.chip .name { padding: 0; font-size: 0.86rem; line-height: 1.2; }
 .tile.chip .meta { font-size: 0.7rem; opacity: 0.78; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Site navigation, shared by the landing and analysis pages. */
+/* Site navigation and footer, the same on every page. A static copy of a page
+   (scry site, cmd/buildsite) has body.static and hides the links to pages it lacks. */
+.static .local-only { display: none !important; }
 .top {
   display: flex;
   gap: 4px 18px;
