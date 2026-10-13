@@ -156,3 +156,38 @@ Phase 1, 2026-10-10 (partial):
   - The client's log model (`LogEntriesChange.execute` -> `game.logModel.entries`) holds `DecisionEntry` records between the log entries. The capture now keeps the log up to the loaded decision and saves the bot's lines as `<id>.bot.log`. The 24 affected games were recaptured; all 24 logs plus bot lines match their score screens, and final scores match DomBot in 184 of 220 games (was 164).
   - A bot can hang mid-turn ("Waiting for Lord Rattington"); the capture goes on once the bot's first move is in.
   - When a bot's move ends the game, the client sometimes stops rendering its templates; the capture stops and asks for a reload.
+
+2026-10-11, afternoon: analysis page, corpus fixed.
+
+- **Web UI.** `/` is a start page; `/analyze.html#ID` shows a saved game turn by turn: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones, the Supply with changes and the final decks. `/notes.html` is the match-notes page that used to be `/`.
+- **Getting a game from the logged-in browser.** The page builds a "Scry game" bookmark (`web/capture.js` + `web/scry-game.js`, with the app's address). In the dominion.games tab it loads one game like the capture script and posts it to `/api/games`, which accepts the `https://dominion.games` origin only for that route and only saves a log under a numeric ID. In Brave 155 the post from the dominion.games tab waited for the browser's local-access answer; after a minute the bookmark copies the game for the page's paste box instead. Not yet tested end to end in a real tab.
+- **Kingdom.** The client's `kingdomViewer.cardGroups` holds the kingdom, the landscapes and the non-Supply cards. The capture saves them as `# kingdom`, `# landscapes` and `# other cards` lines in the score file. None of the 242 saved games has them yet.
+- **Corpus.** Of 462 rated 2026 games: 242 saved (all pass `scry check`, 198 match DomBot's final scores), 18 the server can't load ("Internal error.", decision index -1), 6 AFK, 3 capture errors, 193 not tried (March to September). `manifest-2026.json` in the games folder records each one.
+- **Next:** the Advisor plan (luck and shuffles, rule-based mistake hints, strategy), published as an artifact on 2026-10-11.
+
+
+2026-10-11, evening: unattended capture and more games.
+
+- **Kingdom.** DomBot's token in the Keychain had expired (401), so kingdoms come from dominion.games: the capture's kingdom-only mode starts each saved game, reads `kingdomViewer.cardGroups` and resigns, about 10 seconds a game.
+- **Profiles as a source.** The Profile tab's `ProfileResult` objects give a player's 25 latest games with game number, time, rated, both players' levels, scores and kingdom; the tab's search opens any player. `harvest()` starts from your profile, follows opponents above level 50 and queues their rated two-player games with a player above 50. 30 profiles took 108 seconds, saw 261 players above 50 and found 651 games; 502 of them (total score 10 or more, not yours) were queued.
+- **Unattended runs.** Results and the queue persist in IndexedDB (`resume()` after a reload); a 6-minute limit per game; logouts waited out for 15 minutes; `run` adds to a running queue; optional posting to `scry web`.
+- **Two capture bugs fixed.** The decision field keeps its last value, so a stale -1 failed the game after an unloadable one; the field is now reset before each load. Chained timers in the hidden tab woke about once a minute; waits now run on a worker's timers.
+- **Other players' games.** `SeatNames` maps seat 1 to the first original player even when the loading account isn't one of them. `scry check` takes the final scores from each game's row when no `!prior` list is given.
+- Queued for the night of 2026-10-11: kingdoms for 237 saved games, 8 new games of yours, the 214 not yet saved, and 502 games of strong players.
+
+2026-10-12: research, then the first Advisor slice.
+
+- **Research** (artifact "Обзор аналитики Dominion"): dominion.games has a Stats tab in beta (announced 2026-09-24 in 2nd Shuffle's #news) with per-card stats by skill tier and a per-player view. On 2026-10-12 its server (acceptance-dominion-alpha.dominion.games) refused connections, and the production client 2.3.5 hides the tab behind the server feature CARD_STATS_VIEW. markus's Woodcutter statistics (2018-2022) are the model for skill-adjusted results: P(win) = 1/(1+exp(-Δμ)). We build our own tool and don't duplicate the card table.
+- **advisor/**: card profiles measured from the logs, kingdom roles from them, per-game features and a summary; `scry features` (CSV) and the **My games** page (`/insights.html`, `/api/insights`, `/api/features.csv`).
+- Rows: 196 saved games had an empty "# row:" (imported before rows were written); they were filled from manifest-2026.json, so results come from final scores. 198 of 243 games' replays end at those scores.
+- Not yet: rating-adjusted expectations, top players' baselines, luck.
+- Same day, later: features for both players of every game; Profiles page with a player picker and a second player to compare; differences with 95% ranges, form over the last 30 games, first-Province histogram, new palette. `scry db` (SQLite via modernc.org/sqlite v1.60.1, published 2026-09-29; it needs Go 1.26) and `scry site` (static copy). The site was published as a private Claude Artifact with gamrevinu's profile only.
+
+2026-10-13: Profiles page redesign.
+
+- The 2026-10-12 palette (teal on navy) made ranges hard to see. The page now uses the project palette with more contrast and Source Sans 3. Green and brick red only mean a range that excludes the reference; grey and a hollow point mean it doesn't.
+- "What stands out" lists, in sentences, only the differences whose 95% range leaves no doubt about the direction.
+- Charts are drawn at their container's width, so chart text keeps its real size; they redraw when the width changes.
+- Kingdom cards are rows with a small image of the whole card, from KingdomCreator's card images: `/card-image/` locally, GitHub raw at commit d9a802db on a static site.
+- Reading the saved games took 25 s, two thirds of it trying every log template's regexp on every line. Each template now keeps its longest fixed word and skips the regexp when the line lacks it: 3 s for 244 games, the same features CSV byte for byte. `scry web` reads them at start.
+

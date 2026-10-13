@@ -10,9 +10,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
+	"sort"
 	"strings"
 
+	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
 )
 
@@ -26,6 +27,18 @@ type exportedGame struct {
 	Decision int      `json:"decision"` // the decision the game was loaded at
 	Markers  bool     `json:"markers"`  // whether the client's decision markers were read
 	Score    string   `json:"score"`
+	// the client's kingdom viewer, e.g. {"Cards in Supply": ["Craftsman", ...], "Loot": [...]}
+	Kingdom map[string][]string `json:"kingdom"`
+	Profile *gameProfile        `json:"profile"` // what a player's profile said about the game
+}
+
+// gameProfile is a game as a dominion.games profile lists it.
+type gameProfile struct {
+	Time    string             `json:"time"` // when it was played, e.g. "2026-10-10T23:44:12.000Z"
+	Rated   bool               `json:"rated"`
+	Players []string           `json:"players"`
+	Levels  map[string]float64 `json:"levels"` // each player's rating level
+	Scores  map[string]int     `json:"scores"`
 }
 
 // importGames saves exported games and checks each one against its score screen.
@@ -39,27 +52,17 @@ func importGames(file, dir string, minTurns int) error {
 		defer f.Close()
 		in = f
 	}
-	if dir == "" {
-		base, err := os.UserConfigDir()
-		if err != nil {
-			return err
-		}
-		dir = filepath.Join(base, "scrying-pool", "games")
-	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	dir, err := gamesDir(dir)
+	if err != nil {
 		return err
 	}
-	cpath := cartographer.DefaultClientPath()
-	if cpath == "" {
-		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
-	}
-	client, err := cartographer.LoadClient(cpath)
+	client, err := loadClient()
 	if err != nil {
 		return err
 	}
 	sc := bufio.NewScanner(in)
 	sc.Buffer(make([]byte, 0, 1<<20), 64<<20)
-	var pass, fail, short int
+	var pass, fail, short, kingdoms int
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" {
@@ -69,27 +72,23 @@ func importGames(file, dir string, minTurns int) error {
 		if err := json.Unmarshal([]byte(line), &g); err != nil {
 			return fmt.Errorf("not a capture export line: %w", err)
 		}
-		score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
-		if g.Markers {
-			score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+		if g.Log == "" && len(g.Kingdom) > 0 { // only the kingdom, for a game saved before it was read
+			if err := addKingdom(dir, g.ID, g.Kingdom); err != nil {
+				fmt.Printf("SKIP  %s: %v\n", g.ID, err)
+				continue
+			}
+			kingdoms++
+			fmt.Printf("KINGDOM %s\n", g.ID)
+			continue
 		}
-		score += g.Score
-		r := client.Check(g.Log+g.Bot, score)
-		if r.MinTurns < minTurns {
+		r, saved, err := saveGame(client, dir, g, minTurns)
+		if err != nil {
+			return err
+		}
+		if !saved {
 			short++
 			fmt.Printf("SHORT %s: a player had %d turns, skipped (%s)\n", g.ID, r.MinTurns, g.Row)
 			continue
-		}
-		if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
-			return err
-		}
-		if g.Bot != "" {
-			if err := os.WriteFile(filepath.Join(dir, g.ID+".bot.log"), []byte(g.Bot), 0o644); err != nil {
-				return err
-			}
-		}
-		if err := os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644); err != nil {
-			return err
 		}
 		if r.OK() {
 			pass++
@@ -102,8 +101,121 @@ func importGames(file, dir string, minTurns int) error {
 	if err := sc.Err(); err != nil {
 		return err
 	}
-	fmt.Printf("%d passed, %d failed, %d short games skipped; files in %s\n", pass, fail, short, dir)
+	fmt.Printf("%d passed, %d failed, %d short games skipped, %d kingdoms added; files in %s\n", pass, fail, short, kingdoms, dir)
 	return nil
+}
+
+// addKingdom writes the kingdom lines into a saved game's score file, replacing old ones.
+func addKingdom(dir, id string, groups map[string][]string) error {
+	if !reGameID.MatchString(id) {
+		return fmt.Errorf("bad game id %q", id)
+	}
+	path := filepath.Join(dir, id+".score.txt")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("game not saved: %w", err)
+	}
+	var head, rest []string
+	lines := strings.Split(string(b), "\n")
+	for i, l := range lines {
+		if !strings.HasPrefix(l, "# ") {
+			rest = lines[i:]
+			break
+		}
+		if !strings.HasPrefix(l, "# kingdom: ") && !strings.HasPrefix(l, "# landscapes: ") && !strings.HasPrefix(l, "# other cards: ") {
+			head = append(head, l)
+		}
+	}
+	out := strings.Join(head, "\n") + "\n" + kingdomLines(groups) + strings.Join(rest, "\n")
+	return os.WriteFile(path, []byte(out), 0o644)
+}
+
+var reGameID = regexp.MustCompile(`^\d{1,12}$`)
+
+// saveGame checks one exported game against its score screen and writes
+// <id>.log, <id>.score.txt and, when the bot played on, <id>.bot.log. Games
+// where a player had fewer than minTurns turns aren't saved.
+func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns int) (r cartographer.CheckResult, saved bool, err error) {
+	if !reGameID.MatchString(g.ID) {
+		return r, false, fmt.Errorf("bad game id %q", g.ID)
+	}
+	score := "# row: " + g.Row + "\n# original players: " + strings.Join(g.Original, " / ") + "\n"
+	if g.Markers {
+		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
+	}
+	if p := g.Profile; p != nil && p.Time != "" {
+		var levels []string
+		for _, name := range p.Players {
+			levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
+		}
+		score += fmt.Sprintf("# played: %s\n# rated: %v\n# levels: %s\n", p.Time, p.Rated, strings.Join(levels, " / "))
+	}
+	score += kingdomLines(g.Kingdom)
+	score += g.Score
+	r = client.Check(g.Log+g.Bot, score)
+	if r.MinTurns < minTurns {
+		return r, false, nil
+	}
+	if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
+		return r, false, err
+	}
+	if g.Bot != "" {
+		if err := os.WriteFile(filepath.Join(dir, g.ID+".bot.log"), []byte(g.Bot), 0o644); err != nil {
+			return r, false, err
+		}
+	}
+	return r, true, os.WriteFile(filepath.Join(dir, g.ID+".score.txt"), []byte(score), 0o644)
+}
+
+// kingdomLines writes the kingdom viewer's groups as "# kingdom: ...",
+// "# landscapes: ..." and "# other cards: ..." lines for the score file.
+func kingdomLines(groups map[string][]string) string {
+	var names []string
+	for name := range groups {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	var kingdom, landscapes, other []string
+	for _, name := range names {
+		switch {
+		case name == "Cards in Supply":
+			kingdom = groups[name]
+		case strings.HasPrefix(name, "Events"): // "Events, Landmarks, Projects, Ways, ..."
+			landscapes = append(landscapes, groups[name]...)
+		default:
+			other = append(other, groups[name]...)
+		}
+	}
+	var out string
+	for _, l := range []struct {
+		key   string
+		cards []string
+	}{{"kingdom", kingdom}, {"landscapes", landscapes}, {"other cards", other}} {
+		if len(l.cards) > 0 {
+			out += "# " + l.key + ": " + strings.Join(l.cards, ", ") + "\n"
+		}
+	}
+	return out
+}
+
+// gamesDir is where saved games live: dir, or <user config>/scrying-pool/games.
+func gamesDir(dir string) (string, error) {
+	if dir == "" {
+		base, err := os.UserConfigDir()
+		if err != nil {
+			return "", err
+		}
+		dir = filepath.Join(base, "scrying-pool", "games")
+	}
+	return dir, os.MkdirAll(dir, 0o755)
+}
+
+func loadClient() (*cartographer.Client, error) {
+	cpath := cartographer.DefaultClientPath()
+	if cpath == "" {
+		return nil, fmt.Errorf("no dominion.games client tables found; export them first (see README)")
+	}
+	return cartographer.LoadClient(cpath)
 }
 
 // checkGames runs the cartographer check on saved logs: each <id>.log with its
@@ -122,17 +234,11 @@ func priorScores(path string) (map[string]map[string]int, error) {
 	if err := json.Unmarshal(b, &rows); err != nil {
 		return nil, err
 	}
-	re := regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
 	out := map[string]map[string]int{}
 	for _, r := range rows {
-		// DomBot's minus sign comes through as "−" or, in copied text, as "?": "R4D4: ?5" is -5
-		m := re.FindStringSubmatch(strings.NewReplacer("\u2212", "-", "?", "-").Replace(r.Result))
-		if m == nil {
-			continue
+		if sc, ok := advisor.ResultScores(r.Result); ok {
+			out[r.ID] = sc
 		}
-		a, _ := strconv.Atoi(m[2])
-		b, _ := strconv.Atoi(m[4])
-		out[r.ID] = map[string]int{m[1]: a, m[3]: b}
 	}
 	return out, nil
 }
@@ -145,21 +251,17 @@ func checkGames(args []string, priorPath string) error {
 			return err
 		}
 	}
-	cpath := cartographer.DefaultClientPath()
-	if cpath == "" {
-		return fmt.Errorf("no dominion.games client tables found; export them first (see README)")
-	}
-	client, err := cartographer.LoadClient(cpath)
+	client, err := loadClient()
 	if err != nil {
 		return err
 	}
 	var logs []string
 	if len(args) == 0 {
-		base, err := os.UserConfigDir()
+		dir, err := gamesDir("")
 		if err != nil {
 			return err
 		}
-		args = []string{filepath.Join(base, "scrying-pool", "games")}
+		args = []string{dir}
 	}
 	for _, a := range args {
 		if st, err := os.Stat(a); err == nil && st.IsDir() {
@@ -188,7 +290,11 @@ func checkGames(args []string, priorPath string) error {
 		bot, _ := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".bot.log") // the score screen counts the bot's moves
 		r := client.Check(string(b)+string(bot), string(sb))
 		problems := r.Problems
-		if final, ok := prior[id]; ok {
+		final, ok := prior[id]
+		if !ok {
+			final, ok = advisor.RowScores(advisor.Header(string(sb), "row"))
+		}
+		if ok {
 			scored++
 			_, sp := client.CheckScore(string(b), string(sb), final)
 			problems = append(problems, sp...)
@@ -204,7 +310,7 @@ func checkGames(args []string, priorPath string) error {
 		}
 	}
 	fmt.Printf("%d passed, %d failed, %d without a score screen (of %d logs)\n", pass, fail, noScore, len(logs))
-	if prior != nil {
+	if scored > 0 {
 		fmt.Printf("final scores: %d of %d games match the known scores\n", scored-scoreFail, scored)
 	}
 	return nil

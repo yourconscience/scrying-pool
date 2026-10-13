@@ -141,8 +141,9 @@ func (c *Client) Landscapes(score string) []string {
 
 // SeatNames maps the names in a reloaded game's log to the real players. The
 // player who reloads the game sits in seat 1, which belonged to the first
-// original player; the bot sits in seat 2, the second original player. The
-// reloading player is the one whose name is among the original players.
+// original player; the bot sits in seat 2, the second original player. In your
+// own games the reloading player is the one whose name is among the original
+// players; in other people's games neither log name is, and seat 1 plays first.
 func SeatNames(logPlayers, original []string) map[string]string {
 	if len(original) != 2 || len(logPlayers) != 2 {
 		return nil
@@ -152,7 +153,7 @@ func SeatNames(logPlayers, original []string) map[string]string {
 	if !in(viewer) && in(bot) {
 		viewer, bot = bot, viewer
 	}
-	if !in(viewer) || in(bot) {
+	if in(bot) {
 		return nil
 	}
 	return map[string]string{viewer: original[0], bot: original[1]}

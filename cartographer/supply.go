@@ -23,12 +23,13 @@ var pileGroups = func() map[string]string {
 	add("Patrician", "Patrician", "Emporium")
 	add("Settlers", "Settlers", "Bustling Village")
 	add("Sauna", "Sauna", "Avanto")
-	add("Augurs", "Herb Gatherer", "Acolyte", "Sorceress", "Sibyl")
-	add("Clashes", "Battle Plan", "Archer", "Warlord", "Territory")
-	add("Forts", "Tent", "Garrison", "Hill Fort", "Stronghold")
-	add("Odysseys", "Old Map", "Voyage", "Sunken Treasure", "Distant Shore")
-	add("Townsfolk", "Town Crier", "Blacksmith", "Miller", "Elder")
-	add("Wizards", "Student", "Conjurer", "Sorcerer", "Lich")
+	// the client's kingdom viewer names the rotating piles "Augur Pile" and so on
+	add("Augurs", "Augur Pile", "Herb Gatherer", "Acolyte", "Sorceress", "Sibyl")
+	add("Clashes", "Clash Pile", "Battle Plan", "Archer", "Warlord", "Territory")
+	add("Forts", "Fort Pile", "Tent", "Garrison", "Hill Fort", "Stronghold")
+	add("Odysseys", "Odyssey Pile", "Old Map", "Voyage", "Sunken Treasure", "Distant Shore")
+	add("Townsfolk", "Townsfolk Pile", "Town Crier", "Blacksmith", "Miller", "Elder")
+	add("Wizards", "Wizard Pile", "Student", "Conjurer", "Sorcerer", "Lich")
 	add("Knights", "Dame Anna", "Dame Josephine", "Dame Molly", "Dame Natalie", "Dame Sylvia",
 		"Sir Bailey", "Sir Destry", "Sir Martin", "Sir Michael", "Sir Vander")
 	add("Castles", "Humble Castle", "Crumbling Castle", "Small Castle", "Haunted Castle",
@@ -63,8 +64,8 @@ func (c *Client) PileOf(card string) string {
 	return card
 }
 
-// initialSize is a pile's size at the start of a game with n players.
-func (c *Client) initialSize(pile string, n int) int {
+// InitialSize is a pile's size at the start of a game with n players.
+func (c *Client) InitialSize(pile string, n int) int {
 	if s, ok := nonSupply[pile]; ok {
 		return s
 	}
@@ -112,9 +113,15 @@ type SupplyState struct {
 
 // Empty reports whether a Supply pile was emptied.
 func (s SupplyState) Empty(pile string) bool {
+	return s.InSupply(pile) && s.Initial[pile] > 0 && s.Left[pile] <= 0
+}
+
+// InSupply reports whether a pile the game touched is a Supply pile (Horses,
+// Spoils and the like are not).
+func (s SupplyState) InSupply(pile string) bool {
 	_, outside := nonSupply[pile]
-	init, touched := s.Initial[pile]
-	return touched && !outside && init > 0 && s.Left[pile] <= 0
+	_, touched := s.Initial[pile]
+	return touched && !outside
 }
 
 // EmptyPiles lists the emptied Supply piles.
@@ -140,7 +147,7 @@ func (g *Game) Supply(c *Client) SupplyState {
 	take := func(card string, k int) {
 		pile := c.PileOf(card)
 		if _, ok := s.Initial[pile]; !ok {
-			s.Initial[pile] = c.initialSize(pile, n)
+			s.Initial[pile] = c.InitialSize(pile, n)
 			s.Left[pile] = s.Initial[pile]
 		}
 		s.Left[pile] -= k

@@ -132,7 +132,7 @@ func TestEveryCardForm(t *testing.T) {
 			if strings.TrimSpace(f.text) == "" || f.text == "2 " {
 				continue
 			}
-			cs, ok := c.cardList(f.text)
+			cs, ok := c.CardList(f.text)
 			if !ok || len(cs) != 1 || cs[0].Card == nil || cs[0].N != f.n || cs[0].Card.Name != card.Name {
 				if bad < 15 {
 					got := "nothing"
@@ -219,7 +219,7 @@ func TestSupplyMatchesClient(t *testing.T) {
 	for pile, n := range want {
 		got, ok := s.Left[pile]
 		if !ok { // never touched: still full
-			got = c.initialSize(pile, 2)
+			got = c.InitialSize(pile, 2)
 		}
 		if got != n {
 			t.Errorf("%s: %d left, the client showed %d", pile, got, n)
@@ -382,5 +382,22 @@ func TestScoreMatchesDomBot(t *testing.T) {
 	vp := c.Score(g, ScoreInput{})
 	if vp["gamrevinu"].Total() != 9 || vp["UtagawaLk"].Total() != 6 {
 		t.Errorf("scores %v and %v, DomBot says 9 and 6", vp["gamrevinu"], vp["UtagawaLk"])
+	}
+}
+
+// The loading account sits in seat 1 (the first original player's), the bot in seat 2.
+func TestSeatNames(t *testing.T) {
+	for _, c := range []struct {
+		log, original []string
+		want          map[string]string
+	}{
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"gamrevinu", "Wtrrch"}, map[string]string{"gamrevinu": "gamrevinu", "Lord Rattington": "Wtrrch"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"Nikhec", "gamrevinu"}, map[string]string{"gamrevinu": "Nikhec", "Lord Rattington": "gamrevinu"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"agoo03", "jers"}, map[string]string{"gamrevinu": "agoo03", "Lord Rattington": "jers"}},
+		{[]string{"gamrevinu", "Lord Rattington"}, []string{"agoo03"}, nil},
+	} {
+		if got := SeatNames(c.log, c.original); !reflect.DeepEqual(got, c.want) {
+			t.Errorf("SeatNames(%v, %v) = %v, want %v", c.log, c.original, got, c.want)
+		}
 	}
 }

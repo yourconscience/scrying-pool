@@ -40,7 +40,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	page, err := os.ReadFile("web/index.html")
+	page, err := os.ReadFile("web/notes.html")
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func run() error {
 
 func replaceOnce(s, old, new string) string {
 	if strings.Count(s, old) != 1 {
-		panic(fmt.Sprintf("expected exactly one %q in web/index.html", old))
+		panic(fmt.Sprintf("expected exactly one %q in web/notes.html", old))
 	}
 	return strings.Replace(s, old, new, 1)
 }

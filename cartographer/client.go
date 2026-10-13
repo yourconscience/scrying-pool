@@ -60,8 +60,9 @@ type Template struct {
 	Name    string
 	English string
 	re      *regexp.Regexp
-	args    []int // argument numbers in the order they appear
-	literal int   // length of the fixed text, to try specific templates first
+	args    []int  // argument numbers in the order they appear
+	literal int    // length of the fixed text, to try specific templates first
+	word    string // the fixed text's longest word: a line without it can't match
 }
 
 var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
@@ -215,6 +216,7 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 		}
 		lit := rest[:next]
 		t.literal += len(strings.TrimSpace(lit))
+		t.keepWord(lit)
 		// Copied logs join spans with a space, so a boundary between text and an
 		// argument may gain a space; a space inside the template is always there.
 		b.WriteString(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(lit), `\s+`) + `\s*`)
@@ -228,6 +230,7 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 				shown = c.Name
 			}
 			t.literal += len(shown)
+			t.keepWord(shown)
 			b.WriteString(reSpaces.ReplaceAllString(regexp.QuoteMeta(shown), `\s*`))
 			rest = rest[ref[1]-ref[0]:]
 		default:
@@ -248,12 +251,25 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 	return t, nil
 }
 
+// keepWord remembers the longest word of the fixed text. Spaces in it may vary
+// in a copied log, but each word appears exactly.
+func (t *Template) keepWord(text string) {
+	for _, w := range strings.Fields(text) {
+		if len(w) > len(t.word) {
+			t.word = w
+		}
+	}
+}
+
 // generic templates are only "Argument0" or "Argument0.", which match anything;
 // they are used only where the line kind says so (turn lines, the game header).
 func (t *Template) generic() bool { return t.literal <= 1 }
 
 // match returns the template's arguments by number, or nil.
 func (t *Template) match(text string) map[int]string {
+	if !strings.Contains(text, t.word) { // much cheaper than the regexp, which most templates fail
+		return nil
+	}
 	m := t.re.FindStringSubmatch(text)
 	if m == nil {
 		return nil

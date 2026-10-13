@@ -44,10 +44,10 @@ func (c *Client) addForm(text string, card *Card, plural bool) {
 	c.forms[first] = append(c.forms[first], form{text, card, plural})
 }
 
-// cardList reads a list such as "2 Coppers, a Silver, and an Estate". It returns
+// CardList reads a list such as "2 Coppers, a Silver, and an Estate". It returns
 // false if any part isn't a card, so other arguments (numbers, players, piles)
 // aren't mistaken for cards.
-func (c *Client) cardList(s string) ([]CardN, bool) {
+func (c *Client) CardList(s string) ([]CardN, bool) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil, false
