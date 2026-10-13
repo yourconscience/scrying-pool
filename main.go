@@ -34,7 +34,7 @@ const usageText = `usage:
   scry db [-o FILE] [-dir DIR]                     build an SQLite database of the saved games
   scry site [-o DIR] [-players "a,b"]              the My games page as a static site, one profile per player
 
--ask, match and ask DM DomBot from your Discord account (see README for the token and the ToS risk).
+-ask, match and ask DM DomBot from your Discord account (see docs/match-notes.md for the token and the ToS risk).
 Run "scry <command> -h" for flags.
 `
 
@@ -121,7 +121,7 @@ func main() {
 		}
 		cpath := cartographer.DefaultClientPath()
 		if cpath == "" {
-			fail(fmt.Errorf("no dominion.games client tables found; export them first (see README) or set SCRY_CLIENT"))
+			fail(fmt.Errorf("no dominion.games client tables found; export them first (see docs/capture.md) or set SCRY_CLIENT"))
 		}
 		client, cerr := cartographer.LoadClient(cpath)
 		if cerr != nil {

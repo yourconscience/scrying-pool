@@ -213,7 +213,7 @@ func gamesDir(dir string) (string, error) {
 func loadClient() (*cartographer.Client, error) {
 	cpath := cartographer.DefaultClientPath()
 	if cpath == "" {
-		return nil, fmt.Errorf("no dominion.games client tables found; export them first (see README)")
+		return nil, fmt.Errorf("no dominion.games client tables found; export them first (see docs/capture.md)")
 	}
 	return cartographer.LoadClient(cpath)
 }
