@@ -35,6 +35,7 @@
   });
   const answer = await C.request("games", { me, games: list });
   if (!answer) return C.say("Scrying Pool: the Recent games tab didn't answer.", 15000);
+  if (answer.error) return C.say(`Scrying Pool: ${answer.error}`, 15000);
   const report = (e) => C.tell("progress", { id: e.id, status: e.status, error: e.error || "", left: C.queue.length });
   // games captured here before keep their result: send those again instead of loading them
   await C.load();

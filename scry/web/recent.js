@@ -118,7 +118,8 @@ function render(r) {
   kpis(r);
   sides(r);
   const saved = new Set(r.games.map((g) => g.id));
-  const extra = Object.entries(pending).filter(([id]) => !saved.has(id)).map(([id, p]) => pendingRow(id, { ...p, me: r.me }));
+  const usable = (p) => p.profile && Array.isArray(p.profile.players) && p.profile.levels && typeof p.profile.row === "string";
+  const extra = Object.entries(pending).filter(([id, p]) => !saved.has(id) && usable(p)).map(([id, p]) => pendingRow(id, { ...p, me: r.me }));
   games([...extra, ...r.games].sort((a, b) => (a.id.length - b.id.length) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)).reverse());
 }
 

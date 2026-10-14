@@ -231,6 +231,13 @@ func TestWebGames(t *testing.T) {
 	if w := call("POST", "/api/profiles", "", prof); w.Code != 200 || !strings.Contains(w.Body.String(), `"updated":1`) {
 		t.Fatalf("profiles: %d %s", w.Code, w.Body)
 	}
+	gdir, _ := gamesDir("")
+	scorePath := filepath.Join(gdir, "184426907.score.txt")
+	os.Chmod(scorePath, 0o444) // a saved game whose levels can't be written is an error, not a skip
+	if w := call("POST", "/api/profiles", "", strings.Replace(prof, "57.5", "57.6", 1)); w.Code != 500 {
+		t.Errorf("profiles on a read-only score file: %d %s", w.Code, w.Body)
+	}
+	os.Chmod(scorePath, 0o644)
 	var recent advisor.Recent
 	w = call("GET", "/api/recent?player=gamrevinu", "", "")
 	if err := json.Unmarshal(w.Body.Bytes(), &recent); err != nil || len(recent.Games) != 1 {

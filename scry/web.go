@@ -195,8 +195,15 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		n := 0
 		for _, g := range in {
-			if g.Profile != nil && addProfile(dir, g.ID, g.Profile) == nil {
+			if g.Profile == nil {
+				continue
+			}
+			switch err := addProfile(dir, g.ID, g.Profile); {
+			case err == nil:
 				n++
+			case !errors.Is(err, fs.ErrNotExist): // a game that isn't saved yet is fine
+				writeJSON(w, 500, map[string]string{"error": fmt.Sprintf("game %s: %v", g.ID, err)})
+				return
 			}
 		}
 		writeJSON(w, 200, map[string]int{"updated": n})

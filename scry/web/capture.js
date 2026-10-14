@@ -116,12 +116,16 @@
       });
     },
     async save(entry) { this.results[entry.id] = entry; await this.tx("games", "readwrite", (s) => s.put(entry)); },
-    async saveState() { await this.tx("state", "readwrite", (s) => s.put({ queue: this.queue, meta: this.meta }, "run")); },
+    async saveState() { await this.tx("state", "readwrite", (s) => s.put({ queue: this.queue, later: this.later || null, meta: this.meta }, "run")); },
     // Loads what earlier runs in this browser stored.
     async load() {
       for (const e of (await this.tx("games", "readonly", (s) => s.getAll())) || []) this.results[e.id] = e;
       const st = await this.tx("state", "readonly", (s) => s.get("run"));
-      if (st) { if (!this.queue.length) this.queue = st.queue || []; this.meta = Object.assign(st.meta || {}, this.meta); }
+      if (st) {
+        if (!this.queue.length) this.queue = st.queue || [];
+        if (!this.later && st.later) this.later = st.later; // a queue set aside by an alone run
+        this.meta = Object.assign(st.meta || {}, this.meta);
+      }
       return Object.keys(this.results).length;
     },
 
@@ -379,7 +383,7 @@
     // until these games are done, and is then kept for resume().
     async run(ids, { mode = "full", retry = false, alone = false } = {}) {
       if (!this.running) await this.load();
-      if (alone && !this.running) { this.later = this.queue; this.queue = []; }
+      if (alone && !this.running) { this.later = [...(this.later || []), ...this.queue]; this.queue = []; }
       const queued = new Set(this.queue.map((q) => q.id));
       const done = (id) => { const r = this.results[id]; return r && r.status !== "error" && (mode === "full" ? r.status !== "kingdom" : true); };
       let added = 0;
