@@ -700,7 +700,7 @@ func (r *zoneReplay) step(i int, e Event) {
 
 	switch t := e.Template; {
 	case fromTrash: // Fortress back to hand, Lich to the discard pile, Trail into play
-		to := map[string]string{"PUT_IN_HAND": ZoneHand, "PUT_IN_HAND_FROM": ZoneHand, "DISCARD": ZoneDiscard, "PUT_IN_DISCARD": ZoneDiscard, "REACTS_PLAYING": ZonePlay}[t]
+		to := backFromTrashZone[t]
 		r.gain(e, p, cards, to)
 		if to == ZonePlay {
 			r.inPlay[p] = append(r.inPlay[p], &played{name: cards[0].Card.Name, card: cards[0].Card, turn: r.turn, stays: -1})

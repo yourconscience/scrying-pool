@@ -128,12 +128,30 @@ func (c *Client) CheckScore(log, score string, final map[string]int) (got map[st
 	return got, problems
 }
 
-// Landscapes lists the landmarks and allies a score screen scores, e.g. "Wall".
+// Landscapes lists the landmarks and allies a saved game scores, e.g. "Wall":
+// the ones its score screen lists and the ones its "# landscapes:" line names.
+// The score screen shows an ally such as Plateau Shepherds without a count, so
+// it can't be read there.
 func (c *Client) Landscapes(score string) []string {
 	var out []string
+	seen := map[string]bool{}
+	add := func(name string) {
+		for _, card := range c.Cards {
+			if (strings.EqualFold(card.Name, name) || strings.EqualFold(card.Key, name)) && (card.Is("Landmark") || card.Is("Ally")) && !seen[card.Name] {
+				seen[card.Name] = true
+				out = append(out, card.Name)
+				return
+			}
+		}
+	}
 	for _, name := range ScoreScreenSources(score) {
-		if card := c.Cards[name]; card != nil && (card.Is("Landmark") || card.Is("Ally")) {
-			out = append(out, name)
+		add(name)
+	}
+	for _, l := range strings.Split(score, "\n") {
+		if v, ok := strings.CutPrefix(l, "# landscapes: "); ok {
+			for _, name := range strings.Split(v, ", ") {
+				add(name)
+			}
 		}
 	}
 	return out

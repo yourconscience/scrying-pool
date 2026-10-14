@@ -60,9 +60,10 @@ type Template struct {
 	Name    string
 	English string
 	re      *regexp.Regexp
-	args    []int  // argument numbers in the order they appear
-	literal int    // length of the fixed text, to try specific templates first
-	word    string // the fixed text's longest word: a line without it can't match
+	empty   *regexp.Regexp // re, but arguments after Argument0 may be empty: "fails to take a Turn (from )."
+	args    []int          // argument numbers in the order they appear
+	literal int            // length of the fixed text, to try specific templates first
+	word    string         // the fixed text's longest word: a line without it can't match
 }
 
 var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
@@ -201,8 +202,9 @@ var (
 // logs join the client's spans with spaces, so spaces at any boundary are optional.
 func compileTemplate(name, english string, byKey map[string]*Card) (*Template, error) {
 	t := &Template{Name: name, English: english}
-	var b strings.Builder
-	b.WriteString("^")
+	var b, e strings.Builder
+	both := func(s string) { b.WriteString(s); e.WriteString(s) }
+	both("^")
 	rest := english
 	for rest != "" {
 		loc := reArg.FindStringIndex(rest)
@@ -219,7 +221,7 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 		t.keepWord(lit)
 		// Copied logs join spans with a space, so a boundary between text and an
 		// argument may gain a space; a space inside the template is always there.
-		b.WriteString(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(lit), `\s+`) + `\s*`)
+		both(`\s*` + reSpaces.ReplaceAllString(regexp.QuoteMeta(lit), `\s+`) + `\s*`)
 		rest = rest[next:]
 		switch {
 		case rest == "":
@@ -231,7 +233,7 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 			}
 			t.literal += len(shown)
 			t.keepWord(shown)
-			b.WriteString(reSpaces.ReplaceAllString(regexp.QuoteMeta(shown), `\s*`))
+			both(reSpaces.ReplaceAllString(regexp.QuoteMeta(shown), `\s*`))
 			rest = rest[ref[1]-ref[0]:]
 		default:
 			m := reArg.FindStringSubmatch(rest)
@@ -239,15 +241,21 @@ func compileTemplate(name, english string, byKey map[string]*Card) (*Template, e
 			fmt.Sscan(m[1], &n)
 			t.args = append(t.args, n)
 			b.WriteString(`(.+?)`)
+			if n == 0 {
+				e.WriteString(`(.+?)`)
+			} else {
+				e.WriteString(`(.*?)`)
+			}
 			rest = rest[len(m[0]):]
 		}
 	}
-	b.WriteString("$")
+	both("$")
 	re, err := regexp.Compile(b.String())
 	if err != nil {
 		return nil, err
 	}
 	t.re = re
+	t.empty = regexp.MustCompile(e.String())
 	return t, nil
 }
 
@@ -265,12 +273,17 @@ func (t *Template) keepWord(text string) {
 // they are used only where the line kind says so (turn lines, the game header).
 func (t *Template) generic() bool { return t.literal <= 1 }
 
-// match returns the template's arguments by number, or nil.
-func (t *Template) match(text string) map[int]string {
+// match returns the template's arguments by number, or nil. With empty set,
+// arguments after Argument0 may be empty.
+func (t *Template) match(text string, empty bool) map[int]string {
 	if !strings.Contains(text, t.word) { // much cheaper than the regexp, which most templates fail
 		return nil
 	}
-	m := t.re.FindStringSubmatch(text)
+	re := t.re
+	if empty {
+		re = t.empty
+	}
+	m := re.FindStringSubmatch(text)
 	if m == nil {
 		return nil
 	}
