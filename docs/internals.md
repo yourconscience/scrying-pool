@@ -2,15 +2,24 @@
 
 For developers: the modules, how logs are read, how the statistics are made, the CLI and where data lives. Back to the [README](../README.md); the plan and the log of decisions are in [SPEC.md](../SPEC.md).
 
+## Layout
+
+- `cmd/scry/`: the `scry` command, its web server and the match-notes formatter (also built to WebAssembly for the static notes page).
+- `cartographer/`: reads dominion.games logs and replays games.
+- `advisor/`: per-game features and profile statistics.
+- `web/`: the pages, styles and scripts, embedded into `scry`.
+- `cmd/buildsite/`: the static Match notes page. `cmd/carddb/`: regenerates the card table.
+- `site-data/`: the profiles published on the live page. `testdata/logs/`: game logs for the tests.
+
 ## Modules
 
 | Module | Where | What it does |
 |---|---|---|
 | **Capture** | `web/capture.js`, `web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
 | **Cartographer** | `cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
-| **Analysis page** | `web/analyze.*`, `analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
+| **Analysis page** | `web/analyze.*`, `cmd/scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
 | **Advisor** | `advisor/`, `web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (going first, kingdom roles), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 95% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
-| **Match notes** | `web/notes.html`, `notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
+| **Match notes** | `web/notes.html`, `cmd/scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Cartographer: how logs are read
 
@@ -71,9 +80,8 @@ Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too
 Every game is described from both players' sides, so any player with enough saved games has a profile, and two profiles can be compared.
 
 - `scry db` builds `<user config>/scrying-pool/scrying-pool.db` (SQLite) from the saved files: `games`, `player_games` (one row per player per game), `cards` (the profiles) and a `player_summary` view. Lists are JSON text, so `json_each` unpacks them; `db.go` has an example query.
-- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`). `artifact.html` is the same page for a Claude Artifact, where outside images are blocked, so its cards show no art.
+- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`).
 
-Not yet: opponents' ratings (an expected result per game), comparison with top players' games, luck.
 
 On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59% going first against 45% second, and 57% with a village in the kingdom against 44% without. With these sample sizes the ranges overlap a lot; treat single numbers as leads, not findings.
 
@@ -100,7 +108,7 @@ scry cards sync                                       # download all card art th
 
 - **Client tables** (log templates, card names and types) come from your own dominion.games client through the Copy client tables bookmark and stay in `<user config>/scrying-pool/client`. `SCRY_CLIENT` points to another file.
 - **Saved games** live in `<user config>/scrying-pool/games`: `<id>.log`, `<id>.score.txt` (with the row, the original players and the loaded decision) and, when the bot played on, `<id>.bot.log`.
-- **Card facts:** `cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
+- **Card facts:** `cmd/scry/cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
 - **Card images** (full card faces) for the Analyze and Profiles pages live in `card-images/`, which git ignores, or in `$SCRY_CARD_IMAGES`. They are the English images from [KingdomCreator](https://github.com/blakevanlan/KingdomCreator) (`docs/img/cards`, 1,010 files, 89 MB), fetched with a sparse clone:
 
   ```bash

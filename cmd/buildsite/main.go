@@ -1,7 +1,6 @@
 // buildsite builds the hosted, browser-only version of the web UI into site/:
 //
 //	site/index.html     full page with CSS and JS inlined (any static host)
-//	site/artifact.html  the same page without the html/head/body wrapper
 //	site/scry.wasm    the formatter, compiled to WebAssembly
 //
 // Run from the repo root: go run ./cmd/buildsite
@@ -65,20 +64,7 @@ func run() error {
 	if err := os.WriteFile("site/index.html", []byte(html), 0o644); err != nil {
 		return err
 	}
-
-	var kept []string
-	for _, l := range strings.Split(html, "\n") {
-		switch strings.TrimSpace(l) {
-		case "<!doctype html>", `<html lang="en">`, "<head>", "</head>", "<body>", "</body>", "</html>",
-			`<meta charset="utf-8">`, `<meta name="viewport" content="width=device-width, initial-scale=1">`:
-			continue
-		}
-		kept = append(kept, l)
-	}
-	if err := os.WriteFile("site/artifact.html", []byte(strings.Join(kept, "\n")), 0o644); err != nil {
-		return err
-	}
-	fmt.Println("built site/index.html, site/artifact.html, site/scry.wasm")
+	fmt.Println("built site/index.html, site/scry.wasm")
 	return nil
 }
 

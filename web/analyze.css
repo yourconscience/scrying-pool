@@ -184,8 +184,6 @@ a.chip:hover { outline: 2px solid var(--victory); outline-offset: 0; }
 .deck td:last-child { text-align: right; }
 .deck tr.total td { border-top: 1px solid var(--rule); font-weight: 700; padding-top: 3px; }
 
-.advisor { border-style: dashed; }
-.advisor p { margin: 0; max-width: 75ch; color: var(--muted); }
 
 @media (max-width: 860px) {
   .turn-grid { grid-template-columns: 1fr; }

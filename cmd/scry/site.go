@@ -18,7 +18,6 @@ import (
 // list and no opponents' names.
 //
 //	out/index.html     the page
-//	out/artifact.html  the same page without the html/head/body wrapper
 //	out/*.css, *.js    its assets
 //	out/data/players.json, out/data/<player>.json
 //
@@ -54,18 +53,6 @@ func buildSite(out string, players []string, data string) error {
 	}
 	html := strings.Replace(string(page), `<meta name="scry-data" content="api">`, `<meta name="scry-data" content="static">`, 1)
 	if err := os.WriteFile(filepath.Join(out, "index.html"), []byte(html), 0o644); err != nil {
-		return err
-	}
-	var kept []string
-	for _, l := range strings.Split(html, "\n") {
-		switch strings.TrimSpace(l) {
-		case "<!doctype html>", `<html lang="en">`, "<head>", "</head>", "<body>", "</body>", "</html>",
-			`<meta charset="utf-8">`, `<meta name="viewport" content="width=device-width, initial-scale=1">`:
-			continue
-		}
-		kept = append(kept, l)
-	}
-	if err := os.WriteFile(filepath.Join(out, "artifact.html"), []byte(strings.Join(kept, "\n")), 0o644); err != nil {
 		return err
 	}
 	fmt.Printf("wrote %s: %d profiles\n", out, n)
