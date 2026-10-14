@@ -51,11 +51,11 @@ function showError(msg) {
 }
 
 if (STATIC) {
-  // a static copy is just this page: the brand leads back to it, the app's other pages aren't there
+  // the hosted site has Profiles as its index and this page; the app's other pages aren't there
   document.body.classList.add("static");
   document.querySelector(".top .brand").href = "./";
+  document.querySelector('.top a[href="insights.html"]').href = "./";
   $("ask-row").hidden = true;
-  $("download").hidden = true; // the hosted viewer blocks downloads; Copy works
   $("paste-box").open = true;
   $("static-note").hidden = false;
 }

@@ -2,7 +2,7 @@
 
 Back to the [README](../README.md).
 
-`notes.html` (linked from the start page) turns a match's spectator chat into notes split by game. Each game shows its result, kingdom, landscapes and empty piles from DomBot, then that game's chat, with the players' lines in bold. **Load demo match** shows a real six-game match.
+`notes.html` ([on the live site](https://yourconscience.github.io/scrying-pool/notes.html), and in `scry web`) turns a match's spectator chat into notes split by game. Each game shows its result, kingdom, landscapes and empty piles from DomBot, then that game's chat, with the players' lines in bold. **Load demo match** shows a real six-game match.
 
 1. **Match chat:** after the match, select the whole chat box on dominion.games, copy it, and paste it. Lines like `Match: Alice 1, Bob 0` mark the end of each game.
 2. **Game results (optional):** pick one of these.
@@ -12,7 +12,7 @@ Back to the [README](../README.md).
 
 Each game's kingdom is shown as piles sorted by cost, then landscapes, framed in their card-type colours. Click a card to open its page on the [Dominion Strategy wiki](https://wiki.dominionstrategy.com).
 
-`go run ./tools/buildsite` builds a browser-only copy of the notes page into `site/`: the formatter compiled to WebAssembly plus one HTML page that any static host can serve. It can't ask DomBot itself, since that would DM from whoever's token is on the server.
+The live page is a browser-only copy: the formatter compiled to WebAssembly plus one HTML page, built with the rest of the hosted site by `go run ./tools/buildsite`. It can't ask DomBot itself, since that would DM from whoever's token is on the server.
 
 ## Automatic DomBot lookups (opt-in, read this first)
 

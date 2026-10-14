@@ -204,3 +204,7 @@ Phase 1, 2026-10-10 (partial):
 - Static builds no longer write `artifact.html`: the page is hosted on GitHub Pages now.
 - Test logs: 10 games instead of 40 (19 files instead of 79). They cover the expansions and the cards the tests check; `SCRY_GAMES` runs the replay tests on all saved games. The old logs stay in git history.
 
+2026-10-14: site.
+
+- Profiles: "What stands out" shows each clear difference as a number of percentage points with its game counts, largest first. Going first is only in the summary (59% against 45% is expected in Dominion and says little); the win-rate chart keeps the kingdom features. The setup guide left the page; it's in the README.
+- The live site has the Match notes page next to Profiles (`tools/buildsite` builds both; CI builds it on every pull request). Its Download button is back: it was hidden for the Claude artifact viewer.

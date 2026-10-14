@@ -30,7 +30,7 @@ Step through a game one turn at a time. See the score, the money and where every
 <td width="50%" valign="top">
 <img src="docs/icons/chats-circle.svg" width="36" alt=""><br>
 <b>Notes from a match chat</b><br>
-Paste the chat of a match. Get one short section per game with its kingdom and result.
+Paste the chat of a match. Get one short section per game with its kingdom and result. [Try it](https://yourconscience.github.io/scrying-pool/notes.html).
 </td>
 </tr>
 </table>

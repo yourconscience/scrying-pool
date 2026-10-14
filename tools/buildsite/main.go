@@ -1,12 +1,15 @@
-// buildsite builds the hosted, browser-only version of the web UI into site/:
+// buildsite builds the hosted site, the one published on GitHub Pages, into
+// site/ (or -o DIR):
 //
-//	site/index.html     full page with CSS and JS inlined (any static host)
-//	site/scry.wasm    the formatter, compiled to WebAssembly
+//	index.html, data/   the Profiles page with the profiles in site-data/ (scry site)
+//	notes.html          the Match notes page with CSS and JS inlined
+//	scry.wasm           the formatter, compiled to WebAssembly
 //
 // Run from the repo root: go run ./tools/buildsite
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -22,10 +25,14 @@ func main() {
 }
 
 func run() error {
-	if err := os.MkdirAll("site", 0o755); err != nil {
+	out := flag.String("o", "site", "output folder")
+	flag.Parse()
+	profiles := exec.Command("go", "run", "./scry", "site", "-data", "site-data", "-o", *out)
+	profiles.Stdout, profiles.Stderr = os.Stdout, os.Stderr
+	if err := profiles.Run(); err != nil {
 		return err
 	}
-	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", "./scry")
+	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", filepath.Join(*out, "scry.wasm"), "./scry")
 	build.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	build.Stdout, build.Stderr = os.Stdout, os.Stderr
 	if err := build.Run(); err != nil {
@@ -61,10 +68,10 @@ func run() error {
 	html = replaceOnce(html, `<link rel="stylesheet" href="style.css">`, "<style>\n"+string(css)+"</style>")
 	html = replaceOnce(html, `<script src="app.js"></script>`,
 		"<script>window.SCRY_STATIC = true;</script>\n<script>\n"+string(wasmExec)+"</script>\n<script>\n"+string(app)+"</script>")
-	if err := os.WriteFile("site/index.html", []byte(html), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(*out, "notes.html"), []byte(html), 0o644); err != nil {
 		return err
 	}
-	fmt.Println("built site/index.html, site/scry.wasm")
+	fmt.Printf("wrote %s: notes.html, scry.wasm\n", *out)
 	return nil
 }
 

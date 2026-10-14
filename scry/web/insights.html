@@ -15,7 +15,7 @@
   <a class="brand" href="/">Scrying Pool</a>
   <a class="local-only" href="analyze.html">Analyze a game</a>
   <a href="insights.html" aria-current="page">Profiles</a>
-  <a class="local-only" href="notes.html">Match notes</a>
+  <a href="notes.html">Match notes</a>
   <a href="https://github.com/yourconscience/scrying-pool">GitHub</a>
 </nav>
 
@@ -81,16 +81,7 @@
     <div class="tiles" id="best"></div>
   </section>
 
-  <section class="card how" aria-labelledby="how-h">
-    <h2 id="how-h">Get your own profile</h2>
-    <ol>
-      <li>Install the app and start it: <code>go install github.com/yourconscience/scrying-pool/scry@latest</code>, then <code>scry web</code>.</li>
-      <li>Once, export the log grammar from your dominion.games tab: <code>scry bookmarklet -client</code> prints a bookmark; click it there, then run <code>pbpaste | scry client save</code>.</li>
-      <li>Load your finished games: the <strong>Scry game</strong> bookmark on the app's Analyze page for one game, or the capture script for many (see docs/capture.md), then <code>scry import</code>.</li>
-      <li><code>scry db</code> builds an SQLite database of your games; <code>scry site -players "you,friend"</code> builds this page for any static host.</li>
-    </ol>
-    <p class="hint">Rates count ties as half a win. Opponents' ratings aren't taken into account yet. Card images come from the KingdomCreator project.</p>
-  </section>
+  <p class="hint footnote">Rates count ties as half a win. Opponents' ratings aren't taken into account. Card images come from the KingdomCreator project.</p>
 
   <p class="local-only"><a id="csv" href="/api/features.csv">Download the player's games as CSV</a></p>
   <p id="error" role="alert" hidden></p>

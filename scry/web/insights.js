@@ -7,10 +7,10 @@
 const $ = (id) => document.getElementById(id);
 const STATIC = document.querySelector('meta[name="scry-data"]').content === "static";
 if (STATIC) {
-  // a static copy is just this page: the brand leads back to it, the app's other pages aren't there
+  // the hosted site has this page as its index and the Match notes page; the app's other pages aren't there
   document.body.classList.add("static");
   document.querySelector(".top .brand").href = "./";
-  document.querySelector('.top a[aria-current="page"]').classList.add("local-only");
+  document.querySelector('.top a[aria-current="page"]').href = "./";
 }
 
 function el(tag, cls, text) {
@@ -18,14 +18,6 @@ function el(tag, cls, text) {
   if (cls) e.className = cls;
   if (text !== undefined) e.textContent = text;
   return e;
-}
-// a list item whose text has **...** parts in bold; names stay plain text
-function item(side, text) {
-  const span = el("span");
-  text.split("**").forEach((part, i) => span.append(i % 2 ? el("b", "", part) : document.createTextNode(part)));
-  const li = el("li", side);
-  li.append(span);
-  return li;
 }
 const pct = (x) => Math.round(x * 100) + "%";
 const pp = (x) => (Math.round(x * 100) > 0 ? "+" : Math.round(x * 100) < 0 ? "−" : "") + Math.abs(Math.round(x * 100));
@@ -134,35 +126,39 @@ function kpis(a, b) {
   );
 }
 
-// Plain sentences for the differences whose 95% range leaves no doubt about the direction.
-function takeaways(a, b) {
-  const items = []; // [side, text, size]
-  const splits = [[a.seat[0], "they go first"], ...a.roles.map((r) => [r, ROLES[r.name] ? ROLES[r.name][1] : r.name])];
-  for (const [s, phrase] of splits) {
-    if (!s.with.games || !s.without.games) continue;
-    const side = sideOf(s.diff_low, s.diff_high, 0);
-    if (side === "none") continue;
-    items.push([side, `${a.me} wins **${Math.abs(Math.round(s.diff * 100))} points ${side === "up" ? "more" : "less"}** when ${phrase}: ${pct(s.with.rate)} of ${s.with.games} games against ${pct(s.without.rate)} of ${s.without.games}.`, Math.abs(s.diff)]);
+// The differences whose 95% range leaves no doubt about the direction, largest
+// first: how big, what it is about, and the numbers behind it. Going first isn't
+// one: its edge is well known, and the summary shows it.
+const ENDING_TITLES = { provinces: "Province endings", piles: "Three-pile endings", resign: "Resignations" };
+function takeaways(a) {
+  const found = [];
+  for (const r of a.roles) {
+    if (!r.with.games || !r.without.games) continue;
+    const side = sideOf(r.diff_low, r.diff_high, 0);
+    if (side !== "none") found.push({ side, diff: r.diff, title: ROLES[r.name] ? ROLES[r.name][0] : r.name, detail: `won ${pct(r.with.rate)} of ${r.with.games} games with it, ${pct(r.without.rate)} of ${r.without.games} without` });
   }
+  const versus = (r) => `won ${pct(r.rate)} of ${r.games} games, against ${pct(a.overall.rate)} overall`;
   for (const [k, r] of Object.entries(a.openings)) {
     const side = r.games >= 12 ? sideOf(r.low, r.high, a.overall.rate) : "none";
-    if (side !== "none") items.push([side, `**${k}** openings win ${pct(r.rate)} of ${r.games} games, ${side === "up" ? "above" : "below"} the overall ${pct(a.overall.rate)}.`, Math.abs(r.rate - a.overall.rate)]);
+    if (side !== "none") found.push({ side, diff: r.rate - a.overall.rate, title: `${k} opening`, detail: versus(r) });
   }
-  for (const [k, label] of ENDINGS) {
+  for (const [k] of ENDINGS) {
     const r = a.endings[k];
     const side = r && r.games >= 12 ? sideOf(r.low, r.high, a.overall.rate) : "none";
-    if (side !== "none") items.push([side, `Games that end on **${label.toLowerCase()}** are won ${pct(r.rate)} of the time, in ${r.games} games.`, Math.abs(r.rate - a.overall.rate)]);
+    if (side !== "none") found.push({ side, diff: r.rate - a.overall.rate, title: ENDING_TITLES[k], detail: versus(r) });
   }
-  items.sort((x, y) => y[2] - x[2]);
+  found.sort((x, y) => Math.abs(y.diff) - Math.abs(x.diff));
   const list = $("takeaways");
   list.replaceChildren();
-  if (!items.length) list.append(item("none", `No difference is clear yet in ${a.overall.games} games: every range in the charts below still crosses its reference line.`));
-  for (const [side, text] of items.slice(0, 6)) list.append(item(side, text));
-  const t = a.tempo, i10 = t.turn.indexOf(10);
-  if (i10 >= 0 && t.n_wins[i10] >= 10 && t.n_losses[i10] >= 10) {
-    list.append(item("none", `On turn 10, ${a.me} averages **$${t.wins[i10].toFixed(1)}** in wins and **$${t.losses[i10].toFixed(1)}** in losses.`));
+  if (!found.length) {
+    list.append(el("li", "empty", `No clear difference yet in ${a.overall.games} games: every range in the charts below still crosses its reference line.`));
+    return;
   }
-  if (b) list.append(item("none", `${b.me} has won **${pct(b.overall.rate)}** of ${b.overall.games} saved games, ${a.me} **${pct(a.overall.rate)}** of ${a.overall.games}.`));
+  for (const f of found.slice(0, 6)) {
+    const li = el("li", f.side);
+    li.append(el("span", "delta", pp(f.diff) + " pp"), el("span", "what", f.title), el("span", "detail", f.detail));
+    list.append(li);
+  }
 }
 
 // ---- charts
@@ -170,8 +166,7 @@ function takeaways(a, b) {
 // Each feature's difference (games with it − games without), as a point on its 95% range.
 function effects(a, b) {
   const box = $("effects"), W = widthOf(box);
-  const rows = [{ label: "Going first", get: (d) => d.seat[0] }];
-  for (const r of a.roles) rows.push({ label: ROLES[r.name] ? ROLES[r.name][0] : r.name, get: (d) => d.roles.find((x) => x.name === r.name) });
+  const rows = a.roles.map((r) => ({ label: ROLES[r.name] ? ROLES[r.name][0] : r.name, get: (d) => d.roles.find((x) => x.name === r.name) }));
   const sides = b ? [a, b] : [a];
   const usable = (sp) => sp && sp.with.games && sp.without.games;
   const narrow = W < 600, lines = sides.length;
@@ -400,7 +395,7 @@ async function render() {
     $("meta").textContent = `${a.overall.games} saved games from ${a.first_date || "?"} to ${a.last_date || "?"}. In ${a.complete} of them the replay ends exactly at the final scores; in the rest the log misses the game's last decision.`;
     $("csv").href = "/api/features.csv?player=" + encodeURIComponent(name);
     kpis(a, b);
-    takeaways(a, b);
+    takeaways(a);
     drawCharts();
     const cards = a.cards || [];
     $("cards-note").textContent = `${a.me}'s kingdom cards seen in at least ${a.min_games} games (${cards.length} cards), ranked by win rate pulled toward the overall ${pct(a.overall.rate)} as if 10 average games were added, so a card seen a few times can't top the list by luck. "Took it" means the card was in the deck at some point. Each card links to its wiki page.`;
