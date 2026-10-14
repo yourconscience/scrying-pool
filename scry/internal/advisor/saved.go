@@ -29,6 +29,22 @@ func Cards(score, key string) []string {
 	return nil
 }
 
+// Levels reads the players' rating levels from a score file's
+// "# levels: FLOYDWG 48.25 / gamrevinu 55.50" line, written when a profile listed the game.
+func Levels(score string) map[string]float64 {
+	out := map[string]float64{}
+	for _, p := range strings.Split(Header(score, "levels"), " / ") {
+		i := strings.LastIndex(p, " ")
+		if i <= 0 {
+			continue
+		}
+		if v, err := strconv.ParseFloat(p[i+1:], 64); err == nil {
+			out[p[:i]] = v
+		}
+	}
+	return out
+}
+
 var reResult = regexp.MustCompile(`^(.+): (-?\d+), (.+): (-?\d+)$`)
 
 // ResultScores reads "Nikhec: 23, gamrevinu: 32". DomBot's minus sign comes

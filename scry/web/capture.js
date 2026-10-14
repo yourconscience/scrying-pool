@@ -13,22 +13,30 @@
 //
 // Built to run unattended overnight: every result is kept in the page's IndexedDB, so a
 // reload loses nothing (inject the script again and call resume()); each game has a time
-// limit; a logout or a lost connection is waited out; with `server` set, each game is
-// posted to scry web as soon as it's captured.
+// limit and is tried once more after an error; a logout or a lost connection is waited
+// out. Each captured game goes to a Scrying Pool tab opened from here (attach(), as the
+// Recent games bookmark does), or with `server` set, is posted to scry web.
 //
 // Use: paste into the console (or a javascript_tool call) on dominion.games while logged in, then
 //   scryCapture.run(["184518886", ...])             // full capture; progress: scryCapture.status()
 //   scryCapture.run(ids, { mode: "kingdom" })       // only the kingdom, for games saved before it was read
 //   scryCapture.harvest({ minLevel: 50, skip })     // rated games of strong players, from their profiles
+//   scryCapture.ownProfile()                        // your name and your profile's latest games
 //   scryCapture.exportNext(25)                      // then press Cmd+C in the page; `pbpaste | scry import`
 (() => {
   if (window.scryCapture && window.scryCapture.running) return "a capture is running; call scryCapture.stop() first";
   const C = {
+    version: 2, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
     gameTimeoutMs: 6 * 60 * 1000, // a game that takes longer is abandoned and the page reset
     offlineWaitMs: 15 * 60 * 1000, // how long to wait for the client to come back after a logout or disconnect
     server: null, // e.g. "http://127.0.0.1:8765": post each captured game to scry web
+    target: null, // a Scrying Pool tab, from attach(): it gets each captured game instead
+    targetOrigin: null,
+    replies: {}, // request number -> its resolver, for the target tab's answers
+    seq: 0,
+    onResult: null, // called with each game's result
     results: {}, // id -> {id, status: "ok"|"short"|"kingdom"|"server"|"error", record?, kingdom?, error?, at, exported?, delivered?}
     meta: {}, // id -> what a profile said about the game: {time, rated, players, levels, scores, row}
     queue: [], // [{id, mode: "full"|"kingdom"}]
@@ -73,6 +81,17 @@
     },
     // The lobby menu shows "My Table" at a table and "New Table" elsewhere; the login page shows neither.
     loggedIn() { return !!this.byText("Logout") || !!document.querySelector(".log-scroll-container"); },
+    // A note at the top of the page; ms 0 keeps it until the next one.
+    say(msg, ms = 6000) {
+      if (this.note) this.note.remove();
+      const note = (this.note = document.createElement("div"));
+      note.textContent = msg;
+      note.style.cssText = "position:fixed;z-index:99999;top:16px;left:50%;transform:translateX(-50%);max-width:90vw;" +
+        "background:#1c201a;color:#e5e8de;font:14px system-ui;padding:10px 16px;border-radius:6px;" +
+        "box-shadow:0 2px 12px rgba(0,0,0,.4)";
+      document.body.append(note);
+      if (ms) setTimeout(() => note.remove(), ms);
+    },
 
     // ---- storage: IndexedDB "scrying-pool", so results outlive a reload
 
@@ -97,12 +116,16 @@
       });
     },
     async save(entry) { this.results[entry.id] = entry; await this.tx("games", "readwrite", (s) => s.put(entry)); },
-    async saveState() { await this.tx("state", "readwrite", (s) => s.put({ queue: this.queue, meta: this.meta }, "run")); },
+    async saveState() { await this.tx("state", "readwrite", (s) => s.put({ queue: this.queue, later: this.later || null, meta: this.meta }, "run")); },
     // Loads what earlier runs in this browser stored.
     async load() {
       for (const e of (await this.tx("games", "readonly", (s) => s.getAll())) || []) this.results[e.id] = e;
       const st = await this.tx("state", "readonly", (s) => s.get("run"));
-      if (st) { if (!this.queue.length) this.queue = st.queue || []; this.meta = Object.assign(st.meta || {}, this.meta); }
+      if (st) {
+        if (!this.queue.length) this.queue = st.queue || [];
+        if (!this.later && st.later) this.later = st.later; // a queue set aside by an alone run
+        this.meta = Object.assign(st.meta || {}, this.meta);
+      }
       return Object.keys(this.results).length;
     },
 
@@ -306,8 +329,41 @@
       let timer;
       return Promise.race([p, new Promise((_, fail) => { timer = setTimeout(() => fail(new Error(`gave up after ${Math.round(ms / 60000)} min`)), ms); })]).finally(() => clearTimeout(timer));
     },
+    // Uses a Scrying Pool tab this one opened: games go to it by postMessage, which
+    // the browser's rules for pages reaching apps on your device don't hold up.
+    attach(win, origin) {
+      this.target = win;
+      this.targetOrigin = origin;
+      if (this.listening) return;
+      this.listening = true;
+      window.addEventListener("message", (e) => {
+        const d = e.data, f = d && this.replies[d.scryReply];
+        if (e.origin !== this.targetOrigin || !f) return;
+        delete this.replies[d.scryReply];
+        f(d);
+      });
+    },
+    // Sends the target tab a message and returns its answer, or null after ms.
+    request(type, data, ms = 60000) {
+      if (!this.target || this.target.closed) return Promise.resolve(null);
+      const n = ++this.seq;
+      return new Promise((resolve) => {
+        const timer = setTimeout(() => { delete this.replies[n]; resolve(null); }, ms);
+        this.replies[n] = (d) => { clearTimeout(timer); resolve(d); };
+        this.target.postMessage({ scry: type, seq: n, data }, this.targetOrigin);
+      });
+    },
+    tell(type, data) {
+      if (this.target && !this.target.closed) this.target.postMessage({ scry: type, data }, this.targetOrigin);
+    },
     async deliver(entry) {
-      if (!this.server || entry.status !== "ok" || entry.delivered) return;
+      if (entry.status !== "ok" || entry.delivered) return;
+      if (this.target && !this.target.closed) {
+        const r = await this.request("game", entry.record);
+        if (r && r.ok) { entry.delivered = true; await this.save(entry); } else this.lastDeliveryError = r ? r.error : "the Scrying Pool tab didn't answer";
+        return;
+      }
+      if (!this.server) return;
       const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 60000);
       try {
         const r = await fetch(this.server + "/api/games", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(entry.record), signal: ac.signal });
@@ -323,9 +379,11 @@
 
     // Queues games and starts the loop, or adds them to a running one. Games that
     // already have a final result are skipped unless retry is set; "error" results
-    // are always tried again.
-    async run(ids, { mode = "full", retry = false } = {}) {
+    // are always tried again. With alone, a queue left from an earlier run waits
+    // until these games are done, and is then kept for resume().
+    async run(ids, { mode = "full", retry = false, alone = false } = {}) {
       if (!this.running) await this.load();
+      if (alone && !this.running) { this.later = [...(this.later || []), ...this.queue]; this.queue = []; }
       const queued = new Set(this.queue.map((q) => q.id));
       const done = (id) => { const r = this.results[id]; return r && r.status !== "error" && (mode === "full" ? r.status !== "kingdom" : true); };
       let added = 0;
@@ -363,13 +421,16 @@
           } catch (e) {
             Object.assign(entry, { status: e.server ? "server" : "error", error: String(e.message || e) });
             await this.recover();
+            if (!e.server && entry.tries < 2) this.queue.push({ id, mode }); // once more, after the rest
           }
           await this.save(entry);
           this.queue.shift();
           await this.saveState();
           await this.deliver(entry);
+          if (this.onResult) this.onResult(entry);
           await this.sleep(this.pauseMs);
         }
+        if (this.later) { this.queue = [...this.queue, ...this.later.filter((q) => !this.queue.some((x) => x.id === q.id))]; this.later = null; await this.saveState(); }
         this.current = null;
         this.running = false;
       })();
@@ -433,12 +494,46 @@
       await this.sleep(1500);
       return theirs();
     },
+    // Opens the Profile tab, which shows your own profile first, and returns your
+    // name (the one player in all its games) and the games.
+    async ownProfile() {
+      this.watchProfiles();
+      const mark = (this.seen || []).length;
+      const t = this.tab("Profile");
+      if (!t) throw new Error("no Profile tab (leave the table first)");
+      t.click();
+      await this.waitFor(() => (this.seen || []).length > mark, 15000, "your profile's games");
+      await this.sleep(1500);
+      const games = this.seen.slice(mark);
+      const names = games.map((r) => new Set((r.players || []).map((p) => p.name)));
+      const me = [...names[0]].find((n) => names.every((s) => s.has(n)));
+      if (!me) throw new Error("can't tell whose profile this is");
+      return { me, games };
+    },
+    // Keeps what a profile lists about a game as its meta: when it was played,
+    // whether it was rated, both players' levels and scores, and a row like DomBot's.
+    noteGame(r, owner) {
+      const names = (r.players || []).map((p) => p.name);
+      const other = names.find((n) => n !== owner) || names[1];
+      const scores = { [owner]: r.myScore };
+      for (const o of r.opponents || []) scores[o.player.name] = o.score;
+      const date = new Date(r.timeMillis);
+      const day = `${date.getUTCFullYear()}-${date.toLocaleString("en", { month: "short", timeZone: "UTC" })}-${String(date.getUTCDate()).padStart(2, "0")}`;
+      const id = String(r.gameId);
+      this.meta[id] = {
+        time: date.toISOString(), rated: !!r.rated, players: names,
+        levels: { [owner]: Math.round(r.myLevel * 100) / 100, [other]: Math.round(r.opponentLevel * 100) / 100 },
+        scores, row: `${day} | ${names.map((n) => `${n}: ${scores[n]}`).join(", ")}`,
+      };
+      return id;
+    },
     // Visits the profiles of strong players and queues their rated two-player games
     // where a player's level is above minLevel. It starts from your own profile's
     // opponents (or seeds) and follows strong opponents from there.
-    async harvest({ seeds = [], minLevel = 50, maxProfiles = 30, me = "gamrevinu", skip = [], start = true } = {}) {
+    async harvest({ seeds = [], minLevel = 50, maxProfiles = 30, me, skip = [], start = true } = {}) {
       if (this.running) return "a run is going; the profile pages would interrupt it. Stop it first";
       await this.load();
+      if (!me) me = (await this.ownProfile()).me;
       const saved = new Set(skip.map(String)); // games already saved elsewhere
       try { await this.leave(); } catch (e) { /* not at a table */ }
       const level = {}, visited = new Set(), found = [];
@@ -459,16 +554,7 @@
           if (r.opponentLevel > minLevel && !visited.has(other) && !todo.includes(other)) todo.push(other);
           const id = String(r.gameId);
           if (!r.rated || Math.max(r.myLevel, r.opponentLevel) <= minLevel || this.meta[id] || saved.has(id)) continue;
-          const scores = { [owner]: r.myScore };
-          for (const o of r.opponents || []) scores[o.player.name] = o.score;
-          const date = new Date(r.timeMillis);
-          const day = `${date.getUTCFullYear()}-${date.toLocaleString("en", { month: "short", timeZone: "UTC" })}-${String(date.getUTCDate()).padStart(2, "0")}`;
-          this.meta[id] = {
-            time: date.toISOString(), rated: true, players: names,
-            levels: { [owner]: Math.round(r.myLevel * 100) / 100, [other]: Math.round(r.opponentLevel * 100) / 100 },
-            scores, row: `${day} | ${names.map((n) => `${n}: ${scores[n]}`).join(", ")}`,
-          };
-          found.push(id);
+          found.push(this.noteGame(r, owner));
         }
       }
       await this.saveState();

@@ -208,3 +208,10 @@ Phase 1, 2026-10-10 (partial):
 
 - Profiles: "What stands out" shows each clear difference as a number of percentage points with its game counts, largest first. Going first is only in the summary (59% against 45% is expected in Dominion and says little); the win-rate chart keeps the kingdom features. The setup guide left the page; it's in the README.
 - The live site has the Match notes page next to Profiles (`tools/buildsite` builds both; CI builds it on every pull request). Its Download button is back: it was hidden for the Claude artifact viewer.
+
+2026-10-14: recent games.
+
+- DomBot's `!results` (2026-10-14) shows the rating period's score against an expected score ("8/9, expected: 5.31"), the number of opponents and their skill range, and the rating before and after (level 55.82, μ 1.05, φ 0.137, n 616).
+- The **Recent games** page does the same for the 25 latest saved games, from the levels a profile lists, and compares wins with losses. The Recent games bookmark reads your Profile tab, writes the levels into saved games' score files (`POST /api/profiles`) and loads the missing games.
+- First run, 2026-10-14: the profile's 25 latest rated games were all newer than the saved ones. In 8 minutes 21 were saved, 2 were AFK, the server couldn't load 1, and 1 timed out twice waiting for its log; an older queue of 732 games in that browser waited and was put back. The saved levels match DomBot (55.82). For that day's 9 games the page shows 6/9 against an expected 5.7, where DomBot's `!results` said 8/9 against 5.31; which games DomBot counts isn't known yet. `scry check`: 16 of the 21 new games end at their final scores (VP tokens, Colony and Wall games miss; one log has 2 unread lines, "fails to take a Turn").
+- Capture reliability: games go to the opened Scrying Pool tab by `postMessage` and are confirmed by it, instead of a request from dominion.games to 127.0.0.1 (which hung in Brave 155 until the device-access question was answered); a failed game is retried once; `harvest()` finds your name from your profile instead of a fixed one; the bookmarks load capture.js again when the tab has an older copy.
