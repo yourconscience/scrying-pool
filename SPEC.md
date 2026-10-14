@@ -208,3 +208,9 @@ Phase 1, 2026-10-10 (partial):
 
 - Profiles: "What stands out" shows each clear difference as a number of percentage points with its game counts, largest first. Going first is only in the summary (59% against 45% is expected in Dominion and says little); the win-rate chart keeps the kingdom features. The setup guide left the page; it's in the README.
 - The live site has the Match notes page next to Profiles (`tools/buildsite` builds both; CI builds it on every pull request). Its Download button is back: it was hidden for the Claude artifact viewer.
+
+2026-10-14: parser fixes.
+
+- All 265 saved games now read completely and end with their score screens' decks and turns. Fixed: a Lich discarding itself from the trash with its name after the line (`DISCARD_WITH`) was lost from the deck and the zones; "g fails to take a Turn (from )." didn't read, since the client prints the source as nothing (a line no template reads is tried again with empty arguments, never Argument0); allies like Plateau Shepherds, which the score screen shows without a count, weren't scored.
+- Computed VP equal the final scores in 216 of 265 games. 48 of the other 49 lack the game's last decision, which a loaded game never has; 184308261 (8 VP more than the final score) isn't explained.
+- `TestLogsMatchScoreScreens` runs on every saved game with `SCRY_GAMES`, counting the bot's lines as `scry check` does.

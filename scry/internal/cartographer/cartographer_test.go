@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -23,11 +24,11 @@ func loadClient(t *testing.T) *Client {
 }
 
 // Every saved log must be read completely, and must end with the decks its
-// score screen shows. The bot that took the opponent's seat keeps its name in
-// both files.
+// score screen shows: the test logs, and every saved game with SCRY_GAMES. The
+// bot that took the opponent's seat keeps its name in both files.
 func TestLogsMatchScoreScreens(t *testing.T) {
 	c := loadClient(t)
-	logs, _ := filepath.Glob("../../testdata/logs/*.log")
+	logs := corpus(t)
 	if len(logs) == 0 {
 		t.Fatal("no test logs")
 	}
@@ -46,7 +47,8 @@ func TestLogsMatchScoreScreens(t *testing.T) {
 				}
 				return
 			}
-			for _, p := range c.Check(string(b), string(sb)).Problems {
+			bot, _ := os.ReadFile(strings.TrimSuffix(lp, ".log") + ".bot.log") // the score screen counts the bot's moves
+			for _, p := range c.Check(string(b)+string(bot), string(sb)).Problems {
 				t.Error(p)
 			}
 		})
@@ -399,5 +401,57 @@ func TestSeatNames(t *testing.T) {
 		if got := SeatNames(c.log, c.original); !reflect.DeepEqual(got, c.want) {
 			t.Errorf("SeatNames(%v, %v) = %v, want %v", c.log, c.original, got, c.want)
 		}
+	}
+}
+
+// A line whose source the client prints as nothing still reads, and only when no
+// template reads it with every argument filled.
+func TestEmptyArgument(t *testing.T) {
+	tpl, err := compileTemplate("CANCELS_A_TURN", "Argument0 fails to take a Turn (from Argument1).", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	line := "g fails to take a Turn (from )."
+	if tpl.match(line, false) != nil {
+		t.Fatal("an empty argument matched without the fallback")
+	}
+	if a := tpl.match(line, true); a == nil || a[0] != "g" || a[1] != "" {
+		t.Fatalf("fallback: %v", a)
+	}
+	if a := tpl.match("g fails to take a Turn (from Lich).", false); a == nil || a[1] != "Lich" {
+		t.Fatalf("filled: %v", a)
+	}
+	gain, _ := compileTemplate("GAIN", "Argument0 gains Argument1.", nil)
+	if gain.match(" gains a Silver.", true) != nil {
+		t.Fatal("Argument0 may never be empty")
+	}
+}
+
+// A trashed Lich discards itself, with or without its name after the line,
+// and stays in the deck; every such line puts the card in a zone.
+func TestLichBackFromTrash(t *testing.T) {
+	lich := []CardN{{Card: &Card{Name: "Lich"}, N: 1}}
+	for _, tpl := range []string{"DISCARD", "DISCARD_WITH"} {
+		e := Event{Player: "g", Template: tpl, Cause: "Lich", CauseOf: "TRASH_WITH", Args: map[int]Arg{1: {Cards: lich}}}
+		if ch := e.Changes(); len(ch) != 1 || ch[0].Sign != 1 {
+			t.Errorf("%s: %v", tpl, ch)
+		}
+	}
+	for card, tpls := range backFromTrash {
+		for tpl := range tpls {
+			if backFromTrashZone[tpl] == "" {
+				t.Errorf("%s back from the trash by %s: no zone", card, tpl)
+			}
+		}
+	}
+}
+
+// Allies and landmarks come from the score file's landscapes line too: the score
+// screen shows Plateau Shepherds without a count.
+func TestLandscapesLine(t *testing.T) {
+	c := loadClient(t)
+	got := c.Landscapes("# landscapes: Rush, Baths, Plateau Shepherds\nYou Win\n")
+	if !slices.Contains(got, "Plateau Shepherds") || !slices.Contains(got, "Baths") || slices.Contains(got, "Rush") {
+		t.Fatalf("landscapes %v (Rush is an event)", got)
 	}
 }

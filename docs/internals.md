@@ -47,11 +47,11 @@ Not covered yet: Possession, and cards played from other players' decks.
 
 - **The corpus.** DomBot's `!prior` lists 462 rated games of gamrevinu in 2026. On 2026-10-11, 242 are saved, the server can't load 18, 6 are AFK games, 3 failed during capture and 193 (2026-03-01 to 2026-09-30) were never tried. `manifest-2026.json` in the games folder lists every game with its status.
 - **Seats.** In 119 of the 242 saved games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there and your own draws are hidden. `SeatNames` maps the names back.
-- **Checks.** `scry check` compares saved logs with their score screens. Every line must be read, and each player's last turn and final deck must match. On 2026-10-11 all 242 saved games and all test logs passed.
-- **Final scores.** Computed VP equal DomBot's final scores in 198 of 242 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) The 8 mismatches among the 22 games added on 2026-10-11 aren't classified yet. The other 36, from the first 220:
-  - **The game's last decision is missing (33 games).** The replay never contains it. Usually it was the buy that ended the game: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate. In 32 games it was your seat's decision. In 184163893 it was the bot's seat's, which bought a Gold instead.
-  - **Both players are short (2 games, 184149206 and 184162961).** The game went on past the decisions the server keeps.
-  - **8 VP more than DomBot (1 game, 184308261).** Not explained yet.
+- **Checks.** `scry check` compares saved logs with their score screens. Every line must be read, and each player's last turn and final deck must match. On 2026-10-14 all 265 saved games and all test logs passed, after two fixes: a Lich discarding itself from the trash with its name after the line (`DISCARD_WITH`) stayed in the deck, and a line with an empty argument ("g fails to take a Turn (from ).", after a Lich) couldn't be read.
+- **Final scores.** On 2026-10-14 computed VP equal the final scores in 216 of 265 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) Allies such as Plateau Shepherds are now scored from the score file's `# landscapes:` line, since the score screen shows them without a count; that fixed 184162961 and one player of 184149206, which earlier looked as if the game went on past the decisions the server keeps. The other 49:
+  - **The game's last decision is missing (48 games).** A loaded game stops before it, so no replay can contain it. Usually it was the buy that ended the game: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate, more when Groundskeeper or Marchland add to it. In the 15 games whose score file says whose decision it was, the player who's short is always that one (184163893 included: the bot's seat, which bought a Gold instead). The 32 older games don't say, but each has one player short by such an amount. In 184685959 the last decision took VP from the other player (Wall, and probably an attack).
+  - **8 VP more than the final score (1 game, 184308261).** Not explained yet.
+- **Rules.** The scoring rules agree with pydominion's for every card it scores at the end (Gardens, Duke, Fairgrounds, Feodum, Vineyard, the castles, Territory, Pasture, Distant Lands, Plateau Shepherds, the landmarks, Miserable). pydominion has no Marchland or Demesne.
 - **Zones.** On those games plus the test logs (137,923 log lines):
   - every player's zones always hold exactly the cards they own;
   - 270 moves didn't find the card where the replay expected it, 116 of them for seats whose cards the log names in full;
@@ -62,7 +62,7 @@ Not covered yet: Possession, and cards played from other players' decks.
 
 `go test ./...` checks that:
 
-- every test log passes `scry check`'s rules;
+- every test log (and with `SCRY_GAMES`, every saved game) passes `scry check`'s rules;
 - the turn-by-turn replay ends at the final decks, and no balance ever goes negative;
 - every player's zones add up to their deck after every turn, the next hand is the Clean-up draw, and cards out of place stay rare;
 - Supply piles and final VP match the client and DomBot for 184518886;

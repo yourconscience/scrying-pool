@@ -209,25 +209,29 @@ func revealHiddenGains(g *Game) {
 
 // matchLine finds the most specific template for a line. A template that starts
 // with Argument0 must have a player or a card there, so "Approaching Army comes
-// true" and "g gains a Silver" can't be mixed up.
+// true" and "g gains a Silver" can't be mixed up. Only a line no template reads
+// is tried again with empty arguments: the client prints an unnamed source as
+// nothing, as in "g fails to take a Turn (from )." after a Lich.
 func (c *Client) matchLine(text string, initials map[string]string) (*Template, map[int]string) {
-	for _, t := range c.Templates {
-		if t.generic() {
-			continue
-		}
-		args := t.match(text)
-		if args == nil {
-			continue
-		}
-		if strings.HasPrefix(t.English, "Argument0 ") {
-			a0 := args[0]
-			if _, ok := initials[a0]; !ok {
-				if _, ok := c.CardList(a0); !ok {
-					continue
+	for _, empty := range []bool{false, true} {
+		for _, t := range c.Templates {
+			if t.generic() {
+				continue
+			}
+			args := t.match(text, empty)
+			if args == nil {
+				continue
+			}
+			if strings.HasPrefix(t.English, "Argument0 ") {
+				a0 := args[0]
+				if _, ok := initials[a0]; !ok {
+					if _, ok := c.CardList(a0); !ok {
+						continue
+					}
 				}
 			}
+			return t, args
 		}
-		return t, args
 	}
 	return nil, nil
 }

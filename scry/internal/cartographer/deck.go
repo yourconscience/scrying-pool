@@ -35,8 +35,14 @@ var (
 	// (Market Square discards other copies) don't count.
 	backFromTrash = map[string]map[string]bool{
 		"Fortress": {"PUT_IN_HAND": true, "PUT_IN_HAND_FROM": true},
-		"Lich":     {"DISCARD": true, "PUT_IN_DISCARD": true},
+		"Lich":     {"DISCARD": true, "DISCARD_WITH": true, "PUT_IN_DISCARD": true}, // "discards a Lich. (Lich)"
 		"Trail":    {"REACTS_PLAYING": true},
+	}
+	// where each of those lines puts the card
+	backFromTrashZone = map[string]string{
+		"PUT_IN_HAND": ZoneHand, "PUT_IN_HAND_FROM": ZoneHand,
+		"DISCARD": ZoneDiscard, "DISCARD_WITH": ZoneDiscard, "PUT_IN_DISCARD": ZoneDiscard,
+		"REACTS_PLAYING": ZonePlay,
 	}
 )
 
