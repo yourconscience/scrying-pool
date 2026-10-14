@@ -6,12 +6,12 @@ For developers: the modules, how logs are read, how the statistics are made, the
 
 Everything the app needs lives in `scry/`; `go install github.com/yourconscience/scrying-pool/scry@latest` builds it.
 
-- `scry/`: the `scry` command, its web server and the match-notes formatter (also built to WebAssembly for the static notes page).
+- `scry/`: the `scry` command, its web server and the match-notes formatter (also built to WebAssembly for the hosted notes page).
 - `scry/internal/cartographer/`: reads dominion.games logs and replays games.
 - `scry/internal/advisor/`: per-game features and profile statistics.
 - `scry/web/`: the pages, styles and scripts, embedded into `scry`.
 - `scry/cards/`, `scry/sample/`: the card table and the demo match, embedded too. `scry/testdata/logs/`: 10 games for the tests.
-- `tools/buildsite/`: builds the static Match notes page. `tools/carddb/`: regenerates the card table.
+- `tools/buildsite/`: builds the hosted site: the Profiles page from `site-data/` and the Match notes page. `tools/carddb/`: regenerates the card table.
 - `site-data/`: the profiles published on the live page.
 
 ## Modules
@@ -83,7 +83,7 @@ The 10 test games cover the expansions and the cards the tests check. Set `SCRY_
 Every game is described from both players' sides, so any player with enough saved games has a profile, and two profiles can be compared.
 
 - `scry db` builds `<user config>/scrying-pool/scrying-pool.db` (SQLite) from the saved files: `games`, `player_games` (one row per player per game), `cards` (the profiles) and a `player_summary` view. Lists are JSON text, so `json_each` unpacks them; `db.go` has an example query.
-- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`).
+- `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`). The live site is `go run ./tools/buildsite`: this page with the profiles in `site-data/`, plus the Match notes page.
 
 
 On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59% going first against 45% second, and 57% with a village in the kingdom against 44% without. With these sample sizes the ranges overlap a lot; treat single numbers as leads, not findings.

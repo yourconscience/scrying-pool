@@ -7,10 +7,10 @@
 const $ = (id) => document.getElementById(id);
 const STATIC = document.querySelector('meta[name="scry-data"]').content === "static";
 if (STATIC) {
-  // a static copy is just this page: the brand leads back to it, the app's other pages aren't there
+  // the hosted site has this page as its index and the Match notes page; the app's other pages aren't there
   document.body.classList.add("static");
   document.querySelector(".top .brand").href = "./";
-  document.querySelector('.top a[aria-current="page"]').classList.add("local-only");
+  document.querySelector('.top a[aria-current="page"]').href = "./";
 }
 
 function el(tag, cls, text) {

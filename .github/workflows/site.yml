@@ -1,5 +1,5 @@
-# Tests every pull request; on main, also rebuilds the Profiles page from
-# site-data/ and publishes it to GitHub Pages.
+# Tests every pull request and builds the hosted site (Profiles from site-data/
+# and Match notes); on main, also publishes it to GitHub Pages.
 #
 # Tests that need the dominion.games client tables or saved games skip here:
 # those stay on your machine (see docs/capture.md).
@@ -28,6 +28,7 @@ jobs:
           go-version-file: go.mod
       - run: go vet ./...
       - run: go test ./...
+      - run: go run ./tools/buildsite -o _site
 
   publish:
     needs: test
@@ -44,7 +45,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      - run: go run ./scry site -data site-data -o _site
+      - run: go run ./tools/buildsite -o _site
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
