@@ -199,7 +199,8 @@ Phase 1, 2026-10-10 (partial):
 
 2026-10-14: cleanup.
 
-- Layout: everything the app needs is in `scry/`: the command (install with `go install github.com/yourconscience/scrying-pool/scry@latest`; from the repo root it installed a binary named `scrying-pool`), `scry/internal/cartographer` and `scry/internal/advisor` (parts of the app, not separate modules), `scry/web/`, the embedded data and the test logs. Build helpers are in `tools/` (`buildsite`, `carddb`).
+- Layout: everything the app needs is in `scry/`: the command (install with `go install github.com/yourconscience/scrying-pool/scry@latest`; before, installing from the repo root gave a binary named `scrying-pool`), `scry/internal/cartographer` and `scry/internal/advisor` (parts of the app, not separate modules), `scry/web/`, the embedded data and the test logs. Build helpers are in `tools/` (`buildsite`, `carddb`).
 - Removed what was shown but not built: the "Advisor coming" panel on the analysis page and the roadmap lines on the start page and in docs. Plans stay in this file.
 - Static builds no longer write `artifact.html`: the page is hosted on GitHub Pages now.
+- Test logs: 10 games instead of 40 (19 files instead of 79). They cover the expansions and the cards the tests check; `SCRY_GAMES` runs the replay tests on all saved games. The old logs stay in git history.
 

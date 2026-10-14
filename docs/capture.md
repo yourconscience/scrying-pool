@@ -55,7 +55,7 @@ For an unattended run (overnight):
 - Each game has a 6-minute limit, after which the page is reset and the next game starts. A logout or a lost connection is waited out for 15 minutes.
 - On 2026-10-11 the server closed the connection after about 230 kingdom-only games ("Server connection was closed or could not be established."). Retry led to the login page, so the run waits for you to log in again; then paste the script and call `resume()`.
 - In a hidden tab each game took about a minute while the waits inside it took seconds, which matches Chrome's throttling of chained timers in hidden tabs (at most one wake-up a minute). The script now waits on a worker's timers, and a kingdom-only game takes about 10 seconds.
-- The machine must not sleep (on macOS, `caffeinate -d` or an app like Amphetamine keeps it awake). Captures can run in a hidden tab.
+- The machine must not sleep (on macOS, `caffeinate -i` or an app like Amphetamine keeps it awake). Captures can run in a hidden tab.
 - With `scryCapture.server = "http://127.0.0.1:8765"`, each game is posted to a `scry web` on the same machine as soon as it's captured. The browser may first ask whether dominion.games may connect to apps on the device.
 
 For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`) copies the log of a game you loaded yourself: `pbpaste > game.log`, then `scry review game.log`.

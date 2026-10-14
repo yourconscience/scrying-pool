@@ -10,7 +10,7 @@ Everything the app needs lives in `scry/`; `go install github.com/yourconscience
 - `scry/internal/cartographer/`: reads dominion.games logs and replays games.
 - `scry/internal/advisor/`: per-game features and profile statistics.
 - `scry/web/`: the pages, styles and scripts, embedded into `scry`.
-- `scry/cards/`, `scry/sample/`: the card table and the demo match, embedded too. `scry/testdata/logs/`: game logs for the tests.
+- `scry/cards/`, `scry/sample/`: the card table and the demo match, embedded too. `scry/testdata/logs/`: 10 games for the tests.
 - `tools/buildsite/`: builds the static Match notes page. `tools/carddb/`: regenerates the card table.
 - `site-data/`: the profiles published on the live page.
 
@@ -68,7 +68,7 @@ Not covered yet: Possession, and cards played from other players' decks.
 - Supply piles and final VP match the client and DomBot for 184518886;
 - every template is reachable, and every card reads in every form.
 
-Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too.
+The 10 test games cover the expansions and the cards the tests check. Set `SCRY_GAMES` to a folder of saved games, such as `<user config>/scrying-pool/games`, to run the replay tests on those too.
 
 ## Advisor: what your games say
 
