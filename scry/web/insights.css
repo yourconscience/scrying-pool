@@ -1,5 +1,5 @@
 /* Profiles page.
-   Layout: a header with the pickers, summary tiles, plain-language takeaways, one wide chart, a grid of small charts, card tiles.
+   Layout: a header with the pickers, summary tiles, the clearest findings, one wide chart, a grid of small charts, card tiles.
    Palette: style.css's (grey-green paper, Victory green, Treasure gold) plus the tokens below; green and brick red only
    mean "clearly better" and "clearly worse", grey means "can't tell". */
 :root {
@@ -72,12 +72,17 @@ body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(
 .key span { display: inline-flex; align-items: center; gap: 6px; }
 .key i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
 
-.takeaways ul { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 8px; }
-.takeaways li { display: grid; grid-template-columns: 1.4em minmax(0, 1fr); gap: 8px; font-size: 1rem; align-items: baseline; }
-.takeaways li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--none); transform: translateY(-1px); }
-.takeaways li.up::before { background: var(--up); }
-.takeaways li.down::before { background: var(--down); }
-.takeaways b { font-variant-numeric: tabular-nums; }
+/* findings: the difference, large, beside what it is about and the numbers behind it */
+.takeaways ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+.takeaways li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; row-gap: 2px; padding: 12px 14px; border-radius: 10px; background: var(--soft); border-left: 4px solid var(--none); }
+.takeaways li.up { border-left-color: var(--up); }
+.takeaways li.down { border-left-color: var(--down); }
+.takeaways .delta { grid-row: span 2; align-self: center; font: 700 1.45rem/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--none); white-space: nowrap; }
+.takeaways li.up .delta { color: var(--up); }
+.takeaways li.down .delta { color: var(--down); }
+.takeaways .what { font-weight: 700; line-height: 1.3; }
+.takeaways .detail { color: var(--muted); font-size: 0.92rem; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.takeaways li.empty { display: block; color: var(--muted); }
 
 .tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
 /* a row: the whole card, small, then its numbers; the left edge says better or worse than usual */
@@ -95,8 +100,7 @@ body.insights { background: var(--paper); color: var(--ink); font: 16px/1.5 var(
 .card-tile .rate b { font-size: 1.2rem; }
 .card-tile .split { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-.how ol { padding-left: 22px; max-width: 82ch; margin: 6px 0 10px; }
-.how li { margin: 7px 0; }
+.footnote { margin-top: 4px; }
 #error { background: var(--down-soft); padding: 10px 14px; border-radius: 8px; }
 @media (max-width: 800px) {
   .grid { grid-template-columns: 1fr; }
