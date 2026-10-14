@@ -110,7 +110,7 @@ func run() error {
 		"cards":  out,
 	}
 	b, _ := json.MarshalIndent(doc, "", " ")
-	if err := os.WriteFile("cards/cards.json", append(b, '\n'), 0o644); err != nil {
+	if err := os.WriteFile("cmd/scry/cards/cards.json", append(b, '\n'), 0o644); err != nil {
 		return err
 	}
 	counts := map[string]int{}

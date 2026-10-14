@@ -3,11 +3,9 @@
 package main
 
 import (
-	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
@@ -18,10 +16,11 @@ import (
 
 	"github.com/yourconscience/scrying-pool/advisor"
 	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/web"
 )
 
-//go:embed web
-var webFiles embed.FS
+// webFiles are the pages, styles and scripts in web/.
+var webFiles = web.Files
 
 func serve(addr string, timeout time.Duration) error {
 	fmt.Printf("Scrying Pool web UI: http://%s\n", addr)
@@ -30,9 +29,8 @@ func serve(addr string, timeout time.Duration) error {
 }
 
 func newHandler(timeout time.Duration) http.Handler {
-	static, _ := fs.Sub(webFiles, "web")
 	mux := http.NewServeMux()
-	mux.Handle("GET /", http.FileServerFS(static))
+	mux.Handle("GET /", http.FileServerFS(webFiles))
 	mux.HandleFunc("GET /api/sample", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]string{"chat": sampleChat, "dombot": sampleDomBot})
 	})
@@ -161,8 +159,8 @@ func newHandler(timeout time.Duration) http.Handler {
 		writeJSON(w, 200, map[string]any{"id": g.ID, "problems": res.Problems})
 	})
 	mux.HandleFunc("GET /api/bookmarklet", func(w http.ResponseWriter, r *http.Request) {
-		capture, _ := webFiles.ReadFile("web/capture.js")
-		one, _ := webFiles.ReadFile("web/scry-game.js")
+		capture, _ := webFiles.ReadFile("capture.js")
+		one, _ := webFiles.ReadFile("scry-game.js")
 		src := "if (!window.scryCapture) " + stripComments(string(capture)) + "\n" + strings.ReplaceAll(string(one), "SCRY_ORIGIN", "http://"+r.Host)
 		writeJSON(w, 200, map[string]string{"href": bookmarklet(src)})
 	})

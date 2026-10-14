@@ -40,7 +40,7 @@ func buildSite(out string, players []string, data string) error {
 		return err
 	}
 	for _, f := range []string{"style.css", "insights.css", "insights.js"} {
-		b, err := webFiles.ReadFile("web/" + f)
+		b, err := webFiles.ReadFile(f)
 		if err != nil {
 			return err
 		}
@@ -48,7 +48,7 @@ func buildSite(out string, players []string, data string) error {
 			return err
 		}
 	}
-	page, err := webFiles.ReadFile("web/insights.html")
+	page, err := webFiles.ReadFile("insights.html")
 	if err != nil {
 		return err
 	}

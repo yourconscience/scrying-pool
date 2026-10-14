@@ -26,7 +26,7 @@ func run() error {
 	if err := os.MkdirAll("site", 0o755); err != nil {
 		return err
 	}
-	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", ".")
+	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", "./cmd/scry")
 	build.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	build.Stdout, build.Stderr = os.Stdout, os.Stderr
 	if err := build.Run(); err != nil {

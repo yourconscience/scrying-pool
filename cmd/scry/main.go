@@ -154,9 +154,9 @@ func main() {
 	case "bookmarklet":
 		clientTables := fs.Bool("client", false, `print the "Copy client tables" bookmark instead of "Copy log"`)
 		fs.Parse(args)
-		file := "web/bookmarklet.js"
+		file := "bookmarklet.js"
 		if *clientTables {
-			file = "web/bookmarklet-client.js"
+			file = "bookmarklet-client.js"
 		}
 		src, _ := webFiles.ReadFile(file)
 		fmt.Println(bookmarklet(string(src)))
