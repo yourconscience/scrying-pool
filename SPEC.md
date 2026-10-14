@@ -199,7 +199,7 @@ Phase 1, 2026-10-10 (partial):
 
 2026-10-14: cleanup.
 
-- The `scry` command moved from the repo root to `cmd/scry/` (install with `go install github.com/yourconscience/scrying-pool/cmd/scry@latest`; from the root it installed a binary named `scrying-pool`). `web/` embeds itself as package `web`; the card table and the sample match moved with the command.
+- Layout: everything the app needs is in `scry/`: the command (install with `go install github.com/yourconscience/scrying-pool/scry@latest`; from the repo root it installed a binary named `scrying-pool`), `scry/internal/cartographer` and `scry/internal/advisor` (parts of the app, not separate modules), `scry/web/`, the embedded data and the test logs. Build helpers are in `tools/` (`buildsite`, `carddb`).
 - Removed what was shown but not built: the "Advisor coming" panel on the analysis page and the roadmap lines on the start page and in docs. Plans stay in this file.
 - Static builds no longer write `artifact.html`: the page is hosted on GitHub Pages now.
 

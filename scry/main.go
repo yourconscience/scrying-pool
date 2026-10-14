@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourconscience/scrying-pool/advisor"
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 const usageText = `usage:
@@ -154,9 +154,9 @@ func main() {
 	case "bookmarklet":
 		clientTables := fs.Bool("client", false, `print the "Copy client tables" bookmark instead of "Copy log"`)
 		fs.Parse(args)
-		file := "bookmarklet.js"
+		file := "web/bookmarklet.js"
 		if *clientTables {
-			file = "bookmarklet-client.js"
+			file = "web/bookmarklet-client.js"
 		}
 		src, _ := webFiles.ReadFile(file)
 		fmt.Println(bookmarklet(string(src)))

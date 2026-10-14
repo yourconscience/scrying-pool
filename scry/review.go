@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // cardList renders cards as "2× Horse, Groom", adding up repeats in first-seen order.

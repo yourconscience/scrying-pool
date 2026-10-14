@@ -42,7 +42,7 @@ Profiles are built from games saved on your computer, so this part runs locally.
 1. Install and start the app, then open http://127.0.0.1:8765:
 
    ```bash
-   go install github.com/yourconscience/scrying-pool/cmd/scry@latest
+   go install github.com/yourconscience/scrying-pool/scry@latest
    ```
 
    ```bash

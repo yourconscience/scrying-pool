@@ -12,8 +12,8 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"github.com/yourconscience/scrying-pool/advisor"
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // The games database is built from the saved files, which stay the source of

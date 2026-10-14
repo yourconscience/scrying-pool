@@ -7,11 +7,11 @@ How Scrying Pool gets your finished games out of dominion.games. Back to the [RE
 Needs Go 1.26+ and a browser where you're logged in to dominion.games.
 
 ```bash
-go install github.com/yourconscience/scrying-pool/cmd/scry@latest
+go install github.com/yourconscience/scrying-pool/scry@latest
 scry web
 ```
 
-Then open http://127.0.0.1:8765. From a clone, `go run ./cmd/scry web` does the same.
+Then open http://127.0.0.1:8765. From a clone, `go run ./scry web` does the same.
 
 1. **One time: export the client's log grammar.** Run `scry bookmarklet -client`, save the printed `javascript:` link as a bookmark, click it on dominion.games, then run `pbpaste | scry client save`. The log parser reads lines with these tables. They belong to 2nd Shuffle, so they stay on your machine instead of in this repo.
 2. **Open Analyze a game** and type a game number. It's on your dominion.games profile, in DomBot's `!game` reply, or in a log's first line (`Game #184518886`).
@@ -38,7 +38,7 @@ The capture clicks only the client's own buttons (My Table, Load Old Game, Load 
 
 ## Many games at once
 
-1. Paste `web/capture.js` into the console of your dominion.games tab while logged in.
+1. Paste `scry/web/capture.js` into the console of your dominion.games tab while logged in.
 2. Queue games:
    - `scryCapture.run(ids)` captures games by number, dropping AFK games (a player with fewer than 3 turns);
    - `scryCapture.run(ids, { mode: "kingdom" })` only reads the kingdoms of games saved earlier;

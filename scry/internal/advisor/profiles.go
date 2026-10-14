@@ -6,7 +6,7 @@ package advisor
 import (
 	"sort"
 
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // Profile is what a card does when played, averaged over the saved logs: the

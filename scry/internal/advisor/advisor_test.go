@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 func near(a, b, tol float64) bool { return math.Abs(a-b) <= tol }
@@ -61,7 +61,7 @@ func TestProfilesMatchCardText(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	logs, _ := filepath.Glob("../testdata/logs/*.log")
+	logs, _ := filepath.Glob("../../testdata/logs/*.log")
 	var games []*cartographer.Game
 	for _, f := range logs {
 		b, _ := os.ReadFile(f)

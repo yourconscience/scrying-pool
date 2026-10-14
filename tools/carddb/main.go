@@ -1,9 +1,9 @@
-// carddb regenerates cards/cards.json from the dominiontabs card database
+// carddb regenerates scry/cards/cards.json from the dominiontabs card database
 // (https://github.com/sumpfork/dominiontabs, MIT). Only game facts are kept:
 // names, types, costs and sets. Card text and images belong to Rio Grande Games
 // and are not copied.
 //
-// Run from the repo root: go run ./cmd/carddb
+// Run from the repo root: go run ./tools/carddb
 package main
 
 import (
@@ -110,14 +110,14 @@ func run() error {
 		"cards":  out,
 	}
 	b, _ := json.MarshalIndent(doc, "", " ")
-	if err := os.WriteFile("cmd/scry/cards/cards.json", append(b, '\n'), 0o644); err != nil {
+	if err := os.WriteFile("scry/cards/cards.json", append(b, '\n'), 0o644); err != nil {
 		return err
 	}
 	counts := map[string]int{}
 	for _, c := range out {
 		counts[c.Kind]++
 	}
-	fmt.Printf("wrote cards/cards.json: %d cards %v\n", len(out), counts)
+	fmt.Printf("wrote scry/cards/cards.json: %d cards %v\n", len(out), counts)
 	return nil
 }
 

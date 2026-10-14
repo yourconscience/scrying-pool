@@ -3,7 +3,7 @@
 //	site/index.html     full page with CSS and JS inlined (any static host)
 //	site/scry.wasm    the formatter, compiled to WebAssembly
 //
-// Run from the repo root: go run ./cmd/buildsite
+// Run from the repo root: go run ./tools/buildsite
 package main
 
 import (
@@ -25,7 +25,7 @@ func run() error {
 	if err := os.MkdirAll("site", 0o755); err != nil {
 		return err
 	}
-	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", "./cmd/scry")
+	build := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "site/scry.wasm", "./scry")
 	build.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	build.Stdout, build.Stderr = os.Stdout, os.Stderr
 	if err := build.Run(); err != nil {
@@ -39,15 +39,15 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	page, err := os.ReadFile("web/notes.html")
+	page, err := os.ReadFile("scry/web/notes.html")
 	if err != nil {
 		return err
 	}
-	css, err := os.ReadFile("web/style.css")
+	css, err := os.ReadFile("scry/web/style.css")
 	if err != nil {
 		return err
 	}
-	app, err := os.ReadFile("web/app.js")
+	app, err := os.ReadFile("scry/web/app.js")
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func run() error {
 
 func replaceOnce(s, old, new string) string {
 	if strings.Count(s, old) != 1 {
-		panic(fmt.Sprintf("expected exactly one %q in web/notes.html", old))
+		panic(fmt.Sprintf("expected exactly one %q in scry/web/notes.html", old))
 	}
 	return strings.Replace(s, old, new, 1)
 }

@@ -12,7 +12,7 @@ Back to the [README](../README.md).
 
 Each game's kingdom is shown as piles sorted by cost, then landscapes, framed in their card-type colours. Click a card to open its page on the [Dominion Strategy wiki](https://wiki.dominionstrategy.com).
 
-`go run ./cmd/buildsite` builds a browser-only copy of the notes page into `site/`: the formatter compiled to WebAssembly plus one HTML page that any static host can serve. It can't ask DomBot itself, since that would DM from whoever's token is on the server.
+`go run ./tools/buildsite` builds a browser-only copy of the notes page into `site/`: the formatter compiled to WebAssembly plus one HTML page that any static host can serve. It can't ask DomBot itself, since that would DM from whoever's token is on the server.
 
 ## Automatic DomBot lookups (opt-in, read this first)
 

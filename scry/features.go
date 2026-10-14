@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
 )
 
 // writeFeatures writes one CSV row per game.

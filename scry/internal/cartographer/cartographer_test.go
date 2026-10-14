@@ -27,7 +27,7 @@ func loadClient(t *testing.T) *Client {
 // both files.
 func TestLogsMatchScoreScreens(t *testing.T) {
 	c := loadClient(t)
-	logs, _ := filepath.Glob("../testdata/logs/*.log")
+	logs, _ := filepath.Glob("../../testdata/logs/*.log")
 	if len(logs) == 0 {
 		t.Fatal("no test logs")
 	}
@@ -57,7 +57,7 @@ func TestLogsMatchScoreScreens(t *testing.T) {
 // its expected decks are DomBot's !game picture for that game.
 func TestFinalDecksMatchDomBot(t *testing.T) {
 	c := loadClient(t)
-	b, err := os.ReadFile("../testdata/logs/184518886.log")
+	b, err := os.ReadFile("../../testdata/logs/184518886.log")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -156,7 +156,7 @@ func TestEveryCardForm(t *testing.T) {
 
 // Logs to replay: the test logs, plus every saved game when SCRY_GAMES points at their folder.
 func corpus(t *testing.T) []string {
-	logs, _ := filepath.Glob("../testdata/logs/*.log")
+	logs, _ := filepath.Glob("../../testdata/logs/*.log")
 	if dir := os.Getenv("SCRY_GAMES"); dir != "" {
 		more, _ := filepath.Glob(filepath.Join(dir, "*.log"))
 		for _, f := range more {
@@ -206,7 +206,7 @@ func TestTurnsAreConsistent(t *testing.T) {
 // Game 184518886 at its end, as the dominion.games client showed it (screenshot, 2026-10-10).
 func TestSupplyMatchesClient(t *testing.T) {
 	c := loadClient(t)
-	b, err := os.ReadFile("../testdata/logs/184518886.log")
+	b, err := os.ReadFile("../../testdata/logs/184518886.log")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -374,7 +374,7 @@ func TestNextHandIsTheCleanupDraw(t *testing.T) {
 // Game 184518886 ended 9 to 6 by DomBot's !game: six Estates and a Duchy against a Province.
 func TestScoreMatchesDomBot(t *testing.T) {
 	c := loadClient(t)
-	b, err := os.ReadFile("../testdata/logs/184518886.log")
+	b, err := os.ReadFile("../../testdata/logs/184518886.log")
 	if err != nil {
 		t.Fatal(err)
 	}

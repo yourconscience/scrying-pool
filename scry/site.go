@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
 )
 
 // buildSite writes the "My games" page as a static site that any host can serve,
@@ -39,7 +39,7 @@ func buildSite(out string, players []string, data string) error {
 		return err
 	}
 	for _, f := range []string{"style.css", "insights.css", "insights.js"} {
-		b, err := webFiles.ReadFile(f)
+		b, err := webFiles.ReadFile("web/" + f)
 		if err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ func buildSite(out string, players []string, data string) error {
 			return err
 		}
 	}
-	page, err := webFiles.ReadFile("insights.html")
+	page, err := webFiles.ReadFile("web/insights.html")
 	if err != nil {
 		return err
 	}

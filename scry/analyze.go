@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/advisor"
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // The game view is what the analysis page shows for one saved game: every turn

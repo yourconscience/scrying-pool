@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yourconscience/scrying-pool/advisor"
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 func TestParseSampleChat(t *testing.T) {
@@ -158,8 +158,8 @@ func TestWebGames(t *testing.T) {
 		h.ServeHTTP(w, r)
 		return w
 	}
-	log, _ := os.ReadFile("../../testdata/logs/184426907.log")
-	saved, _ := os.ReadFile("../../testdata/logs/184426907.score.txt")
+	log, _ := os.ReadFile("testdata/logs/184426907.log")
+	saved, _ := os.ReadFile("testdata/logs/184426907.score.txt")
 	var score []string // the score screen as the capture copies it, without the lines import adds
 	for _, l := range strings.Split(string(saved), "\n") {
 		if !strings.HasPrefix(l, "# ") {

@@ -4,22 +4,25 @@ For developers: the modules, how logs are read, how the statistics are made, the
 
 ## Layout
 
-- `cmd/scry/`: the `scry` command, its web server and the match-notes formatter (also built to WebAssembly for the static notes page).
-- `cartographer/`: reads dominion.games logs and replays games.
-- `advisor/`: per-game features and profile statistics.
-- `web/`: the pages, styles and scripts, embedded into `scry`.
-- `cmd/buildsite/`: the static Match notes page. `cmd/carddb/`: regenerates the card table.
-- `site-data/`: the profiles published on the live page. `testdata/logs/`: game logs for the tests.
+Everything the app needs lives in `scry/`; `go install github.com/yourconscience/scrying-pool/scry@latest` builds it.
+
+- `scry/`: the `scry` command, its web server and the match-notes formatter (also built to WebAssembly for the static notes page).
+- `scry/internal/cartographer/`: reads dominion.games logs and replays games.
+- `scry/internal/advisor/`: per-game features and profile statistics.
+- `scry/web/`: the pages, styles and scripts, embedded into `scry`.
+- `scry/cards/`, `scry/sample/`: the card table and the demo match, embedded too. `scry/testdata/logs/`: game logs for the tests.
+- `tools/buildsite/`: builds the static Match notes page. `tools/carddb/`: regenerates the card table.
+- `site-data/`: the profiles published on the live page.
 
 ## Modules
 
 | Module | Where | What it does |
 |---|---|---|
-| **Capture** | `web/capture.js`, `web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
-| **Cartographer** | `cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
-| **Analysis page** | `web/analyze.*`, `cmd/scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
-| **Advisor** | `advisor/`, `web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (going first, kingdom roles), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 95% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
-| **Match notes** | `web/notes.html`, `cmd/scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
+| **Capture** | `scry/web/capture.js`, `scry/web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
+| **Cartographer** | `scry/internal/cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
+| **Analysis page** | `scry/web/analyze.*`, `scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
+| **Advisor** | `scry/internal/advisor/`, `scry/web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (going first, kingdom roles), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 95% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
+| **Match notes** | `scry/web/notes.html`, `scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Cartographer: how logs are read
 
@@ -69,7 +72,7 @@ Set `SCRY_GAMES` to a folder of saved games to run the replay tests on those too
 
 ## Advisor: what your games say
 
-`advisor/` reads every saved game and describes the ones you played (the account that loaded most games, or `-me NAME`).
+`scry/internal/advisor/` reads every saved game and describes the ones you played (the account that loaded most games, or `-me NAME`).
 
 - **What cards do** comes from the logs, not card text: every "plays X" line is followed by the lines one level under it (+Actions, +Buys, cards drawn, +$, trashing, Curses given). `scry features -profiles` prints these averages. A card played twice without a second "plays" line (Royal Galley) counts as two plays. On the test logs Market Square measures +1 Card +1 Action +1 Buy and Horse +2 Cards +1 Action.
 - **Kingdom roles** come from those profiles, with coarse rules per play: a village gives +2 Actions or more, draw draws 2 cards or more, +Buy gives a Buy on most plays, a trasher trashes a card or more, a curser gives Curses on a third of plays or more, plus Attacks by type. A card needs 5 plays to count.
@@ -108,7 +111,7 @@ scry cards sync                                       # download all card art th
 
 - **Client tables** (log templates, card names and types) come from your own dominion.games client through the Copy client tables bookmark and stay in `<user config>/scrying-pool/client`. `SCRY_CLIENT` points to another file.
 - **Saved games** live in `<user config>/scrying-pool/games`: `<id>.log`, `<id>.score.txt` (with the row, the original players and the loaded decision) and, when the bot played on, `<id>.bot.log`.
-- **Card facts:** `cmd/scry/cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./cmd/carddb`. Card text isn't included.
+- **Card facts:** `scry/cards/cards.json` lists 819 cards with names, types, costs and sets. It comes from [dominiontabs](https://github.com/sumpfork/dominiontabs) (MIT); regenerate it with `go run ./tools/carddb`. Card text isn't included.
 - **Card images** (full card faces) for the Analyze and Profiles pages live in `card-images/`, which git ignores, or in `$SCRY_CARD_IMAGES`. They are the English images from [KingdomCreator](https://github.com/blakevanlan/KingdomCreator) (`docs/img/cards`, 1,010 files, 89 MB), fetched with a sparse clone:
 
   ```bash

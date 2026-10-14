@@ -13,8 +13,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/advisor"
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // exportedGame is one line of the capture script's export (web/capture.js).

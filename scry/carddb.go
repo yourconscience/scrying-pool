@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Card facts from cards/cards.json (regenerate with: go run ./cmd/carddb).
+// Card facts from cards/cards.json (regenerate with: go run ./tools/carddb).
 
 type Card struct {
 	Name   string   `json:"name"`

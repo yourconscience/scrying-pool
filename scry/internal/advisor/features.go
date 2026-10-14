@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yourconscience/scrying-pool/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // Features describe one game from one player's side.
