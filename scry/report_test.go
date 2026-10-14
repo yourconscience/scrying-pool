@@ -17,6 +17,14 @@ import (
 	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
+// Tests run in scry/; card-images/ sits at the repo root, where scry web runs.
+func TestMain(m *testing.M) {
+	if os.Getenv("SCRY_CARD_IMAGES") == "" {
+		os.Setenv("SCRY_CARD_IMAGES", filepath.Join("..", "card-images"))
+	}
+	os.Exit(m.Run())
+}
+
 func TestParseSampleChat(t *testing.T) {
 	c, err := parseChat(sampleChat)
 	if err != nil {
