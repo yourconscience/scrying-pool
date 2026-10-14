@@ -249,6 +249,11 @@ article li > strong:first-child { color: var(--treasure); }
 .steps ol { padding-left: 22px; max-width: 72ch; }
 .steps li { margin: 8px 0; }
 .steps code, .module code { font: 0.88em var(--mono); background: var(--code); padding: 1px 5px; border-radius: 4px; }
+/* a bookmark to drag to the bookmarks bar (Scry game, Recent games), and a pulsing "waiting" dot */
+.bookmark { display: inline-block; padding: 3px 12px; border-radius: 14px; background: var(--treasure); color: var(--paper); font-weight: 700; text-decoration: none; cursor: grab; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--victory); animation: pulse 1.4s ease-in-out infinite; flex: none; }
+@keyframes pulse { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
 .site-foot { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 760px) {
   .hero { grid-template-columns: 1fr; padding-top: 28px; }

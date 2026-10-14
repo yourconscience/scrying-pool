@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dominion Recent Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="insights.css">
+<link rel="stylesheet" href="recent.css">
+</head>
+<body class="insights">
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a href="analyze.html">Analyze a game</a>
+  <a href="insights.html">Profiles</a>
+  <a href="recent.html" aria-current="page">Recent games</a>
+  <a href="notes.html">Match notes</a>
+  <a href="https://github.com/yourconscience/scrying-pool">GitHub</a>
+</nav>
+
+<main class="ins">
+  <div class="ins-head">
+    <div class="ins-title">
+      <p class="eyebrow">Dominion Online</p>
+      <h1 id="title">Recent games</h1>
+      <p id="meta" class="hint">Reading the saved games…</p>
+    </div>
+  </div>
+
+  <section class="card fetch" aria-labelledby="fetch-h">
+    <h2 id="fetch-h">Load your latest games</h2>
+    <ol>
+      <li>One time: drag this to your bookmarks bar: <a id="bookmark" class="bookmark" href="#" draggable="true">Recent games</a></li>
+      <li>In your dominion.games tab, on the lobby screen, click it. It reads the 25 latest games on your profile, opens this page in a tab of its own and loads the games that aren't saved yet, about a minute each. Leave that tab be while it works.</li>
+    </ol>
+    <p class="live" id="live" hidden><span class="dot" aria-hidden="true"></span> <span id="live-text"></span></p>
+  </section>
+
+  <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+  <section class="card" aria-labelledby="sides-h">
+    <h2 id="sides-h">Wins and losses</h2>
+    <p class="hint">Averages over these games; ties are left out. Turns and $ are yours.</p>
+    <div class="scroll"><table class="sides" id="sides"></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="games-h">
+    <h2 id="games-h">The games</h2>
+    <p class="hint">Newest first. The win chance comes from both players' rating levels at the time; it's an estimate. Each game opens on the analysis page.</p>
+    <div class="scroll"><table class="games" id="games"></table></div>
+  </section>
+
+  <p id="error" role="alert" hidden></p>
+</main>
+<footer class="site-foot">
+  Use it on finished games only: the dominion.games Terms of Service ban tools that help in games in progress. Not affiliated with Shuffle iT, Rio Grande Games, DomBot or the Dominion League.
+</footer>
+<script src="recent.js"></script>
+</body>
+</html>

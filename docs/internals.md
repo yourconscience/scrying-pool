@@ -18,10 +18,11 @@ Everything the app needs lives in `scry/`; `go install github.com/yourconscience
 
 | Module | Where | What it does |
 |---|---|---|
-| **Capture** | `scry/web/capture.js`, `scry/web/scry-game.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
+| **Capture** | `scry/web/capture.js`, `scry/web/scry-game.js`, `scry/web/scry-recent.js` | In your logged-in dominion.games tab, loads a finished game by number (**My Table** > **Load Old Game** > **Load from End**), seats a bot in the other seat, and copies the log and the score screen. |
 | **Cartographer** | `scry/internal/cartographer/` | Reads every log line with the client's own templates and replays the game: each player's deck, zones and tokens after every turn, the Supply piles, the trash and the VP. Checked against score screens and DomBot's final scores. |
 | **Analysis page** | `scry/web/analyze.*`, `scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
 | **Advisor** | `scry/internal/advisor/`, `scry/web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (kingdom roles, openings, endings; going first is in the summary), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 95% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
+| **Recent games** | `scry/web/recent.*`, `scry/internal/advisor/recent.go` | `scry web`'s **Recent games** page: a player's 25 latest saved games summed up like DomBot's `!results` (score against the levels' prediction, opponents' levels, your level), wins against losses (first Province, $ per turn, length) and each game. The Recent games bookmark fills it from your profile. |
 | **Match notes** | `scry/web/notes.html`, `scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Cartographer: how logs are read
@@ -84,6 +85,7 @@ Every game is described from both players' sides, so any player with enough save
 
 - `scry db` builds `<user config>/scrying-pool/scrying-pool.db` (SQLite) from the saved files: `games`, `player_games` (one row per player per game), `cards` (the profiles) and a `player_summary` view. Lists are JSON text, so `json_each` unpacks them; `db.go` has an example query.
 - `scry site -players "a,b"` writes `site/my-games/`: the page plus one JSON file per profile, for any static host. Profiles carry rates only, no game list or opponents' names. Card images link to KingdomCreator's copies on GitHub at a fixed commit (`kingdomCreatorImages` in `site.go`). The live site is `go run ./tools/buildsite`: this page with the profiles in `site-data/`, plus the Match notes page.
+- **Win chances** on the Recent games page come from both players' rating levels, which the profile lists for each game and the score file keeps (`# levels:`). A dominion.games level is 50 + 7.5 × (μ − 2φ): DomBot's `!results` showed 55.82 for μ 1.05 and φ 0.137 on 2026-10-14. With similar φ, the level difference over 7.5 is the μ difference, and the chance is 1 / (1 + e^−Δμ), the model markus's statistics used. It's an estimate, since φ differs between players.
 
 
 On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59% going first against 45% second, and 57% with a village in the kingdom against 44% without. With these sample sizes the ranges overlap a lot; treat single numbers as leads, not findings.
@@ -91,7 +93,7 @@ On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59
 ## CLI
 
 ```bash
-scry web                                              # start page, analysis page and match notes
+scry web                                              # start page, analysis, Profiles, Recent games, match notes
 scry client save [FILE]                               # store client tables from the Copy client tables bookmark
 scry bookmarklet [-client]                            # print the Copy log (or Copy client tables) bookmark
 scry import [-dir DIR] [-min-turns 3] batch.jsonl     # save captured games and check each one

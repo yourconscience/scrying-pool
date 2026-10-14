@@ -110,3 +110,42 @@ func TestSplitAndPlayers(t *testing.T) {
 		t.Fatal("empty lists must be [] in JSON, not null")
 	}
 }
+
+func TestLatestGames(t *testing.T) {
+	score := "# row: 2026-Oct-11 | FLOYDWG: 31, gamrevinu: 47\n# played: 2026-10-11T05:45:07.121Z\n# levels: FLOYDWG 48.25 / gamrevinu 55.50\n"
+	if l := Levels(score); len(l) != 2 || l["FLOYDWG"] != 48.25 || l["gamrevinu"] != 55.5 {
+		t.Fatalf("levels %v", l)
+	}
+	if len(Levels("# row: x\n")) != 0 {
+		t.Fatal("no levels line, no levels")
+	}
+	if c := WinChance(55.5, 55.5); c != 0.5 {
+		t.Fatalf("equal levels: %v", c)
+	}
+	if c := WinChance(57.5, 50); !near(c, 1/(1+math.Exp(-1)), 1e-9) {
+		t.Fatalf("7.5 levels apart is one μ: %v", c)
+	}
+	fs := []*Features{
+		{ID: "99", Me: "a", Opponent: "x", Result: 1, MyLevel: 55, OppLevel: 55, Turns: 14, FirstProvince: 9, Coins: []int{4, 3, 5, 5, 6, 6, 7, 8, 8, 9, 9, 9}},
+		{ID: "101", Me: "a", Opponent: "y", Result: 0, Turns: 16, Coins: []int{5, 2}},
+		{ID: "100", Me: "a", Opponent: "x", Result: 0.5, MyLevel: 55, OppLevel: 62.5, Turns: 15, FirstProvince: 11},
+		{ID: "102", Me: "b", Opponent: "a", Result: 1},
+	}
+	r := LatestGames("a", fs, 2)
+	if len(r.Games) != 2 || r.Games[0].ID != "101" || r.Games[1].ID != "100" {
+		t.Fatalf("latest first, by game number: %v, %v", r.Games[0].ID, r.Games[1].ID)
+	}
+	if r.Score != 0.5 || r.Leveled != 1 || r.LevelScore != 0.5 || !near(r.Expected, WinChance(55, 62.5), 1e-9) || r.Opponents != 2 {
+		t.Fatalf("summary %+v", r)
+	}
+	all := LatestGames("a", fs, 25)
+	if all.OppLow != 55 || all.OppHigh != 62.5 || all.Wins.Games != 1 || all.Losses.Games != 1 {
+		t.Fatalf("all: %+v", all)
+	}
+	if w := all.Wins; w.FirstProvince != 9 || w.Turns != 14 || !near(w.Coins, 6.1, 1e-9) {
+		t.Fatalf("wins: %+v (turns 1-10 only)", w)
+	}
+	if l := all.Losses; l.NoProvince != 1 || l.FirstProvince != 0 || l.Coins != 3.5 {
+		t.Fatalf("losses: %+v", l)
+	}
+}

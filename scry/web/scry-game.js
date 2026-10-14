@@ -7,18 +7,7 @@
 (async () => {
   const ORIGIN = "SCRY_ORIGIN";
   const C = window.scryCapture;
-  let note;
-  const say = (msg, ms = 6000) => {
-    if (note) note.remove();
-    note = document.createElement("div");
-    note.textContent = msg;
-    note.style.cssText = "position:fixed;z-index:99999;top:16px;left:50%;transform:translateX(-50%);max-width:90vw;" +
-      "background:#1c201a;color:#e5e8de;font:14px system-ui;padding:10px 16px;border-radius:6px;" +
-      "box-shadow:0 2px 12px rgba(0,0,0,.4)";
-    document.body.append(note);
-    const mine = note;
-    if (ms) setTimeout(() => mine.remove(), ms);
-  };
+  const say = (msg, ms) => C.say(msg, ms);
   if (C.running) return say("Scrying Pool: a capture is already running in this tab.");
   const m = /scry=(\d+)/.exec(location.hash);
   const id = (m ? m[1] : prompt("Scrying Pool: ID of the finished game to load") || "").trim();

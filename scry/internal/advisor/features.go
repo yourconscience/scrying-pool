@@ -14,11 +14,18 @@ type Features struct {
 	Date     string `json:"date"` // "2026-Oct-09", from the row
 	Me       string `json:"me"`
 	Opponent string `json:"opponent"`
-	First    bool   `json:"first"` // Me took the first turn
+	// when the game was played and both players' rating levels then, if a
+	// profile listed the game when it was loaded
+	Played   string  `json:"played,omitempty"`
+	MyLevel  float64 `json:"my_level,omitempty"`
+	OppLevel float64 `json:"opp_level,omitempty"`
+
+	First bool `json:"first"` // Me took the first turn
 
 	Result float64 `json:"result"` // 1 win, 0.5 tie, 0 loss: the row's scores, else the computed VP
 	MyVP   int     `json:"my_vp"`
 	OppVP  int     `json:"opp_vp"`
+	Final  []int   `json:"final,omitempty"` // the row's scores, Me's first, when it has them
 	// the computed VP equal the row's scores; when they don't, usually the game's
 	// last decision (often the final buy) is missing from the loaded log
 	Complete bool   `json:"complete"`
@@ -64,11 +71,13 @@ func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Pr
 		kingdomPile[client.PileOf(card)] = card
 	}
 	date, _, _ := strings.Cut(s.Row, " | ")
+	played, levels := Header(s.Score, "played"), Levels(s.Score)
 
 	var out []*Features
 	for k, me := range g.Players {
 		opp := g.Players[1-k]
-		f := &Features{ID: s.ID, Date: date, Me: me, Opponent: opp, Kingdom: s.Kingdom, Landscapes: s.Landscapes,
+		f := &Features{ID: s.ID, Date: date, Me: me, Opponent: opp, Played: played, MyLevel: levels[me], OppLevel: levels[opp],
+			Kingdom: s.Kingdom, Landscapes: s.Landscapes,
 			Roles: roles, Took: map[string]bool{}, Ending: end, MyVP: vp[me].Total(), OppVP: vp[opp].Total()}
 		if len(s.Original) > 0 {
 			f.First = s.Original[0] == me // seat 1 is the first original player's
@@ -77,6 +86,7 @@ func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Pr
 		if a, ok := s.Scores[me]; ok {
 			if b, ok := s.Scores[opp]; ok {
 				f.Complete = a == f.MyVP && b == f.OppVP
+				f.Final = []int{a, b}
 				mine, theirs = a, b
 			}
 		}

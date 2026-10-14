@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -73,6 +74,18 @@ func newHandler(timeout time.Duration) http.Handler {
 			return
 		}
 		writeJSON(w, 200, in)
+	})
+	mux.HandleFunc("GET /api/recent", func(w http.ResponseWriter, r *http.Request) {
+		c, err := loadCorpus()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		player := r.URL.Query().Get("player")
+		if player == "" {
+			player = c.account
+		}
+		writeJSON(w, 200, advisor.LatestGames(player, c.features, recentGames))
 	})
 	mux.HandleFunc("GET /api/features.csv", func(w http.ResponseWriter, r *http.Request) {
 		in, err := insights(r.URL.Query().Get("player"))
@@ -160,10 +173,46 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		writeJSON(w, 200, map[string]any{"id": g.ID, "problems": res.Problems})
 	})
+	// The Recent games page passes on what your profile lists about games that
+	// are saved already: when they were played and both levels.
+	mux.HandleFunc("POST /api/profiles", func(w http.ResponseWriter, r *http.Request) {
+		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
+			writeJSON(w, 403, map[string]string{"error": "cross-origin request refused"})
+			return
+		}
+		var in []struct {
+			ID      string       `json:"id"`
+			Profile *gameProfile `json:"profile"`
+		}
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20)).Decode(&in); err != nil {
+			writeJSON(w, 400, map[string]string{"error": err.Error()})
+			return
+		}
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		n := 0
+		for _, g := range in {
+			if g.Profile != nil && addProfile(dir, g.ID, g.Profile) == nil {
+				n++
+			}
+		}
+		writeJSON(w, 200, map[string]int{"updated": n})
+	})
+	// The Scry game bookmark, or with ?for=recent the Recent games one: capture.js
+	// (unless the tab has this version of it already) and the bookmark's own script.
 	mux.HandleFunc("GET /api/bookmarklet", func(w http.ResponseWriter, r *http.Request) {
+		name := "web/scry-game.js"
+		if r.URL.Query().Get("for") == "recent" {
+			name = "web/scry-recent.js"
+		}
 		capture, _ := webFiles.ReadFile("web/capture.js")
-		one, _ := webFiles.ReadFile("web/scry-game.js")
-		src := "if (!window.scryCapture) " + stripComments(string(capture)) + "\n" + strings.ReplaceAll(string(one), "SCRY_ORIGIN", "http://"+r.Host)
+		one, _ := webFiles.ReadFile(name)
+		version := reCaptureVersion.FindStringSubmatch(string(capture))[1]
+		src := "if ((window.scryCapture && window.scryCapture.version) !== " + version + ") " + stripComments(string(capture)) + "\n" +
+			strings.ReplaceAll(string(one), "SCRY_ORIGIN", "http://"+r.Host)
 		writeJSON(w, 200, map[string]string{"href": bookmarklet(src)})
 	})
 	mux.HandleFunc("POST /api/format", func(w http.ResponseWriter, r *http.Request) {
@@ -226,6 +275,12 @@ type corpus struct {
 
 // minProfileGames is how many saved games a player needs for a profile.
 const minProfileGames = 20
+
+var reCaptureVersion = regexp.MustCompile(`version: (\d+),`)
+
+// recentGames is how many latest games the Recent games page shows: as many as
+// a dominion.games profile lists.
+const recentGames = 25
 
 // loadCorpus reads the saved games, or returns the copy from the last read when
 // no score file changed since. Reading 244 games takes about 3 seconds.

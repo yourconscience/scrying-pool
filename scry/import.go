@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
@@ -107,6 +108,18 @@ func importGames(file, dir string, minTurns int) error {
 
 // addKingdom writes the kingdom lines into a saved game's score file, replacing old ones.
 func addKingdom(dir, id string, groups map[string][]string) error {
+	return replaceHeaders(dir, id, []string{"kingdom", "landscapes", "other cards"}, kingdomLines(groups))
+}
+
+// addProfile writes what a profile said about a saved game (when it was played,
+// whether it was rated, both levels) into its score file, replacing old lines.
+func addProfile(dir, id string, p *gameProfile) error {
+	return replaceHeaders(dir, id, []string{"played", "rated", "levels"}, profileLines(p))
+}
+
+// replaceHeaders drops a saved game's "# key: ..." lines for keys and adds lines
+// (each ending in a newline) after the other header lines.
+func replaceHeaders(dir, id string, keys []string, lines string) error {
 	if !reGameID.MatchString(id) {
 		return fmt.Errorf("bad game id %q", id)
 	}
@@ -116,18 +129,33 @@ func addKingdom(dir, id string, groups map[string][]string) error {
 		return fmt.Errorf("game not saved: %w", err)
 	}
 	var head, rest []string
-	lines := strings.Split(string(b), "\n")
-	for i, l := range lines {
+	all := strings.Split(string(b), "\n")
+	for i, l := range all {
 		if !strings.HasPrefix(l, "# ") {
-			rest = lines[i:]
+			rest = all[i:]
 			break
 		}
-		if !strings.HasPrefix(l, "# kingdom: ") && !strings.HasPrefix(l, "# landscapes: ") && !strings.HasPrefix(l, "# other cards: ") {
+		if !slices.ContainsFunc(keys, func(k string) bool { return strings.HasPrefix(l, "# "+k+": ") }) {
 			head = append(head, l)
 		}
 	}
-	out := strings.Join(head, "\n") + "\n" + kingdomLines(groups) + strings.Join(rest, "\n")
+	out := strings.Join(head, "\n") + "\n" + lines + strings.Join(rest, "\n")
+	if out == string(b) {
+		return nil // unchanged: keep the file's time, which the corpus cache goes by
+	}
 	return os.WriteFile(path, []byte(out), 0o644)
+}
+
+// profileLines are the score file's lines for what a profile said about the game.
+func profileLines(p *gameProfile) string {
+	if p == nil || p.Time == "" {
+		return ""
+	}
+	var levels []string
+	for _, name := range p.Players {
+		levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
+	}
+	return fmt.Sprintf("# played: %s\n# rated: %v\n# levels: %s\n", p.Time, p.Rated, strings.Join(levels, " / "))
 }
 
 var reGameID = regexp.MustCompile(`^\d{1,12}$`)
@@ -143,13 +171,7 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 	if g.Markers {
 		score += fmt.Sprintf("# loaded at decision %d; bot lines cut: %d\n", g.Decision, strings.Count(g.Bot, "\n"))
 	}
-	if p := g.Profile; p != nil && p.Time != "" {
-		var levels []string
-		for _, name := range p.Players {
-			levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
-		}
-		score += fmt.Sprintf("# played: %s\n# rated: %v\n# levels: %s\n", p.Time, p.Rated, strings.Join(levels, " / "))
-	}
+	score += profileLines(g.Profile)
 	score += kingdomLines(g.Kingdom)
 	score += g.Score
 	r = client.Check(g.Log+g.Bot, score)

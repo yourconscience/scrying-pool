@@ -36,6 +36,16 @@ As tested on 2026-10-11:
 
 The capture clicks only the client's own buttons (My Table, Load Old Game, Load from End, the bot seat, Ready, Resign, Yes, Ok, Leave Table, the Profile tab and its player search) and reads the page. Use it on finished games only: the dominion.games Terms of Service ban tools that give a competitive advantage (§2A). Loading hundreds of games a night is heavy use of the client, and the account carries that risk.
 
+## Your latest games
+
+The app's **Recent games** page sums up your 25 latest rated two-player games the way DomBot's `!results` does: your score against the score your rating levels predicted, how strong your opponents were, your level, your wins against your losses, and each game. To fill it from dominion.games:
+
+1. Drag the page's **Recent games** link to your bookmarks bar.
+2. In your dominion.games tab, on the lobby screen, click it. It opens the Recent games page in a tab of its own (if the browser blocks it, allow pop-ups for dominion.games and click again), reads your Profile tab and sends the page your latest games with their dates, scores and both players' levels.
+3. It then loads the games the app hasn't saved, one at a time, about a minute each, and the page saves each one as it arrives. Leave the dominion.games tab be meanwhile.
+
+The two tabs talk by `postMessage`, so the browser's question about dominion.games connecting to apps on this device doesn't come up. If a game fails, it's tried once more after the others. Clicked again (after a reload, say), the bookmark sends games it loaded before instead of loading them again.
+
 ## Many games at once
 
 1. Paste `scry/web/capture.js` into the console of your dominion.games tab while logged in.
@@ -44,7 +54,7 @@ The capture clicks only the client's own buttons (My Table, Load Old Game, Load 
    - `scryCapture.run(ids, { mode: "kingdom" })` only reads the kingdoms of games saved earlier;
    - `scryCapture.harvest({ minLevel: 50, skip })` visits profiles, starting from your own and following opponents above `minLevel`. It queues their rated two-player games where a player is above `minLevel`, except the numbers in `skip`. Each game keeps the profile's date, scores and levels.
 
-   `run` adds to a running queue. `scryCapture.status()` shows progress.
+   `run` adds to a running queue, and a game that fails is tried once more after the rest. `scryCapture.status()` shows progress.
 3. Run `scryCapture.exportNext(25)`, press Cmd+C in the page, then `pbpaste > batch.jsonl`.
 4. `scry import batch.jsonl` saves each game to `<user config>/scrying-pool/games` and checks it against its score screen. On macOS that's `~/Library/Application Support/scrying-pool/games`. Kingdom-only lines update the saved games' score files.
 5. `scry check` checks all saved games again. It compares the computed final VP with the scores in each game's row, or in a saved DomBot `!prior` list with `-prior FILE`.
