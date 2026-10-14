@@ -1,0 +1,19 @@
+/* Recent games page: on top of style.css and insights.css (tiles, cards, the palette). */
+.fetch ol { padding-left: 22px; margin: 6px 0 4px; max-width: 82ch; }
+.fetch li { margin: 6px 0; }
+.live { color: var(--muted); display: flex; gap: 8px; align-items: center; margin: 10px 0 0; }
+
+.scroll { overflow-x: auto; }
+.sides, .games { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.sides th, .sides td, .games th, .games td { padding: 6px 12px 6px 0; text-align: left; white-space: nowrap; }
+.sides thead th, .games thead th { font: 600 0.78rem var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--rule); }
+.sides tbody th { font-weight: 600; }
+.sides td { min-width: 7em; }
+.games { width: 100%; }
+.games tbody td { border-bottom: 1px solid var(--rule); }
+.games tr.day td { background: var(--soft); font-weight: 700; padding: 6px 10px; border-bottom: 0; }
+.games .lvl { color: var(--muted); font-size: 0.9em; }
+.games .res { display: inline-block; min-width: 1.8em; text-align: center; font-weight: 700; border-radius: 6px; padding: 1px 6px; text-decoration: none; color: var(--none); background: var(--none-soft); }
+.games .res.win { color: var(--up); background: var(--up-soft); }
+.games .res.loss { color: var(--down); background: var(--down-soft); }
+.games tr.pending td { color: var(--muted); }

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -221,6 +222,40 @@ func TestWebGames(t *testing.T) {
 	if _, ok := v.Cards["Copper"]; !ok {
 		t.Error("the view doesn't describe Copper")
 	}
+
+	// the Recent games page passes on the profile's levels, then lists the game with them
+	prof := `[{"id":"184426907","profile":{"time":"2026-10-08T10:00:00.000Z","rated":true,"players":["GarlicRamen","gamrevinu"],"levels":{"GarlicRamen":50,"gamrevinu":57.5}}}]`
+	if w := call("POST", "/api/profiles", "https://dominion.games", prof); w.Code != 403 {
+		t.Fatalf("profiles from another origin: %d", w.Code)
+	}
+	if w := call("POST", "/api/profiles", "", prof); w.Code != 200 || !strings.Contains(w.Body.String(), `"updated":1`) {
+		t.Fatalf("profiles: %d %s", w.Code, w.Body)
+	}
+	gdir, _ := gamesDir("")
+	scorePath := filepath.Join(gdir, "184426907.score.txt")
+	os.Chmod(scorePath, 0o444) // a saved game whose levels can't be written is an error, not a skip
+	if w := call("POST", "/api/profiles", "", strings.Replace(prof, "57.5", "57.6", 1)); w.Code != 500 {
+		t.Errorf("profiles on a read-only score file: %d %s", w.Code, w.Body)
+	}
+	os.Chmod(scorePath, 0o644)
+	var recent advisor.Recent
+	w = call("GET", "/api/recent?player=gamrevinu", "", "")
+	if err := json.Unmarshal(w.Body.Bytes(), &recent); err != nil || len(recent.Games) != 1 {
+		t.Fatalf("recent: %d %s", w.Code, w.Body)
+	}
+	if g := recent.Games[0]; g.MyLevel != 57.5 || g.OppLevel != 50 || g.Played == "" || recent.Leveled != 1 {
+		t.Fatalf("recent game: %+v %+v", g.Features, recent)
+	}
+
+	// each bookmark carries capture.js unless the tab has this version of it
+	for path, want := range map[string]string{"/api/bookmarklet": "finished game to load", "/api/bookmarklet?for=recent": "scry-recent"} {
+		var b struct{ Href string }
+		json.Unmarshal(call("GET", path, "", "").Body.Bytes(), &b)
+		src, _ := url.PathUnescape(strings.TrimPrefix(b.Href, "javascript:"))
+		if !strings.Contains(src, want) || !strings.HasPrefix(src, "if ((window.scryCapture && window.scryCapture.version) !== 2)") {
+			t.Errorf("%s: %.120q", path, src)
+		}
+	}
 }
 
 func mustParse(t *testing.T, log string) *cartographer.Game {
@@ -259,6 +294,37 @@ func TestAddKingdom(t *testing.T) {
 	}
 	if got, ok := advisor.ResultScores("R4D4: ?5, gamrevinu: 9"); !ok || got["R4D4"] != -5 {
 		t.Fatalf("DomBot minus: %v", got)
+	}
+}
+
+// What a profile said about a saved game replaces its old profile lines, and an
+// unchanged file isn't written again.
+func TestAddProfile(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "184550558.score.txt")
+	score := "# row: 2026-Oct-11 | FLOYDWG: 31, gamrevinu: 47\n# original players: FLOYDWG / gamrevinu\n# levels: FLOYDWG 1.00 / gamrevinu 2.00\n# kingdom: Poor House\nYou Win\n"
+	if err := os.WriteFile(path, []byte(score), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	p := &gameProfile{Time: "2026-10-11T05:45:07.121Z", Rated: true, Players: []string{"FLOYDWG", "gamrevinu"}, Levels: map[string]float64{"FLOYDWG": 48.25, "gamrevinu": 55.5}}
+	if err := addProfile(dir, "184550558", p); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(path)
+	want := "# row: 2026-Oct-11 | FLOYDWG: 31, gamrevinu: 47\n# original players: FLOYDWG / gamrevinu\n# kingdom: Poor House\n# played: 2026-10-11T05:45:07.121Z\n# rated: true\n# levels: FLOYDWG 48.25 / gamrevinu 55.50\nYou Win\n"
+	if string(b) != want {
+		t.Fatalf("score file:\n%s\nwant:\n%s", b, want)
+	}
+	old := time.Now().Add(-time.Hour)
+	os.Chtimes(path, old, old)
+	if err := addProfile(dir, "184550558", p); err != nil {
+		t.Fatal(err)
+	}
+	if st, _ := os.Stat(path); !st.ModTime().Equal(old) {
+		t.Error("an unchanged score file was written again")
+	}
+	if err := addProfile(dir, "184550559", p); err == nil {
+		t.Error("a game that isn't saved was accepted")
 	}
 }
 

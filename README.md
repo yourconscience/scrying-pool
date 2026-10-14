@@ -49,7 +49,7 @@ Profiles are built from games saved on your computer, so this part runs locally.
    scry web
    ```
 
-2. Save your finished games: one with the **Scry game** bookmark on the Analyze page, many with the capture script. [Loading games](docs/capture.md) walks you through both.
+2. Save your finished games: one with the **Scry game** bookmark on the Analyze page, your 25 latest with the **Recent games** bookmark, many with the capture script. [Loading games](docs/capture.md) walks you through them.
 3. Your profile appears on the app's Profiles page. To put it on the live page, follow [site-data/README.md](site-data/README.md).
 
 ## Good to know
