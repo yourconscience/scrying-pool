@@ -1,0 +1,7 @@
+# CodeRabbit settings for this repo. Anything not set here comes from the
+# organization settings.
+inheritance: true
+reviews:
+  path_filters:
+    # game logs and score screens that the tests replay
+    - "!**/testdata/**"
