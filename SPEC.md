@@ -196,3 +196,11 @@ Phase 1, 2026-10-10 (partial):
 - The repo is public and the Profiles page is on GitHub Pages (https://yourconscience.github.io/scrying-pool/). GitHub Pages wasn't available for the private repo on this plan.
 - `.github/workflows/site.yml` runs `go vet` and `go test` on every pull request and every push to `main`; on `main` it also runs `scry site -data site-data` and publishes the result. Without the client tables, 13 of 31 tests skip in CI.
 - `site-data/` holds the published profiles (win rates only). `scry site -data DIR` copies them instead of reading saved games, so CI doesn't need them; the output is the same file for file.
+
+2026-10-14: cleanup.
+
+- Layout: everything the app needs is in `scry/`: the command (install with `go install github.com/yourconscience/scrying-pool/scry@latest`; before, installing from the repo root gave a binary named `scrying-pool`), `scry/internal/cartographer` and `scry/internal/advisor` (parts of the app, not separate modules), `scry/web/`, the embedded data and the test logs. Build helpers are in `tools/` (`buildsite`, `carddb`).
+- Removed what was shown but not built: the "Advisor coming" panel on the analysis page and the roadmap lines on the start page and in docs. Plans stay in this file.
+- Static builds no longer write `artifact.html`: the page is hosted on GitHub Pages now.
+- Test logs: 10 games instead of 40 (19 files instead of 79). They cover the expansions and the cards the tests check; `SCRY_GAMES` runs the replay tests on all saved games. The old logs stay in git history.
+

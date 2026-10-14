@@ -7,11 +7,11 @@ How Scrying Pool gets your finished games out of dominion.games. Back to the [RE
 Needs Go 1.26+ and a browser where you're logged in to dominion.games.
 
 ```bash
-go install github.com/yourconscience/scrying-pool@latest
+go install github.com/yourconscience/scrying-pool/scry@latest
 scry web
 ```
 
-Then open http://127.0.0.1:8765. From a clone, `go run . web` does the same.
+Then open http://127.0.0.1:8765. From a clone, `go run ./scry web` does the same.
 
 1. **One time: export the client's log grammar.** Run `scry bookmarklet -client`, save the printed `javascript:` link as a bookmark, click it on dominion.games, then run `pbpaste | scry client save`. The log parser reads lines with these tables. They belong to 2nd Shuffle, so they stay on your machine instead of in this repo.
 2. **Open Analyze a game** and type a game number. It's on your dominion.games profile, in DomBot's `!game` reply, or in a log's first line (`Game #184518886`).
@@ -38,7 +38,7 @@ The capture clicks only the client's own buttons (My Table, Load Old Game, Load 
 
 ## Many games at once
 
-1. Paste `web/capture.js` into the console of your dominion.games tab while logged in.
+1. Paste `scry/web/capture.js` into the console of your dominion.games tab while logged in.
 2. Queue games:
    - `scryCapture.run(ids)` captures games by number, dropping AFK games (a player with fewer than 3 turns);
    - `scryCapture.run(ids, { mode: "kingdom" })` only reads the kingdoms of games saved earlier;
@@ -55,7 +55,7 @@ For an unattended run (overnight):
 - Each game has a 6-minute limit, after which the page is reset and the next game starts. A logout or a lost connection is waited out for 15 minutes.
 - On 2026-10-11 the server closed the connection after about 230 kingdom-only games ("Server connection was closed or could not be established."). Retry led to the login page, so the run waits for you to log in again; then paste the script and call `resume()`.
 - In a hidden tab each game took about a minute while the waits inside it took seconds, which matches Chrome's throttling of chained timers in hidden tabs (at most one wake-up a minute). The script now waits on a worker's timers, and a kingdom-only game takes about 10 seconds.
-- The machine must not sleep. On m4 on 2026-10-11 Amphetamine kept it awake, and captures ran in a hidden tab.
+- The machine must not sleep (on macOS, `caffeinate -i` or an app like Amphetamine keeps it awake). Captures can run in a hidden tab.
 - With `scryCapture.server = "http://127.0.0.1:8765"`, each game is posted to a `scry web` on the same machine as soon as it's captured. The browser may first ask whether dominion.games may connect to apps on the device.
 
 For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`) copies the log of a game you loaded yourself: `pbpaste > game.log`, then `scry review game.log`.

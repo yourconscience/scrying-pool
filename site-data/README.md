@@ -1,6 +1,6 @@
 # Published profiles
 
-The profiles on https://yourconscience.github.io/scrying-pool/. Each push to `main` rebuilds the page from `web/` and these files (`.github/workflows/site.yml`).
+The profiles on https://yourconscience.github.io/scrying-pool/. Each push to `main` rebuilds the page from `scry/web/` and these files (`.github/workflows/site.yml`).
 
 They hold win rates only: no list of games and no opponents' names. To publish new numbers, rebuild them from your saved games and commit them:
 
