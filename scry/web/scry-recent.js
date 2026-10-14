@@ -51,5 +51,5 @@
   if (!load.length) return C.say(`Scrying Pool: your ${list.length} latest rated games are in the Recent games tab.`);
   C.onResult = report;
   await C.run(load, { alone: true });
-  C.say(`Scrying Pool: loading ${load.length} games against a bot, about a minute each. Leave this tab be; the Recent games tab shows them as they arrive.`, 15000);
+  C.say(`Scrying Pool: loading ${load.length} games against a bot, about 20 seconds each. Leave this tab be; the Recent games tab shows them as they arrive.`, 15000);
 })();
