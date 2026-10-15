@@ -18,12 +18,13 @@ import (
 // list and no opponents' names.
 //
 //	out/index.html     the page
-//	out/*.css, *.js    its assets
-//	out/data/players.json, out/data/<player>.json
+//	out/recent.html    the first player's latest games (Recent games)
+//	out/*.css, *.js    their assets
+//	out/data/players.json, out/data/<player>.json, out/data/recent.json
 //
-// With data set, the profiles are copied from that folder (a players.json and
-// the files it lists) instead of being made from the saved games, so a CI job
-// can rebuild the page without them.
+// With data set, the profiles are copied from that folder (a players.json, the
+// files it lists and recent.json) instead of being made from the saved games, so
+// a CI job can rebuild the pages without them.
 func buildSite(out string, players []string, data string) error {
 	if err := os.MkdirAll(filepath.Join(out, "data"), 0o755); err != nil {
 		return err
@@ -38,7 +39,7 @@ func buildSite(out string, players []string, data string) error {
 	if err != nil {
 		return err
 	}
-	for _, f := range []string{"style.css", "insights.css", "insights.js"} {
+	for _, f := range []string{"style.css", "insights.css", "insights.js", "recent.css", "recent.js"} {
 		b, err := webFiles.ReadFile("web/" + f)
 		if err != nil {
 			return err
@@ -47,13 +48,15 @@ func buildSite(out string, players []string, data string) error {
 			return err
 		}
 	}
-	page, err := webFiles.ReadFile("web/insights.html")
-	if err != nil {
-		return err
-	}
-	html := strings.Replace(string(page), `<meta name="scry-data" content="api">`, `<meta name="scry-data" content="static">`, 1)
-	if err := os.WriteFile(filepath.Join(out, "index.html"), []byte(html), 0o644); err != nil {
-		return err
+	for name, dst := range map[string]string{"insights.html": filepath.Join(out, "index.html"), "recent.html": filepath.Join(out, "recent.html")} {
+		page, err := webFiles.ReadFile("web/" + name)
+		if err != nil {
+			return err
+		}
+		html := strings.Replace(string(page), `<meta name="scry-data" content="api">`, `<meta name="scry-data" content="static">`, 1)
+		if err := os.WriteFile(dst, []byte(html), 0o644); err != nil {
+			return err
+		}
 	}
 	fmt.Printf("wrote %s: %d profiles\n", out, n)
 	return nil
@@ -105,7 +108,18 @@ func makeProfiles(dir string, players []string) (int, error) {
 		}
 		list.Players = append(list.Players, siteEntry{p, len(mine), file})
 	}
-	b, _ := json.MarshalIndent(list, "", " ")
+	// the first player's latest games, without what only the local app shows
+	recent := advisor.LatestGames(players[0], features, recentGames)
+	for i, g := range recent.Games {
+		f := *g.Features
+		f.Kingdom, f.Landscapes, f.Roles, f.Took, f.OpeningBuys, f.Coins = nil, nil, nil, nil, nil, nil
+		recent.Games[i].Features = &f
+	}
+	b, _ := json.Marshal(recent)
+	if err := os.WriteFile(filepath.Join(dir, "recent.json"), b, 0o644); err != nil {
+		return 0, err
+	}
+	b, _ = json.MarshalIndent(list, "", " ")
 	return len(list.Players), os.WriteFile(filepath.Join(dir, "players.json"), b, 0o644)
 }
 
@@ -119,7 +133,7 @@ func copyProfiles(src, dir string) (int, error) {
 	if err := json.Unmarshal(b, &list); err != nil {
 		return 0, fmt.Errorf("%s/players.json: %w", src, err)
 	}
-	files := []string{"players.json"}
+	files := []string{"players.json", "recent.json"} // the site always has the Recent games page
 	for _, p := range list.Players {
 		files = append(files, filepath.Base(p.File))
 	}

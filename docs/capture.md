@@ -44,6 +44,8 @@ The app's **Recent games** page sums up your 25 latest rated two-player games th
 2. In your dominion.games tab, on the lobby screen, click it. It opens the Recent games page in a tab of its own (if the browser blocks it, allow pop-ups for dominion.games and click again), reads your Profile tab and sends the page your latest games with their dates, scores and both players' levels.
 3. It then loads the games the app hasn't saved, one at a time, and the page saves each one as it arrives. Leave the dominion.games tab be meanwhile. On 2026-10-14, 25 games took 8 minutes: 21 saved, 2 AFK, 1 the server couldn't load, and 1 timed out twice waiting for its log.
 
+To see the page from other machines, publish it with the profiles ([site-data/README.md](../site-data/README.md)): the live site has a static copy at https://yourconscience.github.io/scrying-pool/recent.html.
+
 The two tabs talk by `postMessage`, so the browser's question about dominion.games connecting to apps on this device doesn't come up. If a game fails, it's tried once more after the others. Clicked again (after a reload, say), the bookmark sends games it loaded before instead of loading them again.
 
 ## Many games at once

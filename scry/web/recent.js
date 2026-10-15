@@ -3,10 +3,18 @@
 // opponents), their wins against their losses, and each game. The Recent games
 // bookmark (scry-recent.js), clicked in a dominion.games tab, opens this page,
 // sends it the profile's latest games and loads the missing ones; this page
-// saves what it gets through the app's own /api.
+// saves what it gets through the app's own /api. `scry site` writes a static copy
+// that reads data/recent.json instead.
 "use strict";
 
 const $ = (id) => document.getElementById(id);
+const STATIC = document.querySelector('meta[name="scry-data"]').content === "static";
+if (STATIC) {
+  // the hosted site has Profiles as its index; the app's other pages aren't there
+  document.body.classList.add("static");
+  document.querySelector(".top .brand").href = "./";
+  document.querySelector('.top a[href="insights.html"]').href = "./";
+}
 const DG = "https://dominion.games";
 const player = new URLSearchParams(location.search).get("player") || "";
 const pending = {}; // id -> {profile, status, error}: games the bookmark is still loading
@@ -44,10 +52,10 @@ const RESULT = { 1: ["W", "win"], 0.5: ["T", "tie"], 0: ["L", "loss"] };
 
 // ---- what the bookmark sends
 
-const account = api("/api/players").then((p) => p.default, () => "");
+const account = STATIC ? Promise.resolve("") : api("/api/players").then((p) => p.default, () => "");
 
 window.addEventListener("message", async (e) => {
-  if (e.origin !== DG || !e.data || !e.data.scry) return;
+  if (STATIC || e.origin !== DG || !e.data || !e.data.scry) return;
   const { scry: type, seq, data } = e.data;
   const reply = (d) => seq && e.source.postMessage({ scryReply: seq, ...d }, e.origin);
   try {
@@ -83,7 +91,7 @@ window.addEventListener("message", async (e) => {
   }
 });
 
-api("/api/bookmarklet?for=recent").then((b) => ($("bookmark").href = b.href), () => {});
+if (!STATIC) api("/api/bookmarklet?for=recent").then((b) => ($("bookmark").href = b.href), () => {});
 $("bookmark").addEventListener("click", (e) => {
   e.preventDefault();
   showError("Drag Recent games to your bookmarks bar, then click it in your dominion.games tab.");
@@ -93,7 +101,7 @@ $("bookmark").addEventListener("click", (e) => {
 
 async function refresh() {
   try {
-    const r = await api("/api/recent" + (player ? "?player=" + encodeURIComponent(player) : ""));
+    const r = await api(STATIC ? "data/recent.json" : "/api/recent" + (player ? "?player=" + encodeURIComponent(player) : ""));
     showError("");
     render(r);
   } catch (err) {
@@ -203,9 +211,12 @@ function gameTr(g) {
   const tr = el("tr");
   const [mark, word] = RESULT[g.result];
   const res = el("td");
-  const a = el("a", "res " + word, mark);
-  a.href = "analyze.html#" + g.id;
-  a.title = `Game ${g.id}: open it on the analysis page`;
+  const a = el(STATIC ? "span" : "a", "res " + word, mark);
+  a.title = `Game ${g.id}`;
+  if (!STATIC) {
+    a.href = "analyze.html#" + g.id;
+    a.title += ": open it on the analysis page";
+  }
   res.append(a);
   const vp = g.final || [g.my_vp, g.opp_vp];
   tr.append(res, opponentTd(g), el("td", "", `${vp[0]}–${vp[1]}`), el("td", "", g.chance ? Math.round(g.chance * 100) + "%" : "–"),

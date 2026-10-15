@@ -221,3 +221,8 @@ Phase 1, 2026-10-10 (partial):
 - All 265 saved games now read completely and end with their score screens' decks and turns. Fixed: a Lich discarding itself from the trash with its name after the line (`DISCARD_WITH`) was lost from the deck and the zones; "g fails to take a Turn (from )." didn't read, since the client prints the source as nothing (a line no template reads is tried again with empty arguments, never Argument0); allies like Plateau Shepherds, which the score screen shows without a count, weren't scored.
 - Computed VP equal the final scores in 216 of 265 games. 48 of the other 49 lack the game's last decision, which a loaded game never has; 184308261 (8 VP more than the final score) isn't explained.
 - `TestLogsMatchScoreScreens` runs on every saved game with `SCRY_GAMES`, counting the bot's lines as `scry check` does.
+
+2026-10-15: Recent games on the live site.
+
+- `scry site` also writes the Recent games page and `data/recent.json`, and `-data` copies `recent.json` from `site-data/`, so the live site shows the published snapshot at `recent.html`. It lists opponents' names and levels, as the player's dominion.games profile does; the profiles still carry rates only.
+- The static page reads `data/recent.json`, hides the bookmark section and doesn't link games to the analysis page.
