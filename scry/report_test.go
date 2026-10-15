@@ -363,3 +363,31 @@ func TestCardImagesCoverClientCards(t *testing.T) {
 		}
 	}
 }
+
+// A site built from published data carries the Recent games page and its data.
+func TestSiteFromData(t *testing.T) {
+	src, out := t.TempDir(), t.TempDir()
+	files := map[string]string{
+		"players.json": `{"default":"a","players":[{"name":"a","games":1,"file":"data/a.json"}]}`,
+		"a.json":       `{}`,
+		"recent.json":  `{"me":"a","games":[]}`,
+	}
+	for f, s := range files {
+		os.WriteFile(filepath.Join(src, f), []byte(s), 0o644)
+	}
+	if err := buildSite(out, nil, src); err != nil {
+		t.Fatal(err)
+	}
+	if b, err := os.ReadFile(filepath.Join(out, "data", "recent.json")); err != nil || string(b) != files["recent.json"] {
+		t.Fatalf("recent.json: %v %s", err, b)
+	}
+	for _, page := range []string{"index.html", "recent.html"} {
+		b, _ := os.ReadFile(filepath.Join(out, page))
+		if !strings.Contains(string(b), `<meta name="scry-data" content="static">`) {
+			t.Errorf("%s isn't the static page", page)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(out, "recent.js")); err != nil {
+		t.Error("no recent.js")
+	}
+}
