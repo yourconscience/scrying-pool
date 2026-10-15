@@ -133,12 +133,9 @@ func copyProfiles(src, dir string) (int, error) {
 	if err := json.Unmarshal(b, &list); err != nil {
 		return 0, fmt.Errorf("%s/players.json: %w", src, err)
 	}
-	files := []string{"players.json"}
+	files := []string{"players.json", "recent.json"} // the site always has the Recent games page
 	for _, p := range list.Players {
 		files = append(files, filepath.Base(p.File))
-	}
-	if _, err := os.Stat(filepath.Join(src, "recent.json")); err == nil {
-		files = append(files, "recent.json")
 	}
 	for _, f := range files {
 		b, err := os.ReadFile(filepath.Join(src, f))
