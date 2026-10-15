@@ -243,8 +243,8 @@ func TestWebGames(t *testing.T) {
 	if err := json.Unmarshal(w.Body.Bytes(), &recent); err != nil || len(recent.Games) != 1 {
 		t.Fatalf("recent: %d %s", w.Code, w.Body)
 	}
-	if g := recent.Games[0]; g.MyLevel != 57.5 || g.OppLevel != 50 || g.Played == "" || recent.Leveled != 1 {
-		t.Fatalf("recent game: %+v %+v", g.Features, recent)
+	if g := recent.Games[0]; g.MyLevel != 57.5 || g.OppLevel != 50 || g.Played == "" || g.Chance <= 0.5 {
+		t.Fatalf("recent game: %+v %v", g.Features, g.Chance)
 	}
 
 	// each bookmark carries capture.js unless the tab has this version of it

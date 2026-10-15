@@ -333,7 +333,7 @@
     // the browser's rules for pages reaching apps on your device don't hold up.
     attach(win, origin) {
       this.target = win;
-      this.targetOrigin = origin;
+      this.targetOrigin = new URL(origin).origin; // the page's address may have a path (GitHub Pages)
       if (this.listening) return;
       this.listening = true;
       window.addEventListener("message", (e) => {

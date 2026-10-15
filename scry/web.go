@@ -215,12 +215,7 @@ func newHandler(timeout time.Duration) http.Handler {
 		if r.URL.Query().Get("for") == "recent" {
 			name = "web/scry-recent.js"
 		}
-		capture, _ := webFiles.ReadFile("web/capture.js")
-		one, _ := webFiles.ReadFile(name)
-		version := reCaptureVersion.FindStringSubmatch(string(capture))[1]
-		src := "if ((window.scryCapture && window.scryCapture.version) !== " + version + ") " + stripComments(string(capture)) + "\n" +
-			strings.ReplaceAll(string(one), "SCRY_ORIGIN", "http://"+r.Host)
-		writeJSON(w, 200, map[string]string{"href": bookmarklet(src)})
+		writeJSON(w, 200, map[string]string{"href": bookmarklet(bookmarkSource(name, "http://"+r.Host))})
 	})
 	mux.HandleFunc("POST /api/format", func(w http.ResponseWriter, r *http.Request) {
 		// Only our own page may trigger this: it can send a DM from the user's account.
@@ -284,6 +279,17 @@ type corpus struct {
 const minProfileGames = 20
 
 var reCaptureVersion = regexp.MustCompile(`version: (\d+),`)
+
+// bookmarkSource is a bookmark's script: capture.js (unless the tab has this
+// version of it already) and the bookmark's own file, with SCRY_ORIGIN set to
+// the address of the page it reports to.
+func bookmarkSource(name, origin string) string {
+	capture, _ := webFiles.ReadFile("web/capture.js")
+	one, _ := webFiles.ReadFile(name)
+	version := reCaptureVersion.FindStringSubmatch(string(capture))[1]
+	return "if ((window.scryCapture && window.scryCapture.version) !== " + version + ") " + stripComments(string(capture)) + "\n" +
+		strings.ReplaceAll(string(one), "SCRY_ORIGIN", origin)
+}
 
 // recentGames is how many latest games the Recent games page shows: as many as
 // a dominion.games profile lists.

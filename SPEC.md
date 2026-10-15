@@ -226,3 +226,9 @@ Phase 1, 2026-10-10 (partial):
 
 - `scry site` also writes the Recent games page and `data/recent.json`, and `-data` copies `recent.json` from `site-data/`, so the live site shows the published snapshot at `recent.html`. It lists opponents' names and levels, as the player's dominion.games profile does; the profiles still carry rates only.
 - The static page reads `data/recent.json`, hides the bookmark section and doesn't link games to the analysis page.
+
+2026-10-15: narrower ranges, Recent games updates from the live site.
+
+- Ranges are 80% instead of 95% (`advisor.z`): bars about a third shorter, at the price that about 1 in 5 differences that are only chance looks clear. On gamrevinu's 250 games, "village in the kingdom" (+11 pp) now counts as clear, and "What stands out" lists 5 findings instead of 2.
+- The live Recent games page has **Update**: it opens dominion.games with `#scry-recent`, and the Recent games bookmark (built from `bookmark.json`, which `scry site` writes, with the page's own address) answers the page that opened the tab with the profile's 25 latest games. The page keeps them in localStorage; games without a saved log show the profile's result, scores and levels. **Publish** writes the list to `site-data/recent.json` through the GitHub API with a fine-grained token the browser keeps.
+- The summary (score, expected, opponents, wins and losses) is computed in `recent.js` for both the app and the live page; `advisor.LatestGames` only lists the games with their win chances. Snapshots keep $ per turn for turns 1-10.

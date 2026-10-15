@@ -1,6 +1,9 @@
 /* Recent games page: on top of style.css and insights.css (tiles, cards, the palette). */
 .fetch ol { padding-left: 22px; margin: 6px 0 4px; max-width: 82ch; }
 .fetch li { margin: 6px 0; }
+.hosted-only { display: none; }
+.static .hosted-only { display: block; }
+#token { font: 0.95rem var(--mono); padding: 7px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); color: var(--ink); min-width: 16em; flex: 1 1 16em; max-width: 28em; }
 .live { color: var(--muted); display: flex; gap: 8px; align-items: center; margin: 10px 0 0; }
 
 .scroll { overflow-x: auto; }
