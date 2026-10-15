@@ -5,7 +5,12 @@ import (
 	"sort"
 )
 
-// Rate is a share of games won, ties counting half, with a 95% Wilson interval.
+// z gives the ranges: 80% of them hold the true value. A narrower range than the
+// usual 95% shows more with a few hundred games, at the price that about 1 in 5
+// differences that are only chance looks clear.
+const z = 1.2816
+
+// Rate is a share of games won, ties counting half, with an 80% Wilson interval.
 type Rate struct {
 	Games int     `json:"games"`
 	Wins  float64 `json:"wins"`
@@ -22,7 +27,7 @@ func rate(results []float64) Rate {
 	if r.Games == 0 {
 		return r
 	}
-	n, p, z := float64(r.Games), r.Wins/float64(r.Games), 1.96
+	n, p := float64(r.Games), r.Wins/float64(r.Games)
 	r.Rate = p
 	mid := (p + z*z/(2*n)) / (1 + z*z/n)
 	half := z * math.Sqrt(p*(1-p)/n+z*z/(4*n*n)) / (1 + z*z/n)
@@ -31,7 +36,7 @@ func rate(results []float64) Rate {
 }
 
 // Split compares games with and without something. Diff is With minus Without
-// with a 95% range from the normal approximation.
+// with an 80% range from the normal approximation.
 type Split struct {
 	Name     string  `json:"name"`
 	Desc     string  `json:"desc,omitempty"`
@@ -50,7 +55,7 @@ func split(name, desc string, with, without []float64) Split {
 	}
 	s.Diff = a.Rate - b.Rate
 	se := math.Sqrt(a.Rate*(1-a.Rate)/float64(a.Games) + b.Rate*(1-b.Rate)/float64(b.Games))
-	s.DiffLow, s.DiffHigh = s.Diff-1.96*se, s.Diff+1.96*se
+	s.DiffLow, s.DiffHigh = s.Diff-z*se, s.Diff+z*se
 	return s
 }
 

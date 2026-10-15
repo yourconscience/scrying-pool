@@ -20,6 +20,7 @@ import (
 //	out/index.html     the page
 //	out/recent.html    the first player's latest games (Recent games)
 //	out/*.css, *.js    their assets
+//	out/bookmark.json  the Recent games bookmark's script, for the page to fill in its own address
 //	out/data/players.json, out/data/<player>.json, out/data/recent.json
 //
 // With data set, the profiles are copied from that folder (a players.json, the
@@ -47,6 +48,10 @@ func buildSite(out string, players []string, data string) error {
 		if err := os.WriteFile(filepath.Join(out, f), b, 0o644); err != nil {
 			return err
 		}
+	}
+	b, _ := json.Marshal(map[string]string{"code": stripComments(bookmarkSource("web/scry-recent.js", "SCRY_ORIGIN"))})
+	if err := os.WriteFile(filepath.Join(out, "bookmark.json"), b, 0o644); err != nil {
+		return err
 	}
 	for name, dst := range map[string]string{"insights.html": filepath.Join(out, "index.html"), "recent.html": filepath.Join(out, "recent.html")} {
 		page, err := webFiles.ReadFile("web/" + name)
@@ -108,11 +113,13 @@ func makeProfiles(dir string, players []string) (int, error) {
 		}
 		list.Players = append(list.Players, siteEntry{p, len(mine), file})
 	}
-	// the first player's latest games, without what only the local app shows
+	// the first player's latest games, without what only the local app shows;
+	// $ per turn only for turns 1-10, which the page compares
 	recent := advisor.LatestGames(players[0], features, recentGames)
 	for i, g := range recent.Games {
 		f := *g.Features
-		f.Kingdom, f.Landscapes, f.Roles, f.Took, f.OpeningBuys, f.Coins = nil, nil, nil, nil, nil, nil
+		f.Kingdom, f.Landscapes, f.Roles, f.Took, f.OpeningBuys = nil, nil, nil, nil, nil
+		f.Coins = f.Coins[:min(len(f.Coins), 10)]
 		recent.Games[i].Features = &f
 	}
 	b, _ := json.Marshal(recent)

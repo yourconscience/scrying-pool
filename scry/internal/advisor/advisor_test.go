@@ -13,7 +13,7 @@ func near(a, b, tol float64) bool { return math.Abs(a-b) <= tol }
 
 func TestRateWilson(t *testing.T) {
 	r := rate([]float64{1, 1, 1, 1, 1, 0, 0, 0, 0, 0})
-	if r.Games != 10 || r.Rate != 0.5 || !near(r.Low, 0.237, 0.001) || !near(r.High, 0.763, 0.001) {
+	if r.Games != 10 || r.Rate != 0.5 || !near(r.Low, 0.312, 0.001) || !near(r.High, 0.688, 0.001) {
 		t.Fatalf("5 of 10: %+v", r)
 	}
 	if r := rate([]float64{1, 0.5, 0}); r.Wins != 1.5 || r.Rate != 0.5 {
@@ -126,26 +126,19 @@ func TestLatestGames(t *testing.T) {
 		t.Fatalf("7.5 levels apart is one μ: %v", c)
 	}
 	fs := []*Features{
-		{ID: "99", Me: "a", Opponent: "x", Result: 1, MyLevel: 55, OppLevel: 55, Turns: 14, FirstProvince: 9, Coins: []int{4, 3, 5, 5, 6, 6, 7, 8, 8, 9, 9, 9}},
-		{ID: "101", Me: "a", Opponent: "y", Result: 0, Turns: 16, Coins: []int{5, 2}},
-		{ID: "100", Me: "a", Opponent: "x", Result: 0.5, MyLevel: 55, OppLevel: 62.5, Turns: 15, FirstProvince: 11},
+		{ID: "99", Me: "a", Opponent: "x", Result: 1, MyLevel: 55, OppLevel: 55},
+		{ID: "101", Me: "a", Opponent: "y", Result: 0},
+		{ID: "100", Me: "a", Opponent: "x", Result: 0.5, MyLevel: 55, OppLevel: 62.5},
 		{ID: "102", Me: "b", Opponent: "a", Result: 1},
 	}
 	r := LatestGames("a", fs, 2)
 	if len(r.Games) != 2 || r.Games[0].ID != "101" || r.Games[1].ID != "100" {
 		t.Fatalf("latest first, by game number: %v, %v", r.Games[0].ID, r.Games[1].ID)
 	}
-	if r.Score != 0.5 || r.Leveled != 1 || r.LevelScore != 0.5 || !near(r.Expected, WinChance(55, 62.5), 1e-9) || r.Opponents != 2 {
-		t.Fatalf("summary %+v", r)
+	if r.Games[0].Chance != 0 || !near(r.Games[1].Chance, WinChance(55, 62.5), 1e-9) {
+		t.Fatalf("chances %v %v", r.Games[0].Chance, r.Games[1].Chance)
 	}
-	all := LatestGames("a", fs, 25)
-	if all.OppLow != 55 || all.OppHigh != 62.5 || all.Wins.Games != 1 || all.Losses.Games != 1 {
-		t.Fatalf("all: %+v", all)
-	}
-	if w := all.Wins; w.FirstProvince != 9 || w.Turns != 14 || !near(w.Coins, 6.1, 1e-9) {
-		t.Fatalf("wins: %+v (turns 1-10 only)", w)
-	}
-	if l := all.Losses; l.NoProvince != 1 || l.FirstProvince != 0 || l.Coins != 3.5 {
-		t.Fatalf("losses: %+v", l)
+	if n := len(LatestGames("a", fs, 25).Games); n != 3 {
+		t.Fatalf("%d games of a", n)
 	}
 }

@@ -39,11 +39,31 @@
     <p class="live" id="live" hidden><span class="dot" aria-hidden="true"></span> <span id="live-text"></span></p>
   </section>
 
+  <section class="card fetch hosted-only" aria-labelledby="update-h">
+    <h2 id="update-h">Update from your profile</h2>
+    <ol>
+      <li>One time: drag this to your bookmarks bar: <a id="bookmark-live" class="bookmark" href="#" draggable="true">Recent games</a></li>
+      <li><button type="button" id="update">Update</button> opens dominion.games in a new tab. There, on the lobby screen, click the bookmark: it reads the 25 latest games on your profile and sends them back to this page.</li>
+    </ol>
+    <p class="hint">This browser keeps the update. Games without a saved log show what the profile says: the result, the scores and the levels. Turns, $ and the first Province come from the logs the local app saves.</p>
+    <p class="live" id="live-update" hidden><span class="dot" aria-hidden="true"></span> <span id="live-update-text"></span></p>
+    <details id="publish-box">
+      <summary>Publish for every device</summary>
+      <p class="hint">Writes these games to <code>site-data/recent.json</code> in the repository; the site rebuilds in a few minutes. It needs a GitHub fine-grained token for this repository with Contents read and write. This browser keeps the token until you forget it.</p>
+      <div class="buttons">
+        <input id="token" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub token">
+        <button type="button" id="publish">Publish</button>
+        <button type="button" id="forget" class="secondary">Forget the token</button>
+      </div>
+      <p class="hint" id="publish-note"></p>
+    </details>
+  </section>
+
   <section class="kpis" id="kpis" aria-label="Summary"></section>
 
   <section class="card" aria-labelledby="sides-h">
     <h2 id="sides-h">Wins and losses</h2>
-    <p class="hint">Averages over these games; ties are left out. Turns and $ are yours.</p>
+    <p class="hint" id="sides-note">Averages over these games; ties are left out. Turns and $ are yours.</p>
     <div class="scroll"><table class="sides" id="sides"></table></div>
   </section>
 

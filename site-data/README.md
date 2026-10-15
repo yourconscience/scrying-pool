@@ -5,7 +5,9 @@ The profiles and the Recent games page on https://yourconscience.github.io/scryi
 - `players.json` and `<player>.json`: the profiles. They hold win rates only: no list of games and no opponents' names.
 - `recent.json`: the first player's 25 latest games for the Recent games page, with each opponent's name and level, the scores and a few tempo numbers. dominion.games shows the same on the player's profile.
 
-To publish new numbers, load your latest games (the Recent games bookmark), rebuild these files from your saved games and commit them:
+To update the Recent games list from any machine, use its **Update** button on the live page: it opens dominion.games, where the Recent games bookmark sends your profile's 25 latest games back. **Publish** on the same page writes them to `recent.json` here (it needs a GitHub fine-grained token with Contents read and write for this repository), and the site rebuilds. Games without a saved log then show the profile's result, scores and levels only.
+
+To publish everything from your saved games, profiles and tempo numbers included, rebuild these files and commit them:
 
 ```bash
 scry site -players "gamrevinu" -o site/my-games

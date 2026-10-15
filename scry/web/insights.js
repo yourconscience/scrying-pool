@@ -67,7 +67,7 @@ function key(items) {
   return box;
 }
 
-// whether a 95% range lies clearly above or below a reference
+// whether a 80% range lies clearly above or below a reference
 const sideOf = (lo, hi, ref) => (lo > ref ? "up" : hi < ref ? "down" : "none");
 
 // ---- data
@@ -120,13 +120,13 @@ function kpis(a, b) {
   const s = (d) => d.seat[0];
   $("kpis").replaceChildren(
     tile("Games", String(a.overall.games), b ? String(b.overall.games) : undefined, `${a.first_date || "?"} to ${a.last_date || "?"}`),
-    tile("Won", pct(a.overall.rate), b ? pct(b.overall.rate) : undefined, `95% range ${pct(a.overall.low)} to ${pct(a.overall.high)}`),
+    tile("Won", pct(a.overall.rate), b ? pct(b.overall.rate) : undefined, `80% range ${pct(a.overall.low)} to ${pct(a.overall.high)}`),
     tile("First · second", `${pct(s(a).with.rate)} · ${pct(s(a).without.rate)}`, b ? `${pct(s(b).with.rate)} · ${pct(s(b).without.rate)}` : undefined, "win rate in each seat"),
     tile("Turns per game", a.avg_turns.toFixed(1), b ? b.avg_turns.toFixed(1) : undefined, "the player's own turns"),
   );
 }
 
-// The differences whose 95% range leaves no doubt about the direction, largest
+// The differences whose 80% range leaves no doubt about the direction, largest
 // first: how big, what it is about, and the numbers behind it. Going first isn't
 // one: its edge is well known, and the summary shows it.
 const ENDING_TITLES = { provinces: "Province endings", piles: "Three-pile endings", resign: "Resignations" };
@@ -163,7 +163,7 @@ function takeaways(a) {
 
 // ---- charts
 
-// Each feature's difference (games with it − games without), as a point on its 95% range.
+// Each feature's difference (games with it − games without), as a point on its 80% range.
 function effects(a, b) {
   const box = $("effects"), W = widthOf(box);
   const rows = a.roles.map((r) => ({ label: ROLES[r.name] ? ROLES[r.name][0] : r.name, get: (d) => d.roles.find((x) => x.name === r.name) }));
@@ -309,7 +309,7 @@ function province(d) {
   box.replaceChildren(s, key([["var(--up)", "Wins"], ["var(--down)", "Losses"]]));
 }
 
-// Win rates as points on their 95% ranges, against the overall rate (dashed).
+// Win rates as points on their 80% ranges, against the overall rate (dashed).
 function rateRows(box, title, rows, sides, base) {
   const W = widthOf(box), narrow = W < 440, L = narrow ? 92 : 112, R = narrow ? 50 : 112;
   const rowH = sides.length > 1 ? 44 : 32, T = 44, H = T + rows.length * rowH + 4;

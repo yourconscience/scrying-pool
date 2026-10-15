@@ -1,14 +1,17 @@
 // "Recent games" bookmark: the Recent games page builds it from capture.js plus
-// this file, with SCRY_ORIGIN set to the app's address. On dominion.games it opens
-// the app's Recent games tab (or finds it open), reads your profile's latest rated
-// two-player games and loads the ones the app hasn't saved, one at a time, like
-// capture.js does. Everything goes to that tab by postMessage, and the tab saves it.
+// this file, with SCRY_ORIGIN set to the page's address (the local app, or the
+// live site). On dominion.games it opens that Recent games tab (or finds it open;
+// the live page's Update button opens this tab with #scry-recent, and the
+// bookmark answers that page), reads your profile's latest rated two-player
+// games and sends them there. The local app then asks for the games it hasn't
+// saved, and the bookmark loads them one at a time, like capture.js does.
 // Clicked again while games are loading, it only reconnects to the tab.
 (async () => {
   const ORIGIN = "SCRY_ORIGIN";
   const C = window.scryCapture;
   if (!C.loggedIn()) return C.say("Scrying Pool: log in to dominion.games first.");
-  const win = window.open(ORIGIN + "/recent.html", "scry-recent");
+  const fromPage = location.hash.includes("scry-recent") && window.opener && !window.opener.closed;
+  const win = fromPage ? window.opener : window.open(ORIGIN + "/recent.html", "scry-recent");
   if (!win) return C.say("Scrying Pool: the browser blocked the new tab. Allow pop-ups for dominion.games and click the bookmark again.", 15000);
   C.attach(win, ORIGIN);
   // the tab answers once its page has loaded
