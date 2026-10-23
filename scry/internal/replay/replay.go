@@ -6,7 +6,6 @@ package replay
 
 import (
 	"fmt"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -58,7 +57,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		r.real = append(r.real, e)
 	}
 	copy(r.names[:], rg.Players)
-	kingdom, err := kingdomOf(t, score)
+	kingdom, lands, err := kingdomOf(t, score)
 	if err != nil {
 		rep.Stop = err.Error()
 		return rep
@@ -84,12 +83,14 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	for p, n := range r.names {
 		r.takes[p] = takes[n]
 	}
-	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Partial: true})
+	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
+	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Landscapes: lands, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Colony: colony, Partial: true})
 	if err != nil {
 		rep.Stop = err.Error()
 		return rep
 	}
 	r.g = g
+	r.arrangePiles()
 	g.Log = engine.NewLog(t)
 	g.Log.Hook = r.hook
 	g.BeforeTake = r.beforeTake
@@ -192,6 +193,27 @@ func (r *replayer) hook(i int) {
 	}
 	r.matched, r.entry = r.pos, i
 	r.pos++
+	r.arrangePiles()
+}
+
+// arrangePiles puts the cards the next real line gains on top of their piles,
+// for piles of different cards (Knights, Ruins) whose order the log shows only as they go.
+func (r *replayer) arrangePiles() {
+	x, ok := r.peek()
+	if !ok || x.Template != "BUY_AND_GAIN" && x.Template != "GAIN" && x.Template != "GAIN_WITH" && x.Template != "GAIN_TO_HAND" && x.Template != "GAIN_ON_DRAWPILE" {
+		return
+	}
+	cs := x.Args[1].Cards
+	for k := len(cs) - 1; k >= 0; k-- {
+		if cs[k].Card == nil {
+			continue
+		}
+		if d, ok := r.t.Card(cs[k].Card.Name); ok {
+			for range cs[k].N {
+				r.g.Raise(d.ID)
+			}
+		}
+	}
 }
 
 // checkLast compares the cards of the last matched pair once its lines can't grow.
@@ -318,8 +340,14 @@ var answers = map[engine.Kind][]string{
 	engine.ToDiscard:     {"DISCARD"},
 	engine.ToTopdeck:     {"TOPDECK"},
 	engine.ToPlay:        {"PLAY"},
-	engine.ToSetAside:    {"SET_ASIDE_WITH"},
-	engine.ToReveal:      {"REACTS_WITH"},
+	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
+	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
+	engine.PlayNight:     {"PLAY"},
+	engine.ToExile:       {"EXILE"},
+	engine.ToPass:        {"PASS"},
+	engine.ToReturn:      {"RETURN_TO"},
+	engine.ToCall:        {"CALL"},
+	engine.ToPick:        {"REVEAL"},
 }
 
 // Decide answers with what the next real line shows.
@@ -336,9 +364,37 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			return r.pick(d, []cartographer.CardN{c})
 		}
 	}
+	switch d.Kind {
+	case engine.ToChoose:
+		return r.chooseModes(d)
+	case engine.ToName:
+		return r.chooseName(d)
+	case engine.UseCoffers:
+		x, ok := r.peek()
+		if ok && x.Player == r.names[d.Player] && (x.Template == "USES_COFFER" || x.Template == "USES_COFFERS") && x.Args[1].Number != nil {
+			for i, o := range d.Options {
+				if o.Mode == *x.Args[1].Number {
+					return []int{i}
+				}
+			}
+		}
+		return []int{0}
+	case engine.PlayAction:
+		if x, ok := r.peek(); ok && x.Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
+			return r.pickWay(d, x)
+		}
+	}
 	x, ok := r.peek()
 	if !ok {
 		panic(stop{})
+	}
+	if d.Kind == engine.ToPass { // both players pick before either pass is logged
+		for i := r.pos; i < min(len(r.real), r.pos+3); i++ {
+			if y := r.real[i]; y.Template == "PASS" && y.Player == r.names[d.Player] {
+				x = y
+				break
+			}
+		}
 	}
 	if !r.answers(d, x) {
 		if d.Min == 0 {
@@ -349,6 +405,97 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	return r.pick(d, x.Args[1].Cards)
 }
 
+// chooseModes picks the modes whose first lines are the next real lines, in order.
+func (r *replayer) chooseModes(d *engine.Decision) []int {
+	var out []int
+	used := map[int]bool{}
+	for i := r.pos; i < len(r.real) && len(out) < d.Max; i++ {
+		x := r.real[i]
+		if x.Template == "NEW_TURN" || x.Level < d.Level {
+			break
+		}
+		if x.Template == "SHUFFLES" || x.Level > d.Level {
+			continue
+		}
+		k := -1
+		for j, o := range d.Options {
+			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) {
+				k = j
+				break
+			}
+		}
+		if k < 0 {
+			break
+		}
+		used[k] = true
+		out = append(out, k)
+	}
+	if len(out) < d.Min {
+		for j, o := range d.Options { // the mode that writes nothing ("no")
+			if o.Line == "" && !used[j] && len(out) < d.Min {
+				used[j] = true
+				out = append(out, j)
+			}
+		}
+	}
+	if len(out) < d.Min {
+		x, _ := r.peek()
+		r.fail(fmt.Sprintf("no mode of %s writes the log's next line %s", r.t.Defs[d.Source].Name, x.Template), "")
+	}
+	return out
+}
+
+// sameNumber: a numbered mode matches the number its line shows, when it shows one.
+func (r *replayer) sameNumber(o engine.Option, x cartographer.Event) bool {
+	if o.Label == "" || o.Label[0] < '0' || o.Label[0] > '9' {
+		return true
+	}
+	n := x.Args[1].Number
+	return n == nil || *n == o.Mode
+}
+
+// chooseName picks the card the next naming line names.
+func (r *replayer) chooseName(d *engine.Decision) []int {
+	for i := r.pos; i < min(len(r.real), r.pos+4); i++ {
+		x := r.real[i]
+		switch x.Template {
+		case "NAMES", "WISH_CORRECT", "WISH_WRONG", "SORCERER_GUESS", "SORCERESS_GUESS":
+			name := strings.TrimSpace(x.Args[1].Text)
+			if cs := x.Args[1].Cards; len(cs) == 1 && cs[0].Card != nil {
+				name = cs[0].Card.Name
+			}
+			for j, o := range d.Options {
+				if r.t.Defs[o.Card].Name == name {
+					return []int{j}
+				}
+			}
+			r.fail("the log names "+name+", which the engine doesn't offer", "")
+		}
+	}
+	r.fail("the engine asks to name a card, the log names none", "")
+	return nil
+}
+
+// pickWay picks the card and the Way of a "plays X using Way of the Y" line.
+func (r *replayer) pickWay(d *engine.Decision, x cartographer.Event) []int {
+	card, way := "", strings.TrimSpace(x.Args[2].Text)
+	if cs := x.Args[1].Cards; len(cs) == 1 && cs[0].Card != nil {
+		card = cs[0].Card.Name
+	}
+	if cs := x.Args[2].Cards; len(cs) == 1 && cs[0].Card != nil {
+		way = cs[0].Card.Name
+	}
+	for i, o := range d.Options {
+		if o.Mode > 0 && r.t.Defs[o.Card].Name == card && strings.EqualFold(normWay(o.Label), normWay(way)) {
+			return []int{i}
+		}
+	}
+	r.fail("the log plays "+card+" using "+way+", which the engine doesn't offer", "")
+	return nil
+}
+
+func normWay(s string) string { return strings.ReplaceAll(strings.ToLower(s), " ", "") }
+
 // answers says whether a real event is what a decision's answer writes.
 func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 	if x.Player != r.names[d.Player] || x.Level != d.Level {
@@ -356,9 +503,13 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 	}
 	for _, t := range answers[d.Kind] {
 		if x.Template == t || r.english[x.Template] == r.english[t] {
-			if d.Kind == engine.PlayAction {
+			if d.Kind == engine.PlayAction || d.Kind == engine.PlayNight {
 				cs := x.Args[1].Cards
-				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is("Action")
+				want := "Action"
+				if d.Kind == engine.PlayNight {
+					want = "Night"
+				}
+				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is(want)
 			}
 			return true
 		}
@@ -510,35 +661,39 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "DISCARD": true, "TRASH": true,
 	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true}
 
-var reNonWord = regexp.MustCompile(`[^a-z]`)
-
-func norm(s string) string { return reNonWord.ReplaceAllString(strings.ToLower(s), "") }
-
-// kingdomOf reads the kingdom from a score file's "# kingdom:" line.
-func kingdomOf(t *engine.Table, score string) ([]engine.CardID, error) {
-	byNorm := map[string]engine.CardID{}
-	for _, d := range t.Defs {
-		byNorm[norm(d.Name)] = d.ID
-	}
+// kingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
+// and "# landscapes:" lines.
+func kingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
+	var kingdom, lands []engine.CardID
+	found := false
 	for _, l := range strings.Split(score, "\n") {
-		rest, ok := strings.CutPrefix(l, "# kingdom:")
-		if !ok {
-			continue
-		}
-		var out []engine.CardID
-		for _, n := range strings.Split(rest, ",") {
-			n = strings.TrimSpace(n)
-			id, ok := byNorm[norm(n)]
-			if !ok {
-				return nil, fmt.Errorf("kingdom card %q isn't in the card table", n)
+		if rest, ok := strings.CutPrefix(l, "# kingdom:"); ok {
+			found = true
+			for _, n := range strings.Split(rest, ",") {
+				n = strings.TrimSpace(n)
+				id, ok := t.KingdomPile(n)
+				if !ok {
+					return nil, nil, fmt.Errorf("kingdom card %q isn't in the card table", n)
+				}
+				kingdom = append(kingdom, id)
 			}
-			if t.Defs[id].Kind != "kingdom" {
-				return nil, fmt.Errorf("kingdom card %q is a %s", n, t.Defs[id].Kind)
-			}
-			out = append(out, id)
 		}
-		sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
-		return out, nil
+		if rest, ok := strings.CutPrefix(l, "# landscapes:"); ok {
+			for _, n := range strings.Split(rest, ",") {
+				if n = strings.TrimSpace(n); n == "" {
+					continue
+				}
+				id, ok := t.Landscape(n)
+				if !ok {
+					return nil, nil, fmt.Errorf("landscape %q isn't in the card table", n)
+				}
+				lands = append(lands, id)
+			}
+		}
 	}
-	return nil, fmt.Errorf("the score file has no kingdom line")
+	if !found {
+		return nil, nil, fmt.Errorf("the score file has no kingdom line")
+	}
+	sort.Slice(kingdom, func(i, j int) bool { return kingdom[i] < kingdom[j] })
+	return kingdom, lands, nil
 }

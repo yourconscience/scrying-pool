@@ -2,7 +2,11 @@
 // its cards with the engine when the package is imported.
 package cards
 
-import "github.com/yourconscience/scrying-pool/scry/internal/engine"
+import (
+	"fmt"
+
+	"github.com/yourconscience/scrying-pool/scry/internal/engine"
+)
 
 type (
 	ctx   = engine.Ctx
@@ -107,3 +111,5 @@ func costExactly(c *ctx, x inst, n int) func(*def) bool {
 	want := c.CostOf(c.G.CardOf(x)).Plus(n)
 	return func(d *def) bool { return c.CostOf(d.ID) == want }
 }
+
+func itoa(n int) string { return fmt.Sprint(n) }

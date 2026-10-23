@@ -3,7 +3,6 @@ package engine
 import (
 	"fmt"
 	"math/rand/v2"
-	"sort"
 )
 
 // Inst is one physical card in the game: an index into Game.cards. Supply cards
@@ -147,6 +146,8 @@ type turnState struct {
 	Used      map[CardID]int
 	ActionsIn int // Actions played this turn
 	HandSize  int // cards drawn for the next hand in Clean-up
+
+	CopperBonus int // Coppersmith: Copper makes $ more
 }
 
 type Phase uint8
@@ -333,6 +334,32 @@ func (g *Game) CardOf(x Inst) CardID { return g.cards[x] }
 
 // Def is an instance's card.
 func (g *Game) Def(x Inst) *Def { return g.T.Defs[g.cards[x]] }
+
+// CtxFor is a card's effect context away from its play: a landscape's, a
+// setup's, an effect that names the card ("(Importer)").
+func (g *Game) CtxFor(p int, c CardID, level int) *Ctx {
+	cx := g.ctx(p, -1, level)
+	cx.Src, cx.from = c, true
+	return cx
+}
+
+// Raise moves a card of a kind to the top of its pile, for replays of mixed piles.
+func (g *Game) Raise(c CardID) bool {
+	i := g.PileOf(c)
+	if i < 0 {
+		return false
+	}
+	s := g.Piles[i].Cards
+	for k := len(s) - 1; k >= 0; k-- {
+		if g.cards[s[k]] == c {
+			x := s[k]
+			copy(s[k:], s[k+1:])
+			s[len(s)-1] = x
+			return true
+		}
+	}
+	return false
+}
 
 // D is a card kind's Def.
 func (g *Game) D(c CardID) *Def { return g.T.Defs[c] }
@@ -531,19 +558,34 @@ func (g *Game) ids(xs []Inst) []CardID {
 
 // Play runs the game to its end.
 func (g *Game) Play() Result {
-	g.Log.add(Entry{Template: "", Text: "Game #simulated"})
-	for p := range g.P {
-		var kinds []CardID
-		n := map[CardID]int{}
-		for _, c := range g.start[p] {
-			if n[c] == 0 {
-				kinds = append(kinds, c)
-			}
-			n[c]++
+	for _, c := range g.Land { // Landmarks, Allies, Traits and Prophecies act all game
+		if d := g.T.Defs[c]; d.Rules == nil && d.Is(TLandmark|TAlly|TTrait|TProphecy) {
+			panic(MissingRules{d.Name})
 		}
-		sort.SliceStable(kinds, func(i, j int) bool { return startOrder(g.T.Defs[kinds[i]]) < startOrder(g.T.Defs[kinds[j]]) })
-		for _, c := range kinds {
-			g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), repeat(c, n[c])}})
+	}
+	g.Log.add(Entry{Template: "", Text: "Game #simulated"})
+	for _, c := range append(append([]CardID{}, g.Kingdom...), g.Land...) {
+		if r := g.T.Defs[c].Rules; r != nil && r.Start != nil {
+			r.Start(g, c)
+		}
+	}
+	for p := range g.P {
+		// one line for the Estates (or Shelters), one for Heirlooms, one for the Coppers
+		var groups [3][]CardID
+		for _, c := range g.start[p] {
+			k := 0
+			switch {
+			case g.T.Defs[c].Is(THeirloom):
+				k = 1
+			case c == g.copper:
+				k = 2
+			}
+			groups[k] = append(groups[k], c)
+		}
+		for _, cs := range groups {
+			if len(cs) > 0 {
+				g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), cs}})
+			}
 		}
 	}
 	for p := range g.P {
@@ -575,14 +617,6 @@ func (g *Game) Play() Result {
 		}
 		g.Cur = 1 - g.Cur
 	}
-}
-
-// startOrder: the log lists starting cards Victory first, then Treasures.
-func startOrder(d *Def) int {
-	if d.Treasure() {
-		return 1
-	}
-	return 0
 }
 
 func repeat(c CardID, n int) []CardID {

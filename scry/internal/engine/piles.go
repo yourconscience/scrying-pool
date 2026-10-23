@@ -1,5 +1,7 @@
 package engine
 
+import "strings"
+
 // extraCards are the cards scry/cards/cards.json lacks: the members of mixed
 // piles, the Loot, and the States it lists in pairs.
 var extraCards = func() []cardFacts {
@@ -161,4 +163,41 @@ func (p *Pile) kinds(g *Game) []CardID {
 		return p.members
 	}
 	return []CardID{p.Card}
+}
+
+// KingdomPile finds the kingdom pile a name means: a kingdom card, a card of
+// a mixed pile ("Encampment", "Farm"), or a pile name ("Townsfolk Pile", "Augur Pile").
+func (t *Table) KingdomPile(name string) (CardID, bool) {
+	norm := normName(name)
+	for _, d := range t.Defs {
+		if d.Kind == "kingdom" && normName(d.Name) == norm {
+			return d.ID, true
+		}
+	}
+	for pile, ms := range pileMembers {
+		for _, m := range ms {
+			if normName(m.name) == norm {
+				return t.MustCard(pile), true
+			}
+		}
+	}
+	if base, ok := strings.CutSuffix(norm, "pile"); ok {
+		for pile := range pileMembers {
+			if p := normName(pile); p == base || p == base+"s" || p == base+"es" {
+				return t.MustCard(pile), true
+			}
+		}
+	}
+	return 0, false
+}
+
+// Landscape finds a landscape by name, ignoring case and punctuation.
+func (t *Table) Landscape(name string) (CardID, bool) {
+	norm := normName(name)
+	for _, d := range t.Defs {
+		if d.Landscape() && normName(d.Name) == norm {
+			return d.ID, true
+		}
+	}
+	return 0, false
 }

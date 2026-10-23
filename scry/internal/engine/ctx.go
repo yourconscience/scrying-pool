@@ -208,7 +208,8 @@ func (c *Ctx) Yes(p int, label, line string) bool {
 	return c.Mode1(p, Mode{"no", ""}, Mode{label, line}) == 1
 }
 
-// NameCard asks player p to name a card, from all the cards that could be in a deck.
+// NameCard asks player p to name a card, from all the cards that could be in
+// a deck; the caller logs it (NAMES, or Wishing Well's own line).
 func (c *Ctx) NameCard(p int) CardID {
 	var opts []Option
 	for _, pile := range c.G.Piles {
@@ -216,9 +217,7 @@ func (c *Ctx) NameCard(p int) CardID {
 			opts = append(opts, Option{Card: id, Inst: -1})
 		}
 	}
-	got := c.Choose(p, ToName, opts, 1, 1)
-	c.Log("NAMES", Seat(p), Name(got[0].Card))
-	return got[0].Card
+	return c.Choose(p, ToName, opts, 1, 1)[0].Card
 }
 
 // Options lists a player's cards in a zone that pass a test (nil: all).
@@ -574,3 +573,44 @@ func Is(name string) func(*Def) bool { return func(d *Def) bool { return d.Name 
 
 // Of tests for any of the types.
 func Of(t Types) func(*Def) bool { return func(d *Def) bool { return d.Is(t) } }
+
+// TrashFromSupply trashes the top card of a Supply pile, e.g. Lurker's.
+func (c *Ctx) TrashFromSupply(p int, card CardID) Inst {
+	i := c.G.PileOf(card)
+	if i < 0 || c.G.Top(i) != card {
+		return -1
+	}
+	s := c.G.Piles[i].Cards
+	x := s[len(s)-1]
+	c.G.move(x, Supply, Loc{Trash, 0})
+	c.Log("TRASH", Seat(p), []CardID{card})
+	c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: card, From: Supply, By: c.Src, Level: c.level + 1})
+	return x
+}
+
+// Pass moves a card from one player's hand to another's.
+func (c *Ctx) Pass(from, to int, x Inst) {
+	if c.G.move(x, Hand, Loc{Hand, int16(to)}) {
+		c.Log("PASS", Seat(from), []CardID{c.G.cards[x]}, Seat(to))
+	}
+}
+
+// Insert puts a card into a player's deck with n cards above it (0: on top).
+func (c *Ctx) Insert(p int, x Inst, n int) {
+	if n == 0 {
+		c.Topdeck(p, []Inst{x})
+		return
+	}
+	l := c.G.loc[x]
+	if !c.G.move(x, l.Zone, Loc{Deck, int16(p)}) {
+		return
+	}
+	d := c.G.P[p].Z[Deck]
+	at := len(d) - 1 - n
+	if at < 0 {
+		at = 0
+	}
+	copy(d[at+1:], d[at:len(d)-1])
+	d[at] = x
+	c.Log("INSERT_IN_DECK", Seat(p), []CardID{c.G.cards[x]})
+}

@@ -159,8 +159,10 @@ type Rules struct {
 
 	// Buy is an Event's effect, or a Project's when bought.
 	Buy func(c *Ctx)
-	// Setup prepares the game for the card: piles it needs, tokens.
+	// Setup prepares the game for the card: piles it needs, tokens. Start
+	// runs when the game starts, before the starting decks, for what the log shows then.
 	Setup func(g *Game)
+	Start func(g *Game, me CardID)
 }
 
 var registered = map[string]*Rules{}

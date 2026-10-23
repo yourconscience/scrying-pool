@@ -753,7 +753,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 
 	// moves between the player's zones
-	case t == "DRAW", t == "DRAW_FROM", t == "DRAWS_FROM":
+	case t == "DRAW", t == "DRAW_FROM", t == "DRAWS_FROM", t == "WISH_CORRECT": // Wishing Well puts the card it finds in hand
 		r.move(e, p, cards, []string{ZoneDeck}, ZoneHand)
 	case t == "PLAY_AGAIN", t == "PLAY_THIRD", t == "PLAY_TREASURES_AGAIN_FOR", t == "PLAY_TREASURES_THIRD_FOR":
 		r.replay(e, p, cards)

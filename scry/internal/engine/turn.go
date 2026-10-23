@@ -273,8 +273,11 @@ func (g *Game) buy(p int, c CardID) {
 	pl.Potions -= cost.Potion
 	g.T2.Bought = append(g.T2.Bought, c)
 	if d.Landscape() {
+		if d.Rules == nil {
+			panic(MissingRules{d.Name})
+		}
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
-		g.takeDebt(p, cost.Debt, 1)
+		g.P[p].Debt += cost.Debt
 		if d.Is(TProject) {
 			pl.Projects = append(pl.Projects, c)
 		}
@@ -290,7 +293,7 @@ func (g *Game) buy(p int, c CardID) {
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
 	g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
-	g.takeDebt(p, cost.Debt, 1)
+	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
 	g.gainX(p, x, Discard, 1, 0, true)
@@ -382,6 +385,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	card := []CardID{g.cards[x]}
 	switch {
 	case how.way != 0:
+		if g.T.Defs[how.way].Rules == nil {
+			panic(MissingRules{g.T.Defs[how.way].Name})
+		}
 		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
 	case how.by != 0 && how.times == 0:
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
@@ -424,6 +430,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 // coinsOf is a Treasure's fixed $ as played now (Envious makes Silver and Gold $1).
 func (g *Game) coinsOf(p int, x Inst) int {
 	n := g.Def(x).Rules.Coins
+	if g.cards[x] == g.copper {
+		n += g.T2.CopperBonus
+	}
 	if n > 1 && (g.cards[x] == g.silver || g.cards[x] == g.gold) {
 		for _, h := range g.Held {
 			if h.P == p && g.T.Defs[h.C].Name == "Envious" {
