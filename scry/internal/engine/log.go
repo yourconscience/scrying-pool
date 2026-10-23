@@ -13,8 +13,9 @@ import (
 // int (a number): a Seat shows as the player's initial, a Name as the bare card
 // name ("(Merchant)").
 type (
-	Seat int
-	Name CardID
+	Seat     int
+	Name     CardID
+	PileName CardID // "the Horse pile"
 )
 
 // Entry is one log line: a dominion.games template and its arguments.
@@ -32,8 +33,10 @@ type Log struct {
 	Entries []Entry
 	// Hook runs when entry i is added, or changed by merging a line into it.
 	Hook  func(i int)
-	tr    *Entry  // Treasures being played: consecutive plays make one line
-	after []Entry // the lines those plays caused, written after it (Merchant's +$)
+	tr      *Entry  // Treasures being played: consecutive plays make one line
+	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
+	pending *Entry  // a lazy line
+	byNorm  map[string]*cartographer.Card
 }
 
 func NewLog(t *Table) *Log { return &Log{T: t} }
@@ -41,6 +44,11 @@ func NewLog(t *Table) *Log { return &Log{T: t} }
 func (l *Log) add(e Entry) {
 	if l == nil {
 		return
+	}
+	if l.pending != nil && e.Kind != 'T' {
+		p := *l.pending
+		l.pending = nil
+		l.add(p)
 	}
 	if l.tr != nil {
 		if e.Level > 0 && e.Kind == 0 {
@@ -155,7 +163,12 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 	case int:
 		return strconv.Itoa(a), nil
 	case Name:
-		return l.T.Defs[a].Name, nil
+		if a == 0 {
+			return "", nil
+		}
+		return l.clientName(c, CardID(a)), nil
+	case PileName:
+		return "the " + l.clientName(c, CardID(a)) + " pile", nil
 	case []CardID:
 		var order []CardID
 		count := map[CardID]int{}
@@ -167,7 +180,7 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 		}
 		var parts []string
 		for _, id := range order {
-			card := c.Cards[l.T.Defs[id].Name]
+			card := l.clientCard(c, id)
 			if card == nil {
 				return "", fmt.Errorf("the client has no card %s", l.T.Defs[id].Name)
 			}
@@ -188,4 +201,44 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 		return strings.Join(parts[:len(parts)-1], ", ") + ", and " + parts[len(parts)-1], nil
 	}
 	return "", fmt.Errorf("log argument %v of type %T", a, a)
+}
+
+// clientCard is the client's card for an engine card, by name ignoring case and punctuation.
+func (l *Log) clientCard(c *cartographer.Client, id CardID) *cartographer.Card {
+	name := l.T.Defs[id].Name
+	if card := c.Cards[name]; card != nil {
+		return card
+	}
+	if l.byNorm == nil {
+		l.byNorm = map[string]*cartographer.Card{}
+		for _, card := range c.Cards {
+			l.byNorm[normName(card.Name)] = card
+		}
+	}
+	return l.byNorm[normName(name)]
+}
+
+func (l *Log) clientName(c *cartographer.Client, id CardID) string {
+	if card := l.clientCard(c, id); card != nil {
+		return card.Name
+	}
+	return l.T.Defs[id].Name
+}
+
+func normName(s string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(s) {
+		if r >= 'a' && r <= 'z' {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// lazy holds a line that is written only if something else is logged before
+// the next lazy call: "starts their turn" when a start-of-turn effect happens.
+func (l *Log) lazy(e *Entry) {
+	if l != nil {
+		l.pending = e
+	}
 }

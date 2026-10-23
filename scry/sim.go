@@ -77,10 +77,11 @@ func simCmd(args []string) error {
 	start := time.Now()
 	for i := range *n {
 		s := *seed + uint64(i)
-		k := fixed
-		if k == nil {
-			k = randomKingdom(t, s)
+		setup := engine.Setup{Kingdom: fixed, Names: simNames, Seed: s}
+		if fixed == nil {
+			setup = randomKingdom(t, client, s)
 		}
+		k := setup.Kingdom
 		seats := [2]int{0, 1} // which spec plays in each seat
 		if i%2 == 1 {
 			seats = [2]int{1, 0}
@@ -91,7 +92,8 @@ func simCmd(args []string) error {
 				return err
 			}
 		}
-		g, err := engine.New(t, engine.Setup{Kingdom: k, Names: simNames, Agents: agents, Seed: s})
+		setup.Names, setup.Agents, setup.Seed = simNames, agents, s
+		g, err := engine.New(t, setup)
 		if err != nil {
 			return err
 		}
@@ -170,13 +172,60 @@ func playSafely(g *engine.Game) (res engine.Result, err error) {
 	return g.Play(), nil
 }
 
-func randomKingdom(t *engine.Table, seed uint64) []engine.CardID {
-	all := t.Playable()
+// randomKingdom picks 10 playable kingdom piles, up to two landscapes (one
+// Way at most), and sometimes Platinum and Colony or Shelters. With a client,
+// only cards it knows, so the log can be rendered.
+func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) engine.Setup {
+	known := map[string]bool{}
+	if client != nil {
+		for _, c := range client.Cards {
+			known[normCard(c.Name)] = true
+		}
+	}
+	var piles, lands []engine.CardID
+	for _, c := range t.Playable() {
+		d := t.Defs[c]
+		if client != nil && !known[normCard(d.Name)] && !strings.Contains(d.Name, "/") {
+			continue
+		}
+		if d.Landscape() {
+			lands = append(lands, c)
+		} else {
+			piles = append(piles, c)
+		}
+	}
 	r := rand.New(rand.NewPCG(seed, 2))
-	r.Shuffle(len(all), func(i, j int) { all[i], all[j] = all[j], all[i] })
-	k := all[:10]
-	sort.Slice(k, func(i, j int) bool { return t.Defs[k[i]].Name < t.Defs[k[j]].Name })
-	return k
+	r.Shuffle(len(piles), func(i, j int) { piles[i], piles[j] = piles[j], piles[i] })
+	r.Shuffle(len(lands), func(i, j int) { lands[i], lands[j] = lands[j], lands[i] })
+	shelters := true
+	for _, n := range []string{"Hovel", "Necropolis", "Overgrown Estate"} {
+		shelters = shelters && t.HasRules(t.MustCard(n))
+	}
+	s := engine.Setup{Kingdom: piles[:min(10, len(piles))], Colony: r.IntN(5) == 0, Shelters: shelters && r.IntN(5) == 0}
+	sort.Slice(s.Kingdom, func(i, j int) bool { return t.Defs[s.Kingdom[i]].Name < t.Defs[s.Kingdom[j]].Name })
+	ways := 0
+	for _, c := range lands {
+		if len(s.Landscapes) == r.IntN(3) {
+			break
+		}
+		if t.Defs[c].Is(engine.TWay) {
+			if ways++; ways > 1 {
+				continue
+			}
+		}
+		s.Landscapes = append(s.Landscapes, c)
+	}
+	return s
+}
+
+func normCard(s string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(s) {
+		if r >= 'a' && r <= 'z' {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
 
 func kingdomNames(t *engine.Table, k []engine.CardID) string {
