@@ -47,7 +47,10 @@ type Money struct {
 var nonTerminal = map[string]bool{"Cellar": true, "Harbinger": true, "Merchant": true, "Village": true,
 	"Poacher": true, "Festival": true, "Laboratory": true, "Market": true, "Sentry": true,
 	"Pawn": true, "Shanty Town": true, "Conspirator": true, "Mining Village": true, "Great Hall": true, "Nobles": true,
-	"Lurker": true, "Diplomat": true, "Mill": true, "Secret Passage": true, "Upgrade": true, "Scout": true}
+	"Lurker": true, "Diplomat": true, "Mill": true, "Secret Passage": true, "Upgrade": true, "Scout": true,
+	"Bazaar": true, "Caravan": true, "Fishing Village": true, "Haven": true, "Lighthouse": true, "Lookout": true,
+	"Native Village": true, "Pearl Diver": true, "Sailor": true, "Sea Chart": true, "Tide Pools": true,
+	"Treasury": true, "Warehouse": true}
 
 // price is a card's cost as one number: a Potion counts $2, debt $1.
 func price(d *engine.Def) int { return d.Cost.Coins + 2*d.Cost.Potion + d.Cost.Debt }

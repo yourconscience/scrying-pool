@@ -116,7 +116,9 @@ func (d *Def) Is(t Types) bool { return d.T&t != 0 }
 func (d *Def) NTypes() int { return len(d.Types) }
 
 // Landscape: an Event, Landmark, Project, Way, Ally, Trait or Prophecy.
-func (d *Def) Landscape() bool { return d.Is(TEvent | TLandmark | TProject | TWay | TAlly | TTrait | TProphecy) }
+func (d *Def) Landscape() bool {
+	return d.Is(TEvent | TLandmark | TProject | TWay | TAlly | TTrait | TProphecy)
+}
 
 // Rules are what a card does. Every func is static: what a card remembers
 // between calls is data in the Game (a Dur, a Watch, a counter), so games can be copied.

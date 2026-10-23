@@ -45,6 +45,7 @@ func simCmd(args []string) error {
 	seed := fs.Uint64("seed", 1, "seed of the first game; game i uses seed+i")
 	logFile := fs.String("log", "", "write the first game's log to this file")
 	check := fs.Bool("check", false, "read each game's log back with Cartographer and compare every turn's decks and zones, and the final VP")
+	show := fs.Int("show", 5, "with -check, how many logs with problems to print")
 	fs.Parse(args[1:])
 
 	t, err := engine.NewTable(cardsJSON)
@@ -140,8 +141,8 @@ func simCmd(args []string) error {
 			checked++
 			if ps := checkSimLog(client, text, snaps, res); len(ps) > 0 {
 				problems++
-				if problems <= 5 {
-					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 8)], "\n  "))
+				if problems <= *show {
+					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 40)], "\n  "))
 				}
 			}
 		}

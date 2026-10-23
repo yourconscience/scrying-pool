@@ -178,7 +178,7 @@ func init() {
 		c.PlusCoins(2)
 		x := c.DiscardTop(c.P)
 		if x >= 0 && c.G.Def(x).Action() && len(pickOf(c, c.P, engine.ToPlay, one(x), 0, 1)) == 1 {
-			c.PlayCard(x, 0)
+			c.PlayNow(x)
 		}
 	}})
 	reg("Village", rules{Play: func(c *ctx) {

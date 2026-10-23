@@ -71,14 +71,14 @@ type Pile struct {
 	Supply bool
 	Size   int // how many it started with
 
-	Embargo  int    // Embargo tokens
-	Trade    bool   // a Trade Route token, until a card is gained from it
-	VP       int    // VP tokens on it (Gathering cards, Aqueduct...); debt tokens (Tax) are Debt
-	Debt     int    //
-	Trait    CardID // the Trait on it
-	Coins    int    // coin tokens (Aqueduct-like landmarks keep VP; Silver/Gold piles for Aqueduct use VP)
-	Bane     bool   // Young Witch's or Ferryman's pile
-	members  []CardID
+	Embargo int    // Embargo tokens
+	Trade   bool   // a Trade Route token, until a card is gained from it
+	VP      int    // VP tokens on it (Gathering cards, Aqueduct...); debt tokens (Tax) are Debt
+	Debt    int    //
+	Trait   CardID // the Trait on it
+	Coins   int    // coin tokens (Aqueduct-like landmarks keep VP; Silver/Gold piles for Aqueduct use VP)
+	Bane    bool   // Young Witch's or Ferryman's pile
+	members []CardID
 }
 
 // AddPile adds a pile of n copies of a card; it returns the pile's index.

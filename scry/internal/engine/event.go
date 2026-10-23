@@ -35,17 +35,17 @@ func (m EvMask) has(k EvKind) bool { return m&(1<<k) != 0 }
 
 // Ev is one event. Listeners may change it: a gain's To, an Attack's Unaffected.
 type Ev struct {
-	Kind   EvKind
-	P      int    // the player it happens to
-	X      Inst   // the card, -1 for none
-	C      CardID // its card kind
-	From   Zone   // where a trashed or discarded card came from
-	To     Zone   // where a gained card went
-	By     CardID // the card that caused it; 0 for a buy or the turn itself
-	Bought bool   // the gain of a bought card
-	Victim int    // EvAttack: the player attacked
-	Level  int    // the nesting of lines its responses write
-	Cleanup bool  // EvDiscard in Clean-up
+	Kind    EvKind
+	P       int    // the player it happens to
+	X       Inst   // the card, -1 for none
+	C       CardID // its card kind
+	From    Zone   // where a trashed or discarded card came from
+	To      Zone   // where a gained card went
+	By      CardID // the card that caused it; 0 for a buy or the turn itself
+	Bought  bool   // the gain of a bought card
+	Victim  int    // EvAttack: the player attacked
+	Level   int    // the nesting of lines its responses write
+	Cleanup bool   // EvDiscard in Clean-up
 
 	Unaffected bool // EvAttack: a Reaction protects the victim
 	Done       bool // the card was moved already: a later listener can't move it
@@ -109,7 +109,9 @@ func (g *Game) fire(ev *Ev) {
 				if r == nil || r.Hear == nil || !r.Hears.has(ev.Kind) {
 					continue
 				}
-				r.Hear(g.ctx(q, x, ev.Level), ev)
+				cx := g.ctx(q, x, ev.Level)
+				cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
+				r.Hear(cx, ev)
 				zone = g.P[q].Z[z]
 			}
 		}

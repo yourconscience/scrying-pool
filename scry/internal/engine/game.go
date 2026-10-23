@@ -68,6 +68,8 @@ type Player struct {
 	Tokens    [nTokens]int // the pile each token is on, -1 for none
 
 	Projects []CardID // Projects with this player's cube
+	// Mat is tokens a card keeps for the player, by card: Pirate Ship's coins, Sinister Plot's
+	Mat map[CardID]int
 }
 
 // Held is a State or Artifact a player has, e.g. Lost in the Woods or the Flag.
@@ -118,8 +120,8 @@ type Game struct {
 	BoonsOut   []CardID // its discard pile
 	Hexes      []CardID
 	HexesOut   []CardID
-	Druid      []CardID // the Boons Druid uses
-	Held       []Held   // States and Artifacts
+	Druid      []CardID       // the Boons Druid uses
+	Held       []Held         // States and Artifacts
 	LandVP     map[CardID]int // VP tokens on Landmarks
 	Sun        int            // Sun tokens on the Prophecy; 0 once it came true
 	Prophecy   CardID
@@ -199,6 +201,7 @@ func New(t *Table, s Setup) (*Game, error) {
 	g.curse, g.platinum, g.colony, g.potion = t.MustCard("Curse"), t.MustCard("Platinum"), t.MustCard("Colony"), t.MustCard("Potion")
 	for i := range g.P {
 		g.P[i].Name = s.Names[i]
+		g.P[i].Mat = map[CardID]int{}
 		for k := range g.P[i].Tokens {
 			g.P[i].Tokens[k] = -1
 		}
@@ -360,6 +363,9 @@ func (g *Game) Raise(c CardID) bool {
 	}
 	return false
 }
+
+// PrevGained is what a player gained on their last turn.
+func (g *Game) PrevGained(p int) []CardID { return g.prevGained[p] }
 
 // D is a card kind's Def.
 func (g *Game) D(c CardID) *Def { return g.T.Defs[c] }

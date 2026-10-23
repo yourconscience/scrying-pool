@@ -32,7 +32,7 @@ type Log struct {
 	T       *Table
 	Entries []Entry
 	// Hook runs when entry i is added, or changed by merging a line into it.
-	Hook  func(i int)
+	Hook    func(i int)
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
 	pending *Entry  // a lazy line
@@ -162,6 +162,8 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 		return players[a][:1], nil
 	case int:
 		return strconv.Itoa(a), nil
+	case string: // a mat: "Island mat"
+		return a, nil
 	case Name:
 		if a == 0 {
 			return "", nil
@@ -240,5 +242,14 @@ func normName(s string) string {
 func (l *Log) lazy(e *Entry) {
 	if l != nil {
 		l.pending = e
+	}
+}
+
+// emit writes the lazy line now, e.g. "starts their turn" for an Outpost that does nothing then.
+func (l *Log) emit() {
+	if l != nil && l.pending != nil {
+		p := *l.pending
+		l.pending = nil
+		l.add(p)
 	}
 }

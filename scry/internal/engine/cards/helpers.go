@@ -105,7 +105,9 @@ func topdeckAny(c *ctx, p int, xs []inst) {
 	c.Topdeck(p, xs)
 }
 
-func costUp(c *ctx, x inst, n int) func(*def) bool { return c.CostsAtMost(c.CostOf(c.G.CardOf(x)).Plus(n)) }
+func costUp(c *ctx, x inst, n int) func(*def) bool {
+	return c.CostsAtMost(c.CostOf(c.G.CardOf(x)).Plus(n))
+}
 
 func costExactly(c *ctx, x inst, n int) func(*def) bool {
 	want := c.CostOf(c.G.CardOf(x)).Plus(n)

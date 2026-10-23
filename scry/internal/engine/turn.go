@@ -60,7 +60,6 @@ func (g *Game) takeTurn(extra CardID) {
 	}
 	g.Log.lazy(&Entry{Template: "BEGINS_CLEANUP_PHASE", Args: []any{Seat(p)}})
 	g.fire(&Ev{Kind: EvCleanup, P: p, X: -1, Level: 1})
-	g.Log.lazy(nil)
 	g.cleanup(p)
 	g.fire(&Ev{Kind: EvTurnEnd, P: p, X: -1, Level: 1})
 	g.prevGained[p] = g.T2.Gained
@@ -77,6 +76,7 @@ func (g *Game) startTurn(p int) {
 		if r == nil || r.Next == nil {
 			continue
 		}
+		g.Log.emit()
 		c := g.ctx(p, d.X, 1)
 		c.Src, c.from = d.C, true
 		if r.Next(c, d) && !d.Ever {
@@ -292,10 +292,23 @@ func (g *Game) buy(p int, c CardID) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	if c == g.curse && len(pile) <= g.Piles[i].Embargo { // the Embargo's Curses take the last ones first
+		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+	} else {
+		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	}
 	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
+	for range g.Piles[i].Embargo {
+		g.ctx(p, -1, 1).Gain(p, g.curse, Discard)
+	}
+	if g.loc[x].Zone != Supply { // what the buy caused took the card: an Embargo's Curse, the pile's last
+		if pile = g.Piles[i].Cards; len(pile) == 0 || g.cards[pile[len(pile)-1]] != c {
+			return
+		}
+		x = pile[len(pile)-1]
+	}
 	g.gainX(p, x, Discard, 1, 0, true)
 }
 
@@ -339,11 +352,12 @@ func (g *Game) cleanup(p int) {
 			continue
 		}
 		g.move(x, InPlay, Loc{Discard, int16(p)})
-		g.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true})
+		g.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 	}
 	for len(pl.Z[Hand]) > 0 {
 		g.move(pl.Z[Hand][0], Hand, Loc{Discard, int16(p)})
 	}
+	g.Log.lazy(nil)
 	live := g.durs[:0]
 	for _, d := range g.durs {
 		if !d.Done || d.P != p {
