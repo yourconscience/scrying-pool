@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Library: Draw until you have 7 cards in hand, skipping any Action cards you choose to; set those aside, discarding them afterwards.
 func init() {
 	engine.Register("Library", engine.Rules{Play: func(c *engine.Ctx) {
 		var aside []engine.Inst

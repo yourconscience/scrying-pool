@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Moneylender: You may trash a Copper from your hand for +$3.
 func init() {
 	engine.Register("Moneylender", engine.Rules{Play: func(c *engine.Ctx) {
 		coppers := c.Options(c.P, engine.Hand, func(d *engine.Def) bool { return d.Name == "Copper" })

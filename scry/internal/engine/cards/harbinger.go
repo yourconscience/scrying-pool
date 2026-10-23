@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Harbinger: +1 Card, +1 Action. Look through your discard pile. You may put a card from it onto your deck.
 func init() {
 	engine.Register("Harbinger", engine.Rules{Play: func(c *engine.Ctx) {
 		c.Draw(1)

@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Vassal: +$2. Discard the top card of your deck. If it's an Action card, you may play it.
 func init() {
 	engine.Register("Vassal", engine.Rules{Play: func(c *engine.Ctx) {
 		c.PlusCoins(2)

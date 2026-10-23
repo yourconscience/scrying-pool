@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Militia: +$2. Each other player discards down to 3 cards in hand.
 func init() {
 	engine.Register("Militia", engine.Rules{Play: func(c *engine.Ctx) {
 		c.PlusCoins(2)

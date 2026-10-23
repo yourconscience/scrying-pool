@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Merchant: +1 Card, +1 Action. The first time you play a Silver this turn, +$1.
 func init() {
 	engine.Register("Merchant", engine.Rules{Play: func(c *engine.Ctx) {
 		c.Draw(1)

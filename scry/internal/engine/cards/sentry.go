@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Sentry: +1 Card, +1 Action. Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
 func init() {
 	engine.Register("Sentry", engine.Rules{Play: func(c *engine.Ctx) {
 		c.Draw(1)

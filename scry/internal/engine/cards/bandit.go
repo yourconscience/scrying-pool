@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Bandit: Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
 func init() {
 	engine.Register("Bandit", engine.Rules{Play: func(c *engine.Ctx) {
 		c.Gain(c.P, c.G.T.MustCard("Gold"), engine.Discard)

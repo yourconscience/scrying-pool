@@ -2,7 +2,6 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Remodel: Trash a card from your hand. Gain a card costing up to $2 more than it.
 func init() {
 	engine.Register("Remodel", engine.Rules{Play: func(c *engine.Ctx) {
 		got := c.Choose(c.P, engine.ToTrash, c.Options(c.P, engine.Hand, nil), 1, 1)
