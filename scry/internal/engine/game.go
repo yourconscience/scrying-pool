@@ -115,22 +115,23 @@ type Game struct {
 	T2 turnState // this turn's facts
 
 	// shared game state of the expansions
-	Colony     bool     // Platinum and Colony are in the Supply
-	Boons      []CardID // the Boon deck, top at the end
-	BoonsOut   []CardID // its discard pile
-	Hexes      []CardID
-	HexesOut   []CardID
-	Druid      []CardID       // the Boons Druid uses
-	Held       []Held         // States and Artifacts
-	LandVP     map[CardID]int // VP tokens on Landmarks
-	Sun        int            // Sun tokens on the Prophecy; 0 once it came true
-	Prophecy   CardID
-	Mouse      CardID // the card Way of the Mouse uses
-	Obelisk    int    // the pile Obelisk chose, -1
-	Riverboat  CardID
-	Approach   bool // Approaching Army's Attack pile
-	TradeRoute int  // coin tokens on the Trade Route mat
-	prevGained [2][]CardID
+	Colony        bool     // Platinum and Colony are in the Supply
+	CurseTreasure bool     // Charlatan: Curses are also Treasures worth $1
+	Boons         []CardID // the Boon deck, top at the end
+	BoonsOut      []CardID // its discard pile
+	Hexes         []CardID
+	HexesOut      []CardID
+	Druid         []CardID       // the Boons Druid uses
+	Held          []Held         // States and Artifacts
+	LandVP        map[CardID]int // VP tokens on Landmarks
+	Sun           int            // Sun tokens on the Prophecy; 0 once it came true
+	Prophecy      CardID
+	Mouse         CardID // the card Way of the Mouse uses
+	Obelisk       int    // the pile Obelisk chose, -1
+	Riverboat     CardID
+	Approach      bool // Approaching Army's Attack pile
+	TradeRoute    int  // coin tokens on the Trade Route mat
+	prevGained    [2][]CardID
 
 	copper, silver, gold, estate, duchy, province, curse, platinum, colony, potion CardID
 }
@@ -150,6 +151,9 @@ type turnState struct {
 	HandSize  int // cards drawn for the next hand in Clean-up
 
 	CopperBonus int // Coppersmith: Copper makes $ more
+
+	Named  []CardID // cards named for War Chest this turn
+	Forbid []CardID // cards that can't be bought this turn (Contraband)
 }
 
 type Phase uint8

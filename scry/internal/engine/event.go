@@ -62,6 +62,9 @@ type Watch struct {
 	Long bool // it lasts past this turn's Clean-up, until used up
 }
 
+// Watches are the effects waiting for later.
+func (g *Game) Watches() []Watch { return g.watches }
+
 // AddWatch leaves an effect for later this turn.
 func (c *Ctx) AddWatch(on EvMask, n int) *Watch {
 	c.G.watches = append(c.G.watches, Watch{P: c.P, Src: c.Me, C: c.Src, On: on, N: n})

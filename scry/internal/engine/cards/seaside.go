@@ -324,12 +324,13 @@ func init() {
 			c.Stay()
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
-			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) {
+			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) || !stillGained(c, e) {
 				return false
 			}
 			if !c.Yes(c.P, "play it", "PLAY_WITH") {
 				return false
 			}
+			e.Done = true
 			c.PlayWith(e.X)
 			return true
 		},

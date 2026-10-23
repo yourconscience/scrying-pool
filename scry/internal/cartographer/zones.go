@@ -104,17 +104,17 @@ var deckLookers = names("Adventurer", "Advisor", "Apothecary", "Archive", "Bandi
 	"Carnival", "Cartographer", "Catacombs", "Crystal Ball", "Envoy",
 	"Famine", "Foresight", "Forest Dwellers", "Fortune Hunter", "Gamble", "Ghost",
 	"Giant", "Golem", "Herald", "Hunter", "Hunting Party", "Ironmonger", "Jack of All Trades", "Journeyman",
-	"Library", "Locusts", "Lookout", "Magpie", "Mapmaker", "Miller", "Mystic", "Native Village", "Navigator",
+	"Library", "Loan", "Locusts", "Lookout", "Magpie", "Mapmaker", "Miller", "Mystic", "Native Village", "Navigator",
 	"Night Watchman", "Patrician", "Patrol", "Piazza", "Pirate Ship", "Poet", "Pursue",
 	"Rabble", "Raze", "Rebuild", "Rogue", "Sage", "Scouting Party", "Scrying Pool",
 	"Sea Chart", "Seer", "Sentinel", "Sentry", "Sextant", "Sorcerer", "Sorceress", "Survivors", "Swindler",
-	"The Sun's Gift", "Vagrant", "Wandering Minstrel", "War", "Will-o'-Wisp",
+	"The Sun's Gift", "Vagrant", "Venture", "Wandering Minstrel", "War", "Will-o'-Wisp",
 	"Wishing Well", "Zombie Spy", "Zombie Mason",
 	"Dame Anna", "Dame Josephine", "Dame Molly", "Dame Natalie", "Dame Sylvia",
 	"Sir Bailey", "Sir Destry", "Sir Martin", "Sir Michael", "Sir Vander")
 
 // Cards that look through a discard pile: what they reveal stays there.
-var discardLookers = names("Annex", "Bury", "Bustling Village", "Courier", "Harbinger", "Herald",
+var discardLookers = names("Annex", "Bury", "Bustling Village", "Counting House", "Courier", "Harbinger", "Herald",
 	"Hermit", "Inn", "March", "Mountain Village", "Orb", "Scavenger", "Settlers", "The Moon's Gift")
 
 // Cards that discard or trash the top card of a deck without revealing it first.
@@ -453,7 +453,7 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 			switch {
 			case gainedToHand[name] || gainsToHand[by]:
 				dest = ZoneHand
-			case gainsOntoDeck[by] || by == "Replace" && cn.Card != nil && (cn.Card.Is("Action") || cn.Card.Is("Treasure")):
+			case gainsOntoDeck[by] || by == "Replace" && strings.HasPrefix(e.CauseOf, "PLAY") && cn.Card != nil && (cn.Card.Is("Action") || cn.Card.Is("Treasure")):
 				dest = ZoneDeck
 			case gainsSettingAside[by]:
 				dest = ZoneSetAside
@@ -784,6 +784,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			want, rest = []string{ZoneDeck}, nil // never the card in play: a Vassal that discards a Vassal
 		case cause == "Library":
 			want, rest = []string{ZoneSetAside}, nil // the Actions it skipped, not copies it drew
+		case cause == "Tactician":
+			want, rest = []string{ZoneHand}, nil // the hand, with any other Tactician in it
 		case e.Cause == "" && e.Level > 0 && t == "DISCARD": // at the start of a turn: Grotto discards what it set aside (Tide Pools names itself)
 			want = []string{ZoneSetAside, ZoneHand}
 		}

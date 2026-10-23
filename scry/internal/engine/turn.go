@@ -147,7 +147,7 @@ func (g *Game) actionOptions(p int) []Option {
 func (g *Game) buyPhase(p int) {
 	pl := &g.P[p]
 	for {
-		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() })
+		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() || d.ID == g.curse && g.CurseTreasure })
 		if len(opts) == 0 {
 			break
 		}
@@ -242,6 +242,11 @@ func (g *Game) CanBuy(p int, c CardID) bool {
 	if d.Is(TProject) && g.HasProject(p, c) {
 		return false
 	}
+	for _, f := range g.T2.Forbid {
+		if f == c {
+			return false
+		}
+	}
 	if r := d.Rules; r != nil && r.CanBuy != nil && !r.CanBuy(g, p) {
 		return false
 	}
@@ -292,19 +297,17 @@ func (g *Game) buy(p int, c CardID) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	if c == g.curse && len(pile) <= g.Piles[i].Embargo { // the Embargo's Curses take the last ones first
-		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
-	} else {
-		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
-	}
+	g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	line := g.Log.last()
 	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
 	for range g.Piles[i].Embargo {
 		g.ctx(p, -1, 1).Gain(p, g.curse, Discard)
 	}
-	if g.loc[x].Zone != Supply { // what the buy caused took the card: an Embargo's Curse, the pile's last
+	if g.loc[x].Zone != Supply { // what the buy caused took the card: an Embargo's Curse, Talisman's copy
 		if pile = g.Piles[i].Cards; len(pile) == 0 || g.cards[pile[len(pile)-1]] != c {
+			g.Log.unGain(line) // "buys a Curse": the pile ran out first
 			return
 		}
 		x = pile[len(pile)-1]
@@ -379,6 +382,7 @@ func (g *Game) cleanup(p int) {
 // playHow says how a card is played: again by a Throne Room, with a Way, by what.
 type playHow struct {
 	times   int    // 0 the first play, 1 again, 2 a third time
+	line    string // the play line's template instead of PLAY: REACTS_PLAYING
 	way     CardID // the Way used instead of the card's effect
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
 	holders []Inst // cards that played it: they stay in play while it does
@@ -405,8 +409,13 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
 	case how.by != 0 && how.times == 0:
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
-	case d.Treasure() && !d.Action() && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
+	case how.line != "":
+		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
 		g.Log.treasure(p, g.cards[x], g.coinsOf(p, x))
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
+		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
+		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, g.coinsOf(p, x)}})
 	case how.times == 1:
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
 	case how.times == 2:
@@ -441,9 +450,21 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
 }
 
+// isTreasure: the card is a Treasure in this game (Charlatan makes Curses Treasures).
+func (g *Game) isTreasure(x Inst) bool {
+	return g.Def(x).Treasure() || g.cards[x] == g.curse && g.CurseTreasure
+}
+
 // coinsOf is a Treasure's fixed $ as played now (Envious makes Silver and Gold $1).
 func (g *Game) coinsOf(p int, x Inst) int {
-	n := g.Def(x).Rules.Coins
+	r := g.Def(x).Rules
+	n := r.Coins
+	if r.Worth != nil {
+		n = r.Worth(g, p)
+	}
+	if g.cards[x] == g.curse && g.CurseTreasure {
+		n = 1
+	}
 	if g.cards[x] == g.copper {
 		n += g.T2.CopperBonus
 	}

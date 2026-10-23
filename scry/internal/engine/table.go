@@ -125,6 +125,9 @@ func (d *Def) Landscape() bool {
 type Rules struct {
 	Play  func(c *Ctx)             // an Action's, Treasure's or Night card's effect; a Way's, a Boon's, a Hex's
 	Coins int                      // a Treasure's fixed $, added before Play runs
+	Worth func(g *Game, p int) int // a Treasure's $ when it depends on the game (Bank), instead of Coins
+	// Alone is a Treasure with a choice: its play line stands alone, without its $ ("plays an Anvil.")
+	Alone bool
 	VP    func(g *Game, p int) int // worth at the end of the game; a Landmark's for each player
 
 	// Next is a Duration's effect at the start of a later turn; it returns true

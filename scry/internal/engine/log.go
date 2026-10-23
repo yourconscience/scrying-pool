@@ -70,6 +70,25 @@ func (l *Log) add(e Entry) {
 	l.changed(len(l.Entries) - 1)
 }
 
+// last is the index of the last line, -1 for none.
+func (l *Log) last() int {
+	if l == nil {
+		return -1
+	}
+	return len(l.Entries) - 1
+}
+
+// unGain makes a "buys and gains" line a plain "buys" when the card wasn't gained.
+func (l *Log) unGain(i int) {
+	if l == nil || i < 0 {
+		return
+	}
+	if e := &l.Entries[i]; e.Template == "BUY_AND_GAIN" && len(e.Args[1].([]CardID)) == 1 {
+		e.Template = "BUY"
+		l.changed(i)
+	}
+}
+
 func (l *Log) changed(i int) {
 	if l.Hook != nil {
 		l.Hook(i)

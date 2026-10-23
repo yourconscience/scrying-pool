@@ -38,6 +38,13 @@ func (c *Ctx) As(p int) *Ctx {
 	return &d
 }
 
+// Away is the same effect named on its lines, as away from the card's play: "gets 2 VP from Collection".
+func (c *Ctx) Away() *Ctx {
+	d := *c
+	d.from = true
+	return &d
+}
+
 // Hand is a player's hand.
 func (c *Ctx) Hand(p int) []Inst { return c.G.P[p].Z[Hand] }
 
@@ -568,6 +575,9 @@ func (c *Ctx) PlayFrom(x Inst) {
 
 // PlayNow plays a card from where it is, e.g. Vassal's discarded Action or a Reaction that plays itself.
 func (c *Ctx) PlayNow(x Inst) { c.G.play(c.P, x, c.level, playHow{}) }
+
+// PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
+func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }
 
 // PlayWith plays a card with this card named on the line ("(Sailor)").
 func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
