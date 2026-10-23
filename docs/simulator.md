@@ -216,6 +216,7 @@ Speed targets are set after M0, from real measurements. What we know:
 - A toy Go engine played a whole Big Smithy against Big Money game in 3.1 µs on one M1 thread. That is a floor, not a forecast.
 - The hot path avoids maps and allocations: cards are small integers, zones reuse their slices, and card hooks are looked up in a table by `CardID`.
 - A state copy, a one-turn re-play and a random game are benchmarked on every milestone.
+- Measured 2026-10-23 with the base set only, log off, one M1 thread: about 12,000 Big Money or BM+Smithy games per second, and about 3,000 random-player games per second (those run to about 170 turns).
 
 ## Plan
 

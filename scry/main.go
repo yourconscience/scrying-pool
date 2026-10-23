@@ -33,6 +33,8 @@ const usageText = `usage:
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
   scry db [-o FILE] [-dir DIR]                     build an SQLite database of the saved games
   scry site [-o DIR] [-players "a,b"] [-data DIR]  the My games page as a static site, one profile per player
+  scry sim play [-a bm] [-b bm+Smithy] [-n 100]    bots play each other on the rules engine (-check, -log FILE)
+  scry sim fuzz [-n 1000] [-seed 1] [-check]       random players on random kingdoms, checking invariants
 
 -ask, match and ask DM DomBot from your Discord account (see docs/match-notes.md for the token and the ToS risk).
 Run "scry <command> -h" for flags.
@@ -259,6 +261,8 @@ func main() {
 		if err = os.WriteFile(path, b, 0o644); err == nil {
 			fmt.Printf("saved %d templates and %d cards (client %s) to %s\n", len(client.Templates), len(client.Cards), client.Version, path)
 		}
+	case "sim":
+		err = simCmd(args)
 	case "cards":
 		kinds := fs.String("kinds", "", "comma-separated card kinds (kingdom, landscape, basic, other); empty means all")
 		if len(args) == 0 || args[0] != "sync" {
