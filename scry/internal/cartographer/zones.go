@@ -829,6 +829,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			name := r.guessTopdeck(p)
 			r.move(e, p, []CardN{{r.cardOf(p, name), 1}}, []string{ZonePlay, ZoneHand}, ZoneDeck)
 		}
+	case t == "TOPDECK" && discardLookers[cause]: // Harbinger's pick from the discard pile, not the Harbinger in play
+		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
 	case t == "TOPDECK", t == "TOPDECK_WITH", t == "BACK_ON_DECK", t == "BOTTOMDECKS", t == "INSERT_IN_DECK", t == "SHUFFLE_INTO_DECK",
 		t == "PUT_ON_BOTTOM_OF": // "on the bottom of Draw Pile"
 		r.move(e, p, cards, self(ZoneHand, ZoneDiscard, ZonePlay, ZoneSetAside, ZoneDeck), ZoneDeck) // Inn shuffles first
