@@ -204,6 +204,8 @@ type zoneReplay struct {
 	cleanup  map[int]bool   // event indices that start a Clean-up
 	events   []Event
 	misses   []ZoneMiss
+	line     int                   // the line being replayed
+	takes    map[string][]DeckTake // every card taken from each player's deck
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
@@ -294,7 +296,13 @@ func (r *zoneReplay) takeOne(p, zone, card string, allowUnknown bool) bool {
 		return false
 	}
 	if zone == ZoneDeck {
-		return r.takeDeck(p, c, card, allowUnknown)
+		if !r.takeDeck(p, c, card, allowUnknown) {
+			return false
+		}
+		if r.takes != nil {
+			r.takes[p] = append(r.takes[p], DeckTake{r.line, r.took})
+		}
+		return true
 	}
 	if zone == ZonePlay && card == "" { // cards in play are always named
 		return false
@@ -655,6 +663,7 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 // step applies one event.
 func (r *zoneReplay) step(i int, e Event) {
 	defer r.owned.Apply(e)
+	r.line = e.Line
 	r.deckPos = ""
 	switch e.Template {
 	case "TOPDECK", "TOPDECK_WITH", "BACK_ON_DECK", "GAIN_ON_DRAWPILE":
@@ -975,6 +984,24 @@ func (g *Game) ZoneMisses() []ZoneMiss {
 	}
 	sort.SliceStable(r.misses, func(i, j int) bool { return r.misses[i].Line < r.misses[j].Line })
 	return r.misses
+}
+
+// DeckTake is a card leaving a player's draw pile: drawn, revealed, looked at,
+// discarded or trashed from it. Card is "" when the log doesn't name it.
+type DeckTake struct {
+	Line int
+	Card string
+}
+
+// DeckTakes lists, for each player, every card taken from their draw pile, in
+// log order. A replay of the game draws them in this order.
+func (g *Game) DeckTakes() map[string][]DeckTake {
+	r := newZoneReplay(g)
+	r.takes = map[string][]DeckTake{}
+	for i, e := range g.Events {
+		r.step(i, e)
+	}
+	return r.takes
 }
 
 // FinalZones replays the zones to the end of the log.

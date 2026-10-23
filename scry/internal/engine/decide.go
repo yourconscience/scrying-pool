@@ -36,6 +36,7 @@ type Decision struct {
 	Options []Option
 	Min     int
 	Max     int
+	Level   int // log nesting of the lines the answer leads to
 }
 
 // Agent makes a player's decisions: a bot, a search, a network.

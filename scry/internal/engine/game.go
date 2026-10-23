@@ -64,12 +64,16 @@ type Game struct {
 
 	// AfterTurn runs after every turn's Clean-up, e.g. to compare zones with a replay.
 	AfterTurn func(g *Game)
+	// BeforeTake runs before a card is taken from a player's draw pile, so a
+	// replay can put the card its log names on top (PutOnTop).
+	BeforeTake func(p int)
 
 	cards []CardID // by Inst
 	loc   []Loc    // by Inst
 	rng   *rand.Rand
 	turn  int     // the current turn's number for Cur
 	watch []watch // effects that last until Clean-up, e.g. Merchant's
+	start [2][]CardID
 
 	copper, silver, gold, estate, duchy, province, curse CardID
 }
@@ -82,23 +86,39 @@ type Result struct {
 	Capped bool // stopped at MaxTurns without ending
 }
 
-// New sets up a two-player game: the basic Supply, ten kingdom piles, starting
-// decks of 7 Coppers and 3 Estates. Player 0 goes first.
-func New(t *Table, kingdom []CardID, names [2]string, agents [2]Agent, seed uint64) (*Game, error) {
-	g := &Game{T: t, Kingdom: kingdom, Agents: agents, rng: rand.New(rand.NewPCG(seed, seed^0x9e3779b97f4a7c15))}
+// Setup is how a game starts.
+type Setup struct {
+	Kingdom []CardID
+	Names   [2]string // player 0 goes first
+	Agents  [2]Agent
+	Seed    uint64
+	Start   [2][]CardID // starting decks; empty: 3 Estates and 7 Coppers
+	// Partial allows kingdom cards without rules, for replays of real games:
+	// they can be bought and gained, and playing one stops the game.
+	Partial bool
+}
+
+// MissingRules stops a game that plays a card whose rules aren't written.
+type MissingRules struct{ Card string }
+
+func (m MissingRules) Error() string { return m.Card + " has no rules yet" }
+
+// New sets up a two-player game: the basic Supply and the kingdom piles.
+func New(t *Table, s Setup) (*Game, error) {
+	g := &Game{T: t, Kingdom: s.Kingdom, Agents: s.Agents, rng: rand.New(rand.NewPCG(s.Seed, s.Seed^0x9e3779b97f4a7c15))}
 	g.copper, g.silver, g.gold = t.MustCard("Copper"), t.MustCard("Silver"), t.MustCard("Gold")
 	g.estate, g.duchy, g.province = t.MustCard("Estate"), t.MustCard("Duchy"), t.MustCard("Province")
 	g.curse = t.MustCard("Curse")
 	for i := range g.P {
-		g.P[i].Name = names[i]
+		g.P[i].Name = s.Names[i]
 	}
-	if len(kingdom) != 10 {
-		return nil, fmt.Errorf("a kingdom has 10 cards, got %d", len(kingdom))
+	if len(s.Kingdom) != 10 && !s.Partial {
+		return nil, fmt.Errorf("a kingdom has 10 cards, got %d", len(s.Kingdom))
 	}
 	seen := map[CardID]bool{}
-	for _, k := range kingdom {
+	for _, k := range s.Kingdom {
 		d := t.Defs[k]
-		if d.Kind != "kingdom" || d.Rules == nil {
+		if d.Kind != "kingdom" || d.Rules == nil && !s.Partial {
 			return nil, fmt.Errorf("%s can't be played yet", d.Name)
 		}
 		if seen[k] {
@@ -114,7 +134,7 @@ func New(t *Table, kingdom []CardID, names [2]string, agents [2]Agent, seed uint
 	for _, b := range basics {
 		g.addPile(b.c, b.n)
 	}
-	for _, k := range kingdom {
+	for _, k := range s.Kingdom {
 		n := 10
 		if t.Defs[k].Victory() {
 			n = 8
@@ -122,13 +142,12 @@ func New(t *Table, kingdom []CardID, names [2]string, agents [2]Agent, seed uint
 		g.addPile(k, n)
 	}
 	for p := range g.P {
-		for _, s := range []struct {
-			c CardID
-			n int
-		}{{g.estate, 3}, {g.copper, 7}} {
-			for range s.n {
-				g.newCard(s.c, Loc{Discard, int16(p)}) // the first shuffle makes the deck
-			}
+		g.start[p] = s.Start[p]
+		if len(g.start[p]) == 0 {
+			g.start[p] = append(repeat(g.estate, 3), repeat(g.copper, 7)...)
+		}
+		for _, c := range g.start[p] {
+			g.newCard(c, Loc{Discard, int16(p)})
 		}
 	}
 	return g, nil
@@ -253,7 +272,7 @@ func (g *Game) shuffle(p int, level int) {
 	}
 	pl.Z[Deck] = append(pl.Z[Deck], d...)
 	pl.Z[Discard] = d[:0:0]
-	g.Log.add(Entry{Level: level, Kind: 'S', Template: "SHUFFLES", Args: []any{seat(p)}})
+	g.Log.add(Entry{Level: level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
 }
 
 // top takes the deck's top card into a zone, shuffling first if the deck is
@@ -266,9 +285,20 @@ func (g *Game) top(p int, to Zone, level int) Inst {
 		}
 		g.shuffle(p, level)
 	}
+	if g.BeforeTake != nil {
+		g.BeforeTake(p)
+	}
 	x := pl.Z[Deck][len(pl.Z[Deck])-1]
 	g.move(x, Deck, Loc{to, int16(p)})
 	return x
+}
+
+// PutOnTop moves a card in its owner's draw pile to the top.
+func (g *Game) PutOnTop(x Inst) {
+	l := g.loc[x]
+	if l.Zone == Deck {
+		g.move(x, Deck, l)
+	}
 }
 
 // draw draws up to n cards. When the deck runs out the log shows the shuffle
@@ -283,9 +313,9 @@ func (g *Game) draw(p, n, level int, template string, from CardID) []Inst {
 		out = append(out, x)
 	}
 	if len(out) > 0 {
-		e := Entry{Level: level, Template: template, Args: []any{seat(p), g.ids(out)}}
+		e := Entry{Level: level, Template: template, Args: []any{Seat(p), g.ids(out)}}
 		if template == "DRAW_FROM" {
-			e.Args = append(e.Args, name(from))
+			e.Args = append(e.Args, Name(from))
 		}
 		g.Log.add(e)
 	}
@@ -316,8 +346,17 @@ func (g *Game) gain(p int, c CardID, to Zone) Inst {
 func (g *Game) Play() Result {
 	g.Log.add(Entry{Template: "", Text: "Game #simulated"})
 	for p := range g.P {
-		g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{seat(p), []CardID{g.estate, g.estate, g.estate}}})
-		g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{seat(p), repeat(g.copper, 7)}})
+		var kinds []CardID
+		n := map[CardID]int{}
+		for _, c := range g.start[p] {
+			if n[c] == 0 {
+				kinds = append(kinds, c)
+			}
+			n[c]++
+		}
+		for _, c := range kinds {
+			g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), repeat(c, n[c])}})
+		}
 	}
 	for p := range g.P {
 		g.shuffle(p, 0)
@@ -406,6 +445,7 @@ func (g *Game) takeTurn() {
 		for _, o := range got {
 			g.play(p, o.Inst, 0, false)
 		}
+		g.Log.flush()
 	}
 	for pl.Buys > 0 {
 		var opts []Option
@@ -422,7 +462,7 @@ func (g *Game) takeTurn() {
 		pl.Buys--
 		pl.Coins -= g.Cost(c)
 		g.gain(p, c, Discard)
-		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{seat(p), []CardID{c}}})
+		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
 	}
 
 	// Clean-up, except after the last turn: dominion.games ends the game and its log there
@@ -484,6 +524,9 @@ func (g *Game) ask(d *Decision) []Option {
 // and runs its rules. level is the play line's log nesting.
 func (g *Game) play(p int, x Inst, level int, again bool) {
 	d := g.Def(x)
+	if d.Rules == nil {
+		panic(MissingRules{d.Name})
+	}
 	if !again {
 		g.move(x, g.loc[x].Zone, Loc{InPlay, int16(p)})
 	}
@@ -492,9 +535,9 @@ func (g *Game) play(p int, x Inst, level int, again bool) {
 	case d.Treasure() && !d.Action() && level == 0 && !again:
 		g.Log.treasure(p, g.cards[x], d.Rules.Coins)
 	case again:
-		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{seat(p), []CardID{g.cards[x]}}})
+		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), []CardID{g.cards[x]}}})
 	default:
-		g.Log.add(Entry{Level: level, Template: "PLAY", Args: []any{seat(p), []CardID{g.cards[x]}}})
+		g.Log.add(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), []CardID{g.cards[x]}}})
 	}
 	if d.Attack() {
 		c.react()

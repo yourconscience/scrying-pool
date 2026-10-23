@@ -29,23 +29,23 @@ func (c *Ctx) DrawFor(p, n int) []Inst { return c.G.draw(p, n, c.level, "DRAW", 
 
 func (c *Ctx) PlusActions(n int) {
 	c.G.P[c.P].Actions += n
-	c.log(plural(n, "GETS_ACTION", "GETS_ACTIONS"), seat(c.P), n)
+	c.log(plural(n, "GETS_ACTION", "GETS_ACTIONS"), Seat(c.P), n)
 }
 
 func (c *Ctx) PlusBuys(n int) {
 	c.G.P[c.P].Buys += n
-	c.log(plural(n, "GETS_BUY", "GETS_BUYS"), seat(c.P), n)
+	c.log(plural(n, "GETS_BUY", "GETS_BUYS"), Seat(c.P), n)
 }
 
 func (c *Ctx) PlusCoins(n int) {
 	c.G.P[c.P].Coins += n
-	c.log(plural(n, "GETS_COIN", "GETS_COINS"), seat(c.P), n)
+	c.log(plural(n, "GETS_COIN", "GETS_COINS"), Seat(c.P), n)
 }
 
 // CoinsFrom is +$ that a card gives later, e.g. Merchant's for the first Silver.
 func (c *Ctx) CoinsFrom(n int) {
 	c.G.P[c.P].Coins += n
-	c.log(plural(n, "GETS_COIN_FROM", "GETS_COINS_FROM"), seat(c.P), n, name(c.G.cards[c.Me]))
+	c.log(plural(n, "GETS_COIN_FROM", "GETS_COINS_FROM"), Seat(c.P), n, Name(c.G.cards[c.Me]))
 }
 
 func plural(n int, one, many string) string {
@@ -57,7 +57,7 @@ func plural(n int, one, many string) string {
 
 // Choose asks player p to pick between min and max of the options.
 func (c *Ctx) Choose(p int, k Kind, opts []Option, min, max int) []Option {
-	return c.G.ask(&Decision{Player: p, Kind: k, Source: c.G.cards[c.Me], Options: opts, Min: min, Max: max})
+	return c.G.ask(&Decision{Player: p, Kind: k, Source: c.G.cards[c.Me], Options: opts, Min: min, Max: max, Level: c.level})
 }
 
 // Options lists a player's cards in a zone that pass a test (nil: all).
@@ -112,7 +112,7 @@ func (c *Ctx) CostsUpTo(n int) func(*Def) bool {
 func (c *Ctx) Gain(p int, card CardID, to Zone) Inst {
 	x := c.G.gain(p, card, to)
 	if x >= 0 {
-		c.log("GAIN", seat(p), []CardID{card})
+		c.log("GAIN", Seat(p), []CardID{card})
 	}
 	return x
 }
@@ -137,7 +137,7 @@ func (c *Ctx) moveAll(p int, xs []Inst, to Loc, template string) {
 		}
 	}
 	if len(moved) > 0 {
-		c.log(template, seat(p), c.G.ids(moved))
+		c.log(template, Seat(p), c.G.ids(moved))
 	}
 }
 
@@ -150,20 +150,20 @@ func (c *Ctx) Topdeck(p int, xs []Inst) { c.moveAll(p, xs, Loc{Deck, int16(p)}, 
 // SetAsideWith sets a card aside with this card, e.g. Library's skipped Actions.
 func (c *Ctx) SetAsideWith(p int, x Inst) {
 	if c.G.move(x, c.G.loc[x].Zone, Loc{Aside, int16(p)}) {
-		c.log("SET_ASIDE_WITH", seat(p), []CardID{c.G.cards[x]}, name(c.G.cards[c.Me]))
+		c.log("SET_ASIDE_WITH", Seat(p), []CardID{c.G.cards[x]}, Name(c.G.cards[c.Me]))
 	}
 }
 
 // LookAt logs cards a player looks at without moving them.
 func (c *Ctx) LookAt(p int, xs []Inst) {
 	if len(xs) > 0 {
-		c.log("LOOK_AT", seat(p), c.G.ids(xs))
+		c.log("LOOK_AT", Seat(p), c.G.ids(xs))
 	}
 }
 
 func (c *Ctx) RevealHand(p int) {
 	if len(c.G.P[p].Z[Hand]) > 0 {
-		c.log("REVEAL_HAND", seat(p), c.G.ids(c.G.P[p].Z[Hand]))
+		c.log("REVEAL_HAND", Seat(p), c.G.ids(c.G.P[p].Z[Hand]))
 	}
 }
 
@@ -179,7 +179,7 @@ func (c *Ctx) FromTop(p, n int, template string) []Inst {
 		out = append(out, x)
 	}
 	if len(out) > 0 {
-		c.log(template, seat(p), c.G.ids(out))
+		c.log(template, Seat(p), c.G.ids(out))
 	}
 	return out
 }
@@ -191,7 +191,7 @@ func (c *Ctx) DrawOne(p int) Inst { return c.G.top(p, Hand, c.level) }
 func (c *Ctx) DiscardTop(p int) Inst {
 	x := c.G.top(p, Discard, c.level)
 	if x >= 0 {
-		c.log("DISCARD", seat(p), []CardID{c.G.cards[x]})
+		c.log("DISCARD", Seat(p), []CardID{c.G.cards[x]})
 	}
 	return x
 }
@@ -212,11 +212,11 @@ func (c *Ctx) Attack(fn func(victim int)) {
 func (c *Ctx) react() {
 	v := c.Other()
 	opts := c.G.options(v, Hand, func(d *Def) bool { return d.Rules != nil && d.Rules.React != nil })
-	got := c.G.ask(&Decision{Player: v, Kind: ToReveal, Source: c.G.cards[c.Me], Options: opts, Min: 0, Max: 1})
+	got := c.G.ask(&Decision{Player: v, Kind: ToReveal, Source: c.G.cards[c.Me], Options: opts, Min: 0, Max: 1, Level: c.level})
 	if len(got) == 0 {
 		return
 	}
-	c.log("REACTS_WITH", seat(v), []CardID{got[0].Card})
+	c.log("REACTS_WITH", Seat(v), []CardID{got[0].Card})
 	if c.G.Def(got[0].Inst).Rules.React(c, got[0].Inst) {
 		c.unaffected[v] = true
 	}
