@@ -1,31 +1,34 @@
-# Simulator: a Dominion rules engine for self-play
+# Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-23. Nothing below is built yet. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-23; the decisions at the end are agreed. Nothing below is built yet. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 
-A rules engine in Go that plays complete games of Dominion with every card on dominion.games, and asks an agent for every choice. Bots can then play each other at scale, as the Temple Gates app's AI does ([their write-up](https://www.templegatesgames.com/dominion-ai/)).
+One thing: for any position in a finished two-player game, each player's chance to win from the board as it stands. That is the evaluation bar on the analysis page, after every turn of a saved game.
 
-What it is for, in order:
+To learn it, a network needs millions of positions with known outcomes, more than any set of logs gives. So the plan is the one the Temple Gates app's AI follows ([their write-up](https://www.templegatesgames.com/dominion-ai/)):
 
-1. **Self-play training.** A value and policy network learns from bot-against-bot games. Its value output is the per-move evaluation bar for real games.
-2. **Analysis of real games.** It starts from a position Cartographer replayed, then plays rollouts and asks "what if they had bought X" one turn ahead.
-3. **Kingdom analysis.** It plays candidate strategies against each other on one kingdom: Big Money plus one card, engines, rushes.
-4. **Benchmarks.** Bots of known strength give the network and later bots a yardstick.
+- a rules engine in Go plays complete games with every card on dominion.games;
+- the engine asks an agent for every choice, so bots play each other at scale;
+- a value network learns from those games;
+- the network then evaluates the positions Cartographer replays from real logs.
+
+Rollouts from real positions and kingdom analysis come almost free once the engine exists, but they're not part of this plan.
 
 How we know it works:
 
 - **Coverage:** the share of the 819 cards in `scry/cards/cards.json` that have rules, and the share of saved games whose whole kingdom is covered.
 - **Conformance:** replaying a real saved game through the engine gives the same log entries and the same zones as Cartographer's replay, turn by turn.
 - **Determinism:** the same seed and the same decisions give the same game, byte for byte.
+- **Evaluation:** on held-out real games, the calibrated network predicts the winner better than the logistic baseline from the research (log loss 0.639, where a coin is 0.693). It is measured by Brier score and log loss.
 - **Speed:** random-bot games per second, and how long a state copy takes. Both are measured, never assumed.
 
 ## Not in scope
 
 - **Anything near a live game.** No client for dominion.games, no connection to its servers, no advice during a game. The ToS rules in [SPEC.md](../SPEC.md) still apply: the engine only ever looks at finished games.
-- **A playable Dominion for people.** There is a debug CLI to step through a bot game, but no game UI, accounts or online play. Dominion belongs to Rio Grande Games; a public playable clone is a different matter from an analysis engine. The repo stays without card text and art, as now.
+- **Playing against the bots.** Nobody plays the engine: there is a debug CLI to step through a bot game, but no game UI, accounts or online play. Dominion belongs to Rio Grande Games; a public playable clone is a different matter from an analysis engine. The repo stays without card text and art, as now.
 - **First-edition cards come last.** 48 of the 819 cards exist only in the first editions (Silk Road, Great Hall, Sea Hag, the Prizes...). None appears in our saved games. Whether dominion.games still deals them needs checking; either way they come after everything else.
-- **First version: two players.** The state allows up to 6, but rules that only matter with 3+ players (who is "left", attack order) are checked later.
+- **More than two players.** The state holds exactly two players, and rules that only matter with three or more (who is to the left, attack order) aren't written.
 
 ## The scope, measured
 
@@ -62,7 +65,8 @@ These numbers are measured, not guessed. The scripts are one-offs in the session
 
 - `scry/internal/engine/`: the state, the rules core, decisions, and log output.
 - `scry/internal/engine/cards/`: one Go file per card, Event or landscape, registered by name. One file per card keeps reviews and agent work small and parallel.
-- `scry/internal/bots/`: agents. Random, Big Money, buy-rule bots, search, network.
+- `scry/internal/bots/`: agents. Random, Big Money, Big Money + X, network-guided search.
+- `scry/internal/evaluator/`: the network's inference in Go, and the conversion from Cartographer's replay to the network's input.
 - `scry/sim.go`: the `scry sim` command.
 
 The engine reads card names, types, costs and sets from `scry/cards/cards.json`, so there is one card table. The rules for each card are Go code; no card text goes into the repo.
@@ -163,28 +167,47 @@ The repo's rule is not to add unit tests, so the checks are `scry sim check` and
 ### Agents
 
 - **Random:** a uniform choice among legal options. Used for fuzzing.
-- **Big Money:** the canonical buy rules, as the floor.
-- **Buy-rule bots:** priority lists with conditions. DominionSim's `DomBots.xml` (MIT, 198 bots) is read as data, with attribution. A "Big Money + one X" bot is generated for every kingdom card, as DominionSim does.
-- **Default play rules per card.** Each card file also gives a simple default for its choices: what to trash, what to discard, which mode to pick. Buy-rule bots need it, and it is the starting policy for search. Provincial did the same.
-- **Search:** information-set MCTS with determinization. Each simulation draws one shuffle of the hidden cards from the known composition, then uses `Clone()` and the turn re-play described above.
-- **Network:** a value head (one win probability per player) and a policy head over the legal options, after Temple Gates.
-  - Each card is a learned vector of about ten numbers, so one network covers every kingdom.
-  - Inference runs in pure Go: small matrices and no cgo.
-  - Training runs outside the binary.
+- **Big Money and Big Money + X:** the canonical buy rules, and the same with one kingdom card X added, as DominionSim generates them for every card. One shared rule set answers choices inside cards: trash Curses, then Estates, then Coppers; discard Victory cards first. These bots are yardsticks for the network's strength, not training partners.
+- **The network's search:** information-set MCTS guided by the network, as AlphaZero and Temple Gates do. Each simulation draws one shuffle of the hidden cards from the known composition, then uses `Clone()` and the turn re-play described above. There is no hand-made evaluation stage: the network is the evaluation from the start.
+
+### The network
+
+- **Two heads.**
+  - **Value:** the first player's chance to win (two players, so one number; a tie counts as half). This is the bar.
+  - **Policy:** a score for each legal option of a decision, used by the search.
+- **Cards as learned vectors.** Each card is a learned vector of about ten numbers, after Temple Gates, so one network covers every kingdom and kingdoms it has never seen.
+- **Value input: public information only.** It holds:
+  - each player's deck composition, which is public, since every gain and trash is in the log;
+  - the cards known to be in each zone from public events: cards played since the last shuffle are in the discard pile, and known top cards are on the deck;
+  - the number of unknown cards in each zone.
+
+  Hands are not in it. It's taken at turn boundaries, after Clean-up.
+- **Why public information.** Cartographer already tracks exactly this for the seat whose draws the log hides. For the seat whose draws it names, the evaluator replays the log with the drawn cards' names masked, so both seats are treated alike. The bar is then the same whichever seat the log came from, and the network sees real and simulated positions the same way.
+- **Policy input:** the deciding player's own `View`, including their hand.
+- **Inference** runs in pure Go: small matrices and no cgo. Training runs outside the binary.
 
 ### Self-play and training
 
-- **Games.** `scry sim selfplay -games N -out DIR` plays bot games on random kingdoms. For every decision it writes the view's features, the legal options, the answer and the search's visit counts, and for every game the result. Files are compact and append-only.
+- **Games.**
+  - `scry sim selfplay -games N -out DIR` plays network-against-network games on random kingdoms.
+  - Files are compact and append-only. For every decision they hold the view's features, the legal options, the answer and the search's visit counts; for every turn boundary, the public view; for every game, the result.
+  - A turn cap ends runaway games early in training, scored as they stand.
 - **Training.** A one-off `uv run` job with PyTorch reads them, trains, and exports the weights in a plain file format that Go reads. Package versions stay pinned and at least 3 days old.
-- **Head start.** Before any self-play, a network trained to copy the named seat's choices in our saved logs gives a starting policy. Temple Gates started from no knowledge; we don't have to.
+- **Head start.** Before any self-play, the policy head learns to copy the named seat's choices in our saved logs, through the same log agent `scry sim check` uses. Temple Gates started from no knowledge; we don't have to, and it saves the first rounds of near-random games.
 - **The loop:**
   1. self-play with search guided by the current network;
   2. train on those games, using the final result and TD targets;
   3. keep the new network only if it beats the old one in a fixed match;
   4. repeat.
-- **Measuring strength:**
-  - against Big Money, BM+X and the buy-rule bots, and against earlier networks, in matches of fixed size;
-  - for the evaluation bar, calibration on real games: Brier score and log loss against what actually happened.
+- **Strength:** fixed-size matches against Big Money, BM+X and earlier networks.
+
+### From self-play to real games
+
+- **Same input from both sources.** `scry/internal/evaluator` turns each `cartographer.Turn` of a saved game into the public view.
+  - The check: an engine game is written as a log from one seat, as dominion.games writes it, Cartographer reads it back, and the view built from that replay must equal the engine's own public view at every turn boundary.
+  - Any difference is a bug in the engine, the log output or Cartographer.
+- **Calibration.** The raw value is the chance to win when the network plays itself, not when two level-55 players do. A small calibration layer fixes that: Platt scaling, with the rating-level difference as an offset where the score file has levels, fitted on our saved games' results. The fit is checked on held-out games.
+- **The bar.** `analyze.html` shows the calibrated chance after each turn, with its range from the calibration's uncertainty. Turns where the chance moves more than the measured noise are marked as swings.
 
 ### Speed
 
@@ -205,23 +228,23 @@ The milestones follow mechanisms, since each expansion brings its own. Effort is
 | M2 | Dark Ages (Ruins, Shelters, Knights, Spoils), Adventures (Reserve, Travellers, tokens, Events), Empires (debt, Landmarks, split piles, Castles) | as above | estimated after M0 |
 | M3 | Nocturne (Night, Boons, Hexes, States, Heirlooms, Spirits), Renaissance (Villagers, Projects, Artifacts), Menagerie (Ways, Horses, Exile) | as above | estimated after M0 |
 | M4 | Allies (Favors, Liaisons, rotating piles), Plunder (Loot, Traits), Rising Sun (Prophecies, Omens, Shadow cards), Promos, then Possession | All 771 current cards, then the 48 first-edition ones. 90% or more of the saved games pass `scry sim check`; the rest are listed with reasons. | estimated after M0 |
-| M5 | Buy-rule bots, information-set MCTS, the self-play file format, the imitation head start | MCTS beats Big Money and BM+X in fixed matches. | 2-3 weeks |
-| M6 | Network training loop and Go inference | The network beats the M5 bots. Its value is calibrated on real games. | open |
+| M5 | The network and its Go inference, network-guided MCTS, the self-play file format, the imitation head start, the training loop, BM and BM+X yardsticks | The network beats Big Money and BM+X in fixed matches. | open; compute needs measuring |
+| M6 | The public view from Cartographer and its round-trip check, calibration on saved games, the bar on `analyze.html` | On held-out real games the bar beats the logistic baseline (log loss 0.639). | 1-2 weeks |
 
 **Writing 819 cards.** Card files can be written in parallel by coding-agent sessions on the user's subscriptions, one set per session. The steps for each card:
 
 1. read the card's text locally (dominiontabs or the rulebook) and the rulings;
-2. write the card file and its default play rule;
+2. write the card file;
 3. run `scry sim check` on the saved games that use the card.
 
 A card counts as done when the games that use it pass the check, not when the session says it's done. My rough guess for all cards is two to three months part-time including debugging. That is an estimate to replace with the M0 measurement.
 
 **Rules source.** The second-edition rulebooks and the published rulings decide; where they're silent, dominion.games' behaviour as seen in our logs does. The Dominion Strategy wiki's rulings sections are a good human reference, but they can't be read by our tools.
 
-## Open questions
+## Decisions, 2026-10-23
 
-1. **Who plays.** This draft assumes "play each other" means bots playing bots, for training and analysis. Is a way for a person to play against the bots locally wanted too, and when?
-2. **Player count.** Two players first, then 3-4 for self-play, or is two enough?
-3. **Order of M5 and M6.** Ship search with a hand-made evaluation first and add the network after, or go straight for the network as Temple Gates did?
-4. **Public repo.** pydominion and DominionSim implement every card in public. Keeping the engine in this public repo seems fine, but should it stay private until it works?
-5. **pydominion's license.** If its author licensed it (MIT, say), its rules and tests could be ported directly instead of only read. Draft an issue asking?
+1. **The only product is the evaluation of the board.** Bots play each other to train it; nobody plays against them.
+2. **Two players only.**
+3. **Straight to the network.** Network-guided search from the start, with no stage of hand-made evaluation.
+4. **The engine lives in this public repo,** as pydominion and DominionSim do.
+5. **Ask pydominion's author for a license.** With one (MIT, say), its rules and tests could be ported directly instead of only read.
