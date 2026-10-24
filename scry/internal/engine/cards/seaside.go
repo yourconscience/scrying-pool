@@ -191,7 +191,7 @@ func init() {
 	})
 	reg("Native Village", rules{Play: func(c *ctx) {
 		c.PlusActions(2)
-		if c.Mode1(c.P, mode{"set aside the top card", "SET_ASIDE_WITH"}, mode{"take the mat's cards", "PUT_IN_HAND"}) == 0 {
+		if c.Mode1(c.P, mode("set aside the top card", "SET_ASIDE_WITH"), mode("take the mat's cards", "PUT_IN_HAND")) == 0 {
 			if x := c.TopCard(c.P); x >= 0 {
 				c.MoveTo(c.P, one(x), engine.NativeVillage, "SET_ASIDE_WITH", engine.Name(c.Src))
 			}

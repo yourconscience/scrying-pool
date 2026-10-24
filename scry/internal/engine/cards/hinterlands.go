@@ -74,7 +74,7 @@ func init() {
 		}
 		more, less := costExactly(c, x, 1), costExactly(c, x, -1)
 		c.Trash(c.P, one(x))
-		if c.Mode1(c.P, mode{"the costlier one first", "GAIN"}, mode{"the cheaper one first", "GAIN"}) == 1 {
+		if c.Mode1(c.P, mode("the costlier one first", "GAIN"), mode("the cheaper one first", "GAIN")) == 1 {
 			more, less = less, more
 		}
 		c.ChooseGain(c.P, more, deck)
@@ -150,7 +150,7 @@ func init() {
 	reg("Jack of All Trades", rules{Play: func(c *ctx) {
 		c.Gain(c.P, c.Card("Silver"), discard)
 		if xs := c.FromTop(c.P, 1, "LOOK_AT"); len(xs) == 1 {
-			if c.Mode1(c.P, mode{"discard it", "DISCARD"}, mode{"put it back", ""}) == 0 {
+			if c.Mode1(c.P, mode("discard it", "DISCARD"), mode("put it back", "")) == 0 {
 				c.Discard(c.P, xs)
 			} else {
 				c.Topdeck(c.P, xs)
@@ -228,7 +228,7 @@ func init() {
 	reg("Spice Merchant", rules{Play: func(c *ctx) {
 		if x := pick1(c, c.P, engine.ToTrash, hand, treasure, true); x >= 0 {
 			c.Trash(c.P, one(x))
-			if c.Mode1(c.P, mode{"+2 Cards +1 Action", "DRAW"}, mode{"+$2 +1 Buy", "GETS_COINS"}) == 0 {
+			if c.Mode1(c.P, mode("+2 Cards +1 Action", "DRAW"), mode("+$2 +1 Buy", "GETS_COINS")) == 0 {
 				c.Draw(2)
 				c.PlusActions(1)
 			} else {
@@ -283,7 +283,7 @@ func init() {
 	}})
 	reg("Weaver", rules{
 		Play: func(c *ctx) {
-			if c.Mode1(c.P, mode{"gain two Silvers", "GAIN"}, mode{"gain a card costing up to $4", "GAIN"}) == 0 {
+			if c.Mode1(c.P, mode("gain two Silvers", "GAIN"), mode("gain a card costing up to $4", "GAIN")) == 0 {
 				c.GainN(c.P, c.Card("Silver"), 2, discard, "GAIN")
 				return
 			}

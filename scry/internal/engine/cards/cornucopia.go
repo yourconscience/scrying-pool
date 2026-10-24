@@ -159,7 +159,7 @@ func init() {
 			case d.Victory():
 				c.Gain(v, c.Card("Curse"), discard)
 			case c.G.Left(d.ID) == 0:
-			case c.Mode1(c.P, mode{"they gain a copy", "GAIN"}, mode{"you gain a copy", "GAIN"}) == 0:
+			case c.Mode1(c.P, mode("they gain a copy", "GAIN"), mode("you gain a copy", "GAIN")) == 0:
 				c.Gain(v, d.ID, discard)
 			default:
 				c.Gain(c.P, d.ID, discard)
@@ -255,7 +255,7 @@ func init() {
 		}
 	}})
 	reg("Courser", rules{Play: func(c *ctx) {
-		for _, m := range c.Modes(c.P, 2, 2, mode{"+2 Cards", "DRAW"}, mode{"+2 Actions", "GETS_ACTIONS"}, mode{"+$2", "GETS_COINS"}, mode{"gain 4 Silvers", "GAIN"}) {
+		for _, m := range c.Modes(c.P, 2, 2, mode("+2 Cards", "DRAW"), mode("+2 Actions", "GETS_ACTIONS"), mode("+$2", "GETS_COINS"), mode("gain 4 Silvers", "GAIN")) {
 			switch m {
 			case 0:
 				c.Draw(2)

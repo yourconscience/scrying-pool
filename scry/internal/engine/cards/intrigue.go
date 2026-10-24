@@ -31,7 +31,7 @@ func init() {
 		}
 		c.Reveal(c.P, one(x))
 		n := min(c.G.Def(x).NTypes(), 4)
-		for _, m := range c.Modes(c.P, n, n, mode{"+1 Action", "GETS_ACTION"}, mode{"+1 Buy", "GETS_BUY"}, mode{"+$3", "GETS_COINS"}, mode{"gain a Gold", "GAIN"}) {
+		for _, m := range c.Modes(c.P, n, n, mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY"), mode("+$3", "GETS_COINS"), mode("gain a Gold", "GAIN")) {
 			switch m {
 			case 0:
 				c.PlusActions(1)
@@ -84,7 +84,7 @@ func init() {
 	}})
 	reg("Lurker", rules{Play: func(c *ctx) {
 		c.PlusActions(1)
-		if c.Mode1(c.P, mode{"trash an Action from the Supply", "TRASH"}, mode{"gain an Action from the trash", "GAIN"}) == 0 {
+		if c.Mode1(c.P, mode("trash an Action from the Supply", "TRASH"), mode("gain an Action from the trash", "GAIN")) == 0 {
 			if o := c.ChooseOne(c.P, engine.ToTrash, c.SupplyOptions(action), false); o != nil {
 				c.TrashFromSupply(c.P, o.Card)
 			}
@@ -127,7 +127,7 @@ func init() {
 	}})
 	reg("Minion", rules{Play: func(c *ctx) {
 		c.PlusActions(1)
-		if c.Mode1(c.P, mode{"+$2", "GETS_COINS"}, mode{"discard your hand, +4 Cards", "DISCARD"}) == 0 {
+		if c.Mode1(c.P, mode("+$2", "GETS_COINS"), mode("discard your hand, +4 Cards", "DISCARD")) == 0 {
 			c.PlusCoins(2)
 			return
 		}
@@ -141,7 +141,7 @@ func init() {
 		})
 	}})
 	reg("Nobles", rules{VP: worth(2), Play: func(c *ctx) {
-		if c.Mode1(c.P, mode{"+3 Cards", "DRAW"}, mode{"+2 Actions", "GETS_ACTIONS"}) == 0 {
+		if c.Mode1(c.P, mode("+3 Cards", "DRAW"), mode("+2 Actions", "GETS_ACTIONS")) == 0 {
 			c.Draw(3)
 		} else {
 			c.PlusActions(2)
@@ -160,7 +160,7 @@ func init() {
 		topdeckAny(c, c.P, c.In(revealed, top))
 	}})
 	reg("Pawn", rules{Play: func(c *ctx) {
-		for _, m := range c.Modes(c.P, 2, 2, mode{"+1 Card", "DRAW"}, mode{"+1 Action", "GETS_ACTION"}, mode{"+1 Buy", "GETS_BUY"}, mode{"+$1", "GETS_COIN"}) {
+		for _, m := range c.Modes(c.P, 2, 2, mode("+1 Card", "DRAW"), mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY"), mode("+$1", "GETS_COIN")) {
 			switch m {
 			case 0:
 				c.Draw(1)
@@ -212,7 +212,7 @@ func init() {
 		}
 	}})
 	reg("Steward", rules{Play: func(c *ctx) {
-		switch c.Mode1(c.P, mode{"+2 Cards", "DRAW"}, mode{"+$2", "GETS_COINS"}, mode{"trash 2 cards", "TRASH"}) {
+		switch c.Mode1(c.P, mode("+2 Cards", "DRAW"), mode("+$2", "GETS_COINS"), mode("trash 2 cards", "TRASH")) {
 		case 0:
 			c.Draw(2)
 		case 1:
@@ -239,7 +239,7 @@ func init() {
 	reg("Torturer", rules{Play: func(c *ctx) {
 		c.Draw(3)
 		c.Attack(func(v int) {
-			if c.Mode1(v, mode{"discard 2 cards", "DISCARD"}, mode{"gain a Curse to your hand", "GAIN"}) == 0 {
+			if c.Mode1(v, mode("discard 2 cards", "DISCARD"), mode("gain a Curse to your hand", "GAIN")) == 0 {
 				n := min(2, len(c.Hand(v)))
 				c.Discard(v, pick(c, v, engine.ToDiscard, hand, nil, n, n))
 			} else {

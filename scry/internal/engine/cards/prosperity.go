@@ -90,9 +90,9 @@ func init() {
 			return
 		}
 		x := xs[0]
-		ms := []mode{{"trash it", "TRASH"}, {"discard it", "DISCARD"}, {"put it back", ""}}
+		ms := []engine.Mode{mode("trash it", "TRASH"), mode("discard it", "DISCARD"), mode("put it back", "")}
 		if d := c.G.Def(x); d.Action() || d.Treasure() {
-			ms = append(ms, mode{"play it", "PLAY"})
+			ms = append(ms, mode("play it", "PLAY"))
 		}
 		switch c.Mode1(c.P, ms...) {
 		case 0:
@@ -147,7 +147,7 @@ func init() {
 	})
 	reg("Investment", rules{Alone: true, Play: func(c *ctx) {
 		c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, 1, 1))
-		if c.Mode1(c.P, mode{"+$1", "GETS_COIN_FROM"}, mode{"trash this for VP", "TRASH"}) == 0 {
+		if c.Mode1(c.P, mode("+$1", "GETS_COIN_FROM"), mode("trash this for VP", "TRASH")) == 0 {
 			c.CoinsFrom(1)
 			return
 		}
@@ -287,7 +287,7 @@ func init() {
 		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && stillGained(c, e) },
 		React: func(c *ctx, e *ev) bool {
 			c.Log("REACTS_WITH", engine.Seat(c.P), []engine.CardID{c.Src})
-			if c.Mode1(c.P, mode{"trash it", "TRASH"}, mode{"put it onto your deck", "TOPDECK"}) == 0 {
+			if c.Mode1(c.P, mode("trash it", "TRASH"), mode("put it onto your deck", "TOPDECK")) == 0 {
 				c.Trash(c.P, one(e.X))
 			} else {
 				c.Topdeck(c.P, one(e.X))

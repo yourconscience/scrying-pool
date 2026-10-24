@@ -14,7 +14,6 @@ type (
 	inst  = engine.Inst
 	def   = engine.Def
 	rules = engine.Rules
-	mode  = engine.Mode
 )
 
 const (
@@ -115,3 +114,6 @@ func costExactly(c *ctx, x inst, n int) func(*def) bool {
 }
 
 func itoa(n int) string { return fmt.Sprint(n) }
+
+// mode is one of a card's modes and the template of the line it writes first.
+func mode(label, line string) engine.Mode { return engine.Mode{Label: label, Line: line} }
