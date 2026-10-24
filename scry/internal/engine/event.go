@@ -126,6 +126,13 @@ func (g *Game) fire(ev *Ev) {
 			r.Hear(cx, ev)
 		}
 	}
+	for _, c := range g.Global {
+		if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
+			cx := g.ctx(ev.P, -1, ev.Level)
+			cx.Src = c
+			r.Hear(cx, ev)
+		}
+	}
 	for _, h := range g.Held {
 		if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
 			cx := g.ctx(h.P, -1, ev.Level)

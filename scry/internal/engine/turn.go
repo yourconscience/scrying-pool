@@ -350,12 +350,15 @@ func (g *Game) cleanup(p int) {
 			}
 		}
 	}
-	for _, x := range append([]Inst{}, pl.Z[InPlay]...) {
-		if stay[x] || g.loc[x].Zone != InPlay {
-			continue
+	// the other player's cards too: what they played on this turn (Guard Dog) leaves with it
+	for _, q := range [2]int{p, 1 - p} {
+		for _, x := range append([]Inst{}, g.P[q].Z[InPlay]...) {
+			if stay[x] || g.loc[x].Zone != InPlay {
+				continue
+			}
+			g.move(x, InPlay, Loc{Discard, int16(q)})
+			g.fire(&Ev{Kind: EvDiscard, P: q, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 		}
-		g.move(x, InPlay, Loc{Discard, int16(p)})
-		g.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 	}
 	for len(pl.Z[Hand]) > 0 {
 		g.move(pl.Z[Hand][0], Hand, Loc{Discard, int16(p)})
@@ -395,9 +398,10 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	if d.Rules == nil {
 		panic(MissingRules{d.Name})
 	}
-	if how.times == 0 && g.loc[x].Zone != InPlay {
-		g.move(x, g.loc[x].Zone, Loc{InPlay, int16(p)})
+	if z := g.loc[x].Zone; how.times == 0 && z != InPlay && z != Supply { // a Trail played from the trash comes into play
+		g.move(x, z, Loc{InPlay, int16(p)})
 	}
+	coins := g.coinsOf(p, x) // before it counts as played this turn (Fool's Gold)
 	c := g.ctx(p, x, level+1)
 	c.holders = how.holders
 	card := []CardID{g.cards[x]}
@@ -412,10 +416,10 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
-		g.Log.treasure(p, g.cards[x], g.coinsOf(p, x))
+		g.Log.treasure(p, g.cards[x], coins)
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
-		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, g.coinsOf(p, x)}})
+		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
 	case how.times == 1:
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
 	case how.times == 2:
@@ -440,9 +444,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			g.fire(ev)
 			c.unaffected[1-p] = ev.Unaffected
 		}
-		if n := g.coinsOf(p, x); n != 0 {
-			g.P[p].Coins += n
-		}
+		g.P[p].Coins += coins
 		if d.Rules.Play != nil {
 			d.Rules.Play(c)
 		}

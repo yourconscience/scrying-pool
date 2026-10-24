@@ -51,7 +51,9 @@ var nonTerminal = map[string]bool{"Cellar": true, "Harbinger": true, "Merchant":
 	"Bazaar": true, "Caravan": true, "Fishing Village": true, "Haven": true, "Lighthouse": true, "Lookout": true,
 	"Native Village": true, "Pearl Diver": true, "Sailor": true, "Sea Chart": true, "Tide Pools": true,
 	"Treasury": true, "Warehouse": true,
-	"City": true, "Grand Market": true, "Peddler": true, "Worker's Village": true}
+	"City": true, "Grand Market": true, "Peddler": true, "Worker's Village": true,
+	"Border Village": true, "Cartographer": true, "Crossroads": true, "Highway": true, "Inn": true, "Oasis": true,
+	"Scheme": true, "Trail": true, "Wheelwright": true}
 
 // price is a card's cost as one number: a Potion counts $2, debt $1.
 func price(d *engine.Def) int { return d.Cost.Coins + 2*d.Cost.Potion + d.Cost.Debt }

@@ -123,6 +123,7 @@ type Game struct {
 	HexesOut      []CardID
 	Druid         []CardID       // the Boons Druid uses
 	Held          []Held         // States and Artifacts
+	Global        []CardID       // kingdom cards whose Hear runs all game, not from a zone (Duchess for Duchies); Me is -1
 	LandVP        map[CardID]int // VP tokens on Landmarks
 	Sun           int            // Sun tokens on the Prophecy; 0 once it came true
 	Prophecy      CardID

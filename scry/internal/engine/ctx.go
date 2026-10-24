@@ -418,7 +418,12 @@ func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 // Discard discards a player's cards (not in Clean-up).
 func (c *Ctx) Discard(p int, xs []Inst) []Inst {
 	t, a := c.with("DISCARD")
-	moved := c.moveAll(p, xs, Loc{Discard, int16(p)}, t, a...)
+	return c.DiscardAs(p, xs, t, a...)
+}
+
+// DiscardAs discards cards with a template of its own, e.g. DISCARD_REVEALED.
+func (c *Ctx) DiscardAs(p int, xs []Inst, template string, args ...any) []Inst {
+	moved := c.moveAll(p, xs, Loc{Discard, int16(p)}, template, args...)
 	from := c.moved
 	for i, x := range moved {
 		c.G.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: c.G.cards[x], From: from[i], By: c.Src, Level: c.level + 1})
@@ -488,6 +493,24 @@ func (c *Ctx) ReturnTo(p int, x Inst) bool {
 	}
 	c.Log("RETURN_TO", Seat(p), []CardID{c.G.cards[x]}, PileName(c.G.Piles[i].Card))
 	return true
+}
+
+// ShuffleInto shuffles cards into a player's deck: "shuffles an Inn into their deck".
+func (c *Ctx) ShuffleInto(p int, xs []Inst) {
+	moved := c.moveAll(p, xs, Loc{Deck, int16(p)}, "SHUFFLE_INTO_DECK")
+	if len(moved) > 0 {
+		d := c.G.P[p].Z[Deck]
+		c.G.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
+	}
+}
+
+// LoseCoins takes $ away: "loses 6 Coins".
+func (c *Ctx) LoseCoins(n int) {
+	n = min(n, c.G.P[c.P].Coins)
+	if n > 0 {
+		c.G.P[c.P].Coins -= n
+		c.Log(plural(n, "LOSES_COIN", "LOSES_COINS"), Seat(c.P), n)
+	}
 }
 
 // LookAt logs cards a player looks at without moving them.
