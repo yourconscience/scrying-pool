@@ -78,6 +78,32 @@ func (l *Log) last() int {
 	return len(l.Entries) - 1
 }
 
+// size counts the lines written or waiting to be.
+func (l *Log) size() int {
+	if l == nil {
+		return 0
+	}
+	n := len(l.Entries) + len(l.after)
+	if l.pending != nil {
+		n++
+	}
+	return n
+}
+
+// extendLast adds a card to the last line's card list.
+func (l *Log) extendLast(c CardID) {
+	if l == nil {
+		return
+	}
+	if n := len(l.after); n > 0 {
+		l.after[n-1].Args[1] = append(l.after[n-1].Args[1].([]CardID), c)
+		return
+	}
+	n := len(l.Entries) - 1
+	l.Entries[n].Args[1] = append(l.Entries[n].Args[1].([]CardID), c)
+	l.changed(n)
+}
+
 // unGain makes a "buys and gains" line a plain "buys" when the card wasn't gained.
 func (l *Log) unGain(i int) {
 	if l == nil || i < 0 {

@@ -2,7 +2,7 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Prosperity, with the first edition's cards. Platinum and Colony are in base.go.
+// Prosperity, second edition. Platinum and Colony are in base.go.
 func init() {
 	reg("Anvil", rules{Coins: 1, Alone: true, Play: func(c *ctx) {
 		if x := pick1(c, c.P, engine.ToDiscard, hand, treasure, true); x >= 0 {
@@ -84,17 +84,6 @@ func init() {
 			return false
 		},
 	})
-	reg("Contraband", rules{Coins: 3, Alone: true, Play: func(c *ctx) {
-		c.PlusBuys(1)
-		named := c.NameCard(c.Other())
-		c.Log("NAMES", engine.Seat(c.Other()), engine.Name(named))
-		c.T2().Forbid = append(c.T2().Forbid, named)
-	}})
-	reg("Counting House", rules{Play: func(c *ctx) {
-		xs := pick(c, c.P, engine.ToPick, discard, named("Copper"), 0, len(c.Zone(c.P, discard)))
-		c.Reveal(c.P, xs)
-		c.ToHand(c.P, xs, "PUT_IN_HAND")
-	}})
 	reg("Crystal Ball", rules{Coins: 1, Alone: true, Play: func(c *ctx) {
 		xs := c.FromTop(c.P, 1, "LOOK_AT")
 		if len(xs) == 0 {
@@ -132,23 +121,6 @@ func init() {
 		c.Trash(c.P, xs)
 		c.ChooseGain(c.P, func(d *def) bool { return c.CostOf(d.ID) == engine.Upto(total) }, discard)
 	}})
-	reg("Goons", rules{
-		Play: func(c *ctx) {
-			c.PlusBuys(1)
-			c.PlusCoins(2)
-			c.Attack(func(v int) {
-				if n := len(c.Hand(v)) - 3; n > 0 {
-					c.Discard(v, pick(c, v, engine.ToDiscard, hand, nil, n, n))
-				}
-			})
-		},
-		Hears: engine.On(engine.EvBuy),
-		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && e.X >= 0 {
-				c.PlusVP(1)
-			}
-		},
-	})
 	reg("Grand Market", rules{
 		Play: func(c *ctx) {
 			c.Draw(1)
@@ -202,15 +174,6 @@ func init() {
 		c.PlayCard(x, 1)
 		c.PlayCard(x, 2)
 	}})
-	reg("Loan", rules{Coins: 1, Alone: true, Play: func(c *ctx) {
-		all, found := c.RevealUntil(c.P, treasure, 1)
-		if len(found) == 1 {
-			if c.Mode1(c.P, mode{"discard it", "DISCARD"}, mode{"trash it", "TRASH"}) == 1 {
-				c.Trash(c.P, found)
-			}
-		}
-		c.Discard(c.P, c.In(revealed, all))
-	}})
 	reg("Magnate", rules{Play: func(c *ctx) {
 		c.RevealHand(c.P)
 		if n := c.Count(c.P, hand, treasure); n > 0 {
@@ -231,17 +194,6 @@ func init() {
 	reg("Monument", rules{Play: func(c *ctx) {
 		c.PlusCoins(2)
 		c.PlusVP(1)
-	}})
-	reg("Mountebank", rules{Play: func(c *ctx) {
-		c.PlusCoins(2)
-		c.Attack(func(v int) {
-			if x := pick1(c, v, engine.ToDiscard, hand, named("Curse"), true); x >= 0 {
-				c.Discard(v, one(x))
-				return
-			}
-			c.Gain(v, c.Card("Curse"), discard)
-			c.Gain(v, c.Card("Copper"), discard)
-		})
 	}})
 	reg("Peddler", rules{
 		Play: func(c *ctx) {
@@ -281,23 +233,6 @@ func init() {
 			topdeckAny(c, v, c.In(revealed, xs))
 		})
 	}})
-	reg("Royal Seal", rules{Coins: 2,
-		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && stillGained(c, e) && c.Yes(c.P, "put it onto your deck", "TOPDECK") {
-				c.Topdeck(c.P, one(e.X))
-				e.Done = true
-			}
-		},
-	})
-	reg("Talisman", rules{Coins: 1,
-		Hears: engine.On(engine.EvBuy),
-		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && e.X >= 0 && !c.G.D(e.C).Victory() && c.CostOf(e.C).LE(engine.Upto(4)) {
-				c.Gain(c.P, e.C, discard)
-			}
-		},
-	})
 	reg("Tiara", rules{Alone: true, Play: func(c *ctx) {
 		c.PlusBuys(1)
 		has := false
@@ -318,22 +253,6 @@ func init() {
 		}
 		return false
 	}})
-	reg("Trade Route", rules{
-		Setup: func(g *engine.Game) {
-			for i := range g.Piles {
-				if p := &g.Piles[i]; p.Supply && g.D(p.Card).Victory() {
-					p.Trade = true
-				}
-			}
-		},
-		Play: func(c *ctx) {
-			c.PlusBuys(1)
-			if n := c.G.TradeRoute; n > 0 {
-				c.PlusCoins(n)
-			}
-			c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, 1, 1))
-		},
-	})
 	reg("Vault", rules{Play: func(c *ctx) {
 		c.Draw(2)
 		if n := len(c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P))))); n > 0 {
@@ -343,19 +262,6 @@ func init() {
 		if len(c.Hand(v)) >= 2 && c.Yes(v, "discard 2 cards to draw 1", "DISCARD") {
 			c.Discard(v, pick(c, v, engine.ToDiscard, hand, nil, 2, 2))
 			c.DrawFor(v, 1)
-		}
-	}})
-	reg("Venture", rules{Coins: 1, Alone: true, Play: func(c *ctx) {
-		all, found := c.RevealUntil(c.P, treasure, 1)
-		var rest []inst
-		for _, x := range all {
-			if len(found) == 0 || x != found[0] {
-				rest = append(rest, x)
-			}
-		}
-		c.Discard(c.P, rest)
-		if len(found) == 1 {
-			c.PlayNow(found[0])
 		}
 	}})
 	reg("War Chest", rules{Alone: true, Play: func(c *ctx) {

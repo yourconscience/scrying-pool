@@ -102,8 +102,9 @@ type Game struct {
 	loc    []Loc    // by Inst
 	rng    *rand.Rand
 	pileOf map[CardID]int
-	turn   int // the current turn's number for Cur
-	turns  int // turns taken so far by both players, extra turns too
+	turn   int      // the current turn's number for Cur
+	turns  int      // turns taken so far by both players, extra turns too
+	pool   []CardID // Setup.Pool
 	start  [2][]CardID
 
 	durs    []*Dur  // Durations and other cards waiting for later turns
@@ -186,6 +187,9 @@ type Setup struct {
 	Colony     bool        // add Platinum and Colony
 	Shelters   bool        // start with Shelters instead of Estates
 	Bane       CardID      // Young Witch's Bane, when Young Witch is in the kingdom
+	// Pool is the kingdom cards a Setup may add (Young Witch's Bane, Ferryman's
+	// pile); empty: every playable one.
+	Pool []CardID
 	// Partial allows kingdom cards without rules, for replays of real games:
 	// they can be bought and gained, and playing one stops the game.
 	Partial bool
@@ -200,7 +204,7 @@ func (m MissingRules) Error() string { return m.Card + " has no rules yet" }
 func New(t *Table, s Setup) (*Game, error) {
 	g := &Game{T: t, Kingdom: s.Kingdom, Land: s.Landscapes, Agents: s.Agents, pileOf: map[CardID]int{},
 		rng: rand.New(rand.NewPCG(s.Seed, s.Seed^0x9e3779b97f4a7c15)), Obelisk: -1,
-		LandVP: map[CardID]int{}, Colony: s.Colony}
+		LandVP: map[CardID]int{}, Colony: s.Colony, pool: s.Pool}
 	g.copper, g.silver, g.gold = t.MustCard("Copper"), t.MustCard("Silver"), t.MustCard("Gold")
 	g.estate, g.duchy, g.province = t.MustCard("Estate"), t.MustCard("Duchy"), t.MustCard("Province")
 	g.curse, g.platinum, g.colony, g.potion = t.MustCard("Curse"), t.MustCard("Platinum"), t.MustCard("Colony"), t.MustCard("Potion")
@@ -252,10 +256,10 @@ func New(t *Table, s Setup) (*Game, error) {
 		g.AddPile(g.potion, 16, true)
 	}
 	for _, k := range s.Kingdom {
-		g.addKingdomPile(k)
+		g.addKingdomPile(k, true)
 	}
 	if s.Bane != 0 {
-		g.Piles[g.addKingdomPile(s.Bane)].Bane = true
+		g.Piles[g.addKingdomPile(s.Bane, true)].Bane = true
 	}
 	for p := range g.P {
 		g.start[p] = s.Start[p]
@@ -273,17 +277,43 @@ func New(t *Table, s Setup) (*Game, error) {
 	return g, nil
 }
 
-func (g *Game) addKingdomPile(k CardID) int {
+func (g *Game) addKingdomPile(k CardID, supply bool) int {
 	d := g.T.Defs[k]
 	if ms, ok := pileMembers[d.Name]; ok {
-		return g.addMixed(k, ms, true, shuffledPiles[d.Name], 0)
+		return g.addMixed(k, ms, supply, shuffledPiles[d.Name], 0)
 	}
 	n := 10
 	if d.Victory() {
 		n = 8
 	}
-	return g.AddPile(k, n, true)
+	return g.AddPile(k, n, supply)
 }
+
+// AddBane adds a kingdom pile a card's Setup chose, and runs its own Setup:
+// Young Witch's Bane in the Supply, Ferryman's pile outside it.
+func (g *Game) AddBane(k CardID, supply bool) {
+	g.Piles[g.addKingdomPile(k, supply)].Bane = true
+	g.setupCard(k)
+}
+
+// Unused lists the kingdom piles with rules that aren't in the game, by name,
+// for a Setup to choose from with Rand.
+func (g *Game) Unused(ok func(*Def) bool) []CardID {
+	pool := g.pool
+	if len(pool) == 0 {
+		pool = g.T.Playable()
+	}
+	var out []CardID
+	for _, c := range pool {
+		if d := g.T.Defs[c]; !d.Landscape() && g.PileOf(c) < 0 && ok(d) {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+// Rand is a random number in [0, n) from the game's seed.
+func (g *Game) Rand(n int) int { return g.rng.IntN(n) }
 
 // setupCard runs a kingdom card's (and its pile members') or a landscape's Setup.
 func (g *Game) setupCard(c CardID) {

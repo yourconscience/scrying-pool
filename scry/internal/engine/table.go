@@ -162,6 +162,10 @@ type Rules struct {
 	// CanBuy forbids buying the card (Grand Market with a Copper in play).
 	CanBuy func(g *Game, p int) bool
 
+	// Overpay is what paying $n more than a card's cost when buying it does,
+	// after the card is gained (Masterpiece's Silvers).
+	Overpay func(c *Ctx, n int)
+
 	// Buy is an Event's effect, or a Project's when bought.
 	Buy func(c *Ctx)
 	// Setup prepares the game for the card: piles it needs, tokens. Start

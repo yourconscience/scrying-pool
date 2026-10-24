@@ -46,14 +46,17 @@ type Money struct {
 // nonTerminal lists cards that give +Actions, played before the others.
 var nonTerminal = map[string]bool{"Cellar": true, "Harbinger": true, "Merchant": true, "Village": true,
 	"Poacher": true, "Festival": true, "Laboratory": true, "Market": true, "Sentry": true,
-	"Pawn": true, "Shanty Town": true, "Conspirator": true, "Mining Village": true, "Great Hall": true, "Nobles": true,
-	"Lurker": true, "Diplomat": true, "Mill": true, "Secret Passage": true, "Upgrade": true, "Scout": true,
+	"Pawn": true, "Shanty Town": true, "Conspirator": true, "Mining Village": true, "Nobles": true,
+	"Lurker": true, "Diplomat": true, "Mill": true, "Secret Passage": true, "Upgrade": true,
 	"Bazaar": true, "Caravan": true, "Fishing Village": true, "Haven": true, "Lighthouse": true, "Lookout": true,
-	"Native Village": true, "Pearl Diver": true, "Sailor": true, "Sea Chart": true, "Tide Pools": true,
+	"Native Village": true, "Sailor": true, "Sea Chart": true, "Tide Pools": true,
 	"Treasury": true, "Warehouse": true,
 	"City": true, "Grand Market": true, "Peddler": true, "Worker's Village": true,
 	"Border Village": true, "Cartographer": true, "Crossroads": true, "Highway": true, "Inn": true, "Oasis": true,
-	"Scheme": true, "Trail": true, "Wheelwright": true}
+	"Scheme": true, "Trail": true, "Wheelwright": true,
+	"Farmhands": true, "Ferryman": true, "Hamlet": true, "Hunting Party": true, "Joust": true, "Menagerie": true,
+	"Demesne": true,
+	"Advisor": true, "Baker": true, "Candlestick Maker": true, "Farrier": true, "Herald": true, "Plaza": true}
 
 // price is a card's cost as one number: a Potion counts $2, debt $1.
 func price(d *engine.Def) int { return d.Cost.Coins + 2*d.Cost.Potion + d.Cost.Debt }

@@ -345,8 +345,15 @@ func (r *zoneReplay) takeCard(e Event, p, card string, want []string, usePending
 
 func (r *zoneReplay) find(e Event, p, card string, want []string, usePending bool) string {
 	// what was just revealed comes first, also when the reveal didn't name the
-	// cards: an opponent's Miller "looks at 4 cards", then discards "2 other cards and a Town"
-	if c := r.z(p)[ZoneRevealed]; usePending && c != nil && c.Size() > 0 {
+	// cards: an opponent's Miller "looks at 4 cards", then discards "2 other cards and a Town".
+	// Not two levels below the reveal, in a play it led to: the Trail a Lookout
+	// trashed draws from the deck, not the cards the Lookout looks at.
+	nearReveal := func(x pending) bool { return x.zone == ZoneRevealed && x.level >= e.Level-1 }
+	near := false
+	for _, x := range r.pend[p] {
+		near = near || nearReveal(x)
+	}
+	if c := r.z(p)[ZoneRevealed]; usePending && near && c != nil && c.Size() > 0 {
 		if r.takeOne(p, ZoneRevealed, card, false) || r.couldBeUnknown(p, card) && r.takeOne(p, ZoneRevealed, card, true) {
 			return ZoneRevealed
 		}
@@ -366,7 +373,7 @@ func (r *zoneReplay) find(e Event, p, card string, want []string, usePending boo
 		// its pile, not the Horse it drew), then one moved just before
 		ps := r.pend[p]
 		for _, pick := range []func(x pending) bool{
-			func(x pending) bool { return x.zone == ZoneRevealed },
+			nearReveal,
 			func(x pending) bool { return x.level < e.Level && contains(want, x.zone) },
 			func(x pending) bool { return contains(want, x.zone) },
 		} {
@@ -448,8 +455,8 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 		dest := to
 		if dest == ZoneDiscard {
 			by := r.cause(e)
-			if e.CauseOf == "RETURN_TO" {
-				by = "" // Ambassador's copy: the card returned didn't gain it
+			if e.CauseOf == "RETURN_TO" || gains[e.CauseOf] {
+				by = "" // a Trader's Silver for a Fool's Gold: the card returned or gained didn't gain it
 			}
 			if a := e.Args[2]; e.Template == "GAIN_WITH" && a.Text != "" {
 				by = strings.TrimSpace(a.Text)
@@ -701,12 +708,29 @@ func (r *zoneReplay) step(i int, e Event) {
 	if p == "" {
 		return
 	}
+	for q, ps := range r.pend {
+		// another player's line ends a chain at its level: what a Diplomat
+		// discarded isn't the Copper the Clerk then has its victim topdeck
+		if q == p {
+			continue
+		}
+		keep := ps[:0]
+		for _, x := range ps {
+			if x.level < e.Level {
+				keep = append(keep, x)
+			}
+		}
+		r.pend[q] = keep
+	}
 	cards := e.Args[1].Cards
 	arg2 := ""
 	if cs := e.Args[2].Cards; len(cs) > 0 && cs[0].Card != nil {
 		arg2 = cs[0].Card.Name
 	}
 	self := func(want ...string) []string { // cards that move themselves come from play first
+		if gains[e.CauseOf] { // not one just gained: an Inn shuffles itself in from the discard pile
+			return want
+		}
 		for _, cn := range cards {
 			if cn.Card != nil && (cn.Card.Name == e.Cause || cn.Card.Name == arg2) {
 				return append([]string{ZonePlay}, want...)
@@ -718,7 +742,7 @@ func (r *zoneReplay) step(i int, e Event) {
 	if leavesIfNow[cause] == e.Template {
 		r.note("now", cause)
 	}
-	fromTrash := backFromTrash[e.Cause][e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == e.Cause
+	fromTrash := backFromTrashed(e, cards)
 
 	switch t := e.Template; {
 	case fromTrash: // Fortress back to hand, Lich to the discard pile, Trail into play
@@ -743,6 +767,9 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "GAIN_SETTING_ASIDE", t == "INHERITS":
 		r.gain(e, p, cards, ZoneSetAside)
 		r.note("set aside", cause)
+	case t == "GAIN" && p != r.turnOf && e.Cause == "Province" && gains[e.CauseOf] && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Gold" &&
+		strings.HasPrefix(r.events[i-1].Template, "TRASH") && r.events[i-1].Player == p:
+		r.gain(e, p, cards, ZoneDeck) // another player's Province: "trashes a Fool's Gold.", "gains a Gold." onto the deck
 	case gains[t]:
 		r.gain(e, p, cards, ZoneDiscard)
 	case t == "EXILE" && supplyExilers[e.Cause]:
@@ -750,7 +777,7 @@ func (r *zoneReplay) step(i int, e Event) {
 
 	// cards that leave the player
 	case strings.HasPrefix(t, "TRASH"):
-		if supplyTrashers[e.Cause] {
+		if trashesSupply(e) {
 			break
 		}
 		want := self(ZoneHand, ZonePlay, ZoneDiscard)
@@ -786,6 +813,10 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "PLAY" && playsFromElsewhere[cause]:
 	case t == "PLAY" && i > 0 && r.events[i-1].Template == "REACTS_PLAYING" && r.events[i-1].Player == p && r.events[i-1].Level == e.Level:
 		// "reacts with a Guard Dog, playing it." and then "plays a Guard Dog." are one play
+	case t == "REACTS_PLAYING" && i > 0 && r.events[i-1].Template == "GAIN_SETTING_ASIDE" && r.events[i-1].Player == p:
+		// "gains a Trail setting it aside." and "reacts with a Trail, playing it.": the Blockade holds nothing
+		r.play(e, p, cards, []string{ZoneSetAside, ZoneHand, ZoneDiscard, ZoneDeck})
+		r.evidence["set aside:"+r.cause(r.events[i-1])]--
 	case t == "PLAY", t == "PLAY_TREASURES_FOR", t == "PLAY_USING_WAY", t == "PLAY_ENLIGHTENED", t == "PLAY_NULLIFIED", t == "REACTS_PLAYING":
 		r.play(e, p, cards, []string{ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
 	case t == "DISCARD", t == "DISCARD_WITH", t == "DISCARD_REVEALED":

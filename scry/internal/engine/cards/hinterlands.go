@@ -2,7 +2,7 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Hinterlands, with the first edition's cards.
+// Hinterlands, second edition.
 func init() {
 	reg("Berserker", rules{
 		Play: func(c *ctx) {
@@ -27,9 +27,6 @@ func init() {
 		},
 		OnGain: func(c *ctx, e *ev) { c.ChooseGain(c.P, cheaperThan(c, c.Src), discard) },
 	})
-	reg("Cache", rules{Coins: 3, OnGain: func(c *ctx, e *ev) {
-		c.GainN(c.P, c.Card("Copper"), 2, discard, "GAIN")
-	}})
 	reg("Cartographer", rules{Play: func(c *ctx) {
 		c.Draw(1)
 		c.PlusActions(1)
@@ -83,33 +80,6 @@ func init() {
 		c.ChooseGain(c.P, more, deck)
 		c.ChooseGain(c.P, less, deck)
 	}})
-	reg("Duchess", rules{
-		Setup: func(g *engine.Game) { g.Global = append(g.Global, g.T.MustCard("Duchess")) },
-		Play: func(c *ctx) {
-			c.PlusCoins(2)
-			for _, p := range []int{c.P, c.Other()} {
-				xs := c.FromTop(p, 1, "LOOK_AT")
-				if len(xs) == 1 && c.Mode1(p, mode{"discard it", "DISCARD"}, mode{"put it back", ""}) == 0 {
-					c.Discard(p, xs)
-				} else {
-					c.MoveTo(p, xs, deck, "")
-				}
-			}
-		},
-		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) {
-			if c.Me < 0 && c.G.D(e.C).Name == "Duchy" && c.G.Left(c.Src) > 0 && c.Yes(e.P, "gain a Duchess", "GAIN") {
-				c.As(e.P).Gain(e.P, c.Src, discard)
-			}
-		},
-	})
-	reg("Embassy", rules{
-		Play: func(c *ctx) {
-			c.Draw(5)
-			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, min(3, len(c.Hand(c.P))), 3))
-		},
-		OnGain: func(c *ctx, e *ev) { c.Gain(c.Other(), c.Card("Silver"), discard) },
-	})
 	reg("Farmland", rules{VP: worth(2), OnGain: func(c *ctx, e *ev) {
 		if x := pick1(c, c.P, engine.ToTrash, hand, nil, false); x >= 0 {
 			up := costExactly(c, x, 2)
@@ -128,8 +98,7 @@ func init() {
 		},
 		Reacts:   engine.On(engine.EvGain),
 		CanReact: func(c *ctx, e *ev) bool { return e.P != c.P && c.G.D(e.C).Name == "Province" },
-		React: func(c *ctx, e *ev) bool {
-			c.Log("REACTS_WITH", engine.Seat(c.P), []engine.CardID{c.Src})
+		React: func(c *ctx, e *ev) bool { // "trashes a Fool's Gold.", "gains a Gold."
 			if len(c.Trash(c.P, one(c.Me))) == 1 {
 				c.Gain(c.P, c.Card("Gold"), deck)
 			}
@@ -167,14 +136,6 @@ func init() {
 		},
 		Reduce: func(g *engine.Game, me inst, c engine.CardID) int { return 1 },
 	})
-	reg("Ill-Gotten Gains", rules{Coins: 1, Alone: true,
-		Play: func(c *ctx) {
-			if c.Yes(c.P, "gain a Copper to your hand", "GAIN_TO_HAND") {
-				c.GainAs(c.P, c.Card("Copper"), hand, "GAIN_TO_HAND")
-			}
-		},
-		OnGain: func(c *ctx, e *ev) { c.Gain(c.Other(), c.Card("Curse"), discard) },
-	})
 	reg("Inn", rules{
 		Play: func(c *ctx) {
 			c.Draw(2)
@@ -200,15 +161,6 @@ func init() {
 		}
 		c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, not(treasure), 0, 1))
 	}})
-	reg("Mandarin", rules{
-		Play: func(c *ctx) {
-			c.PlusCoins(3)
-			c.Topdeck(c.P, pick(c, c.P, engine.ToTopdeck, hand, nil, 1, 1))
-		},
-		OnGain: func(c *ctx, e *ev) {
-			topdeckAny(c, c.P, cards(c.Options(c.P, inPlay, treasure)))
-		},
-	})
 	reg("Margrave", rules{Play: func(c *ctx) {
 		c.Draw(3)
 		c.PlusBuys(1)
@@ -219,25 +171,6 @@ func init() {
 			}
 		})
 	}})
-	reg("Noble Brigand", rules{
-		Play: func(c *ctx) {
-			c.PlusCoins(1)
-			c.Attack(func(v int) { nobleBrigand(c, v) })
-		},
-		OnBuy: func(c *ctx, e *ev) { nobleBrigand(c, c.Other()) },
-	})
-	reg("Nomad Camp", rules{
-		Play: func(c *ctx) {
-			c.PlusBuys(1)
-			c.PlusCoins(2)
-		},
-		OnGain: func(c *ctx, e *ev) {
-			if stillGained(c, e) {
-				c.MoveTo(c.P, one(c.Me), deck, "")
-				e.Done = true
-			}
-		},
-	})
 	reg("Nomads", rules{
 		Play: func(c *ctx) {
 			c.PlusBuys(1)
@@ -251,20 +184,6 @@ func init() {
 		c.PlusActions(1)
 		c.PlusCoins(1)
 		c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 1, 1))
-	}})
-	reg("Oracle", rules{Play: func(c *ctx) {
-		for _, p := range []int{c.P, c.Other()} {
-			if p != c.P && c.Unaffected(p) {
-				continue
-			}
-			xs := c.FromTop(p, 2, "REVEAL")
-			if len(xs) > 0 && c.Mode1(c.P, mode{"discard them", "DISCARD"}, mode{"put them back", "TOPDECK"}) == 0 {
-				c.Discard(p, xs)
-			} else {
-				topdeckAny(c, p, xs)
-			}
-		}
-		c.Draw(2)
 	}})
 	reg("Scheme", rules{
 		Play: func(c *ctx) {
@@ -290,13 +209,14 @@ func init() {
 				}
 				return w.N == 0
 			case e.Kind == engine.EvDiscard && e.Cleanup && w.N == int(e.X)+1:
-				c.Topdeck(w.P, one(e.X))
+				if c.G.Where(e.X) == (engine.Loc{Zone: discard, Owner: int16(w.P)}) { // a Treasury may have topdecked itself
+					c.Topdeck(w.P, one(e.X))
+				}
 				return true
 			}
 			return false
 		},
 	})
-	reg("Silk Road", rules{VP: func(g *engine.Game, p int) int { return g.Count(p, victory) / 4 }})
 	reg("Souk", rules{
 		Play: func(c *ctx) {
 			c.PlusBuys(1)

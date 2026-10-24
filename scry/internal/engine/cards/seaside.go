@@ -2,21 +2,8 @@ package cards
 
 import "github.com/yourconscience/scrying-pool/scry/internal/engine"
 
-// Seaside, with Caravan and the first edition's cards.
+// Seaside, second edition.
 func init() {
-	reg("Ambassador", rules{Play: func(c *ctx) {
-		x := pick1(c, c.P, engine.ToReveal, hand, nil, false)
-		if x < 0 {
-			return
-		}
-		c.Reveal(c.P, one(x))
-		card := c.G.CardOf(x)
-		back := pick(c, c.P, engine.ToReturn, hand, func(d *def) bool { return d.ID == card }, 0, 2)
-		for _, y := range back {
-			c.ReturnTo(c.P, y)
-		}
-		c.Attack(func(v int) { c.Deeper().Gain(v, card, discard) })
-	}})
 	reg("Astrolabe", rules{Coins: 1,
 		Play: func(c *ctx) {
 			c.PlusBuys(1)
@@ -117,23 +104,6 @@ func init() {
 			c.RevealHand(v)
 		})
 	}})
-	reg("Embargo", rules{Play: func(c *ctx) {
-		c.PlusCoins(2)
-		if len(c.Trash(c.P, one(c.Me))) == 0 {
-			return
-		}
-		if o := c.ChooseOne(c.P, engine.ToPick, c.SupplyOptions(nil), false); o != nil {
-			c.G.Piles[c.G.PileOf(o.Card)].Embargo++
-		}
-	}})
-	reg("Explorer", rules{Play: func(c *ctx) {
-		gain := c.Card("Silver")
-		if x := pick1(c, c.P, engine.ToReveal, hand, named("Province"), true); x >= 0 {
-			c.Reveal(c.P, one(x))
-			gain = c.Card("Gold")
-		}
-		c.GainAs(c.P, gain, hand, "GAIN_TO_HAND")
-	}})
 	reg("Fishing Village", rules{
 		Play: func(c *ctx) {
 			c.PlusActions(2)
@@ -146,14 +116,6 @@ func init() {
 			return true
 		},
 	})
-	reg("Ghost Ship", rules{Play: func(c *ctx) {
-		c.Draw(2)
-		c.Attack(func(v int) {
-			if n := len(c.Hand(v)) - 3; n > 0 {
-				topdeckAny(c, v, pick(c, v, engine.ToTopdeck, hand, nil, n, n))
-			}
-		})
-	}})
 	reg("Haven", rules{
 		Play: func(c *ctx) {
 			c.Draw(1)
@@ -237,15 +199,6 @@ func init() {
 		}
 		c.ToHand(c.P, append([]inst{}, c.Zone(c.P, engine.NativeVillage)...), "PUT_IN_HAND")
 	}})
-	reg("Navigator", rules{Play: func(c *ctx) {
-		c.PlusCoins(2)
-		xs := c.FromTop(c.P, 5, "LOOK_AT")
-		if len(xs) > 0 && c.Mode1(c.P, mode{"discard them", "DISCARD"}, mode{"put them back", "TOPDECK"}) == 0 {
-			c.Discard(c.P, xs)
-			return
-		}
-		topdeckAny(c, c.P, xs)
-	}})
 	reg("Outpost", rules{
 		Play: func(c *ctx) {
 			n := 0
@@ -263,20 +216,6 @@ func init() {
 		},
 		Next: func(c *ctx, d *engine.Dur) bool { return true },
 	})
-	reg("Pearl Diver", rules{Play: func(c *ctx) {
-		c.Draw(1)
-		c.PlusActions(1)
-		if len(c.Zone(c.P, deck)) == 0 {
-			c.Shuffle(c.P)
-		}
-		if d := c.Zone(c.P, deck); len(d) > 0 {
-			x := d[0]
-			c.LookAt(c.P, one(x))
-			if len(d) > 1 && c.Yes(c.P, "put it on top", "TOPDECK") {
-				c.Topdeck(c.P, one(x))
-			}
-		}
-	}})
 	reg("Pirate", rules{
 		Play: func(c *ctx) { c.Stay() },
 		Next: func(c *ctx, d *engine.Dur) bool {
@@ -291,32 +230,6 @@ func init() {
 			return true
 		},
 	})
-	reg("Pirate Ship", rules{Play: func(c *ctx) {
-		if c.Mode1(c.P, mode{"attack", "REVEAL"}, mode{"+$ per Coin token", "GETS_COINS"}) == 1 {
-			if n := c.Pl(c.P).Mat[c.Src]; n > 0 {
-				c.PlusCoins(n)
-			}
-			return
-		}
-		hit := false
-		c.Attack(func(v int) {
-			xs := c.FromTop(v, 2, "REVEAL")
-			var ts []inst
-			for _, x := range xs {
-				if c.G.Def(x).Treasure() {
-					ts = append(ts, x)
-				}
-			}
-			if t := pickOf(c, c.P, engine.ToTrash, ts, 1, 1); len(t) == 1 {
-				c.Trash(v, t)
-				hit = true
-			}
-			c.Discard(v, c.In(revealed, xs))
-		})
-		if hit {
-			c.Pl(c.P).Mat[c.Src]++
-		}
-	}})
 	reg("Sailor", rules{
 		Play: func(c *ctx) {
 			c.PlusActions(1)
@@ -362,12 +275,6 @@ func init() {
 			return
 		}
 		c.MoveTo(c.P, x, deck, "BACK_ON_DECK")
-	}})
-	reg("Sea Hag", rules{Play: func(c *ctx) {
-		c.Attack(func(v int) {
-			c.DiscardTop(v)
-			c.GainAs(v, c.Card("Curse"), deck, "GAIN_ON_DRAWPILE")
-		})
 	}})
 	reg("Sea Witch", rules{
 		Play: func(c *ctx) {
@@ -434,7 +341,7 @@ func init() {
 			c.PlusCoins(1)
 		},
 		OnDiscard: func(c *ctx, e *ev) {
-			if !e.Cleanup {
+			if !e.Cleanup || c.G.Where(c.Me) != (engine.Loc{Zone: discard, Owner: int16(c.P)}) { // a Scheme took it first
 				return
 			}
 			for _, b := range c.T2().Bought {

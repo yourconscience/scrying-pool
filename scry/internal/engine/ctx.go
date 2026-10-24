@@ -311,7 +311,8 @@ func (c *Ctx) logGain(p int, x Inst, template string) {
 	c.Log(template, args...)
 }
 
-// GainN gains up to n cards from a pile, logged as one line: "gains 4 Golds onto their drawpile".
+// GainN gains up to n cards from a pile, logged as one line unless what a gain
+// causes comes between: "gains 4 Golds onto their drawpile".
 func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst {
 	i := c.G.PileOf(card)
 	var xs []Inst
@@ -325,8 +326,14 @@ func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst 
 	if len(xs) == 0 {
 		return nil
 	}
-	c.Log(template, Seat(p), c.G.ids(xs))
+	seen := -1
 	for _, x := range xs {
+		if c.G.Log.size() == seen { // nothing logged since the last gain: "gains 2 Silvers"
+			c.G.Log.extendLast(card)
+		} else { // a Footpad's draw between them: "gains a Silver", "draws a card", "gains a Silver"
+			c.Log(template, Seat(p), []CardID{card})
+		}
+		seen = c.G.Log.size()
 		c.G.gainX(p, x, to, c.level+1, c.Src, false)
 	}
 	return xs

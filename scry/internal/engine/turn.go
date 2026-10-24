@@ -297,7 +297,17 @@ func (g *Game) buy(p int, c CardID) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	over := 0
+	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
+		over = g.ctx(p, x, 1).Number(p, 0, pl.Coins, "LOSES_COINS")
+	}
+	if over > 0 { // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
+		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+		pl.Coins -= over
+		g.Log.add(Entry{Level: 1, Template: plural(over, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), over}})
+	} else {
+		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	}
 	line := g.Log.last()
 	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
@@ -312,7 +322,13 @@ func (g *Game) buy(p int, c CardID) {
 		}
 		x = pile[len(pile)-1]
 	}
+	if over > 0 {
+		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(p), []CardID{c}}})
+	}
 	g.gainX(p, x, Discard, 1, 0, true)
+	if over > 0 {
+		d.Rules.Overpay(g.ctx(p, x, 1), over)
+	}
 }
 
 func (g *Game) takeDebt(p, n, level int) {
@@ -420,7 +436,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
-	case how.times == 1:
+	case how.times == 1 || how.times > 2: // a fourth Infirmary is "again" too
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
 	case how.times == 2:
 		g.Log.add(Entry{Level: level, Template: "PLAY_THIRD", Args: []any{Seat(p), card}})
