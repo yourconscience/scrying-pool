@@ -543,7 +543,7 @@ func (r *zoneReplay) leavePlay(p, name string) {
 			break
 		}
 		// before Clean-up Bonfire trashes the Caravan Guard whose turn this is, not the one just played
-		if r.cleaning != p && ps[i].turn < r.turn && ps[i].stays <= 0 {
+		if r.cleaning != p && ps[i].turn < r.turn && ps[i].stays <= 0 && ps[i].holds == nil && !permanent[ps[i].name] {
 			pick = i
 			break
 		}
