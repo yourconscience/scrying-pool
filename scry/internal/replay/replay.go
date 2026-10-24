@@ -230,23 +230,31 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 	for n, a := range e.Args {
 		y := x.Args[n]
 		switch a := a.(type) {
+		case engine.Seat:
+			if y.Player != r.names[a] {
+				return "a different player"
+			}
 		case int:
-			if n == 0 { // a seat
-				if y.Player != r.names[a] {
-					return "a different player"
-				}
-			} else if y.Number == nil || *y.Number != a {
+			if y.Number == nil || *y.Number != a {
 				return "a different number"
 			}
-		case string:
-			if strings.TrimSpace(y.Text) != a {
+		case engine.Name:
+			if a != 0 && norm(y.Text) != norm(r.t.Defs[a].Name) {
 				return "a different card"
 			}
-		case []string:
+		case engine.PileName:
+			if norm(y.Text) != norm("the "+r.t.Defs[a].Name+" pile") {
+				return "a different pile"
+			}
+		case []engine.CardID:
 			if !cards {
 				continue
 			}
-			if why := sameCards(a, y.Cards); why != "" {
+			names := make([]string, len(a))
+			for i, id := range a {
+				names[i] = r.t.Defs[id].Name
+			}
+			if why := sameCards(names, y.Cards); why != "" {
 				return why
 			}
 		}
@@ -369,7 +377,7 @@ func (r *replayer) moreOfLast(d *engine.Decision) (cartographer.CardN, bool) {
 		return cartographer.CardN{}, false
 	}
 	cs := x.Args[1].Cards
-	if len(cs) != 1 || cs[0].Card == nil || cs[0].N <= len(e.Args[1].([]string)) {
+	if len(cs) != 1 || cs[0].Card == nil || cs[0].N <= len(e.Args[1].([]engine.CardID)) {
 		return cartographer.CardN{}, false
 	}
 	return cartographer.CardN{Card: cs[0].Card, N: 1}, true

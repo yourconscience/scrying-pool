@@ -559,7 +559,7 @@ func (g *Game) Play() Result {
 		if g.AfterTurn != nil {
 			g.AfterTurn(g)
 		}
-		for len(g.extra) > 0 && !g.over() {
+		for len(g.extra) > 0 && !g.over() && !g.capped() {
 			src := g.extra[0]
 			g.extra = g.extra[1:]
 			g.takeTurn(src)
@@ -598,7 +598,11 @@ func (g *Game) over() bool {
 	return g.ended || g.Left(g.province) == 0 || g.Colony && g.Left(g.colony) == 0 || g.EmptyPiles() >= 3
 }
 
-func (g *Game) capped() bool { return g.Cur == 1 && g.P[1].Turns >= MaxTurns }
+// capped: the second player has taken MaxTurns turns, or extra turns kept
+// coming until both players together took three times as many.
+func (g *Game) capped() bool {
+	return g.Cur == 1 && g.P[1].Turns >= MaxTurns || g.turns >= 3*MaxTurns
+}
 
 func (g *Game) result(capped bool) Result {
 	r := Result{Capped: capped, Winner: -1}
