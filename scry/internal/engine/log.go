@@ -154,6 +154,8 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 			}
 		}
 		switch len(parts) {
+		case 0:
+			return "nothing", nil // "discards nothing."
 		case 1:
 			return parts[0], nil
 		case 2:
