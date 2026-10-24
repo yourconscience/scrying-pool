@@ -173,6 +173,7 @@ type played struct {
 	turn  int     // the turn it was played on (count of NEW_TURN lines)
 	stays int     // the owner's Clean-ups it still stays through; -1 until decided
 	holds *played // the Duration a Throne Room-like card played
+	by    string  // the card whose line played it: a Throne Room
 	fired bool    // an untilTriggered card whose time came
 	back  bool    // played by Prince: set aside again instead of discarded
 }
@@ -206,6 +207,8 @@ type zoneReplay struct {
 	cleaning string              // the player whose Clean-up has begun
 	owned    Decks
 	received map[string][]pending // Boons and Hexes being resolved: their lines follow at the same level
+	reacted  map[string][]pending // reactions being resolved: "reacts with a Tunnel", then its Gold
+	playAt   map[int]*played      // the card the latest play line at each level played
 	inPlay   map[string][]*played
 	pend     map[string][]pending
 	turn     int            // NEW_TURN lines so far
@@ -220,7 +223,7 @@ type zoneReplay struct {
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
-	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}, latest: map[int]int{}}
+	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, reacted: map[string][]pending{}, playAt: map[int]*played{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}, latest: map[int]int{}}
 	for _, p := range g.Players {
 		r.zones[p] = Zones{}
 	}
@@ -476,6 +479,9 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 			if e.CauseOf == "RETURN_TO" || gains[e.CauseOf] {
 				by = "" // a Trader's Silver for a Fool's Gold: the card returned or gained didn't gain it
 			}
+			if rs := r.reacted[p]; len(rs) > 0 && rs[len(rs)-1].level == e.Level {
+				by = rs[len(rs)-1].card // the Tunnel's Gold, not one for the Fool's Gold discarded with it
+			}
 			if a := e.Args[2]; e.Template == "GAIN_WITH" && a.Text != "" {
 				by = strings.TrimSpace(a.Text)
 			}
@@ -510,7 +516,9 @@ func (r *zoneReplay) leavePlay(p, name string) {
 		if pick < 0 {
 			pick = i
 		}
-		if r.cleaning == p && ps[i].stays == 0 { // in Clean-up Scheme topdecks the Monkey that's done, not the one staying out
+		// in Clean-up Scheme topdecks the Monkey that's done, not the one staying out;
+		// but Herbalist's Treasure is one still in play, played after it, not last turn's Astrolabe, discarded first
+		if r.cleaning == p && ps[i].stays == 0 && !(ps[i].card != nil && ps[i].card.Is("Treasure")) {
 			pick = i
 			break
 		}
@@ -571,7 +579,7 @@ func (r *zoneReplay) note(kind, card string) {
 // expire drops pending cards whose line has ended, and puts revealed cards
 // nothing took back onto the deck.
 func (r *zoneReplay) expire(e Event) {
-	for _, m := range []map[string][]pending{r.pend, r.received} {
+	for _, m := range []map[string][]pending{r.pend, r.received, r.reacted} {
 		for p, ps := range m {
 			keep := ps[:0]
 			for _, x := range ps {
@@ -621,13 +629,19 @@ func (r *zoneReplay) cleanUp(p string) {
 			}
 			keep = append(keep, x)
 		}
-		// a Throne Room stays as long as the Duration it played
-		var out []*played
-		for _, x := range keep {
-			if x.holds != nil && !containsPlayed(keep, x.holds) {
-				continue
+		// a Throne Room stays as long as the Duration it played, or the Throne Room
+		out := keep
+		for changed := true; changed; {
+			changed = false
+			var next []*played
+			for _, x := range out {
+				if x.holds != nil && !containsPlayed(out, x.holds) {
+					changed = true
+					continue
+				}
+				next = append(next, x)
 			}
-			out = append(out, x)
+			out = next
 		}
 		for _, x := range ps {
 			if !containsPlayed(out, x) {
@@ -742,6 +756,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.turnOf = e.Player
 		r.pend = map[string][]pending{}
 		r.received = map[string][]pending{}
+		r.reacted = map[string][]pending{}
+		r.playAt = map[int]*played{}
 		r.cleaning = ""
 		return
 	}
@@ -796,6 +812,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			r.inPlay[p] = append(r.inPlay[p], &played{name: cards[0].Card.Name, card: cards[0].Card, turn: r.turn, stays: -1})
 		}
 
+	case t == "REACTS_WITH" && len(cards) == 1 && cards[0].Card != nil:
+		r.reacted[p] = append(r.reacted[p], pending{cards[0].Card.Name, "", e.Level, false, source(e), e.Line})
 	case (t == "RECEIVES" || t == "EXCHANGE_RECEIVE" || t == "TAKE") && len(cards) == 1 && cards[0].Card != nil && !cards[0].Card.InDeck():
 		r.received[p] = append(r.received[p], pending{cards[0].Card.Name, "", e.Level, false, source(e), e.Line})
 
@@ -1061,6 +1079,11 @@ func (r *zoneReplay) play(e Event, p string, cards []CardN, want []string) {
 		return
 	}
 	r.move(e, p, mine, want, ZonePlay)
+	r.playAt[e.Level] = nil
+	if len(r.inPlay[p]) == n+1 {
+		r.playAt[e.Level] = r.inPlay[p][n]
+		r.inPlay[p][n].by = e.Cause
+	}
 	if strings.TrimSpace(e.Args[2].Text) == "Prince" {
 		for _, x := range r.inPlay[p][n:] {
 			x.back = true
@@ -1069,11 +1092,12 @@ func (r *zoneReplay) play(e Event, p string, cards []CardN, want []string) {
 }
 
 // replay notes a card played again: a Throne Room that plays a Duration twice
-// stays in play as long as that Duration.
+// stays in play as long as that Duration, and so does a Throne Room that plays
+// that Throne Room.
 func (r *zoneReplay) replay(e Event, p string, cards []CardN) {
 	ps := r.inPlay[p]
 	for _, cn := range cards {
-		if cn.Card == nil || !cn.Card.Is("Duration") {
+		if cn.Card == nil {
 			continue
 		}
 		var x *played
@@ -1083,11 +1107,22 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN) {
 				break
 			}
 		}
+		if x == nil || !cn.Card.Is("Duration") && x.holds == nil {
+			continue
+		}
 		for i := len(ps) - 1; x != nil && i >= 0; i-- {
 			if h := ps[i]; h.name == e.Cause && h.holds == nil && h != x {
 				h.holds = x
 				break
 			}
+		}
+		// and the Throne Room that played that Throne Room, though it played it before the Duration
+		for k := e.Level - 1; k > 0; k-- {
+			in, out := r.playAt[k], r.playAt[k-1]
+			if in == nil || out == nil || in.holds == nil || out.holds != nil || in.by != out.name {
+				break
+			}
+			out.holds = in
 		}
 	}
 }
