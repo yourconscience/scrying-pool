@@ -85,7 +85,7 @@ func init() {
 	reg("Ruined Village", rules{Play: func(c *ctx) { c.PlusActions(1) }})
 	reg("Survivors", rules{Play: func(c *ctx) {
 		xs := c.FromTop(c.P, 2, "LOOK_AT")
-		if len(xs) > 0 && c.Mode1(c.P, mode{"discard them", "DISCARD"}, mode{"put them back", "TOPDECK"}) == 0 {
+		if len(xs) > 0 && c.Mode1(c.P, mode("discard them", "DISCARD"), mode("put them back", "TOPDECK")) == 0 {
 			c.Discard(c.P, xs)
 			return
 		}
@@ -178,7 +178,7 @@ func init() {
 	reg("Catacombs", rules{
 		Play: func(c *ctx) {
 			xs := c.FromTop(c.P, 3, "LOOK_AT")
-			if c.Mode1(c.P, mode{"put them into your hand", "PUT_IN_HAND"}, mode{"discard them, +3 Cards", "DISCARD"}) == 0 {
+			if c.Mode1(c.P, mode("put them into your hand", "PUT_IN_HAND"), mode("discard them, +3 Cards", "DISCARD")) == 0 {
 				c.ToHand(c.P, xs, "PUT_IN_HAND")
 				return
 			}
@@ -188,7 +188,7 @@ func init() {
 		OnTrash: func(c *ctx, e *ev) { c.ChooseGain(c.P, cheaperThan(c, e.C), discard) },
 	})
 	reg("Count", rules{Play: func(c *ctx) {
-		switch c.Mode1(c.P, mode{"discard 2 cards", "DISCARD"}, mode{"put a card from your hand onto your deck", "TOPDECK"}, mode{"gain a Copper", "GAIN"}) {
+		switch c.Mode1(c.P, mode("discard 2 cards", "DISCARD"), mode("put a card from your hand onto your deck", "TOPDECK"), mode("gain a Copper", "GAIN")) {
 		case 0:
 			n := min(2, len(c.Hand(c.P)))
 			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, n, n))
@@ -197,7 +197,7 @@ func init() {
 		case 2:
 			c.Gain(c.P, c.Card("Copper"), discard)
 		}
-		switch c.Mode1(c.P, mode{"+$3", "GETS_COINS"}, mode{"trash your hand", "TRASH"}, mode{"gain a Duchy", "GAIN"}) {
+		switch c.Mode1(c.P, mode("+$3", "GETS_COINS"), mode("trash your hand", "TRASH"), mode("gain a Duchy", "GAIN")) {
 		case 0:
 			c.PlusCoins(3)
 		case 1:
@@ -279,7 +279,7 @@ func init() {
 		},
 	})
 	reg("Graverobber", rules{Play: func(c *ctx) {
-		if c.Mode1(c.P, mode{"gain a card from the trash", "GAIN_ON_DRAWPILE"}, mode{"trash an Action card from your hand", "TRASH"}) == 0 {
+		if c.Mode1(c.P, mode("gain a card from the trash", "GAIN_ON_DRAWPILE"), mode("trash an Action card from your hand", "TRASH")) == 0 {
 			if o := c.ChooseOne(c.P, engine.ToGain, c.OptionsOf(inTrash(c, costs3to6(c))), false); o != nil {
 				c.GainInst(c.P, o.Inst, deck, "GAIN_ON_DRAWPILE")
 			}
@@ -319,7 +319,7 @@ func init() {
 	reg("Hunting Grounds", rules{
 		Play: func(c *ctx) { c.Draw(4) },
 		OnTrash: func(c *ctx, e *ev) {
-			if c.Mode1(c.P, mode{"gain a Duchy", "GAIN"}, mode{"gain 3 Estates", "GAIN"}) == 0 {
+			if c.Mode1(c.P, mode("gain a Duchy", "GAIN"), mode("gain 3 Estates", "GAIN")) == 0 {
 				c.Gain(c.P, c.Card("Duchy"), discard)
 				return
 			}
@@ -477,7 +477,7 @@ func init() {
 	reg("Squire", rules{
 		Play: func(c *ctx) {
 			c.PlusCoins(1)
-			switch c.Mode1(c.P, mode{"+2 Actions", "GETS_ACTIONS"}, mode{"+2 Buys", "GETS_BUYS"}, mode{"gain a Silver", "GAIN"}) {
+			switch c.Mode1(c.P, mode("+2 Actions", "GETS_ACTIONS"), mode("+2 Buys", "GETS_BUYS"), mode("gain a Silver", "GAIN")) {
 			case 0:
 				c.PlusActions(2)
 			case 1:

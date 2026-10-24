@@ -156,8 +156,8 @@ func init() {
 		}
 	}))
 	reg("Teacher", startCall(func(*ctx) {}, func(c *ctx) {
-		k := c.Mode1(c.P, mode{"+1 Card", "PLAYER_MOVES_TOKEN_TO"}, mode{"+1 Action", "PLAYER_MOVES_TOKEN_TO"},
-			mode{"+1 Buy", "PLAYER_MOVES_TOKEN_TO"}, mode{"+$1", "PLAYER_MOVES_TOKEN_TO"})
+		k := c.Mode1(c.P, mode("+1 Card", "PLAYER_MOVES_TOKEN_TO"), mode("+1 Action", "PLAYER_MOVES_TOKEN_TO"),
+			mode("+1 Buy", "PLAYER_MOVES_TOKEN_TO"), mode("+$1", "PLAYER_MOVES_TOKEN_TO"))
 		tokenTo(c, engine.TokCard+k, true)
 	}))
 	reg("Duplicate", rules{
@@ -191,7 +191,7 @@ func init() {
 		return 0
 	}})
 	reg("Miser", rules{Play: func(c *ctx) {
-		if c.Mode1(c.P, mode{"put a Copper from your hand onto your Tavern mat", "PUT_ON_MAT"}, mode{"+$1 per Copper on your Tavern mat", "GETS_COINS"}) == 0 {
+		if c.Mode1(c.P, mode("put a Copper from your hand onto your Tavern mat", "PUT_ON_MAT"), mode("+$1 per Copper on your Tavern mat", "GETS_COINS")) == 0 {
 			c.PutOnMat(c.P, one(pick1(c, c.P, engine.ToPick, hand, named("Copper"), false)), tavern)
 		} else if n := c.Count(c.P, tavern, named("Copper")); n > 0 {
 			c.PlusCoins(n)
@@ -200,7 +200,7 @@ func init() {
 
 	// Durations
 	amulet := func(c *ctx) {
-		switch c.Mode1(c.P, mode{"+$1", "GETS_COIN"}, mode{"trash a card from your hand", "TRASH"}, mode{"gain a Silver", "GAIN"}) {
+		switch c.Mode1(c.P, mode("+$1", "GETS_COIN"), mode("trash a card from your hand", "TRASH"), mode("gain a Silver", "GAIN")) {
 		case 0:
 			c.PlusCoins(1)
 		case 1:
@@ -550,20 +550,20 @@ func init() {
 		},
 	})
 	reg("Quest", rules{Buy: func(c *ctx) { // "discards a Militia.", "gains a Gold."
-		ms := []mode{{"no", ""}}
+		ms := []engine.Mode{mode("no", "")}
 		do := []func() int{nil}
 		if c.Count(c.P, hand, func(d *def) bool { return d.Attack() }) > 0 {
-			ms = append(ms, mode{"discard an Attack", "DISCARD"})
+			ms = append(ms, mode("discard an Attack", "DISCARD"))
 			do = append(do, func() int {
 				return len(c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, func(d *def) bool { return d.Attack() }, 1, 1)))
 			})
 		}
 		if c.Count(c.P, hand, named("Curse")) >= 2 {
-			ms = append(ms, mode{"discard two Curses", "DISCARD"})
+			ms = append(ms, mode("discard two Curses", "DISCARD"))
 			do = append(do, func() int { return len(c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, named("Curse"), 2, 2))) / 2 })
 		}
 		if len(c.Hand(c.P)) >= 6 {
-			ms = append(ms, mode{"discard six cards", "DISCARD"})
+			ms = append(ms, mode("discard six cards", "DISCARD"))
 			do = append(do, func() int { return len(c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 6, 6))) / 6 })
 		}
 		if k := c.Mode1(c.P, ms...); k > 0 && do[k]() > 0 {
