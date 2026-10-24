@@ -215,7 +215,7 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 		}
 		return l.clientName(c, CardID(a)), nil
 	case PileName:
-		return "the " + l.clientName(c, CardID(a)) + " pile", nil
+		return "the " + l.clientName(c, l.T.PileCard(CardID(a))) + " pile", nil
 	case []CardID:
 		var order []CardID
 		count := map[CardID]int{}

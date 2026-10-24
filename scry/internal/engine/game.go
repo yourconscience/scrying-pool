@@ -158,6 +158,8 @@ type turnState struct {
 
 	Named  []CardID // cards named for War Chest this turn
 	Forbid []CardID // cards that can't be bought this turn (Contraband)
+
+	Back bool // Villa: back to the Action phase from the Buy phase
 }
 
 type Phase uint8

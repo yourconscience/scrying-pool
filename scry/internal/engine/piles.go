@@ -192,6 +192,15 @@ func (t *Table) KingdomPile(name string) (CardID, bool) {
 	return 0, false
 }
 
+// PileCard is the card a pile is called by: "the Encampment pile" for Encampment / Plunder,
+// "the Farm pile" for Harem / Farm.
+func (t *Table) PileCard(c CardID) CardID {
+	if name := t.Defs[c].Name; strings.Contains(name, " / ") {
+		return t.MustCard(pileMembers[name][0].name)
+	}
+	return c
+}
+
 // Landscape finds a landscape by name, ignoring case and punctuation.
 func (t *Table) Landscape(name string) (CardID, bool) {
 	norm := normName(name)

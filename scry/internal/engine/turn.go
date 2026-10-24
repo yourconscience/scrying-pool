@@ -37,17 +37,24 @@ func (g *Game) takeTurn(extra CardID) {
 	g.startTurn(p)
 	g.Log.lazy(nil)
 
-	g.T2.Phase = ActionPhase
-	g.actionPhase(p)
+	for { // Villa gained in the Buy phase returns to the Action phase, silently
+		g.T2.Phase = ActionPhase
+		g.actionPhase(p)
 
-	g.T2.Phase = BuyPhase
-	g.Log.lazy(&Entry{Template: "BEGINS_BUYPHASE", Args: []any{Seat(p)}})
-	g.fire(&Ev{Kind: EvBuyStart, P: p, X: -1, Level: 1})
-	g.Log.lazy(nil)
-	g.buyPhase(p)
-	g.Log.lazy(&Entry{Template: "ENDS_BUYPHASE", Args: []any{Seat(p)}})
-	g.fire(&Ev{Kind: EvBuyEnd, P: p, X: -1, Level: 1})
-	g.Log.lazy(nil)
+		g.T2.Phase = BuyPhase
+		g.Log.lazy(&Entry{Template: "BEGINS_BUYPHASE", Args: []any{Seat(p)}})
+		g.fire(&Ev{Kind: EvBuyStart, P: p, X: -1, Level: 1})
+		g.Log.lazy(nil)
+		g.buyPhase(p)
+		if g.T2.Back {
+			g.T2.Back = false
+			continue
+		}
+		g.Log.lazy(&Entry{Template: "ENDS_BUYPHASE", Args: []any{Seat(p)}})
+		g.fire(&Ev{Kind: EvBuyEnd, P: p, X: -1, Level: 1})
+		g.Log.lazy(nil)
+		break
+	}
 
 	g.T2.Phase = NightPhase
 	g.nightPhase(p)
@@ -156,11 +163,14 @@ func (g *Game) buyPhase(p int) {
 			break
 		}
 		for _, o := range got {
-			if g.loc[o.Inst] == (Loc{Hand, int16(p)}) { // not one a Crystal Ball's Masquerade passed
+			if g.loc[o.Inst] == (Loc{Hand, int16(p)}) && !g.T2.Back { // not one a Crystal Ball's Masquerade passed
 				g.play(p, o.Inst, 0, playHow{})
 			}
 		}
 		g.Log.flush()
+		if g.T2.Back {
+			return
+		}
 	}
 	if pl.Coffers > 0 {
 		var opts []Option
@@ -186,6 +196,9 @@ func (g *Game) buyPhase(p int) {
 			break
 		}
 		g.buy(p, got[0].Card)
+		if g.T2.Back {
+			return
+		}
 	}
 }
 
@@ -396,8 +409,12 @@ func (g *Game) cleanup(p int) {
 		}
 	}
 	g.watches = w
+	left := pl.Coins
 	pl.Actions, pl.Buys, pl.Coins, pl.Potions = 0, 0, 0, 0
 	g.draw(p, g.T2.HandSize, 0, 0)
+	if left > 0 && pl.Debt > 0 { // the $ Capital's debt kept: "draws 5 cards.", "loses 2 Coins."
+		g.Log.add(Entry{Template: plural(left, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), left}})
+	}
 }
 
 // playHow says how a card is played: again by a Throne Room, with a Way, by what.
@@ -408,7 +425,7 @@ type playHow struct {
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
 	holders []Inst // cards that played it: they stay in play while it does
 	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
-	self    Inst   // with inPlace: the Estate that plays it, which is "this" for its effect
+	self    Inst   // with inPlace: the Estate or Overlord that plays it, which stays in play for a Duration
 	merge   bool   // a Treasure played by an Action, on one line with the others it plays (Storyteller)
 }
 
@@ -426,7 +443,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	c := g.ctx(p, x, level+1)
 	c.holders = how.holders
 	if how.inPlace {
-		c.Me = how.self
+		c.Me, c.InPlace = how.self, true
 	}
 	card := []CardID{g.cards[x]}
 	switch {
@@ -456,8 +473,11 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		g.T2.ActionsIn++
 		g.tokenBonus(p, x, level+1)
 	}
-	g.fire(&Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1})
-	if how.way != 0 {
+	playing := &Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1}
+	g.fire(playing)
+	if playing.Skip {
+		// nothing of its own
+	} else if how.way != 0 {
 		w := g.T.Defs[how.way]
 		c.Src = how.way
 		if w.Rules != nil && w.Rules.Play != nil {
@@ -480,7 +500,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			d.Rules.Play(c)
 		}
 		if g.inherits(p, x) { // "plays an Estate.", "plays an Alley."
-			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x})
+			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x, holders: how.holders})
 		}
 	}
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
