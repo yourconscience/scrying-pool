@@ -174,6 +174,7 @@ type played struct {
 	stays int     // the owner's Clean-ups it still stays through; -1 until decided
 	holds *played // the Duration a Throne Room-like card played
 	by    string  // the card whose line played it: a Throne Room
+	again bool    // played more than once: by a Throne Room, not a Shop
 	fired bool    // an untilTriggered card whose time came
 	back  bool    // played by Prince: set aside again instead of discarded
 }
@@ -1013,6 +1014,8 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "SET_ASIDE", t == "SET_ASIDE_WITH":
 		want := []string{ZoneHand, ZonePlay, ZoneDeck, ZoneDiscard} // Faithful Hound from the discard pile
 		switch {
+		case t == "SET_ASIDE" && cause == "Farmhands" && gains[e.CauseOf]:
+			want = []string{ZoneHand} // a gained Farmhands sets aside a card from hand, not itself
 		case t == "SET_ASIDE":
 			want = self(want...)
 		case arg2 != "Trickster": // only Trickster takes from play: Haven sets aside from hand, not the Throne Room that played it, nor itself
@@ -1107,6 +1110,9 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN) {
 				break
 			}
 		}
+		if x != nil {
+			x.again = true
+		}
 		if x == nil || !cn.Card.Is("Duration") && x.holds == nil {
 			continue
 		}
@@ -1119,7 +1125,7 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN) {
 		// and the Throne Room that played that Throne Room, though it played it before the Duration
 		for k := e.Level - 1; k > 0; k-- {
 			in, out := r.playAt[k], r.playAt[k-1]
-			if in == nil || out == nil || in.holds == nil || out.holds != nil || in.by != out.name {
+			if in == nil || out == nil || in.holds == nil || !in.again || out.holds != nil || in.by != out.name {
 				break
 			}
 			out.holds = in
