@@ -38,6 +38,13 @@ func (c *Ctx) As(p int) *Ctx {
 	return &d
 }
 
+// Away is the same effect named on its lines, as away from the card's play: "gets 2 VP from Collection".
+func (c *Ctx) Away() *Ctx {
+	d := *c
+	d.from = true
+	return &d
+}
+
 // Hand is a player's hand.
 func (c *Ctx) Hand(p int) []Inst { return c.G.P[p].Z[Hand] }
 
@@ -208,7 +215,8 @@ func (c *Ctx) Yes(p int, label, line string) bool {
 	return c.Mode1(p, Mode{"no", ""}, Mode{label, line}) == 1
 }
 
-// NameCard asks player p to name a card, from all the cards that could be in a deck.
+// NameCard asks player p to name a card, from all the cards that could be in
+// a deck; the caller logs it (NAMES, or Wishing Well's own line).
 func (c *Ctx) NameCard(p int) CardID {
 	var opts []Option
 	for _, pile := range c.G.Piles {
@@ -216,9 +224,7 @@ func (c *Ctx) NameCard(p int) CardID {
 			opts = append(opts, Option{Card: id, Inst: -1})
 		}
 	}
-	got := c.Choose(p, ToName, opts, 1, 1)
-	c.Log("NAMES", Seat(p), Name(got[0].Card))
-	return got[0].Card
+	return c.Choose(p, ToName, opts, 1, 1)[0].Card
 }
 
 // Options lists a player's cards in a zone that pass a test (nil: all).
@@ -305,6 +311,34 @@ func (c *Ctx) logGain(p int, x Inst, template string) {
 	c.Log(template, args...)
 }
 
+// GainN gains up to n cards from a pile, logged as one line unless what a gain
+// causes comes between: "gains 4 Golds onto their drawpile".
+func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst {
+	i := c.G.PileOf(card)
+	var xs []Inst
+	for i >= 0 && len(xs) < n {
+		s := c.G.Piles[i].Cards
+		if len(s) <= len(xs) || c.G.cards[s[len(s)-1-len(xs)]] != card {
+			break
+		}
+		xs = append(xs, s[len(s)-1-len(xs)])
+	}
+	if len(xs) == 0 {
+		return nil
+	}
+	seen := -1
+	for _, x := range xs {
+		if c.G.Log.size() == seen { // nothing logged since the last gain: "gains 2 Silvers"
+			c.G.Log.extendLast(card)
+		} else { // a Footpad's draw between them: "gains a Silver", "draws a card", "gains a Silver"
+			c.Log(template, Seat(p), []CardID{card})
+		}
+		seen = c.G.Log.size()
+		c.G.gainX(p, x, to, c.level+1, c.Src, false)
+	}
+	return xs
+}
+
 // GainInst gains a particular card, e.g. one from the trash.
 func (c *Ctx) GainInst(p int, x Inst, to Zone, template string) {
 	c.logGain(p, x, template)
@@ -379,7 +413,8 @@ func (c *Ctx) moveAll(p int, xs []Inst, to Loc, template string, args ...any) []
 
 // Trash trashes a player's cards and runs what trashing them causes.
 func (c *Ctx) Trash(p int, xs []Inst) []Inst {
-	moved := c.moveAll(p, xs, Loc{Trash, 0}, "TRASH")
+	t, a := c.with("TRASH")
+	moved := c.moveAll(p, xs, Loc{Trash, 0}, t, a...)
 	from := c.moved
 	for i, x := range moved {
 		c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: c.G.cards[x], From: from[i], By: c.Src, Level: c.level + 1})
@@ -389,7 +424,13 @@ func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 
 // Discard discards a player's cards (not in Clean-up).
 func (c *Ctx) Discard(p int, xs []Inst) []Inst {
-	moved := c.moveAll(p, xs, Loc{Discard, int16(p)}, "DISCARD")
+	t, a := c.with("DISCARD")
+	return c.DiscardAs(p, xs, t, a...)
+}
+
+// DiscardAs discards cards with a template of its own, e.g. DISCARD_REVEALED.
+func (c *Ctx) DiscardAs(p int, xs []Inst, template string, args ...any) []Inst {
+	moved := c.moveAll(p, xs, Loc{Discard, int16(p)}, template, args...)
 	from := c.moved
 	for i, x := range moved {
 		c.G.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: c.G.cards[x], From: from[i], By: c.Src, Level: c.level + 1})
@@ -397,8 +438,18 @@ func (c *Ctx) Discard(p int, xs []Inst) []Inst {
 	return moved
 }
 
+// with is a move template's "(Card)" variant away from the card's play.
+func (c *Ctx) with(template string) (string, []any) {
+	if c.from {
+		return template + "_WITH", []any{Name(c.Src)}
+	}
+	return template, nil
+}
+
 // Topdeck puts cards onto the deck; the last one ends on top.
-func (c *Ctx) Topdeck(p int, xs []Inst) []Inst { return c.moveAll(p, xs, Loc{Deck, int16(p)}, "TOPDECK") }
+func (c *Ctx) Topdeck(p int, xs []Inst) []Inst {
+	return c.moveAll(p, xs, Loc{Deck, int16(p)}, "TOPDECK")
+}
 
 // Bottomdeck puts cards on the bottom of the deck.
 func (c *Ctx) Bottomdeck(p int, xs []Inst) {
@@ -432,6 +483,11 @@ func (c *Ctx) SetAsideWith(p int, xs ...Inst) []Inst {
 	return c.MoveTo(p, xs, Aside, "SET_ASIDE_WITH", Name(c.Src))
 }
 
+// PutOnMat puts cards on one of a player's mats: "puts an Island on their Island mat".
+func (c *Ctx) PutOnMat(p int, xs []Inst, z Zone) []Inst {
+	return c.MoveTo(p, xs, z, "PUT_ON_MAT", z.String())
+}
+
 // ReturnTo puts a card back on its pile.
 func (c *Ctx) ReturnTo(p int, x Inst) bool {
 	i := c.G.PileOf(c.G.cards[x])
@@ -444,6 +500,24 @@ func (c *Ctx) ReturnTo(p int, x Inst) bool {
 	}
 	c.Log("RETURN_TO", Seat(p), []CardID{c.G.cards[x]}, PileName(c.G.Piles[i].Card))
 	return true
+}
+
+// ShuffleInto shuffles cards into a player's deck: "shuffles an Inn into their deck".
+func (c *Ctx) ShuffleInto(p int, xs []Inst) {
+	moved := c.moveAll(p, xs, Loc{Deck, int16(p)}, "SHUFFLE_INTO_DECK")
+	if len(moved) > 0 {
+		d := c.G.P[p].Z[Deck]
+		c.G.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
+	}
+}
+
+// LoseCoins takes $ away: "loses 6 Coins".
+func (c *Ctx) LoseCoins(n int) {
+	n = min(n, c.G.P[c.P].Coins)
+	if n > 0 {
+		c.G.P[c.P].Coins -= n
+		c.Log(plural(n, "LOSES_COIN", "LOSES_COINS"), Seat(c.P), n)
+	}
 }
 
 // LookAt logs cards a player looks at without moving them.
@@ -518,8 +592,8 @@ func (c *Ctx) DiscardTop(p int) Inst {
 	return x
 }
 
-// PlayCard plays a card from where it is, e.g. Vassal's discarded Action or
-// Throne Room's choice; times > 0 plays it again where it is.
+// PlayCard plays a card from where it is for a card that plays it more than
+// once (Throne Room), which stays in play with a Duration; times > 0 plays it again where it is.
 func (c *Ctx) PlayCard(x Inst, times int) {
 	c.G.play(c.P, x, c.level, playHow{times: times, holders: append(append([]Inst{}, c.holders...), c.Me)})
 }
@@ -528,6 +602,15 @@ func (c *Ctx) PlayCard(x Inst, times int) {
 func (c *Ctx) PlayFrom(x Inst) {
 	c.G.play(c.P, x, c.level-1, playHow{by: c.Src, holders: append(append([]Inst{}, c.holders...), c.Me)})
 }
+
+// PlayNow plays a card from where it is, e.g. Vassal's discarded Action or a Reaction that plays itself.
+func (c *Ctx) PlayNow(x Inst) { c.G.play(c.P, x, c.level, playHow{}) }
+
+// PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
+func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }
+
+// PlayWith plays a card with this card named on the line ("(Sailor)").
+func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
 
 // Attack runs an Attack's effect on each other player a Reaction didn't protect.
 func (c *Ctx) Attack(fn func(victim int)) {
@@ -542,6 +625,27 @@ func (c *Ctx) Stay() *Dur {
 	d := &Dur{P: c.P, X: c.Me, C: c.Src, Hold: append([]Inst{}, c.holders...), Made: c.G.turns}
 	c.G.durs = append(c.G.durs, d)
 	return d
+}
+
+// Unaffected: a Reaction protected player p from this Attack.
+func (c *Ctx) Unaffected(p int) bool { return c.unaffected[p] }
+
+// Shuffle shuffles a player's discard pile into their deck.
+func (c *Ctx) Shuffle(p int) {
+	if len(c.G.P[p].Z[Discard]) > 0 {
+		c.G.shuffle(p, c.level)
+	}
+}
+
+// Durs are this card's Durations still waiting.
+func (c *Ctx) Durs() []*Dur {
+	var out []*Dur
+	for _, d := range c.G.durs {
+		if d.X == c.Me && c.Me >= 0 && !d.Done {
+			out = append(out, d)
+		}
+	}
+	return out
 }
 
 // Later runs a card's Next at the start of the player's next turn without the
@@ -574,3 +678,44 @@ func Is(name string) func(*Def) bool { return func(d *Def) bool { return d.Name 
 
 // Of tests for any of the types.
 func Of(t Types) func(*Def) bool { return func(d *Def) bool { return d.Is(t) } }
+
+// TrashFromSupply trashes the top card of a Supply pile, e.g. Lurker's.
+func (c *Ctx) TrashFromSupply(p int, card CardID) Inst {
+	i := c.G.PileOf(card)
+	if i < 0 || c.G.Top(i) != card {
+		return -1
+	}
+	s := c.G.Piles[i].Cards
+	x := s[len(s)-1]
+	c.G.move(x, Supply, Loc{Trash, 0})
+	c.Log("TRASH", Seat(p), []CardID{card})
+	c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: card, From: Supply, By: c.Src, Level: c.level + 1})
+	return x
+}
+
+// Pass moves a card from one player's hand to another's.
+func (c *Ctx) Pass(from, to int, x Inst) {
+	if c.G.move(x, Hand, Loc{Hand, int16(to)}) {
+		c.Log("PASS", Seat(from), []CardID{c.G.cards[x]}, Seat(to))
+	}
+}
+
+// Insert puts a card into a player's deck with n cards above it (0: on top).
+func (c *Ctx) Insert(p int, x Inst, n int) {
+	if n == 0 {
+		c.Topdeck(p, []Inst{x})
+		return
+	}
+	l := c.G.loc[x]
+	if !c.G.move(x, l.Zone, Loc{Deck, int16(p)}) {
+		return
+	}
+	d := c.G.P[p].Z[Deck]
+	at := len(d) - 1 - n
+	if at < 0 {
+		at = 0
+	}
+	copy(d[at+1:], d[at:len(d)-1])
+	d[at] = x
+	c.Log("INSERT_IN_DECK", Seat(p), []CardID{c.G.cards[x]})
+}

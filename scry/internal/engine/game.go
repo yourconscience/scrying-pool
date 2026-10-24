@@ -3,7 +3,6 @@ package engine
 import (
 	"fmt"
 	"math/rand/v2"
-	"sort"
 )
 
 // Inst is one physical card in the game: an index into Game.cards. Supply cards
@@ -69,6 +68,8 @@ type Player struct {
 	Tokens    [nTokens]int // the pile each token is on, -1 for none
 
 	Projects []CardID // Projects with this player's cube
+	// Mat is tokens a card keeps for the player, by card: Pirate Ship's coins, Sinister Plot's
+	Mat map[CardID]int
 }
 
 // Held is a State or Artifact a player has, e.g. Lost in the Woods or the Flag.
@@ -101,8 +102,9 @@ type Game struct {
 	loc    []Loc    // by Inst
 	rng    *rand.Rand
 	pileOf map[CardID]int
-	turn   int // the current turn's number for Cur
-	turns  int // turns taken so far by both players, extra turns too
+	turn   int      // the current turn's number for Cur
+	turns  int      // turns taken so far by both players, extra turns too
+	pool   []CardID // Setup.Pool
 	start  [2][]CardID
 
 	durs    []*Dur  // Durations and other cards waiting for later turns
@@ -114,22 +116,24 @@ type Game struct {
 	T2 turnState // this turn's facts
 
 	// shared game state of the expansions
-	Colony     bool     // Platinum and Colony are in the Supply
-	Boons      []CardID // the Boon deck, top at the end
-	BoonsOut   []CardID // its discard pile
-	Hexes      []CardID
-	HexesOut   []CardID
-	Druid      []CardID // the Boons Druid uses
-	Held       []Held   // States and Artifacts
-	LandVP     map[CardID]int // VP tokens on Landmarks
-	Sun        int            // Sun tokens on the Prophecy; 0 once it came true
-	Prophecy   CardID
-	Mouse      CardID // the card Way of the Mouse uses
-	Obelisk    int    // the pile Obelisk chose, -1
-	Riverboat  CardID
-	Approach   bool // Approaching Army's Attack pile
-	TradeRoute int  // coin tokens on the Trade Route mat
-	prevGained [2][]CardID
+	Colony        bool     // Platinum and Colony are in the Supply
+	CurseTreasure bool     // Charlatan: Curses are also Treasures worth $1
+	Boons         []CardID // the Boon deck, top at the end
+	BoonsOut      []CardID // its discard pile
+	Hexes         []CardID
+	HexesOut      []CardID
+	Druid         []CardID       // the Boons Druid uses
+	Held          []Held         // States and Artifacts
+	Global        []CardID       // kingdom cards whose Hear runs all game, not from a zone (Duchess for Duchies); Me is -1
+	LandVP        map[CardID]int // VP tokens on Landmarks
+	Sun           int            // Sun tokens on the Prophecy; 0 once it came true
+	Prophecy      CardID
+	Mouse         CardID // the card Way of the Mouse uses
+	Obelisk       int    // the pile Obelisk chose, -1
+	Riverboat     CardID
+	Approach      bool // Approaching Army's Attack pile
+	TradeRoute    int  // coin tokens on the Trade Route mat
+	prevGained    [2][]CardID
 
 	copper, silver, gold, estate, duchy, province, curse, platinum, colony, potion CardID
 }
@@ -147,6 +151,11 @@ type turnState struct {
 	Used      map[CardID]int
 	ActionsIn int // Actions played this turn
 	HandSize  int // cards drawn for the next hand in Clean-up
+
+	CopperBonus int // Coppersmith: Copper makes $ more
+
+	Named  []CardID // cards named for War Chest this turn
+	Forbid []CardID // cards that can't be bought this turn (Contraband)
 }
 
 type Phase uint8
@@ -178,6 +187,9 @@ type Setup struct {
 	Colony     bool        // add Platinum and Colony
 	Shelters   bool        // start with Shelters instead of Estates
 	Bane       CardID      // Young Witch's Bane, when Young Witch is in the kingdom
+	// Pool is the kingdom cards a Setup may add (Young Witch's Bane, Ferryman's
+	// pile); empty: every playable one.
+	Pool []CardID
 	// Partial allows kingdom cards without rules, for replays of real games:
 	// they can be bought and gained, and playing one stops the game.
 	Partial bool
@@ -192,12 +204,13 @@ func (m MissingRules) Error() string { return m.Card + " has no rules yet" }
 func New(t *Table, s Setup) (*Game, error) {
 	g := &Game{T: t, Kingdom: s.Kingdom, Land: s.Landscapes, Agents: s.Agents, pileOf: map[CardID]int{},
 		rng: rand.New(rand.NewPCG(s.Seed, s.Seed^0x9e3779b97f4a7c15)), Obelisk: -1,
-		LandVP: map[CardID]int{}, Colony: s.Colony}
+		LandVP: map[CardID]int{}, Colony: s.Colony, pool: s.Pool}
 	g.copper, g.silver, g.gold = t.MustCard("Copper"), t.MustCard("Silver"), t.MustCard("Gold")
 	g.estate, g.duchy, g.province = t.MustCard("Estate"), t.MustCard("Duchy"), t.MustCard("Province")
 	g.curse, g.platinum, g.colony, g.potion = t.MustCard("Curse"), t.MustCard("Platinum"), t.MustCard("Colony"), t.MustCard("Potion")
 	for i := range g.P {
 		g.P[i].Name = s.Names[i]
+		g.P[i].Mat = map[CardID]int{}
 		for k := range g.P[i].Tokens {
 			g.P[i].Tokens[k] = -1
 		}
@@ -243,10 +256,10 @@ func New(t *Table, s Setup) (*Game, error) {
 		g.AddPile(g.potion, 16, true)
 	}
 	for _, k := range s.Kingdom {
-		g.addKingdomPile(k)
+		g.addKingdomPile(k, true)
 	}
 	if s.Bane != 0 {
-		g.Piles[g.addKingdomPile(s.Bane)].Bane = true
+		g.Piles[g.addKingdomPile(s.Bane, true)].Bane = true
 	}
 	for p := range g.P {
 		g.start[p] = s.Start[p]
@@ -264,17 +277,43 @@ func New(t *Table, s Setup) (*Game, error) {
 	return g, nil
 }
 
-func (g *Game) addKingdomPile(k CardID) int {
+func (g *Game) addKingdomPile(k CardID, supply bool) int {
 	d := g.T.Defs[k]
 	if ms, ok := pileMembers[d.Name]; ok {
-		return g.addMixed(k, ms, true, shuffledPiles[d.Name], 0)
+		return g.addMixed(k, ms, supply, shuffledPiles[d.Name], 0)
 	}
 	n := 10
 	if d.Victory() {
 		n = 8
 	}
-	return g.AddPile(k, n, true)
+	return g.AddPile(k, n, supply)
 }
+
+// AddBane adds a kingdom pile a card's Setup chose, and runs its own Setup:
+// Young Witch's Bane in the Supply, Ferryman's pile outside it.
+func (g *Game) AddBane(k CardID, supply bool) {
+	g.Piles[g.addKingdomPile(k, supply)].Bane = true
+	g.setupCard(k)
+}
+
+// Unused lists the kingdom piles with rules that aren't in the game, by name,
+// for a Setup to choose from with Rand.
+func (g *Game) Unused(ok func(*Def) bool) []CardID {
+	pool := g.pool
+	if len(pool) == 0 {
+		pool = g.T.Playable()
+	}
+	var out []CardID
+	for _, c := range pool {
+		if d := g.T.Defs[c]; !d.Landscape() && g.PileOf(c) < 0 && ok(d) {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+// Rand is a random number in [0, n) from the game's seed.
+func (g *Game) Rand(n int) int { return g.rng.IntN(n) }
 
 // setupCard runs a kingdom card's (and its pile members') or a landscape's Setup.
 func (g *Game) setupCard(c CardID) {
@@ -333,6 +372,35 @@ func (g *Game) CardOf(x Inst) CardID { return g.cards[x] }
 
 // Def is an instance's card.
 func (g *Game) Def(x Inst) *Def { return g.T.Defs[g.cards[x]] }
+
+// CtxFor is a card's effect context away from its play: a landscape's, a
+// setup's, an effect that names the card ("(Importer)").
+func (g *Game) CtxFor(p int, c CardID, level int) *Ctx {
+	cx := g.ctx(p, -1, level)
+	cx.Src, cx.from = c, true
+	return cx
+}
+
+// Raise moves a card of a kind to the top of its pile, for replays of mixed piles.
+func (g *Game) Raise(c CardID) bool {
+	i := g.PileOf(c)
+	if i < 0 {
+		return false
+	}
+	s := g.Piles[i].Cards
+	for k := len(s) - 1; k >= 0; k-- {
+		if g.cards[s[k]] == c {
+			x := s[k]
+			copy(s[k:], s[k+1:])
+			s[len(s)-1] = x
+			return true
+		}
+	}
+	return false
+}
+
+// PrevGained is what a player gained on their last turn.
+func (g *Game) PrevGained(p int) []CardID { return g.prevGained[p] }
 
 // D is a card kind's Def.
 func (g *Game) D(c CardID) *Def { return g.T.Defs[c] }
@@ -531,19 +599,34 @@ func (g *Game) ids(xs []Inst) []CardID {
 
 // Play runs the game to its end.
 func (g *Game) Play() Result {
-	g.Log.add(Entry{Template: "", Text: "Game #simulated"})
-	for p := range g.P {
-		var kinds []CardID
-		n := map[CardID]int{}
-		for _, c := range g.start[p] {
-			if n[c] == 0 {
-				kinds = append(kinds, c)
-			}
-			n[c]++
+	for _, c := range g.Land { // Landmarks, Allies, Traits and Prophecies act all game
+		if d := g.T.Defs[c]; d.Rules == nil && d.Is(TLandmark|TAlly|TTrait|TProphecy) {
+			panic(MissingRules{d.Name})
 		}
-		sort.SliceStable(kinds, func(i, j int) bool { return startOrder(g.T.Defs[kinds[i]]) < startOrder(g.T.Defs[kinds[j]]) })
-		for _, c := range kinds {
-			g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), repeat(c, n[c])}})
+	}
+	g.Log.add(Entry{Template: "", Text: "Game #simulated"})
+	for _, c := range append(append([]CardID{}, g.Kingdom...), g.Land...) {
+		if r := g.T.Defs[c].Rules; r != nil && r.Start != nil {
+			r.Start(g, c)
+		}
+	}
+	for p := range g.P {
+		// one line for the Estates (or Shelters), one for Heirlooms, one for the Coppers
+		var groups [3][]CardID
+		for _, c := range g.start[p] {
+			k := 0
+			switch {
+			case g.T.Defs[c].Is(THeirloom):
+				k = 1
+			case c == g.copper:
+				k = 2
+			}
+			groups[k] = append(groups[k], c)
+		}
+		for _, cs := range groups {
+			if len(cs) > 0 {
+				g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), cs}})
+			}
 		}
 	}
 	for p := range g.P {
@@ -559,7 +642,7 @@ func (g *Game) Play() Result {
 		if g.AfterTurn != nil {
 			g.AfterTurn(g)
 		}
-		for len(g.extra) > 0 && !g.over() && !g.capped() {
+		for len(g.extra) > 0 && !g.over() && !g.capped() { // the last turn skipped its Clean-up
 			src := g.extra[0]
 			g.extra = g.extra[1:]
 			g.takeTurn(src)
@@ -575,14 +658,6 @@ func (g *Game) Play() Result {
 		}
 		g.Cur = 1 - g.Cur
 	}
-}
-
-// startOrder: the log lists starting cards Victory first, then Treasures.
-func startOrder(d *Def) int {
-	if d.Treasure() {
-		return 1
-	}
-	return 0
 }
 
 func repeat(c CardID, n int) []CardID {

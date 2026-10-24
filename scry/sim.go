@@ -45,6 +45,7 @@ func simCmd(args []string) error {
 	seed := fs.Uint64("seed", 1, "seed of the first game; game i uses seed+i")
 	logFile := fs.String("log", "", "write the first game's log to this file")
 	check := fs.Bool("check", false, "read each game's log back with Cartographer and compare every turn's decks and zones, and the final VP")
+	show := fs.Int("show", 5, "with -check, how many logs with problems to print")
 	fs.Parse(args[1:])
 
 	t, err := engine.NewTable(cardsJSON)
@@ -140,8 +141,8 @@ func simCmd(args []string) error {
 			checked++
 			if ps := checkSimLog(client, text, snaps, res); len(ps) > 0 {
 				problems++
-				if problems <= 5 {
-					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 8)], "\n  "))
+				if problems <= *show {
+					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 40)], "\n  "))
 				}
 			}
 		}
@@ -202,6 +203,7 @@ func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) en
 		shelters = shelters && t.HasRules(t.MustCard(n))
 	}
 	s := engine.Setup{Kingdom: piles[:min(10, len(piles))], Colony: r.IntN(5) == 0, Shelters: shelters && r.IntN(5) == 0}
+	s.Pool = piles[len(s.Kingdom):] // for a Bane or Ferryman's pile
 	sort.Slice(s.Kingdom, func(i, j int) bool { return t.Defs[s.Kingdom[i]].Name < t.Defs[s.Kingdom[j]].Name })
 	ways := 0
 	for _, c := range lands {
@@ -291,7 +293,8 @@ func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engi
 			want := s.zones[p]
 			if i == len(snaps)-1 {
 				// the last turn has no Clean-up, and its log can't tell a played card from a
-				// copy in hand when a card moves one of its own name (Cellar discards a Cellar)
+				// copy in hand when a card moves one of its own name (Cellar discards a Cellar),
+				// nor that a card Herald revealed stayed on the deck
 				have, want = handWithPlay(have), handWithPlay(want)
 			}
 			if !reflect.DeepEqual(have, want) {
@@ -308,12 +311,16 @@ func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engi
 	return out
 }
 
-// handWithPlay counts the hand and the cards in play as one zone.
+// handWithPlay counts the hand and the cards in play as one zone, and revealed
+// cards as the deck's.
 func handWithPlay(zones map[string]map[string]int) map[string]map[string]int {
 	out := map[string]map[string]int{}
 	for z, cs := range zones {
-		if z == "in play" {
+		switch z {
+		case "in play":
 			z = "hand"
+		case "revealed":
+			z = "deck"
 		}
 		if out[z] == nil {
 			out[z] = map[string]int{}

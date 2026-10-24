@@ -116,13 +116,18 @@ func (d *Def) Is(t Types) bool { return d.T&t != 0 }
 func (d *Def) NTypes() int { return len(d.Types) }
 
 // Landscape: an Event, Landmark, Project, Way, Ally, Trait or Prophecy.
-func (d *Def) Landscape() bool { return d.Is(TEvent | TLandmark | TProject | TWay | TAlly | TTrait | TProphecy) }
+func (d *Def) Landscape() bool {
+	return d.Is(TEvent | TLandmark | TProject | TWay | TAlly | TTrait | TProphecy)
+}
 
 // Rules are what a card does. Every func is static: what a card remembers
 // between calls is data in the Game (a Dur, a Watch, a counter), so games can be copied.
 type Rules struct {
 	Play  func(c *Ctx)             // an Action's, Treasure's or Night card's effect; a Way's, a Boon's, a Hex's
 	Coins int                      // a Treasure's fixed $, added before Play runs
+	Worth func(g *Game, p int) int // a Treasure's $ when it depends on the game (Bank), instead of Coins
+	// Alone is a Treasure with a choice: its play line stands alone, without its $ ("plays an Anvil.")
+	Alone bool
 	VP    func(g *Game, p int) int // worth at the end of the game; a Landmark's for each player
 
 	// Next is a Duration's effect at the start of a later turn; it returns true
@@ -157,10 +162,16 @@ type Rules struct {
 	// CanBuy forbids buying the card (Grand Market with a Copper in play).
 	CanBuy func(g *Game, p int) bool
 
+	// Overpay is what paying $n more than a card's cost when buying it does,
+	// after the card is gained (Masterpiece's Silvers).
+	Overpay func(c *Ctx, n int)
+
 	// Buy is an Event's effect, or a Project's when bought.
 	Buy func(c *Ctx)
-	// Setup prepares the game for the card: piles it needs, tokens.
+	// Setup prepares the game for the card: piles it needs, tokens. Start
+	// runs when the game starts, before the starting decks, for what the log shows then.
 	Setup func(g *Game)
+	Start func(g *Game, me CardID)
 }
 
 var registered = map[string]*Rules{}

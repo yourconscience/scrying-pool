@@ -2,7 +2,11 @@
 // its cards with the engine when the package is imported.
 package cards
 
-import "github.com/yourconscience/scrying-pool/scry/internal/engine"
+import (
+	"fmt"
+
+	"github.com/yourconscience/scrying-pool/scry/internal/engine"
+)
 
 type (
 	ctx   = engine.Ctx
@@ -10,7 +14,6 @@ type (
 	inst  = engine.Inst
 	def   = engine.Def
 	rules = engine.Rules
-	mode  = engine.Mode
 )
 
 const (
@@ -101,9 +104,16 @@ func topdeckAny(c *ctx, p int, xs []inst) {
 	c.Topdeck(p, xs)
 }
 
-func costUp(c *ctx, x inst, n int) func(*def) bool { return c.CostsAtMost(c.CostOf(c.G.CardOf(x)).Plus(n)) }
+func costUp(c *ctx, x inst, n int) func(*def) bool {
+	return c.CostsAtMost(c.CostOf(c.G.CardOf(x)).Plus(n))
+}
 
 func costExactly(c *ctx, x inst, n int) func(*def) bool {
 	want := c.CostOf(c.G.CardOf(x)).Plus(n)
 	return func(d *def) bool { return c.CostOf(d.ID) == want }
 }
+
+func itoa(n int) string { return fmt.Sprint(n) }
+
+// mode is one of a card's modes and the template of the line it writes first.
+func mode(label, line string) engine.Mode { return engine.Mode{Label: label, Line: line} }

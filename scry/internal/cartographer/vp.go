@@ -6,13 +6,12 @@ import "sort"
 // the printed VP (checked against pydominion); the rest are the "worth" and
 // "when scoring" rules of cards, landmarks, the Plateau Shepherds ally and the
 // Misery states. Final scores were checked against DomBot's results for the
-// saved games (see the tests). Only current cards are scored: the ones the
-// second editions removed (Great Hall, Silk Road, ...) don't come up on
-// dominion.games, and Harem is now Farm.
+// saved games (see the tests). The cards the second editions removed (Great
+// Hall, Silk Road, ...) are scored for the engine's games.
 
 var fixedVP = map[string]int{
 	"Estate": 1, "Duchy": 3, "Province": 6, "Colony": 10, "Curse": -1,
-	"Mill": 1, "Crumbling Castle": 1,
+	"Mill": 1, "Crumbling Castle": 1, "Great Hall": 1, "Harem": 2,
 	"Nobles": 2, "Farm": 2, "Island": 2, "Tunnel": 2, "Cemetery": 2, "Farmland": 2,
 	"Distant Shore": 2, "Small Castle": 2, "Haunted Castle": 2, "Dame Josephine": 2,
 	"Opulent Castle": 3, "Sprawling Castle": 4, "Grand Castle": 5,
@@ -119,6 +118,8 @@ func (c *Client) Score(g *Game, in ScoreInput) map[string]VPBreakdown {
 				v = d["Estate"] * k
 			case "Marchland":
 				v = victory / 3 * k
+			case "Silk Road":
+				v = victory / 4 * k
 			case "Territory":
 				v = victoryNames * k
 			case "Demesne":

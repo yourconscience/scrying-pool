@@ -46,6 +46,16 @@ var (
 	}
 )
 
+// trashesSupply reports a trash from the Supply: a Lurker played, not one a
+// Watchtower trashes as it's gained.
+func trashesSupply(e Event) bool { return supplyTrashers[e.Cause] && !gains[e.CauseOf] }
+
+// backFromTrashed reports a line that takes a card just trashed out of the
+// trash; the trash line may name it after another: "trashes a Curse and a Trail".
+func backFromTrashed(e Event, cards []CardN) bool {
+	return len(cards) == 1 && cards[0].Card != nil && backFromTrash[cards[0].Card.Name][e.Template] && strings.HasPrefix(e.CauseOf, "TRASH")
+}
+
 // Change is one change of ownership: Sign is +1 for cards gained, -1 for cards lost.
 type Change struct {
 	Player string
@@ -59,11 +69,11 @@ func (e Event) Changes() []Change {
 	switch {
 	case gains[e.Template]:
 		return []Change{{e.Player, cards, 1}}
-	case losses[e.Template] && !(strings.HasPrefix(e.Template, "TRASH") && supplyTrashers[e.Cause]):
+	case losses[e.Template] && !(strings.HasPrefix(e.Template, "TRASH") && trashesSupply(e)):
 		return []Change{{e.Player, cards, -1}}
 	case toPile[e.Template] && toSupplyPile(e.Args[2].Text):
 		return []Change{{e.Player, cards, -1}}
-	case backFromTrash[e.Cause][e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == e.Cause:
+	case backFromTrashed(e, cards):
 		return []Change{{e.Player, cards, 1}}
 	case e.Template == "EXILE" && supplyExilers[e.Cause]:
 		return []Change{{e.Player, cards, 1}}

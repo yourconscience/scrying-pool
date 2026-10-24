@@ -60,7 +60,6 @@ func (g *Game) takeTurn(extra CardID) {
 	}
 	g.Log.lazy(&Entry{Template: "BEGINS_CLEANUP_PHASE", Args: []any{Seat(p)}})
 	g.fire(&Ev{Kind: EvCleanup, P: p, X: -1, Level: 1})
-	g.Log.lazy(nil)
 	g.cleanup(p)
 	g.fire(&Ev{Kind: EvTurnEnd, P: p, X: -1, Level: 1})
 	g.prevGained[p] = g.T2.Gained
@@ -77,6 +76,7 @@ func (g *Game) startTurn(p int) {
 		if r == nil || r.Next == nil {
 			continue
 		}
+		g.Log.emit()
 		c := g.ctx(p, d.X, 1)
 		c.Src, c.from = d.C, true
 		if r.Next(c, d) && !d.Ever {
@@ -147,7 +147,7 @@ func (g *Game) actionOptions(p int) []Option {
 func (g *Game) buyPhase(p int) {
 	pl := &g.P[p]
 	for {
-		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() })
+		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() || d.ID == g.curse && g.CurseTreasure })
 		if len(opts) == 0 {
 			break
 		}
@@ -156,7 +156,7 @@ func (g *Game) buyPhase(p int) {
 			break
 		}
 		for _, o := range got {
-			if g.loc[o.Inst].Zone == Hand {
+			if g.loc[o.Inst] == (Loc{Hand, int16(p)}) { // not one a Crystal Ball's Masquerade passed
 				g.play(p, o.Inst, 0, playHow{})
 			}
 		}
@@ -242,6 +242,11 @@ func (g *Game) CanBuy(p int, c CardID) bool {
 	if d.Is(TProject) && g.HasProject(p, c) {
 		return false
 	}
+	for _, f := range g.T2.Forbid {
+		if f == c {
+			return false
+		}
+	}
 	if r := d.Rules; r != nil && r.CanBuy != nil && !r.CanBuy(g, p) {
 		return false
 	}
@@ -273,8 +278,11 @@ func (g *Game) buy(p int, c CardID) {
 	pl.Potions -= cost.Potion
 	g.T2.Bought = append(g.T2.Bought, c)
 	if d.Landscape() {
+		if d.Rules == nil {
+			panic(MissingRules{d.Name})
+		}
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
-		g.takeDebt(p, cost.Debt, 1)
+		g.P[p].Debt += cost.Debt
 		if d.Is(TProject) {
 			pl.Projects = append(pl.Projects, c)
 		}
@@ -289,11 +297,38 @@ func (g *Game) buy(p int, c CardID) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
-	g.takeDebt(p, cost.Debt, 1)
+	over := 0
+	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
+		over = g.ctx(p, x, 1).Number(p, 0, pl.Coins, "LOSES_COINS")
+	}
+	if over > 0 { // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
+		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+		pl.Coins -= over
+		g.Log.add(Entry{Level: 1, Template: plural(over, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), over}})
+	} else {
+		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
+	}
+	line := g.Log.last()
+	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
+	for range g.Piles[i].Embargo {
+		g.ctx(p, -1, 1).Gain(p, g.curse, Discard)
+	}
+	if g.loc[x].Zone != Supply { // what the buy caused took the card: an Embargo's Curse, Talisman's copy
+		if pile = g.Piles[i].Cards; len(pile) == 0 || g.cards[pile[len(pile)-1]] != c {
+			g.Log.unGain(line) // "buys a Curse": the pile ran out first
+			return
+		}
+		x = pile[len(pile)-1]
+	}
+	if over > 0 {
+		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(p), []CardID{c}}})
+	}
 	g.gainX(p, x, Discard, 1, 0, true)
+	if over > 0 {
+		d.Rules.Overpay(g.ctx(p, x, 1), over)
+	}
 }
 
 func (g *Game) takeDebt(p, n, level int) {
@@ -331,16 +366,20 @@ func (g *Game) cleanup(p int) {
 			}
 		}
 	}
-	for _, x := range append([]Inst{}, pl.Z[InPlay]...) {
-		if stay[x] || g.loc[x].Zone != InPlay {
-			continue
+	// the other player's cards too: what they played on this turn (Guard Dog) leaves with it
+	for _, q := range [2]int{p, 1 - p} {
+		for _, x := range append([]Inst{}, g.P[q].Z[InPlay]...) {
+			if stay[x] || g.loc[x].Zone != InPlay {
+				continue
+			}
+			g.move(x, InPlay, Loc{Discard, int16(q)})
+			g.fire(&Ev{Kind: EvDiscard, P: q, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 		}
-		g.move(x, InPlay, Loc{Discard, int16(p)})
-		g.fire(&Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true})
 	}
 	for len(pl.Z[Hand]) > 0 {
 		g.move(pl.Z[Hand][0], Hand, Loc{Discard, int16(p)})
 	}
+	g.Log.lazy(nil)
 	live := g.durs[:0]
 	for _, d := range g.durs {
 		if !d.Done || d.P != p {
@@ -362,6 +401,7 @@ func (g *Game) cleanup(p int) {
 // playHow says how a card is played: again by a Throne Room, with a Way, by what.
 type playHow struct {
 	times   int    // 0 the first play, 1 again, 2 a third time
+	line    string // the play line's template instead of PLAY: REACTS_PLAYING
 	way     CardID // the Way used instead of the card's effect
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
 	holders []Inst // cards that played it: they stay in play while it does
@@ -374,20 +414,29 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	if d.Rules == nil {
 		panic(MissingRules{d.Name})
 	}
-	if how.times == 0 && g.loc[x].Zone != InPlay {
-		g.move(x, g.loc[x].Zone, Loc{InPlay, int16(p)})
+	if z := g.loc[x].Zone; how.times == 0 && z != InPlay && z != Supply { // a Trail played from the trash comes into play
+		g.move(x, z, Loc{InPlay, int16(p)})
 	}
+	coins := g.coinsOf(p, x) // before it counts as played this turn (Fool's Gold)
 	c := g.ctx(p, x, level+1)
 	c.holders = how.holders
 	card := []CardID{g.cards[x]}
 	switch {
 	case how.way != 0:
+		if g.T.Defs[how.way].Rules == nil {
+			panic(MissingRules{g.T.Defs[how.way].Name})
+		}
 		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
 	case how.by != 0 && how.times == 0:
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
-	case d.Treasure() && !d.Action() && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
-		g.Log.treasure(p, g.cards[x], g.coinsOf(p, x))
-	case how.times == 1:
+	case how.line != "":
+		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
+		g.Log.treasure(p, g.cards[x], coins)
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
+		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
+		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
+	case how.times == 1 || how.times > 2: // a fourth Infirmary is "again" too
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
 	case how.times == 2:
 		g.Log.add(Entry{Level: level, Template: "PLAY_THIRD", Args: []any{Seat(p), card}})
@@ -411,9 +460,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			g.fire(ev)
 			c.unaffected[1-p] = ev.Unaffected
 		}
-		if n := g.coinsOf(p, x); n != 0 {
-			g.P[p].Coins += n
-		}
+		g.P[p].Coins += coins
 		if d.Rules.Play != nil {
 			d.Rules.Play(c)
 		}
@@ -421,9 +468,24 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
 }
 
+// isTreasure: the card is a Treasure in this game (Charlatan makes Curses Treasures).
+func (g *Game) isTreasure(x Inst) bool {
+	return g.Def(x).Treasure() || g.cards[x] == g.curse && g.CurseTreasure
+}
+
 // coinsOf is a Treasure's fixed $ as played now (Envious makes Silver and Gold $1).
 func (g *Game) coinsOf(p int, x Inst) int {
-	n := g.Def(x).Rules.Coins
+	r := g.Def(x).Rules
+	n := r.Coins
+	if r.Worth != nil {
+		n = r.Worth(g, p)
+	}
+	if g.cards[x] == g.curse && g.CurseTreasure {
+		n = 1
+	}
+	if g.cards[x] == g.copper {
+		n += g.T2.CopperBonus
+	}
 	if n > 1 && (g.cards[x] == g.silver || g.cards[x] == g.gold) {
 		for _, h := range g.Held {
 			if h.P == p && g.T.Defs[h.C].Name == "Envious" {

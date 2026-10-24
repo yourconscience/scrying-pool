@@ -32,7 +32,7 @@ type Log struct {
 	T       *Table
 	Entries []Entry
 	// Hook runs when entry i is added, or changed by merging a line into it.
-	Hook  func(i int)
+	Hook    func(i int)
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
 	pending *Entry  // a lazy line
@@ -68,6 +68,51 @@ func (l *Log) add(e Entry) {
 	}
 	l.Entries = append(l.Entries, e)
 	l.changed(len(l.Entries) - 1)
+}
+
+// last is the index of the last line, -1 for none.
+func (l *Log) last() int {
+	if l == nil {
+		return -1
+	}
+	return len(l.Entries) - 1
+}
+
+// size counts the lines written or waiting to be.
+func (l *Log) size() int {
+	if l == nil {
+		return 0
+	}
+	n := len(l.Entries) + len(l.after)
+	if l.pending != nil {
+		n++
+	}
+	return n
+}
+
+// extendLast adds a card to the last line's card list.
+func (l *Log) extendLast(c CardID) {
+	if l == nil {
+		return
+	}
+	if n := len(l.after); n > 0 {
+		l.after[n-1].Args[1] = append(l.after[n-1].Args[1].([]CardID), c)
+		return
+	}
+	n := len(l.Entries) - 1
+	l.Entries[n].Args[1] = append(l.Entries[n].Args[1].([]CardID), c)
+	l.changed(n)
+}
+
+// unGain makes a "buys and gains" line a plain "buys" when the card wasn't gained.
+func (l *Log) unGain(i int) {
+	if l == nil || i < 0 {
+		return
+	}
+	if e := &l.Entries[i]; e.Template == "BUY_AND_GAIN" && len(e.Args[1].([]CardID)) == 1 {
+		e.Template = "BUY"
+		l.changed(i)
+	}
 }
 
 func (l *Log) changed(i int) {
@@ -162,6 +207,8 @@ func (l *Log) arg(c *cartographer.Client, players [2]string, a any) (string, err
 		return players[a][:1], nil
 	case int:
 		return strconv.Itoa(a), nil
+	case string: // a mat: "Island mat"
+		return a, nil
 	case Name:
 		if a == 0 {
 			return "", nil
@@ -240,5 +287,14 @@ func normName(s string) string {
 func (l *Log) lazy(e *Entry) {
 	if l != nil {
 		l.pending = e
+	}
+}
+
+// emit writes the lazy line now, e.g. "starts their turn" for an Outpost that does nothing then.
+func (l *Log) emit() {
+	if l != nil && l.pending != nil {
+		p := *l.pending
+		l.pending = nil
+		l.add(p)
 	}
 }

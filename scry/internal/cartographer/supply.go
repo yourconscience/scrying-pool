@@ -177,7 +177,7 @@ func (g *Game) Supply(c *Client) SupplyState {
 				}
 			case strings.HasPrefix(e.Template, "TRASH"):
 				s.Trash[name] += cn.N
-				if supplyTrashers[e.Cause] {
+				if trashesSupply(e) {
 					take(name, cn.N)
 				}
 			case e.Template == "EXILE" && supplyExilers[e.Cause]:
@@ -187,7 +187,7 @@ func (g *Game) Supply(c *Client) SupplyState {
 			case losses[e.Template] && !strings.HasPrefix(e.Template, "TRASH"): // Traveller exchanged back to its pile
 				take(name, -cn.N)
 			}
-			if backFromTrash[e.Cause][e.Template] && strings.HasPrefix(e.CauseOf, "TRASH") && name == e.Cause {
+			if backFromTrashed(e, cards) {
 				s.Trash[name] -= cn.N
 			}
 		}

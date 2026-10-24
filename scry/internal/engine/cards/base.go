@@ -177,8 +177,9 @@ func init() {
 	reg("Vassal", rules{Play: func(c *ctx) {
 		c.PlusCoins(2)
 		x := c.DiscardTop(c.P)
-		if x >= 0 && c.G.Def(x).Action() && len(pickOf(c, c.P, engine.ToPlay, one(x), 0, 1)) == 1 {
-			c.PlayCard(x, 0)
+		if x >= 0 && c.G.Def(x).Action() && c.G.Where(x) == (engine.Loc{Zone: discard, Owner: int16(c.P)}) && // a Trail played itself
+			len(pickOf(c, c.P, engine.ToPlay, one(x), 0, 1)) == 1 {
+			c.PlayNow(x)
 		}
 	}})
 	reg("Village", rules{Play: func(c *ctx) {
@@ -190,61 +191,4 @@ func init() {
 		c.Attack(func(v int) { c.Gain(v, c.Card("Curse"), discard) })
 	}})
 	reg("Workshop", rules{Play: func(c *ctx) { c.ChooseGain(c.P, c.CostsUpTo(4), discard) }})
-
-	// first edition
-	reg("Adventurer", rules{Play: func(c *ctx) {
-		all, found := c.RevealUntil(c.P, treasure, 2)
-		c.ToHand(c.P, found, "PUT_IN_HAND")
-		c.Discard(c.P, c.In(revealed, all))
-	}})
-	reg("Chancellor", rules{Play: func(c *ctx) {
-		c.PlusCoins(2)
-		if len(c.Zone(c.P, deck)) > 0 && c.Yes(c.P, "put your deck into your discard pile", "DECK_TO_DISCARD") {
-			c.MoveTo(c.P, append([]inst{}, c.Zone(c.P, deck)...), discard, "")
-			c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
-		}
-	}})
-	reg("Feast", rules{Play: func(c *ctx) {
-		c.Trash(c.P, c.In(inPlay, one(c.Me)))
-		c.ChooseGain(c.P, c.CostsUpTo(5), discard)
-	}})
-	reg("Spy", rules{Play: func(c *ctx) {
-		c.Draw(1)
-		c.PlusActions(1)
-		spy := func(v int) {
-			x := c.FromTop(v, 1, "REVEAL")
-			if len(x) == 0 {
-				return
-			}
-			if c.Yes(c.P, "discard it", "DISCARD") {
-				c.Discard(v, x)
-			} else {
-				c.Topdeck(v, x)
-			}
-		}
-		spy(c.P)
-		c.Attack(spy)
-	}})
-	reg("Thief", rules{Play: func(c *ctx) {
-		c.Attack(func(v int) {
-			top := c.FromTop(v, 2, "REVEAL")
-			var ts []inst
-			for _, x := range top {
-				if c.G.Def(x).Treasure() {
-					ts = append(ts, x)
-				}
-			}
-			got := c.Trash(v, pickOf(c, c.P, engine.ToTrash, ts, 1, 1))
-			for _, x := range got {
-				if len(pickOf(c, c.P, engine.ToGain, got, 0, 1)) == 1 {
-					c.GainInst(c.P, x, discard, "GAIN")
-				}
-			}
-			c.Discard(v, c.In(revealed, top))
-		})
-	}})
-	reg("Woodcutter", rules{Play: func(c *ctx) {
-		c.PlusBuys(1)
-		c.PlusCoins(2)
-	}})
 }
