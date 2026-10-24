@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 	"github.com/yourconscience/scrying-pool/scry/internal/engine"
 	_ "github.com/yourconscience/scrying-pool/scry/internal/engine/cards"
+	"github.com/yourconscience/scrying-pool/scry/internal/replay"
 )
 
 // seat names in simulated logs: distinct initials, so Cartographer tells them apart
@@ -23,6 +25,9 @@ var simNames = [2]string{"Alice", "Bob"}
 
 // simCmd runs "scry sim play" and "scry sim fuzz".
 func simCmd(args []string) error {
+	if len(args) > 0 && args[0] == "check" {
+		return simCheck(args[1:])
+	}
 	if len(args) == 0 || args[0] != "play" && args[0] != "fuzz" {
 		fmt.Fprint(os.Stderr, usageText)
 		os.Exit(2)
@@ -72,10 +77,11 @@ func simCmd(args []string) error {
 	start := time.Now()
 	for i := range *n {
 		s := *seed + uint64(i)
-		k := fixed
-		if k == nil {
-			k = randomKingdom(t, s)
+		setup := engine.Setup{Kingdom: fixed, Names: simNames, Seed: s}
+		if fixed == nil {
+			setup = randomKingdom(t, client, s)
 		}
+		k := setup.Kingdom
 		seats := [2]int{0, 1} // which spec plays in each seat
 		if i%2 == 1 {
 			seats = [2]int{1, 0}
@@ -86,7 +92,8 @@ func simCmd(args []string) error {
 				return err
 			}
 		}
-		g, err := engine.New(t, k, simNames, agents, s)
+		setup.Names, setup.Agents, setup.Seed = simNames, agents, s
+		g, err := engine.New(t, setup)
 		if err != nil {
 			return err
 		}
@@ -165,13 +172,60 @@ func playSafely(g *engine.Game) (res engine.Result, err error) {
 	return g.Play(), nil
 }
 
-func randomKingdom(t *engine.Table, seed uint64) []engine.CardID {
-	all := t.Playable()
+// randomKingdom picks 10 playable kingdom piles, up to two landscapes (one
+// Way at most), and sometimes Platinum and Colony or Shelters. With a client,
+// only cards it knows, so the log can be rendered.
+func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) engine.Setup {
+	known := map[string]bool{}
+	if client != nil {
+		for _, c := range client.Cards {
+			known[normCard(c.Name)] = true
+		}
+	}
+	var piles, lands []engine.CardID
+	for _, c := range t.Playable() {
+		d := t.Defs[c]
+		if client != nil && !known[normCard(d.Name)] && !strings.Contains(d.Name, "/") {
+			continue
+		}
+		if d.Landscape() {
+			lands = append(lands, c)
+		} else {
+			piles = append(piles, c)
+		}
+	}
 	r := rand.New(rand.NewPCG(seed, 2))
-	r.Shuffle(len(all), func(i, j int) { all[i], all[j] = all[j], all[i] })
-	k := all[:10]
-	sort.Slice(k, func(i, j int) bool { return t.Defs[k[i]].Name < t.Defs[k[j]].Name })
-	return k
+	r.Shuffle(len(piles), func(i, j int) { piles[i], piles[j] = piles[j], piles[i] })
+	r.Shuffle(len(lands), func(i, j int) { lands[i], lands[j] = lands[j], lands[i] })
+	shelters := true
+	for _, n := range []string{"Hovel", "Necropolis", "Overgrown Estate"} {
+		shelters = shelters && t.HasRules(t.MustCard(n))
+	}
+	s := engine.Setup{Kingdom: piles[:min(10, len(piles))], Colony: r.IntN(5) == 0, Shelters: shelters && r.IntN(5) == 0}
+	sort.Slice(s.Kingdom, func(i, j int) bool { return t.Defs[s.Kingdom[i]].Name < t.Defs[s.Kingdom[j]].Name })
+	ways := 0
+	for _, c := range lands {
+		if len(s.Landscapes) == r.IntN(3) {
+			break
+		}
+		if t.Defs[c].Is(engine.TWay) {
+			if ways++; ways > 1 {
+				continue
+			}
+		}
+		s.Landscapes = append(s.Landscapes, c)
+	}
+	return s
+}
+
+func normCard(s string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(s) {
+		if r >= 'a' && r <= 'z' {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
 
 func kingdomNames(t *engine.Table, k []engine.CardID) string {
@@ -269,4 +323,96 @@ func handWithPlay(zones map[string]map[string]int) map[string]map[string]int {
 		}
 	}
 	return out
+}
+
+// simCheck replays saved games on the engine and reports how far each one matches.
+func simCheck(args []string) error {
+	fs := flag.NewFlagSet("sim check", flag.ExitOnError)
+	verbose := fs.Bool("v", false, "one line per game")
+	fs.Parse(args)
+	t, err := engine.NewTable(cardsJSON)
+	if err != nil {
+		return err
+	}
+	client, err := loadClient()
+	if err != nil {
+		return err
+	}
+	paths := fs.Args()
+	if len(paths) == 0 {
+		dir, err := gamesDir("")
+		if err != nil {
+			return err
+		}
+		paths = []string{dir}
+	}
+	var logs []string
+	for _, a := range paths {
+		if st, err := os.Stat(a); err == nil && st.IsDir() {
+			found, _ := filepath.Glob(filepath.Join(a, "*.log"))
+			for _, f := range found {
+				if !strings.HasSuffix(f, ".bot.log") {
+					logs = append(logs, f)
+				}
+			}
+		} else {
+			logs = append(logs, a)
+		}
+	}
+	turns, matched, done := 0, 0, 0
+	missing := map[string]int{}
+	stops := map[string]int{}
+	for _, f := range logs {
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return err
+		}
+		score, _ := os.ReadFile(strings.TrimSuffix(f, ".log") + ".score.txt")
+		r := replay.Check(client, t, string(b), string(score))
+		turns += r.Turns
+		matched += r.Matched
+		switch {
+		case r.Done:
+			done++
+		case r.Missing != "":
+			missing[r.Missing]++
+		case r.Key != "":
+			stops[r.Stop+" | real "+r.Key]++
+		default:
+			stops[r.Stop]++
+		}
+		if *verbose && !r.Done {
+			name := filepath.Base(f)
+			if r.Missing != "" {
+				fmt.Printf("%s: %d/%d turns, then %s\n", name, r.Matched, r.Turns, r.Stop)
+			} else {
+				fmt.Printf("%s: %d/%d turns, %s: %s\n", name, r.Matched, r.Turns, r.Turn, r.Stop)
+				if r.Real != "" || r.Engine != "" {
+					fmt.Printf("  real:   %s\n  engine: %s\n", r.Real, r.Engine)
+				}
+			}
+		}
+	}
+	fmt.Printf("%d games: %d replayed to the end; %d of %d turns (%.1f%%) match the real logs\n", len(logs), done, matched, turns, 100*float64(matched)/float64(max(turns, 1)))
+	print := func(title string, m map[string]int, n int) {
+		type kv struct {
+			k string
+			v int
+		}
+		var xs []kv
+		for k, v := range m {
+			xs = append(xs, kv{k, v})
+		}
+		sort.Slice(xs, func(i, j int) bool { return xs[i].v > xs[j].v || xs[i].v == xs[j].v && xs[i].k < xs[j].k })
+		if len(xs) == 0 {
+			return
+		}
+		fmt.Println(title)
+		for _, x := range xs[:min(n, len(xs))] {
+			fmt.Printf("  %3d  %s\n", x.v, x.k)
+		}
+	}
+	print("stopped at a card without rules:", missing, 15)
+	print("stopped where the engine differs:", stops, 30)
+	return nil
 }

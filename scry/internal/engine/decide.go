@@ -15,16 +15,30 @@ const (
 	ToPlay                    // play a card, e.g. with Throne Room or Vassal
 	ToSetAside                // set a card aside, e.g. an Action drawn by Library
 	ToReveal                  // reveal a card, e.g. a Moat against an Attack
+	ToChoose                  // pick modes of a card, a number, or yes or no: Options have Labels
+	ToName                    // name a card
+	UseCoffers                // spend Coffers: the Mode is how many
+	PlayNight                 // play one Night card, or none to end the Night phase
+	ToExile                   // exile cards
+	ToPass                    // pass a card to the other player
+	ToReturn                  // return cards to the Supply
+	ToCall                    // call a Reserve card from the Tavern mat
+	ToPick                    // pick cards for a card to use, e.g. Courtier's card to reveal
 )
 
-var kindNames = [...]string{"play an Action", "play Treasures", "buy", "gain", "trash", "discard", "topdeck", "order", "play", "set aside", "reveal"}
+var kindNames = [...]string{"play an Action", "play Treasures", "buy", "gain", "trash", "discard", "topdeck", "order", "play", "set aside", "reveal",
+	"choose", "name", "use Coffers", "play a Night card", "exile", "pass", "return", "call", "pick"}
 
 func (k Kind) String() string { return kindNames[k] }
 
-// Option is one choice: a card instance, or a Supply pile (Inst -1).
+// Option is one choice: a card instance, a Supply pile (Inst -1), or a mode
+// (Inst -1, Card 0) with a Label.
 type Option struct {
-	Card CardID
-	Inst Inst
+	Card  CardID
+	Inst  Inst
+	Mode  int    // which mode or number; for PlayAction, 1 + the Way's index in Game.Land
+	Label string // what the mode is, e.g. "+1 Card"
+	Line  string // the template of the first line the mode writes, for replays
 }
 
 // Decision is everything the engine asks a player. The answer picks between
@@ -36,6 +50,7 @@ type Decision struct {
 	Options []Option
 	Min     int
 	Max     int
+	Level   int // log nesting of the lines the answer leads to
 }
 
 // Agent makes a player's decisions: a bot, a search, a network.
@@ -99,3 +114,8 @@ func (v *View) Piles() []CardID {
 func (v *View) EmptyPiles() int   { return v.g.EmptyPiles() }
 func (v *View) VP(p int) int      { return v.g.VP(p) }
 func (v *View) Cost(c CardID) int { return v.g.Cost(c) }
+
+// Game is the whole game, for agents that may look at everything (the replay, tests).
+func (v *View) Game() *Game { return v.g }
+
+func (v *View) Player(p int) *Player { return &v.g.P[p] }

@@ -43,9 +43,14 @@ type Money struct {
 	HasX bool
 }
 
-// nonTerminal lists the Base cards that give +Actions, played before the others.
+// nonTerminal lists cards that give +Actions, played before the others.
 var nonTerminal = map[string]bool{"Cellar": true, "Harbinger": true, "Merchant": true, "Village": true,
-	"Poacher": true, "Festival": true, "Laboratory": true, "Market": true, "Sentry": true}
+	"Poacher": true, "Festival": true, "Laboratory": true, "Market": true, "Sentry": true,
+	"Pawn": true, "Shanty Town": true, "Conspirator": true, "Mining Village": true, "Great Hall": true, "Nobles": true,
+	"Lurker": true, "Diplomat": true, "Mill": true, "Secret Passage": true, "Upgrade": true, "Scout": true}
+
+// price is a card's cost as one number: a Potion counts $2, debt $1.
+func price(d *engine.Def) int { return d.Cost.Coins + 2*d.Cost.Potion + d.Cost.Debt }
 
 // worth orders cards for keeping: Curses and Victory cards last, Copper next.
 func worth(d *engine.Def) int {
@@ -57,7 +62,7 @@ func worth(d *engine.Def) int {
 	case d.Name == "Copper":
 		return 0
 	}
-	return d.Cost + 1
+	return price(d) + 1
 }
 
 func junk(d *engine.Def) bool { return worth(d) < 0 }
@@ -107,9 +112,9 @@ func (b *Money) Decide(v *engine.View, d *engine.Decision) []int {
 	case engine.PlayAction:
 		return take(d, ranked(v, d, func(x *engine.Def) int {
 			if nonTerminal[x.Name] {
-				return 100 + x.Cost
+				return 100 + price(x)
 			}
-			return x.Cost
+			return price(x)
 		}), 1)
 	case engine.PlayTreasures:
 		all := make([]int, len(d.Options))
@@ -125,7 +130,7 @@ func (b *Money) Decide(v *engine.View, d *engine.Decision) []int {
 			if x.Name == "Curse" || x.Victory() && !greenOK && x.Name != "Province" {
 				return -1
 			}
-			return x.Cost
+			return price(x)
 		}), 1)
 	case engine.ToTrash:
 		idx := ranked(v, d, neg(worth))
@@ -157,8 +162,21 @@ func (b *Money) Decide(v *engine.View, d *engine.Decision) []int {
 			return []int{0}
 		}
 		return nil
-	case engine.ToReveal:
+	case engine.ToReveal, engine.ToCall:
 		return take(d, []int{0}, 1)
+	case engine.ToChoose:
+		idx := make([]int, len(d.Options)) // the last modes: "yes", the biggest number
+		for i := range idx {
+			idx[i] = len(idx) - 1 - i
+		}
+		return take(d, idx, 1)
+	case engine.UseCoffers:
+		return []int{0}
+	case engine.PlayNight:
+		return take(d, []int{0}, 1)
+	case engine.ToExile, engine.ToPass, engine.ToReturn:
+		idx := ranked(v, d, neg(worth))
+		return take(d, idx, d.Min)
 	}
 	return take(d, ranked(v, d, worth), d.Min)
 }
@@ -189,7 +207,7 @@ func (b *Money) buy(v *engine.View, d *engine.Decision) []int {
 			limit = 99
 		}
 		if v.Owned(v.Me())[b.X] < min(limit, 3) || nonTerminal[x.Name] {
-			if x.Cost <= coins && coins < 8 && (coins < 6 || x.Cost >= 6) {
+			if c := v.Cost(b.X); c <= coins && coins < 8 && (coins < 6 || c >= 6) {
 				for i, o := range d.Options {
 					if o.Card == b.X {
 						return []int{i}
