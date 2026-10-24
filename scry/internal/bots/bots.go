@@ -57,7 +57,13 @@ var nonTerminal = map[string]bool{"Cellar": true, "Harbinger": true, "Merchant":
 	"Farmhands": true, "Ferryman": true, "Hamlet": true, "Hunting Party": true, "Joust": true, "Menagerie": true,
 	"Demesne": true,
 	"Advisor": true, "Baker": true, "Candlestick Maker": true, "Farrier": true, "Herald": true, "Plaza": true,
-	"Alchemist": true, "Apothecary": true, "Apprentice": true, "Familiar": true, "Scrying Pool": true, "University": true}
+	"Alchemist": true, "Apothecary": true, "Apprentice": true, "Familiar": true, "Scrying Pool": true, "University": true,
+	"Bandit Camp": true, "Forager": true, "Fortress": true, "Ironmonger": true, "Junk Dealer": true, "Market Square": true,
+	"Mystic": true, "Necropolis": true, "Rats": true, "Rebuild": true, "Sage": true, "Squire": true, "Urchin": true, "Vagrant": true,
+	"Wandering Minstrel": true, "Madman": true, "Ruined Village": true, "Sir Bailey": true, "Dame Molly": true,
+	"Artificer": true, "Caravan Guard": true, "Dungeon": true, "Guide": true, "Lost City": true, "Magpie": true, "Page": true,
+	"Port": true, "Ratcatcher": true, "Raze": true, "Royal Carriage": true, "Storyteller": true, "Transmogrify": true,
+	"Champion": true, "Fugitive": true, "Treasure Hunter": true}
 
 // price is a card's cost as one number: a Potion counts $2, debt $1.
 func price(d *engine.Def) int { return d.Cost.Coins + 2*d.Cost.Potion + d.Cost.Debt }

@@ -121,15 +121,15 @@ func (l *Log) changed(i int) {
 	}
 }
 
-func (l *Log) treasure(p int, c CardID, coins int) {
+func (l *Log) treasure(p int, c CardID, coins, level int) {
 	if l == nil {
 		return
 	}
-	if l.tr != nil && l.tr.Args[0] != Seat(p) {
+	if l.tr != nil && (l.tr.Args[0] != Seat(p) || l.tr.Level != level) {
 		l.flush()
 	}
 	if l == nil || l.tr == nil {
-		l.tr = &Entry{Template: "PLAY_TREASURES_FOR", Args: []any{Seat(p), []CardID{}, 0}}
+		l.tr = &Entry{Level: level, Template: "PLAY_TREASURES_FOR", Args: []any{Seat(p), []CardID{}, 0}}
 	}
 	l.tr.Args[1] = append(l.tr.Args[1].([]CardID), c)
 	l.tr.Args[2] = l.tr.Args[2].(int) + coins

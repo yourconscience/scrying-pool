@@ -1,6 +1,6 @@
 # Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-23; the decisions at the end are agreed. M0 is built: the engine with the base set, random and Big Money bots, `scry sim play` and `scry sim fuzz`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-23; the decisions at the end are agreed. Built: the engine with Base, Intrigue, Seaside, Prosperity, Hinterlands, Cornucopia & Guilds, Alchemy without Possession, Dark Ages and Adventures, random and Big Money bots, `scry sim play`, `scry sim fuzz` and `scry sim check`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 
@@ -217,6 +217,7 @@ Speed targets are set after M0, from real measurements. What we know:
 - The hot path avoids maps and allocations: cards are small integers, zones reuse their slices, and card hooks are looked up in a table by `CardID`.
 - A state copy, a one-turn re-play and a random game are benchmarked on every milestone.
 - Measured 2026-10-23 with the base set only, log off, one M1 thread: about 12,000 Big Money or BM+Smithy games per second, and about 3,000 random-player games per second (those run to about 170 turns).
+- Measured 2026-10-24, side by side with the M0 binary on the same M1: about 4,000 BM against BM+Smithy games per second after the engine core for every expansion, against about 12,000 for M0. The core costs a factor of 3 on the base set; profile before self-play.
 
 ## Plan
 

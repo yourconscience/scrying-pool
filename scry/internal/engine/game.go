@@ -62,10 +62,12 @@ type Player struct {
 
 	Coffers, Villagers, VP, Debt, Favors int
 
-	Journey   bool         // the Journey token is face up
-	MinusCoin bool         // the -$1 token: the next +$ is $1 less
-	MinusCard bool         // the -1 Card token: the next draw is a card less
-	Tokens    [nTokens]int // the pile each token is on, -1 for none
+	JourneyDown bool            // the Journey token is face down; it starts face up
+	MinusCoin   CardID          // the -$1 token, by the card that gave it: the next +$ is $1 less
+	MinusCard   CardID          // the -1 Card token on the deck, by the card that put it there: the next draw is a card less
+	Tokens      [nTokens]int    // the pile each token is on, -1 for none
+	TokenBy     [nTokens]CardID // the card that last moved each token: "gets +1 Action (from Lost Arts)"
+	Inherited   Inst            // the card set aside with the Estate token, -1 for none
 
 	Projects []CardID // Projects with this player's cube
 	// Mat is tokens a card keeps for the player, by card: Pirate Ship's coins, Sinister Plot's
@@ -214,6 +216,7 @@ func New(t *Table, s Setup) (*Game, error) {
 		for k := range g.P[i].Tokens {
 			g.P[i].Tokens[k] = -1
 		}
+		g.P[i].Inherited = -1
 	}
 	if len(s.Kingdom) < 10 && !s.Partial {
 		return nil, fmt.Errorf("a kingdom has 10 cards, got %d", len(s.Kingdom))
@@ -507,6 +510,8 @@ func (g *Game) VP(p int) int {
 	for _, x := range g.Owned(p) {
 		if r := g.Def(x).Rules; r != nil && r.VP != nil {
 			vp += r.VP(g, p)
+		} else if r != nil && r.VPAt != nil {
+			vp += r.VPAt(g, x)
 		}
 	}
 	for _, c := range g.Land {
@@ -565,10 +570,21 @@ func (g *Game) PutOnTop(x Inst) {
 // draw draws up to n cards. When the deck runs out the log shows the shuffle
 // first, then one line with every card drawn, as dominion.games does.
 func (g *Game) draw(p, n, level int, from CardID) []Inst {
-	if n > 0 && g.P[p].MinusCard {
-		g.P[p].MinusCard = false
-		g.Log.add(Entry{Level: level, Template: "RETURNS_TOKEN", Args: []any{Seat(p), Name(g.T.MustCard("MinusCard")), Name(0)}})
+	t := "DRAW"
+	if from != 0 {
+		t = "DRAW_FROM"
+	}
+	return g.drawAs(p, n, level, t, from)
+}
+
+// drawAs draws with a template of its own: a +1 Card token's "draws a Copper (from Teacher)".
+func (g *Game) drawAs(p, n, level int, template string, from CardID) []Inst {
+	if n > 0 && g.P[p].MinusCard != 0 { // "skips a draw (because of Relic).", "moves -Card token to Set Aside."; the rest one level in
+		g.Log.add(Entry{Level: level, Template: "DRAWS_LESS_BECAUSE", Args: []any{Seat(p), Name(g.P[p].MinusCard)}})
+		g.P[p].MinusCard = 0
+		g.Log.add(Entry{Level: level + 1, Template: "PLAYER_MOVES_TOKEN_TO", Args: []any{Seat(p), "-Card token", "Set Aside"}})
 		n--
+		level++
 	}
 	var out []Inst
 	for range n {
@@ -579,9 +595,8 @@ func (g *Game) draw(p, n, level int, from CardID) []Inst {
 		out = append(out, x)
 	}
 	if len(out) > 0 {
-		e := Entry{Level: level, Template: "DRAW", Args: []any{Seat(p), g.ids(out)}}
+		e := Entry{Level: level, Template: template, Args: []any{Seat(p), g.ids(out)}}
 		if from != 0 {
-			e.Template = "DRAW_FROM"
 			e.Args = append(e.Args, Name(from))
 		}
 		g.Log.add(e)
@@ -699,7 +714,13 @@ func (g *Game) result(capped bool) Result {
 func (g *Game) options(p int, z Zone, ok func(*Def) bool) []Option {
 	var out []Option
 	for _, x := range g.P[p].Z[z] {
-		if ok == nil || ok(g.Def(x)) {
+		d := g.Def(x)
+		if g.inherits(p, x) { // "During your turns, Estates are also Actions": Throne Room can play one
+			e := *d
+			e.T |= TAction
+			d = &e
+		}
+		if ok == nil || ok(d) {
 			out = append(out, Option{Card: g.cards[x], Inst: x})
 		}
 	}

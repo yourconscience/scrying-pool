@@ -30,11 +30,25 @@ func (c *Ctx) Deeper() *Ctx {
 	return &d
 }
 
+// At is the same effect at another log level: a Royal Carriage called on the line of the play it follows.
+func (c *Ctx) At(level int) *Ctx {
+	d := *c
+	d.level = level
+	return &d
+}
+
 // As is the effect for another player, e.g. an Attack's victim gaining a Curse
 // that then triggers their own cards.
 func (c *Ctx) As(p int) *Ctx {
 	d := *c
 	d.P = p
+	return &d
+}
+
+// Here is the same effect with lines that don't name the card: Urchin's "trashes an Urchin" when another Attack is played.
+func (c *Ctx) Here() *Ctx {
+	d := *c
+	d.from = false
 	return &d
 }
 
@@ -99,9 +113,9 @@ func (c *Ctx) PlusBuys(n int) {
 
 func (c *Ctx) PlusCoins(n int) {
 	pl := &c.G.P[c.P]
-	if n > 0 && pl.MinusCoin {
-		pl.MinusCoin = false
-		c.Log("RETURNS_MINUS_COIN_TOKEN", Seat(c.P), Name(c.Card("MinusCoin")), Name(0))
+	if n > 0 && pl.MinusCoin != 0 { // "returns -Coin token set by Bridge Troll. (-$1)"
+		c.Log("RETURNS_MINUS_COIN_TOKEN", Seat(c.P), "-Coin token", Name(pl.MinusCoin))
+		pl.MinusCoin = 0
 		n--
 		if n == 0 {
 			return
@@ -312,28 +326,25 @@ func (c *Ctx) logGain(p int, x Inst, template string) {
 }
 
 // GainN gains up to n cards from a pile, logged as one line unless what a gain
-// causes comes between: "gains 4 Golds onto their drawpile".
+// causes comes between: "gains 4 Golds onto their drawpile". A mixed pile's
+// card (Ruins) gains whatever is on top: "gains a Ruined Library and a Survivors".
 func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst {
 	i := c.G.PileOf(card)
 	var xs []Inst
-	for i >= 0 && len(xs) < n {
+	seen := -1
+	for i >= 0 && len(xs) < n { // the top card each time: a Duplicate's Silver between them comes off the pile too
 		s := c.G.Piles[i].Cards
-		if len(s) <= len(xs) || c.G.cards[s[len(s)-1-len(xs)]] != card {
+		if len(s) == 0 || c.G.cards[s[len(s)-1]] != card && c.G.Piles[i].Card != card {
 			break
 		}
-		xs = append(xs, s[len(s)-1-len(xs)])
-	}
-	if len(xs) == 0 {
-		return nil
-	}
-	seen := -1
-	for _, x := range xs {
+		x := s[len(s)-1]
 		if c.G.Log.size() == seen { // nothing logged since the last gain: "gains 2 Silvers"
-			c.G.Log.extendLast(card)
+			c.G.Log.extendLast(c.G.cards[x])
 		} else { // a Footpad's draw between them: "gains a Silver", "draws a card", "gains a Silver"
-			c.Log(template, Seat(p), []CardID{card})
+			c.Log(template, Seat(p), []CardID{c.G.cards[x]})
 		}
 		seen = c.G.Log.size()
+		xs = append(xs, x)
 		c.G.gainX(p, x, to, c.level+1, c.Src, false)
 	}
 	return xs
@@ -502,6 +513,65 @@ func (c *Ctx) ReturnTo(p int, x Inst) bool {
 	return true
 }
 
+// Exchange returns a card to its pile and puts the top card of another pile in
+// the discard pile, which isn't gaining it: "returns a Hermit.", "receives a Madman."
+func (c *Ctx) Exchange(x Inst, card CardID) bool {
+	i, j := c.G.PileOf(c.G.cards[x]), c.G.PileOf(card)
+	l := c.G.loc[x]
+	if i < 0 || j < 0 || len(c.G.Piles[j].Cards) == 0 || l.Zone >= nPlayerZones || int(l.Owner) != c.P {
+		return false
+	}
+	c.G.move(x, l.Zone, Loc{Supply, int16(i)})
+	c.Log("EXCHANGE_RETURN", Seat(c.P), []CardID{c.G.cards[x]})
+	s := c.G.Piles[j].Cards
+	y := s[len(s)-1]
+	c.G.move(y, Supply, Loc{Discard, int16(c.P)})
+	c.Log("EXCHANGE_RECEIVE", Seat(c.P), []CardID{c.G.cards[y]})
+	return true
+}
+
+// Call moves a Reserve card from the Tavern mat into play: "calls a Ratcatcher".
+func (c *Ctx) Call(x Inst) bool {
+	if c.G.loc[x] != (Loc{Tavern, int16(c.P)}) {
+		return false
+	}
+	c.G.move(x, Tavern, Loc{InPlay, int16(c.P)})
+	c.Log("CALL", Seat(c.P), []CardID{c.G.cards[x]})
+	return true
+}
+
+// FlipJourney turns the player's Journey token over; it reports whether it is now face up.
+func (c *Ctx) FlipJourney() bool {
+	pl := &c.G.P[c.P]
+	pl.JourneyDown = !pl.JourneyDown
+	t := "PLAYER_FLIPS_TOKEN_UP"
+	if pl.JourneyDown {
+		t = "PLAYER_FLIPS_TOKEN_DOWN"
+	}
+	c.Log(t, Seat(c.P), "Journey token")
+	return !pl.JourneyDown
+}
+
+// MoveToken moves one of the player's tokens (TokCard, ...) to a pile: "moves +Action token to the Torturer pile".
+func (c *Ctx) MoveToken(k, pile int) {
+	pl := &c.G.P[c.P]
+	pl.Tokens[k], pl.TokenBy[k] = pile, c.Src
+	c.Log("PLAYER_MOVES_TOKEN_TO", Seat(c.P), tokenNames[k], PileName(c.G.Piles[pile].Card))
+}
+
+// MinusCardOn puts player p's -1 Card token on their deck, unless it is there: "moves -Card token to Draw Pile".
+func (c *Ctx) MinusCardOn(p int) bool {
+	if c.G.P[p].MinusCard != 0 {
+		return false
+	}
+	c.G.P[p].MinusCard = c.Src
+	c.Log("PLAYER_MOVES_TOKEN_TO", Seat(p), "-Card token", "Draw Pile")
+	return true
+}
+
+// Emit writes the waiting "begins their Cleanup phase" line now, as dominion.games does when it asks something then.
+func (c *Ctx) Emit() { c.G.Log.emit() }
+
 // ShuffleInto shuffles cards into a player's deck: "shuffles an Inn into their deck".
 func (c *Ctx) ShuffleInto(p int, xs []Inst) {
 	moved := c.moveAll(p, xs, Loc{Deck, int16(p)}, "SHUFFLE_INTO_DECK")
@@ -608,6 +678,9 @@ func (c *Ctx) PlayNow(x Inst) { c.G.play(c.P, x, c.level, playHow{}) }
 
 // PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
 func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }
+
+// PlayMerged plays a Treasure on one line with the others this card plays: "plays 2 Coppers. (+$2)" (Storyteller).
+func (c *Ctx) PlayMerged(x Inst) { c.G.play(c.P, x, c.level, playHow{merge: true}) }
 
 // PlayWith plays a card with this card named on the line ("(Sailor)").
 func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
