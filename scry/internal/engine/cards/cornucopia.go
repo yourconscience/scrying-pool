@@ -167,7 +167,7 @@ func init() {
 		})
 	}})
 	reg("Joust", rules{
-		Setup: needAll(rewards, 2),
+		Setup: needAll(rewards, 1), // one of each with 2 players
 		Play: func(c *ctx) {
 			c.Draw(1)
 			c.PlusActions(1)
