@@ -714,7 +714,13 @@ func (g *Game) result(capped bool) Result {
 func (g *Game) options(p int, z Zone, ok func(*Def) bool) []Option {
 	var out []Option
 	for _, x := range g.P[p].Z[z] {
-		if ok == nil || ok(g.Def(x)) {
+		d := g.Def(x)
+		if g.inherits(p, x) { // "During your turns, Estates are also Actions": Throne Room can play one
+			e := *d
+			e.T |= TAction
+			d = &e
+		}
+		if ok == nil || ok(d) {
 			out = append(out, Option{Card: g.cards[x], Inst: x})
 		}
 	}

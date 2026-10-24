@@ -486,7 +486,7 @@ func init() {
 				c.Gain(c.P, c.Card("Silver"), discard)
 			}
 		},
-		OnTrash: func(c *ctx, e *ev) { c.ChooseGain(c.P, action, discard) },
+		OnTrash: func(c *ctx, e *ev) { c.ChooseGain(c.P, attack, discard) },
 	})
 	reg("Storeroom", rules{Play: func(c *ctx) {
 		c.PlusBuys(1)
