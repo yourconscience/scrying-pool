@@ -408,6 +408,8 @@ type playHow struct {
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
 	holders []Inst // cards that played it: they stay in play while it does
 	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
+	self    Inst   // with inPlace: the Estate that plays it, which is "this" for its effect
+	merge   bool   // a Treasure played by an Action, on one line with the others it plays (Storyteller)
 }
 
 // play puts a card into play from where it is (or plays it where it is, again)
@@ -423,6 +425,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	coins := g.coinsOf(p, x) // before it counts as played this turn (Fool's Gold)
 	c := g.ctx(p, x, level+1)
 	c.holders = how.holders
+	if how.inPlace {
+		c.Me = how.self
+	}
 	card := []CardID{g.cards[x]}
 	switch {
 	case how.way != 0:
@@ -434,8 +439,8 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
-	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase:
-		g.Log.treasure(p, g.cards[x], coins)
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && !d.Attack() && (level == 0 && how.times == 0 && g.T2.Phase == BuyPhase || how.merge):
+		g.Log.treasure(p, g.cards[x], coins, level) // a Relic has a line of its own
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
@@ -475,7 +480,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			d.Rules.Play(c)
 		}
 		if g.inherits(p, x) { // "plays an Estate.", "plays an Alley."
-			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true})
+			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x})
 		}
 	}
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})

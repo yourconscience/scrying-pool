@@ -116,7 +116,9 @@ func (g *Game) fire(ev *Ev) {
 				cx := g.ctx(q, x, ev.Level)
 				cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
 				r.Hear(cx, ev)
-				zone = g.P[q].Z[z]
+				if zone = g.P[q].Z[z]; i < len(zone) && zone[i] != x {
+					i-- // it left (a called Ratcatcher, an exchanged Hermit): the next card is at i now
+				}
 			}
 		}
 	}

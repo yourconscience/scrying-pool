@@ -58,14 +58,18 @@ func simCmd(args []string) error {
 			return fmt.Errorf("-check and -log render logs with the client tables: %w", err)
 		}
 	}
-	var fixed []engine.CardID
+	var fixed, lands []engine.CardID // -kingdom may name Events and other landscapes too
 	if *kingdom != "" {
 		for _, s := range strings.Split(*kingdom, ",") {
 			d, ok := t.Card(strings.TrimSpace(s))
 			if !ok {
 				return fmt.Errorf("no card %q", s)
 			}
-			fixed = append(fixed, d.ID)
+			if d.Landscape() {
+				lands = append(lands, d.ID)
+			} else {
+				fixed = append(fixed, d.ID)
+			}
 		}
 	}
 	specs := [2]string{*a, *b}
@@ -78,11 +82,11 @@ func simCmd(args []string) error {
 	start := time.Now()
 	for i := range *n {
 		s := *seed + uint64(i)
-		setup := engine.Setup{Kingdom: fixed, Names: simNames, Seed: s}
+		setup := engine.Setup{Kingdom: fixed, Landscapes: lands, Names: simNames, Seed: s}
 		if fixed == nil {
 			setup = randomKingdom(t, client, s)
 		}
-		k := setup.Kingdom
+		k := append(append([]engine.CardID{}, setup.Kingdom...), setup.Landscapes...)
 		seats := [2]int{0, 1} // which spec plays in each seat
 		if i%2 == 1 {
 			seats = [2]int{1, 0}

@@ -331,24 +331,20 @@ func (c *Ctx) logGain(p int, x Inst, template string) {
 func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst {
 	i := c.G.PileOf(card)
 	var xs []Inst
-	for i >= 0 && len(xs) < n {
+	seen := -1
+	for i >= 0 && len(xs) < n { // the top card each time: a Duplicate's Silver between them comes off the pile too
 		s := c.G.Piles[i].Cards
-		if len(s) <= len(xs) || c.G.cards[s[len(s)-1-len(xs)]] != card && c.G.Piles[i].Card != card {
+		if len(s) == 0 || c.G.cards[s[len(s)-1]] != card && c.G.Piles[i].Card != card {
 			break
 		}
-		xs = append(xs, s[len(s)-1-len(xs)])
-	}
-	if len(xs) == 0 {
-		return nil
-	}
-	seen := -1
-	for _, x := range xs {
+		x := s[len(s)-1]
 		if c.G.Log.size() == seen { // nothing logged since the last gain: "gains 2 Silvers"
 			c.G.Log.extendLast(c.G.cards[x])
 		} else { // a Footpad's draw between them: "gains a Silver", "draws a card", "gains a Silver"
 			c.Log(template, Seat(p), []CardID{c.G.cards[x]})
 		}
 		seen = c.G.Log.size()
+		xs = append(xs, x)
 		c.G.gainX(p, x, to, c.level+1, c.Src, false)
 	}
 	return xs
@@ -682,6 +678,9 @@ func (c *Ctx) PlayNow(x Inst) { c.G.play(c.P, x, c.level, playHow{}) }
 
 // PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
 func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }
+
+// PlayMerged plays a Treasure on one line with the others this card plays: "plays 2 Coppers. (+$2)" (Storyteller).
+func (c *Ctx) PlayMerged(x Inst) { c.G.play(c.P, x, c.level, playHow{merge: true}) }
 
 // PlayWith plays a card with this card named on the line ("(Sailor)").
 func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
