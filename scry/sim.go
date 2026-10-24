@@ -1,0 +1,272 @@
+//go:build !js
+
+package main
+
+import (
+	"flag"
+	"fmt"
+	"math/rand/v2"
+	"os"
+	"reflect"
+	"sort"
+	"strings"
+	"time"
+
+	"github.com/yourconscience/scrying-pool/scry/internal/bots"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
+	"github.com/yourconscience/scrying-pool/scry/internal/engine"
+	_ "github.com/yourconscience/scrying-pool/scry/internal/engine/cards"
+)
+
+// seat names in simulated logs: distinct initials, so Cartographer tells them apart
+var simNames = [2]string{"Alice", "Bob"}
+
+// simCmd runs "scry sim play" and "scry sim fuzz".
+func simCmd(args []string) error {
+	if len(args) == 0 || args[0] != "play" && args[0] != "fuzz" {
+		fmt.Fprint(os.Stderr, usageText)
+		os.Exit(2)
+	}
+	sub := args[0]
+	fs := flag.NewFlagSet("sim "+sub, flag.ExitOnError)
+	kingdom := fs.String("kingdom", "", "comma-separated kingdom cards; empty: 10 random playable cards each game")
+	a := fs.String("a", "bm", "one bot: random, bm or bm+<card>")
+	b := fs.String("b", "bm", "the other bot; the two swap seats every game")
+	games := 100
+	if sub == "fuzz" {
+		games = 1000
+	}
+	n := fs.Int("n", games, "games to play")
+	seed := fs.Uint64("seed", 1, "seed of the first game; game i uses seed+i")
+	logFile := fs.String("log", "", "write the first game's log to this file")
+	check := fs.Bool("check", false, "read each game's log back with Cartographer and compare every turn's decks and zones, and the final VP")
+	fs.Parse(args[1:])
+
+	t, err := engine.NewTable(cardsJSON)
+	if err != nil {
+		return err
+	}
+	var client *cartographer.Client
+	if *check || *logFile != "" {
+		if client, err = loadClient(); err != nil {
+			return fmt.Errorf("-check and -log render logs with the client tables: %w", err)
+		}
+	}
+	var fixed []engine.CardID
+	if *kingdom != "" {
+		for _, s := range strings.Split(*kingdom, ",") {
+			d, ok := t.Card(strings.TrimSpace(s))
+			if !ok {
+				return fmt.Errorf("no card %q", s)
+			}
+			fixed = append(fixed, d.ID)
+		}
+	}
+	specs := [2]string{*a, *b}
+	if sub == "fuzz" {
+		specs = [2]string{"random", "random"}
+	}
+
+	var wins [2]int
+	ties, capped, turns, problems, checked := 0, 0, 0, 0, 0
+	start := time.Now()
+	for i := range *n {
+		s := *seed + uint64(i)
+		k := fixed
+		if k == nil {
+			k = randomKingdom(t, s)
+		}
+		seats := [2]int{0, 1} // which spec plays in each seat
+		if i%2 == 1 {
+			seats = [2]int{1, 0}
+		}
+		var agents [2]engine.Agent
+		for p := range agents {
+			if agents[p], err = bots.New(specs[seats[p]], t, s*2+uint64(p)); err != nil {
+				return err
+			}
+		}
+		g, err := engine.New(t, k, simNames, agents, s)
+		if err != nil {
+			return err
+		}
+		var snaps []turnSnap
+		if *check || *logFile != "" && i == 0 {
+			g.Log = engine.NewLog(t)
+		}
+		g.AfterTurn = func(g *engine.Game) {
+			if sub == "fuzz" {
+				if err := g.Check(); err != nil {
+					panic(err)
+				}
+			}
+			if *check {
+				snaps = append(snaps, snapTurn(g))
+			}
+		}
+		res, perr := playSafely(g)
+		if perr != nil {
+			return fmt.Errorf("game %d (seed %d, kingdom %s): %v", i, s, kingdomNames(t, k), perr)
+		}
+		turns += res.Turns[0] + res.Turns[1]
+		switch {
+		case res.Capped:
+			capped++
+		case res.Winner < 0:
+			ties++
+		default:
+			wins[seats[res.Winner]]++
+		}
+		if g.Log == nil {
+			continue
+		}
+		text, err := g.Log.Render(client, simNames)
+		if err != nil {
+			return fmt.Errorf("game %d (seed %d): %w", i, s, err)
+		}
+		if *logFile != "" && i == 0 {
+			if err := os.WriteFile(*logFile, []byte(text), 0o644); err != nil {
+				return err
+			}
+		}
+		if *check {
+			checked++
+			if ps := checkSimLog(client, text, snaps, res); len(ps) > 0 {
+				problems++
+				if problems <= 5 {
+					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 8)], "\n  "))
+				}
+			}
+		}
+	}
+	el := time.Since(start)
+	fmt.Printf("%d games in %s (%.0f games/s), %.1f turns per game\n", *n, el.Round(time.Millisecond), float64(*n)/el.Seconds(), float64(turns)/float64(max(*n, 1)))
+	if sub == "play" {
+		fmt.Printf("%s wins %d, %s wins %d, ties %d, unfinished %d\n", specs[0], wins[0], specs[1], wins[1], ties, capped)
+	} else {
+		fmt.Printf("invariants held; unfinished %d\n", capped)
+	}
+	if *check {
+		fmt.Printf("checked %d logs: %d with problems\n", checked, problems)
+		if problems > 0 {
+			return fmt.Errorf("%d of %d logs don't read back", problems, checked)
+		}
+	}
+	return nil
+}
+
+// playSafely turns a panic in the engine, a card or a bot into an error.
+func playSafely(g *engine.Game) (res engine.Result, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return g.Play(), nil
+}
+
+func randomKingdom(t *engine.Table, seed uint64) []engine.CardID {
+	all := t.Playable()
+	r := rand.New(rand.NewPCG(seed, 2))
+	r.Shuffle(len(all), func(i, j int) { all[i], all[j] = all[j], all[i] })
+	k := all[:10]
+	sort.Slice(k, func(i, j int) bool { return t.Defs[k[i]].Name < t.Defs[k[j]].Name })
+	return k
+}
+
+func kingdomNames(t *engine.Table, k []engine.CardID) string {
+	var out []string
+	for _, c := range k {
+		out = append(out, t.Defs[c].Name)
+	}
+	return strings.Join(out, ",")
+}
+
+// turnSnap is every player's cards after a turn, by zone and in all.
+type turnSnap struct {
+	zones map[string]map[string]map[string]int // player, zone, card
+	decks map[string]map[string]int
+}
+
+func snapTurn(g *engine.Game) turnSnap {
+	s := turnSnap{zones: map[string]map[string]map[string]int{}, decks: map[string]map[string]int{}}
+	for p := range g.P {
+		name := g.P[p].Name
+		s.zones[name] = g.Zones(p)
+		s.decks[name] = map[string]int{}
+		for _, x := range g.Owned(p) {
+			s.decks[name][g.Def(x).Name]++
+		}
+	}
+	return s
+}
+
+// checkSimLog reads a simulated log with Cartographer and lists where it
+// disagrees with the engine.
+func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engine.Result) []string {
+	g, err := c.Parse(text, nil)
+	if err != nil {
+		return []string{err.Error()}
+	}
+	var out []string
+	for _, u := range g.Unknown {
+		out = append(out, fmt.Sprintf("line %d not read: %q", u.Line, u.Text))
+	}
+	for _, m := range g.ZoneMisses() {
+		out = append(out, fmt.Sprintf("line %d: %s's %s (%s, cause %s) wasn't in %s, found in %q", m.Line, m.Player, m.Card, m.Template, m.Cause, m.Want, m.Found))
+	}
+	turns := g.Turns()
+	if len(turns) != len(snaps) {
+		out = append(out, fmt.Sprintf("Cartographer reads %d turns, the engine played %d", len(turns), len(snaps)))
+	}
+	for i := range min(len(turns), len(snaps)) {
+		tu, s := turns[i], snaps[i]
+		for p, want := range s.decks {
+			if have := map[string]int(tu.Decks[p]); !reflect.DeepEqual(have, want) {
+				out = append(out, fmt.Sprintf("turn %d %s: %s's deck %v, engine %v", tu.Number, tu.Player, p, have, want))
+			}
+			have := map[string]map[string]int{}
+			for z, cs := range tu.Zones[p] {
+				if cs.Unknown > 0 {
+					out = append(out, fmt.Sprintf("turn %d %s: %s's %s has %d unnamed cards", tu.Number, tu.Player, p, z, cs.Unknown))
+				}
+				if len(cs.Known) > 0 {
+					have[z] = map[string]int(cs.Known)
+				}
+			}
+			want := s.zones[p]
+			if i == len(snaps)-1 {
+				// the last turn has no Clean-up, and its log can't tell a played card from a
+				// copy in hand when a card moves one of its own name (Cellar discards a Cellar)
+				have, want = handWithPlay(have), handWithPlay(want)
+			}
+			if !reflect.DeepEqual(have, want) {
+				out = append(out, fmt.Sprintf("turn %d %s: %s's zones %v, engine %v", tu.Number, tu.Player, p, have, want))
+			}
+		}
+	}
+	vp := c.Score(g, cartographer.ScoreInput{})
+	for p, name := range simNames {
+		if got := vp[name].Total(); got != res.VP[p] {
+			out = append(out, fmt.Sprintf("%s's VP: Cartographer %d, engine %d", name, got, res.VP[p]))
+		}
+	}
+	return out
+}
+
+// handWithPlay counts the hand and the cards in play as one zone.
+func handWithPlay(zones map[string]map[string]int) map[string]map[string]int {
+	out := map[string]map[string]int{}
+	for z, cs := range zones {
+		if z == "in play" {
+			z = "hand"
+		}
+		if out[z] == nil {
+			out[z] = map[string]int{}
+		}
+		for c, n := range cs {
+			out[z][c] += n
+		}
+	}
+	return out
+}

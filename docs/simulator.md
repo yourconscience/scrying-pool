@@ -1,6 +1,6 @@
 # Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-23; the decisions at the end are agreed. Nothing below is built yet. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-23; the decisions at the end are agreed. M0 is built: the engine with the base set, random and Big Money bots, `scry sim play` and `scry sim fuzz`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 
@@ -216,6 +216,7 @@ Speed targets are set after M0, from real measurements. What we know:
 - A toy Go engine played a whole Big Smithy against Big Money game in 3.1 µs on one M1 thread. That is a floor, not a forecast.
 - The hot path avoids maps and allocations: cards are small integers, zones reuse their slices, and card hooks are looked up in a table by `CardID`.
 - A state copy, a one-turn re-play and a random game are benchmarked on every milestone.
+- Measured 2026-10-23 with the base set only, log off, one M1 thread: about 12,000 Big Money or BM+Smithy games per second, and about 3,000 random-player games per second (those run to about 170 turns).
 
 ## Plan
 

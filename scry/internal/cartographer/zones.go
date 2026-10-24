@@ -760,13 +760,16 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.play(e, p, cards, []string{ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
 	case t == "DISCARD", t == "DISCARD_WITH", t == "DISCARD_REVEALED":
 		want := self(ZoneHand)
+		rest := []string{ZonePlay, ZoneSetAside, ZoneTavern} // Wine Merchant from the Tavern mat
 		switch {
 		case topDiscarders[cause]:
-			want = []string{ZoneDeck}
+			want, rest = []string{ZoneDeck}, nil // never the card in play: a Vassal that discards a Vassal
+		case cause == "Library":
+			want, rest = []string{ZoneSetAside}, nil // the Actions it skipped, not copies it drew
 		case e.Cause == "" && e.Level > 0: // at the start of a turn: Grotto discards what it set aside
 			want = []string{ZoneSetAside, ZoneHand}
 		}
-		r.move(e, p, cards, append(want, ZonePlay, ZoneSetAside, ZoneTavern), ZoneDiscard) // Wine Merchant from the Tavern mat
+		r.move(e, p, cards, append(want, rest...), ZoneDiscard)
 		r.note("discard", e.Cause)
 	case t == "DISCARD_FROM_EXILE":
 		r.move(e, p, cards, []string{ZoneExile}, ZoneDiscard)
@@ -826,6 +829,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			name := r.guessTopdeck(p)
 			r.move(e, p, []CardN{{r.cardOf(p, name), 1}}, []string{ZonePlay, ZoneHand}, ZoneDeck)
 		}
+	case t == "TOPDECK" && discardLookers[cause]: // Harbinger's pick from the discard pile, not the Harbinger in play
+		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
 	case t == "TOPDECK", t == "TOPDECK_WITH", t == "BACK_ON_DECK", t == "BOTTOMDECKS", t == "INSERT_IN_DECK", t == "SHUFFLE_INTO_DECK",
 		t == "PUT_ON_BOTTOM_OF": // "on the bottom of Draw Pile"
 		r.move(e, p, cards, self(ZoneHand, ZoneDiscard, ZonePlay, ZoneSetAside, ZoneDeck), ZoneDeck) // Inn shuffles first
@@ -859,6 +864,8 @@ func (r *zoneReplay) step(i int, e Event) {
 	// looking at cards
 	case t == "REVEAL", t == "LOOK_AT":
 		switch {
+		case t == "LOOK_AT" && cause == "Library": // Library draws the cards it looks at
+			r.move(e, p, cards, []string{ZoneDeck}, ZoneHand)
 		case discardLookers[cause] && !strings.HasPrefix(e.CauseOf, "PLAY"): // Herald's overpay, Inn when gained
 			r.mark(e, p, cards, ZoneDiscard)
 		case deckLookers[cause], cause == "" && e.Level > 0: // at the start of a turn: Piazza, Forest Dwellers
