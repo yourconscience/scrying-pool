@@ -642,7 +642,7 @@ func (g *Game) Play() Result {
 		if g.AfterTurn != nil {
 			g.AfterTurn(g)
 		}
-		for len(g.extra) > 0 && !g.over() && !g.capped() {
+		for len(g.extra) > 0 && !g.over() && !g.capped() { // the last turn skipped its Clean-up
 			src := g.extra[0]
 			g.extra = g.extra[1:]
 			g.takeTurn(src)

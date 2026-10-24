@@ -156,7 +156,7 @@ func (g *Game) buyPhase(p int) {
 			break
 		}
 		for _, o := range got {
-			if g.loc[o.Inst].Zone == Hand {
+			if g.loc[o.Inst] == (Loc{Hand, int16(p)}) { // not one a Crystal Ball's Masquerade passed
 				g.play(p, o.Inst, 0, playHow{})
 			}
 		}
