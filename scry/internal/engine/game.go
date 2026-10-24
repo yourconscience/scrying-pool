@@ -127,7 +127,7 @@ func New(t *Table, kingdom []CardID, names [2]string, agents [2]Agent, seed uint
 			n int
 		}{{g.estate, 3}, {g.copper, 7}} {
 			for range s.n {
-				g.newCard(s.c, Loc{Deck, int16(p)})
+				g.newCard(s.c, Loc{Discard, int16(p)}) // the first shuffle makes the deck
 			}
 		}
 	}
