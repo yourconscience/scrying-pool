@@ -9,6 +9,7 @@ const (
 	EvTrash                   // P's card X is trashed, from From
 	EvDiscard                 // P discards X from From, other than in Clean-up; or from play in Clean-up (Cleanup)
 	EvPlay                    // P played X; its effect is done
+	EvPlaying                 // P plays X: after the play line, before its effect (Champion's +1 Action)
 	EvAttack                  // P plays the Attack X; ev.Victim may react
 	EvTurnStart               // the start of P's turn
 	EvBuyStart                // the start of P's Buy phase

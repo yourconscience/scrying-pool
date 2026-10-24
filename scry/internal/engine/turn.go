@@ -24,7 +24,7 @@ func (g *Game) takeTurn(extra CardID) {
 	p := g.Cur
 	pl := &g.P[p]
 	g.turns++
-	g.T2 = turnState{Extra: extra, HandSize: 5}
+	g.T2 = turnState{Extra: extra, HandSize: 5, Used: map[CardID]int{}}
 	pl.Actions, pl.Buys, pl.Coins, pl.Potions = 1, 1, 0, 0
 	text := fmt.Sprintf("Turn %d - %s", g.turn, pl.Name)
 	if extra != 0 {
@@ -132,7 +132,7 @@ func (g *Game) actionOptions(p int) []Option {
 		}
 	}
 	for _, x := range g.P[p].Z[Hand] {
-		if g.Def(x).Action() {
+		if g.Def(x).Action() || g.inherits(p, x) {
 			add(x)
 		}
 	}
@@ -312,6 +312,10 @@ func (g *Game) buy(p int, c CardID) {
 	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
+	if g.P[p].Tokens[TokTrash] == i { // Plan's Trashing token: "buys and gains a Fortress.", "trashes a Copper."
+		cx := g.ctx(p, -1, 1)
+		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
+	}
 	for range g.Piles[i].Embargo {
 		g.ctx(p, -1, 1).Gain(p, g.curse, Discard)
 	}
@@ -357,12 +361,10 @@ func (g *Game) cleanup(p int) {
 	pl := &g.P[p]
 	stay := map[Inst]bool{}
 	for _, d := range g.durs {
-		if !d.Done {
-			if d.X >= 0 {
-				stay[d.X] = true
-			}
-			for _, h := range d.Hold {
-				stay[h] = true
+		if !d.Done && d.X >= 0 && g.loc[d.X].Zone == InPlay { // not the Counterfeit whose Astrolabe it trashed
+			stay[d.X] = true
+			for k := len(d.Hold) - 1; k >= 0 && g.loc[d.Hold[k]].Zone == InPlay; k-- { // nor a Procession whose Throne Room it trashed
+				stay[d.Hold[k]] = true
 			}
 		}
 	}
@@ -405,6 +407,7 @@ type playHow struct {
 	way     CardID // the Way used instead of the card's effect
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
 	holders []Inst // cards that played it: they stay in play while it does
+	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
 }
 
 // play puts a card into play from where it is (or plays it where it is, again)
@@ -414,7 +417,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	if d.Rules == nil {
 		panic(MissingRules{d.Name})
 	}
-	if z := g.loc[x].Zone; how.times == 0 && z != InPlay && z != Supply { // a Trail played from the trash comes into play
+	if z := g.loc[x].Zone; how.times == 0 && !how.inPlace && z != InPlay && z != Supply { // a Trail played from the trash comes into play
 		g.move(x, z, Loc{InPlay, int16(p)})
 	}
 	coins := g.coinsOf(p, x) // before it counts as played this turn (Fool's Gold)
@@ -446,7 +449,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	g.T2.Played = append(g.T2.Played, x)
 	if d.Action() {
 		g.T2.ActionsIn++
+		g.tokenBonus(p, x, level+1)
 	}
+	g.fire(&Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1})
 	if how.way != 0 {
 		w := g.T.Defs[how.way]
 		c.Src = how.way
@@ -460,12 +465,62 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			g.fire(ev)
 			c.unaffected[1-p] = ev.Unaffected
 		}
+		if coins > 0 && g.P[p].MinusCoin != 0 { // "plays a Copper. (+$1)", "returns -Coin token set by Bridge Troll. (-$1)"
+			g.Log.add(Entry{Level: level + 1, Template: "RETURNS_MINUS_COIN_TOKEN", Args: []any{Seat(p), "-Coin token", Name(g.P[p].MinusCoin)}})
+			g.P[p].MinusCoin = 0
+			coins--
+		}
 		g.P[p].Coins += coins
 		if d.Rules.Play != nil {
 			d.Rules.Play(c)
 		}
+		if g.inherits(p, x) { // "plays an Estate.", "plays an Alley."
+			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true})
+		}
 	}
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
+}
+
+// inherits: x is an Estate that plays the card with p's Estate token on p's turn.
+func (g *Game) inherits(p int, x Inst) bool {
+	return g.cards[x] == g.estate && g.P[p].Inherited >= 0 && g.Cur == p
+}
+
+// tokenNames are how the log shows the Adventures tokens, by Tok constant.
+var tokenNames = [nTokens]string{"+Card token", "+Action token", "+Buy token", "+Coin token", "-Cost token", "Trashing token", "Estate token"}
+
+// tokenBonus gives what the player's tokens on the played card's pile give first:
+// "gets +1 Action (from Lost Arts)", "draws a Copper (from Teacher)".
+func (g *Game) tokenBonus(p int, x Inst, level int) {
+	pl := &g.P[p]
+	i := g.PileOf(g.cards[x])
+	if i < 0 {
+		return
+	}
+	for k := TokCard; k <= TokCoin; k++ {
+		if pl.Tokens[k] != i {
+			continue
+		}
+		by := Name(pl.TokenBy[k])
+		switch k {
+		case TokCard:
+			g.drawAs(p, 1, level, "DRAWS_FROM", pl.TokenBy[k])
+		case TokAction:
+			pl.Actions++
+			g.Log.add(Entry{Level: level, Template: "PLUS_ACTION_FROM", Args: []any{Seat(p), by}})
+		case TokBuy:
+			pl.Buys++
+			g.Log.add(Entry{Level: level, Template: "PLUS_BUY_FROM", Args: []any{Seat(p), by}})
+		case TokCoin:
+			if pl.MinusCoin != 0 {
+				g.Log.add(Entry{Level: level, Template: "RETURNS_MINUS_COIN_TOKEN", Args: []any{Seat(p), "-Coin token", Name(pl.MinusCoin)}})
+				pl.MinusCoin = 0
+				continue
+			}
+			pl.Coins++
+			g.Log.add(Entry{Level: level, Template: "PLUS_COIN_FROM", Args: []any{Seat(p), by}})
+		}
+	}
 }
 
 // isTreasure: the card is a Treasure in this game (Charlatan makes Curses Treasures).

@@ -128,7 +128,8 @@ type Rules struct {
 	Worth func(g *Game, p int) int // a Treasure's $ when it depends on the game (Bank), instead of Coins
 	// Alone is a Treasure with a choice: its play line stands alone, without its $ ("plays an Anvil.")
 	Alone bool
-	VP    func(g *Game, p int) int // worth at the end of the game; a Landmark's for each player
+	VP    func(g *Game, p int) int  // worth at the end of the game; a Landmark's for each player
+	VPAt  func(g *Game, x Inst) int // worth by where this copy is (Distant Lands on the Tavern mat)
 
 	// Next is a Duration's effect at the start of a later turn; it returns true
 	// when the card is done and leaves play in that turn's Clean-up.

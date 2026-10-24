@@ -53,6 +53,7 @@ var pileMembers = map[string][]member{
 	"Settlers / Bustling Village": {{"Settlers", 5}, {"Bustling Village", 5}},
 	"Sauna / Avanto":              {{"Sauna", 5}, {"Avanto", 5}},
 	"Harem / Farm":                {{"Farm", 8}},
+	"Rats":                        {{"Rats", 20}},
 	"Augurs":                      {{"Herb Gatherer", 4}, {"Acolyte", 4}, {"Sorceress", 4}, {"Sibyl", 4}},
 	"Clashes":                     {{"Battle Plan", 4}, {"Archer", 4}, {"Warlord", 4}, {"Territory", 4}},
 	"Forts":                       {{"Tent", 4}, {"Garrison", 4}, {"Hill Fort", 4}, {"Stronghold", 4}},
