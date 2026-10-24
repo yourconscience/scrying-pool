@@ -143,7 +143,11 @@ func simCmd(args []string) error {
 		}
 		if *check {
 			checked++
-			if ps := checkSimLog(client, text, snaps, res); len(ps) > 0 {
+			var lands []string
+			for _, l := range g.Land {
+				lands = append(lands, t.Defs[l].Name)
+			}
+			if ps := checkSimLog(client, text, snaps, res, lands); len(ps) > 0 {
 				problems++
 				if problems <= *show {
 					fmt.Printf("game %d (seed %d, kingdom %s):\n  %s\n", i, s, kingdomNames(t, k), strings.Join(ps[:min(len(ps), 40)], "\n  "))
@@ -263,7 +267,7 @@ func snapTurn(g *engine.Game) turnSnap {
 
 // checkSimLog reads a simulated log with Cartographer and lists where it
 // disagrees with the engine.
-func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engine.Result) []string {
+func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engine.Result, lands []string) []string {
 	g, err := c.Parse(text, nil)
 	if err != nil {
 		return []string{err.Error()}
@@ -306,7 +310,7 @@ func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engi
 			}
 		}
 	}
-	vp := c.Score(g, cartographer.ScoreInput{})
+	vp := c.Score(g, cartographer.ScoreInput{Landscapes: lands})
 	for p, name := range simNames {
 		if got := vp[name].Total(); got != res.VP[p] {
 			out = append(out, fmt.Sprintf("%s's VP: Cartographer %d, engine %d", name, got, res.VP[p]))
