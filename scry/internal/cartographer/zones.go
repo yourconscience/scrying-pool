@@ -184,6 +184,7 @@ type pending struct {
 	level      int
 	gained     bool
 	src        string // what moved it: the card a "(Card)" names, else the line above's
+	line       int    // the line that moved it
 }
 
 // source names what a line's effect comes from: "discards a Copper. (Tide Pools)".
@@ -214,11 +215,12 @@ type zoneReplay struct {
 	events   []Event
 	misses   []ZoneMiss
 	line     int                   // the line being replayed
+	latest   map[int]int           // the last line at each level: the current line's parents
 	takes    map[string][]DeckTake // every card taken from each player's deck
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
-	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}}
+	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}, latest: map[int]int{}}
 	for _, p := range g.Players {
 		r.zones[p] = Zones{}
 	}
@@ -355,9 +357,9 @@ func (r *zoneReplay) takeCard(e Event, p, card string, want []string, usePending
 func (r *zoneReplay) find(e Event, p, card string, want []string, usePending bool) string {
 	// what was just revealed comes first, also when the reveal didn't name the
 	// cards: an opponent's Miller "looks at 4 cards", then discards "2 other cards and a Town".
-	// Not two levels below the reveal, in a play it led to: the Trail a Lookout
-	// trashed draws from the deck, not the cards the Lookout looks at.
-	nearReveal := func(x pending) bool { return x.zone == ZoneRevealed && x.level >= e.Level-1 }
+	// Not below the reveal, in a play it led to: the Village a Golem plays and
+	// the Trail a Lookout trashes draw from the deck, not the revealed cards.
+	nearReveal := func(x pending) bool { return x.zone == ZoneRevealed && x.level >= e.Level }
 	near := false
 	for _, x := range r.pend[p] {
 		near = near || nearReveal(x)
@@ -385,14 +387,17 @@ func (r *zoneReplay) find(e Event, p, card string, want []string, usePending boo
 		ps := r.pend[p]
 		for _, pick := range []func(x pending) bool{
 			nearReveal,
-			func(x pending) bool { return x.level < e.Level && contains(want, x.zone) },
+			func(x pending) bool {
+				return x.level < e.Level && r.latest[x.level] == x.line && contains(want, x.zone)
+			},
 			func(x pending) bool {
 				return contains(want, x.zone) && x.src == source(e) && !(x.gained && x.level == e.Level && strings.HasPrefix(e.Template, "TRASH"))
 			},
 		} {
 			for i := len(ps) - 1; i >= 0; i-- {
-				if ps[i].card == card && pick(ps[i]) && r.takeOne(p, ps[i].zone, card, false) {
-					return ps[i].zone
+				if x := ps[i]; x.card == card && pick(x) && r.takeOne(p, x.zone, card, false) {
+					r.pend[p] = append(ps[:i:i], ps[i+1:]...) // it moved on: the gained Infirmary it plays is no longer in the discard pile
+					return x.zone
 				}
 			}
 		}
@@ -449,7 +454,7 @@ func (r *zoneReplay) move(e Event, p string, cards []CardN, want []string, to st
 				r.inPlay[p] = append(r.inPlay[p], &played{name: t.name, card: cn.Card, turn: r.turn, stays: -1})
 			}
 			if t.name != "" || to == ZoneRevealed { // unnamed revealed cards too: they stay revealed until the line ends
-				moved = append(moved, pending{t.name, to, e.Level, false, source(e)})
+				moved = append(moved, pending{t.name, to, e.Level, false, source(e), e.Line})
 			}
 		}
 	}
@@ -485,7 +490,7 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 		}
 		r.put(p, dest, name, cn.N)
 		if name != "" {
-			r.pend[p] = append(r.pend[p], pending{name, dest, e.Level, true, source(e)})
+			r.pend[p] = append(r.pend[p], pending{name, dest, e.Level, true, source(e), e.Line})
 		}
 	}
 }
@@ -716,6 +721,7 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 func (r *zoneReplay) step(i int, e Event) {
 	defer r.owned.Apply(e)
 	r.line = e.Line
+	r.latest[e.Level] = e.Line
 	r.deckPos = ""
 	switch e.Template {
 	case "TOPDECK", "TOPDECK_WITH", "BACK_ON_DECK", "GAIN_ON_DRAWPILE":
@@ -791,7 +797,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 
 	case (t == "RECEIVES" || t == "EXCHANGE_RECEIVE" || t == "TAKE") && len(cards) == 1 && cards[0].Card != nil && !cards[0].Card.InDeck():
-		r.received[p] = append(r.received[p], pending{cards[0].Card.Name, "", e.Level, false, source(e)})
+		r.received[p] = append(r.received[p], pending{cards[0].Card.Name, "", e.Level, false, source(e), e.Line})
 
 	// cards that become the player's
 	case t == "STARTS_WITH":
@@ -837,6 +843,9 @@ func (r *zoneReplay) step(i int, e Event) {
 		// the Black Market deck: not the player's card
 	case t == "RETURN_TO", t == "PUT_ON_BOTTOM_OF" && toSupplyPile(e.Args[2].Text), t == "EXCHANGE_RETURN", t == "RETURN":
 		r.lose(e, p, cards, []string{ZonePlay, ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
+		if e.CauseOf == "GAIN_SETTING_ASIDE" { // a Trader exchanges what a Blockade set aside
+			r.leftAside(i)
+		}
 	case t == "PASS":
 		r.lose(e, p, cards, []string{ZoneHand})
 		if q := e.Args[2].Player; q != "" {
@@ -988,8 +997,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		switch {
 		case t == "SET_ASIDE":
 			want = self(want...)
-		case len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == arg2:
-			want = []string{ZoneHand, ZoneDeck, ZoneDiscard} // "sets a Haven aside with Haven": another Haven
+		case arg2 != "Trickster": // only Trickster takes from play: Haven sets aside from hand, not the Throne Room that played it, nor itself
+			want = []string{ZoneHand, ZoneDeck, ZoneDiscard}
 		}
 		r.move(e, p, cards, want, ZoneSetAside)
 		holder := e.Cause
@@ -1099,7 +1108,7 @@ func (r *zoneReplay) mark(e Event, p string, cards []CardN, prefer string) {
 			}
 		}
 		if zone != "" {
-			r.pend[p] = append(r.pend[p], pending{name, zone, e.Level, false, source(e)})
+			r.pend[p] = append(r.pend[p], pending{name, zone, e.Level, false, source(e), e.Line})
 		}
 	}
 }

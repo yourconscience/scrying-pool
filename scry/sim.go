@@ -293,7 +293,8 @@ func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engi
 			want := s.zones[p]
 			if i == len(snaps)-1 {
 				// the last turn has no Clean-up, and its log can't tell a played card from a
-				// copy in hand when a card moves one of its own name (Cellar discards a Cellar)
+				// copy in hand when a card moves one of its own name (Cellar discards a Cellar),
+				// nor that a card Herald revealed stayed on the deck
 				have, want = handWithPlay(have), handWithPlay(want)
 			}
 			if !reflect.DeepEqual(have, want) {
@@ -310,12 +311,16 @@ func checkSimLog(c *cartographer.Client, text string, snaps []turnSnap, res engi
 	return out
 }
 
-// handWithPlay counts the hand and the cards in play as one zone.
+// handWithPlay counts the hand and the cards in play as one zone, and revealed
+// cards as the deck's.
 func handWithPlay(zones map[string]map[string]int) map[string]map[string]int {
 	out := map[string]map[string]int{}
 	for z, cs := range zones {
-		if z == "in play" {
+		switch z {
+		case "in play":
 			z = "hand"
+		case "revealed":
+			z = "deck"
 		}
 		if out[z] == nil {
 			out[z] = map[string]int{}
