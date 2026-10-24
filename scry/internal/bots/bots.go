@@ -74,6 +74,17 @@ func ranked(v *engine.View, d *engine.Decision, score func(*engine.Def) int) []i
 	return idx
 }
 
+// mineFirst ranks what Mine trashes: Silver into Gold, then Copper into Silver.
+func mineFirst(x *engine.Def) int {
+	switch x.Name {
+	case "Silver":
+		return 2
+	case "Copper":
+		return 1
+	}
+	return 0
+}
+
 // take answers with the first n ranked options, at least Min.
 func take(d *engine.Decision, idx []int, n int) []int {
 	n = max(n, d.Min)
@@ -120,7 +131,7 @@ func (b *Money) Decide(v *engine.View, d *engine.Decision) []int {
 		idx := ranked(v, d, neg(worth))
 		if v.Def(d.Source).Name == "Mine" || v.Def(d.Source).Name == "Moneylender" {
 			if v.Def(d.Source).Name == "Mine" {
-				idx = ranked(v, d, func(x *engine.Def) int { return x.Cost }) // Silver into Gold first
+				idx = ranked(v, d, mineFirst)
 			}
 			return take(d, idx, 1)
 		}

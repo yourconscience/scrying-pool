@@ -1,3 +1,5 @@
+//go:build !js
+
 package main
 
 import (
@@ -30,7 +32,11 @@ func simCmd(args []string) error {
 	kingdom := fs.String("kingdom", "", "comma-separated kingdom cards; empty: 10 random playable cards each game")
 	a := fs.String("a", "bm", "one bot: random, bm or bm+<card>")
 	b := fs.String("b", "bm", "the other bot; the two swap seats every game")
-	n := fs.Int("n", 1, "games to play")
+	games := 100
+	if sub == "fuzz" {
+		games = 1000
+	}
+	n := fs.Int("n", games, "games to play")
 	seed := fs.Uint64("seed", 1, "seed of the first game; game i uses seed+i")
 	logFile := fs.String("log", "", "write the first game's log to this file")
 	check := fs.Bool("check", false, "read each game's log back with Cartographer and compare every turn's decks and zones, and the final VP")

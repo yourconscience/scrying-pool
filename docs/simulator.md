@@ -1,6 +1,6 @@
 # Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-23; the decisions at the end are agreed. Nothing below is built yet. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-23; the decisions at the end are agreed. M0 is built: the engine with the base set, random and Big Money bots, `scry sim play` and `scry sim fuzz`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 

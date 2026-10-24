@@ -161,7 +161,11 @@ func (c *Ctx) LookAt(p int, xs []Inst) {
 	}
 }
 
-func (c *Ctx) RevealHand(p int) { c.log("REVEAL_HAND", seat(p), c.G.ids(c.G.P[p].Z[Hand])) }
+func (c *Ctx) RevealHand(p int) {
+	if len(c.G.P[p].Z[Hand]) > 0 {
+		c.log("REVEAL_HAND", seat(p), c.G.ids(c.G.P[p].Z[Hand]))
+	}
+}
 
 // FromTop takes up to n cards off the top of a deck into Revealed, shuffling
 // if needed, and logs them as revealed or looked at.
