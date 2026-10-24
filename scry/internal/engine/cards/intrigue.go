@@ -120,7 +120,7 @@ func init() {
 	reg("Mining Village", rules{Play: func(c *ctx) {
 		c.Draw(1)
 		c.PlusActions(2)
-		if c.G.Where(c.Me).Zone == inPlay && c.Yes(c.P, "trash it for +$2", "TRASH") {
+		if !c.InPlace && c.G.Where(c.Me).Zone == inPlay && c.Yes(c.P, "trash it for +$2", "TRASH") {
 			c.Trash(c.P, one(c.Me))
 			c.PlusCoins(2)
 		}

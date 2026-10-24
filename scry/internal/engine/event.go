@@ -50,6 +50,7 @@ type Ev struct {
 
 	Unaffected bool // EvAttack: a Reaction protects the victim
 	Done       bool // the card was moved already: a later listener can't move it
+	Skip       bool // EvPlaying: its instructions don't happen (Enchantress)
 }
 
 // Watch is an effect a card leaves for later: Merchant's +$1 for the next

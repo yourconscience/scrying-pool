@@ -91,6 +91,15 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	r.g = g
 	r.arrangePiles()
+	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
+		if x.Template == "OBELISK_CHOOSES_PILE" {
+			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
+			if id, ok := t.KingdomPile(name); ok {
+				g.Obelisk = g.PileOf(id)
+			}
+			break
+		}
+	}
 	g.Log = engine.NewLog(t)
 	g.Log.Hook = r.hook
 	g.BeforeTake = r.beforeTake
@@ -260,12 +269,16 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 			if y.Number == nil || *y.Number != a {
 				return "a different number"
 			}
+		case string:
+			if strings.TrimSpace(y.Text) != a {
+				return "a different text"
+			}
 		case engine.Name:
 			if a != 0 && norm(y.Text) != norm(r.t.Defs[a].Name) {
 				return "a different card"
 			}
 		case engine.PileName:
-			if norm(y.Text) != norm("the "+r.t.Defs[a].Name+" pile") {
+			if norm(y.Text) != norm("the "+r.t.Defs[r.t.PileCard(engine.CardID(a))].Name+" pile") {
 				return "a different pile"
 			}
 		case []engine.CardID:

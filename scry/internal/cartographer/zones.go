@@ -129,13 +129,15 @@ var (
 	gainedToHand   = names("Den of Sin", "Ghost Town", "Guardian", "Night Watchman")
 	gainedOntoDeck = names("Nomad Camp")
 	gainsToHand    = names("Artisan", "Beggar", "Falconer", "Joust", "Kind Emperor",
-		"Mine", "Pickaxe", "Pirate", "Plague", "Sculptor", "Silver Mine", "Swap", "Torturer", "Trading Post",
+		"Mine", "Pickaxe", "Pirate", "Plague", "Rocks", "Sculptor", "Silver Mine", "Swap", "Torturer", "Trading Post",
 		"Transmogrify", "Treasurer", "Wish")
 	gainsOntoDeck = names("Armory", "Artificer", "Bureaucrat", "Demand", "Develop", "Fool's Gold",
 		"Greed", "Invasion", "Sickness", "Stampede", "Supplies")
 	gainsSettingAside = names("Quartermaster")
 	// Research sets cards aside from the deck, not the hand
 	setsAsideFromDeck = names("Research")
+	// cards that play an Action more than once, and stay in play with a Duration it is
+	playsTwice = names("Throne Room", "King's Court", "Crown", "Procession", "Disciple", "Coronet")
 )
 
 // Replays that play a card again without moving it, and plays of cards the player
@@ -170,16 +172,18 @@ func names(ns ...string) map[string]bool {
 
 // played is a card in play, kept to decide when it leaves.
 type played struct {
-	name  string
-	card  *Card
-	turn  int     // the turn it was played on (count of NEW_TURN lines)
-	stays int     // the owner's Clean-ups it still stays through; -1 until decided
-	holds *played // the Duration a Throne Room-like card played
-	by    string  // the card whose line played it: a Throne Room
-	again bool    // played more than once: by a Throne Room, not a Shop
-	fired bool    // an untilTriggered card whose time came
-	back  bool    // played by Prince: set aside again instead of discarded
-	aside bool    // its own play set cards aside: this Gear, not another one played on the turn
+	name   string
+	card   *Card
+	turn   int     // the turn it was played on (count of NEW_TURN lines)
+	stays  int     // the owner's Clean-ups it still stays through; -1 until decided
+	holds  *played // the Duration a Throne Room-like card played
+	by     string  // the card whose line played it: a Throne Room
+	again  bool    // played more than once: by a Throne Room, not a Shop
+	fired  bool    // an untilTriggered card whose time came
+	back   bool    // played by Prince: set aside again instead of discarded
+	aside  bool    // its own play set cards aside: this Gear, not another one played on the turn
+	nAside int     // how many cards its own play set aside (Archive)
+	none   bool    // enchanted: its instructions didn't happen, so it doesn't stay
 	// inherits is the card an Estate played by Inheritance: the Estate stays in play like it
 	inherits *Card
 }
@@ -493,8 +497,8 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 		dest := to
 		if dest == ZoneDiscard {
 			by := r.cause(e)
-			if e.CauseOf == "RETURN_TO" || gains[e.CauseOf] {
-				by = "" // a Trader's Silver for a Fool's Gold: the card returned or gained didn't gain it
+			if (e.CauseOf == "RETURN_TO" || gains[e.CauseOf]) && by != "Rocks" {
+				by = "" // a Trader's Silver for a Fool's Gold: the card returned or gained didn't gain it; a gained Rocks did
 			}
 			if a := e.Args[2]; e.Template == "GAIN_WITH" && a.Text != "" {
 				by = strings.TrimSpace(a.Text)
@@ -592,6 +596,15 @@ func (r *zoneReplay) leftAside(i int) {
 			return
 		}
 	}
+}
+
+// before is the line before line i at its level, past the lines nested under that one, or -1.
+func (r *zoneReplay) before(i int) int {
+	k := i - 1
+	for k >= 0 && r.events[k].Level > r.events[i].Level {
+		k--
+	}
+	return k
 }
 
 // parent is the template of the line event i is nested under, also one without a card ("ends their buy phase").
@@ -716,7 +729,10 @@ func containsPlayed(ps []*played, x *played) bool {
 
 // decideStays says whether a card in play stays through p's Clean-up.
 func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
-	if x.inherits != nil { // decided as the card it inherited
+	if x.none {
+		return false
+	}
+	if x.inherits != nil { // decided as the card it inherited, or the one an Overlord played
 		y := *x
 		y.name, y.card, y.inherits = x.inherits.Name, x.inherits, nil
 		ok := y.decideStays(r, p, owner)
@@ -770,7 +786,7 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 		x.stays = 0
 		switch x.name {
 		case "Archive":
-			x.stays = 1 // two more turns of putting a card into hand
+			x.stays = max(0, x.nAside-1) // a turn of putting a card into hand for each card it set aside
 		case "Crypt":
 			x.stays = max(0, r.evidence["set aside:Crypt"]-1)
 		}
@@ -814,6 +830,11 @@ func (r *zoneReplay) step(i int, e Event) {
 		return
 	}
 	p := e.Player
+	if e.Template == "PLAY_ENCHANTED" { // "plays a Souk.", "Souk is enchanted by Enchantress": the Souk does nothing
+		if x := r.playAt[e.Level-2]; e.Level >= 2 && x != nil && x.name == strings.TrimSpace(e.Args[0].Text) {
+			x.none = true
+		}
+	}
 	if p == "" {
 		return
 	}
@@ -882,8 +903,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.gain(e, p, cards, ZoneSetAside)
 		r.note("set aside", cause)
 	case t == "GAIN" && p != r.turnOf && e.Cause == "Province" && gains[e.CauseOf] && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Gold" &&
-		strings.HasPrefix(r.events[i-1].Template, "TRASH") && r.events[i-1].Player == p:
-		r.gain(e, p, cards, ZoneDeck) // another player's Province: "trashes a Fool's Gold.", "gains a Gold." onto the deck
+		r.before(i) >= 0 && strings.HasPrefix(r.events[r.before(i)].Template, "TRASH") && r.events[r.before(i)].Player == p:
+		r.gain(e, p, cards, ZoneDeck) // another player's Province: "trashes a Fool's Gold.", ("gets 1 VP from Tomb."), "gains a Gold." onto the deck
 	case gains[t]:
 		r.gain(e, p, cards, ZoneDiscard)
 	case t == "EXILE" && supplyExilers[e.Cause]:
@@ -922,6 +943,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 	case t == "PUT_ON_BOTTOM_OF" && !strings.EqualFold(strings.TrimSpace(e.Args[2].Text), "Draw Pile") && !toSupplyPile(e.Args[2].Text):
 		// the Black Market deck: not the player's card
+	case t == "RETURN_TO" && r.parent(i) == "BEGINS_CLEANUP_PHASE": // the Encampment it set aside, not one in hand
+		r.lose(e, p, cards, []string{ZoneSetAside, ZonePlay, ZoneHand, ZoneDiscard, ZoneDeck})
 	case t == "RETURN_TO", t == "PUT_ON_BOTTOM_OF" && toSupplyPile(e.Args[2].Text), t == "EXCHANGE_RETURN", t == "RETURN":
 		r.lose(e, p, cards, []string{ZonePlay, ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
 		if e.CauseOf == "GAIN_SETTING_ASIDE" { // a Trader exchanges what a Blockade set aside
@@ -944,9 +967,17 @@ func (r *zoneReplay) step(i int, e Event) {
 			}
 		}
 		r.replay(e, p, cards, holder)
-	case t == "PLAY" && cause == "Estate" && strings.HasPrefix(e.CauseOf, "PLAY"): // an Estate playing the card it inherited, not a Weaver discarded with one
-		if x := r.playAt[e.Level-1]; x != nil && x.name == "Estate" && len(cards) == 1 {
-			x.inherits = cards[0].Card
+	case t == "PLAY" && (cause == "Estate" || cause == "Overlord") && strings.HasPrefix(e.CauseOf, "PLAY"): // an Estate playing the card it inherited, not a Weaver discarded with one
+		if x := r.playAt[e.Level-1]; x != nil && x.name == cause && len(cards) == 1 {
+			// an Overlord played twice stays as long as the longer: a Crowned one that played
+			// an Enchantress, then a Bandit, stays like the Enchantress, and an Archive outlasts it
+			if old := x.inherits; old == nil || !old.Is("Duration") || cards[0].Card.Is("Duration") && old.Name != "Archive" {
+				x.inherits = cards[0].Card
+			}
+			r.playAt[e.Level] = x
+			if x.inherits.Is("Duration") && playsTwice[x.by] {
+				r.holdInherited(p, x)
+			} // what the Archive an Overlord played sets aside keeps the Overlord in play
 		}
 	case t == "PLAY_NULLIFIED": // "plays Copper (nullified by Highwayman)" describes the play above
 	case t == "PLAY_WITH" && (playsInPlace[arg2] || (arg2 == "Mastermind" || arg2 == "Ghost") && r.replayed(p, cards, e.Level)): // they log each play
@@ -983,6 +1014,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			want, rest = []string{ZoneSetAside}, nil // the Actions it skipped, not copies it drew
 		case r.parent(i) == "ENDS_BUYPHASE":
 			want, rest = []string{ZoneTavern}, nil // Wine Merchants, not a copy in hand
+		case r.parent(i) == "BEGINS_BUYPHASE":
+			want, rest = []string{ZoneHand}, nil // Arena's Action, not one an Archive set aside
 		case cause == "Tactician", fromHandOnly[cause]:
 			want, rest = []string{ZoneHand}, nil // the hand, with any other Tactician in it
 		case e.Cause == "" && e.Level > 0 && t == "DISCARD": // at the start of a turn: Grotto discards what it set aside (Tide Pools names itself)
@@ -1065,7 +1098,7 @@ func (r *zoneReplay) step(i int, e Event) {
 			}
 		}
 		r.move(e, p, cards, []string{ZoneDiscard, ZoneDeck}, ZoneDeck)
-	case t == "SHUFFLE_INTO_DECK" && cause == "Inn" && gains[e.CauseOf]: // the Actions in the discard pile, not those in hand
+	case t == "SHUFFLE_INTO_DECK" && (cause == "Inn" && gains[e.CauseOf] || cause == "Annex"): // the discard pile's cards, not those in hand
 		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
 	case t == "TOPDECK" && e.CauseOf == "BUY_AND_GAIN" && r.othersPlay(p, "Haunted Woods"): // the hand, not the card just bought
 		r.move(e, p, cards, []string{ZoneHand}, ZoneDeck)
@@ -1082,6 +1115,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.move(e, p, cards, []string{ZoneSetAside, ZoneNativeVillage, ZonePlay}, ZoneHand) // Blockade's gained card; Conjurer itself from play
 	case t == "PUT_IN_HAND" && cause == "Native Village": // the mat's cards, not the Native Village just played
 		r.move(e, p, cards, []string{ZoneNativeVillage}, ZoneHand)
+	case t == "PUT_IN_HAND" && cause == "" && (r.parent(i) == "NEW_TURN" || r.parent(i) == "STARTS_TURN"): // Donate's deck and discard pile, not what an Archive set aside
+		r.move(e, p, cards, []string{ZoneDeck, ZoneDiscard}, ZoneHand)
 	case t == "PUT_IN_HAND":
 		r.move(e, p, cards, []string{ZoneSetAside, ZoneNativeVillage, ZoneDiscard, ZoneDeck, ZonePlay}, ZoneHand)
 	case t == "SET_ASIDE_WITH" && arg2 == "Native Village":
@@ -1104,8 +1139,13 @@ func (r *zoneReplay) step(i int, e Event) {
 		if arg2 != "" {
 			holder = arg2
 		}
-		if x := r.playAt[e.Level-1]; e.Level > 0 && x != nil && x.name == holder && holder != "Crypt" { // Crypt counts what it set aside
+		if x := r.playAt[e.Level-1]; e.Level > 0 && x != nil && (x.name == holder || x.inherits != nil && x.inherits.Name == holder) && holder != "Crypt" { // Crypt counts what it set aside
 			x.aside = true
+			n := 0
+			for _, c := range cards {
+				n += c.N
+			}
+			x.nAside = max(x.nAside, n) // a Crown's two plays of one Archive each put their own cards into hand
 		} else {
 			r.note("set aside", holder)
 		}
@@ -1178,6 +1218,26 @@ func (r *zoneReplay) play(e Event, p string, cards []CardN, want []string) {
 	}
 }
 
+// holdInherited: the Throne Room that played an Overlord that played a Duration,
+// on either of its plays, stays in play with it, and so does what played that one.
+func (r *zoneReplay) holdInherited(p string, x *played) {
+	ps := r.inPlay[p]
+	for _, h := range ps {
+		if h.holds == x {
+			return
+		}
+	}
+	for i := len(ps) - 1; i >= 0; i-- {
+		if h := ps[i]; (h.name == x.by || h.inherits != nil && h.inherits.Name == x.by) && h.holds == nil && h != x {
+			h.holds = x
+			if playsTwice[h.by] {
+				r.holdInherited(p, h)
+			}
+			return
+		}
+	}
+}
+
 // replay notes a card played again: a Throne Room that plays a Duration twice
 // stays in play as long as that Duration, and so does a Throne Room that plays
 // that Throne Room.
@@ -1189,9 +1249,8 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN, holder string) {
 		}
 		var x *played
 		for i := len(ps) - 1; i >= 0; i-- {
-			if ps[i].name == cn.Card.Name {
-				x = ps[i]
-				break
+			if ps[i].name == cn.Card.Name && (x == nil || ps[i].by == holder && x.by != holder) {
+				x = ps[i] // the one this holder played: not the Overlord its Overlord's Crown played
 			}
 		}
 		if x != nil {
@@ -1201,7 +1260,7 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN, holder string) {
 			continue
 		}
 		for i := len(ps) - 1; x != nil && i >= 0; i-- {
-			if h := ps[i]; h.name == holder && h.holds == nil && h != x {
+			if h := ps[i]; (h.name == holder || h.inherits != nil && h.inherits.Name == holder) && h.holds == nil && h != x { // an Overlord's Crown
 				h.holds = x
 				break
 			}
@@ -1209,7 +1268,7 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN, holder string) {
 		// and the Throne Room that played that Throne Room, though it played it before the Duration
 		for k := e.Level - 1; k > 0; k-- {
 			in, out := r.playAt[k], r.playAt[k-1]
-			if in == nil || out == nil || in.holds == nil || !in.again || out.holds != nil || in.by != out.name {
+			if in == nil || out == nil || in.holds == nil || !in.again || out.holds != nil || in.by != out.name && (out.inherits == nil || out.inherits.Name != in.by) { // an Overlord's Crown
 				break
 			}
 			out.holds = in

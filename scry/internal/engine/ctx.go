@@ -12,6 +12,10 @@ type Ctx struct {
 	Src   CardID // the card whose rules run: Me's card, a Way, a landscape
 	level int    // log nesting of the effect's lines
 
+	// InPlace: the card was played where it is and left there (Overlord, Inheritance), so
+	// moving "this" fails; Me is the card that played it, which stays in play for a Duration
+	InPlace bool
+
 	from       bool    // the effect happens away from the card's play (a Duration's next turn): lines name the card
 	holders    []Inst  // the cards that played this one (Throne Room), which stay in play with it
 	unaffected [2]bool // players a Reaction protected from this Attack
@@ -165,6 +169,69 @@ func (c *Ctx) PlusVP(n int) {
 
 // TakeDebt takes debt tokens.
 func (c *Ctx) TakeDebt(n int) { c.G.takeDebt(c.P, n, c.level) }
+
+// AddVPTo puts VP tokens on a pile: "adds 1 VP to the Farmers' Market pile".
+func (c *Ctx) AddVPTo(pile, n int) {
+	c.G.Piles[pile].VP += n
+	c.Log("ADDS_VP_TO", Seat(c.P), n, PileName(c.G.Piles[pile].Card))
+}
+
+// TakeVPFrom takes the VP tokens on a pile: "takes 4 VP from the Farmers' Market pile".
+func (c *Ctx) TakeVPFrom(pile int) int {
+	n := c.G.Piles[pile].VP
+	if n > 0 {
+		c.G.Piles[pile].VP = 0
+		c.G.P[c.P].VP += n
+		c.Log("TAKE_VP_FROM", Seat(c.P), n, PileName(c.G.Piles[pile].Card))
+	}
+	return n
+}
+
+// TakeLandVP takes up to n VP tokens from this Landmark: "takes 2 VP from Arena".
+func (c *Ctx) TakeLandVP(n int) {
+	if n = min(n, c.G.LandVP[c.Src]); n > 0 {
+		c.G.LandVP[c.Src] -= n
+		c.G.P[c.P].VP += n
+		c.Log("TAKE_VP_FROM", Seat(c.P), n, Name(c.Src))
+	}
+}
+
+// MoveVPToLand moves a VP token from a pile to this Landmark (Aqueduct, Defiled Shrine).
+func (c *Ctx) MoveVPToLand(pile int) {
+	if c.G.Piles[pile].VP > 0 {
+		c.G.Piles[pile].VP--
+		c.G.LandVP[c.Src]++
+		c.Log("MOVE_VP_FROM_TO", Seat(c.P), 1, PileName(c.G.Piles[pile].Card), Name(c.Src))
+	}
+}
+
+// Quietly writes what fn logs without first writing the waiting lazy line:
+// Capital's debt in Clean-up comes without "begins their Cleanup phase".
+func (c *Ctx) Quietly(fn func()) {
+	l := c.G.Log
+	if l == nil {
+		fn()
+		return
+	}
+	p := l.pending
+	l.pending = nil
+	fn()
+	if l.pending == nil {
+		l.pending = p
+	}
+}
+
+// ShuffleLine writes "shuffles their deck." with nothing to shuffle, as the
+// client does before Donate shuffles a hand into the deck.
+func (c *Ctx) ShuffleLine(p int) {
+	c.G.Log.add(Entry{Level: c.level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
+}
+
+// PlayHere plays a card where it is, leaving it there, with this card as its
+// "this": Overlord's card from the Supply.
+func (c *Ctx) PlayHere(x Inst) {
+	c.G.play(c.P, x, c.level, playHow{inPlace: true, self: c.Me, holders: c.holders})
+}
 
 func plural(n int, one, many string) string {
 	if n == 1 {
@@ -410,6 +477,9 @@ func (c *Ctx) moveAll(p int, xs []Inst, to Loc, template string, args ...any) []
 	var from []Zone
 	for _, x := range xs {
 		l := c.G.loc[x]
+		if c.InPlace && x == c.Me {
+			continue
+		}
 		if l.Zone < nPlayerZones && int(l.Owner) == p && (l.Zone != to.Zone || to.Zone == Deck) && c.G.move(x, l.Zone, to) {
 			moved = append(moved, x)
 			from = append(from, l.Zone)
@@ -466,7 +536,7 @@ func (c *Ctx) Topdeck(p int, xs []Inst) []Inst {
 func (c *Ctx) Bottomdeck(p int, xs []Inst) {
 	var moved []Inst
 	for _, x := range xs {
-		if c.G.Owner(x) == p {
+		if c.G.Owner(x) == p && !(c.InPlace && x == c.Me) {
 			c.G.bottom(x, p)
 			moved = append(moved, x)
 		}
@@ -503,7 +573,7 @@ func (c *Ctx) PutOnMat(p int, xs []Inst, z Zone) []Inst {
 func (c *Ctx) ReturnTo(p int, x Inst) bool {
 	i := c.G.PileOf(c.G.cards[x])
 	l := c.G.loc[x]
-	if i < 0 || l.Zone == Supply {
+	if i < 0 || l.Zone == Supply || c.InPlace && x == c.Me {
 		return false
 	}
 	if !c.G.move(x, l.Zone, Loc{Supply, int16(i)}) {
@@ -518,7 +588,7 @@ func (c *Ctx) ReturnTo(p int, x Inst) bool {
 func (c *Ctx) Exchange(x Inst, card CardID) bool {
 	i, j := c.G.PileOf(c.G.cards[x]), c.G.PileOf(card)
 	l := c.G.loc[x]
-	if i < 0 || j < 0 || len(c.G.Piles[j].Cards) == 0 || l.Zone >= nPlayerZones || int(l.Owner) != c.P {
+	if i < 0 || j < 0 || len(c.G.Piles[j].Cards) == 0 || l.Zone >= nPlayerZones || int(l.Owner) != c.P || c.InPlace && x == c.Me {
 		return false
 	}
 	c.G.move(x, l.Zone, Loc{Supply, int16(i)})
