@@ -496,6 +496,16 @@ func (r *replayer) pickWay(d *engine.Decision, x cartographer.Event) []int {
 
 func normWay(s string) string { return strings.ReplaceAll(strings.ToLower(s), " ", "") }
 
+// norm keeps only the letters, lower case: "Farmers' Market" is "farmersmarket".
+func norm(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r >= 'a' && r <= 'z' {
+			return r
+		}
+		return -1
+	}, strings.ToLower(s))
+}
+
 // answers says whether a real event is what a decision's answer writes.
 func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 	if x.Player != r.names[d.Player] || x.Level != d.Level {
