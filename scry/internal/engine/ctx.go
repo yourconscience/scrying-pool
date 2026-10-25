@@ -1,6 +1,9 @@
 package engine
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 // Ctx is a card's effect as it runs: whose card it is, and how deep its log
 // lines nest. Card code is straight-line Go over these calls; each move logs
@@ -151,6 +154,23 @@ func (c *Ctx) PlusCoins(n int) {
 	pl.Coins += n
 	t, a := c.withFrom(plural(n, "GETS_COIN", "GETS_COINS"), []any{Seat(c.P), n})
 	c.Log(t, a...)
+}
+
+// CoinsFromMerged is CoinsFrom added to the line this card just wrote at this level: two Priests'
+// +$2 for one trash, or one Priest's for "trashes 2 Coppers", are "gets +$4. (Priest)".
+func (c *Ctx) CoinsFromMerged(n int) {
+	l, pl := c.G.Log, &c.G.P[c.P]
+	if l != nil && l.pending == nil && l.tr == nil && len(l.after) == 0 && len(l.Entries) > 0 && pl.MinusCoin == 0 {
+		e := &l.Entries[len(l.Entries)-1]
+		if (e.Template == "GETS_COIN_FROM" || e.Template == "GETS_COINS_FROM") && e.Level == c.level && e.Args[0] == Seat(c.P) && e.Args[2] == Name(c.Src) {
+			pl.Coins += n
+			e.Args[1] = e.Args[1].(int) + n
+			e.Template = plural(e.Args[1].(int), "GETS_COIN", "GETS_COINS") + "_FROM"
+			l.changed(len(l.Entries) - 1)
+			return
+		}
+	}
+	c.CoinsFrom(n)
 }
 
 // CoinsFrom is +$ that a card gives later, e.g. Merchant's for the first Silver.
@@ -725,12 +745,21 @@ func (c *Ctx) LookAt(p int, xs []Inst) {
 func (c *Ctx) Reveal(p int, xs []Inst) {
 	if len(xs) > 0 {
 		c.Log("REVEAL", Seat(p), c.G.ids(xs))
+		c.revealed(p, xs)
 	}
 }
 
 func (c *Ctx) RevealHand(p int) {
-	if len(c.G.P[p].Z[Hand]) > 0 {
-		c.Log("REVEAL_HAND", Seat(p), c.G.ids(c.G.P[p].Z[Hand]))
+	if xs := c.G.P[p].Z[Hand]; len(xs) > 0 {
+		c.Log("REVEAL_HAND", Seat(p), c.G.ids(xs))
+		c.revealed(p, slices.Clone(xs))
+	}
+}
+
+// revealed runs what revealing the cards causes, below the reveal line: "gets a Coffers from Patron."
+func (c *Ctx) revealed(p int, xs []Inst) {
+	for _, x := range xs {
+		c.G.fire(&Ev{Kind: EvReveal, P: p, X: x, C: c.G.cards[x], Level: c.level + 1})
 	}
 }
 
@@ -747,6 +776,9 @@ func (c *Ctx) FromTop(p, n int, template string) []Inst {
 	}
 	if len(out) > 0 && template != "" {
 		c.Log(template, Seat(p), c.G.ids(out))
+		if template == "REVEAL" {
+			c.revealed(p, out)
+		}
 	}
 	return out
 }
@@ -767,6 +799,7 @@ func (c *Ctx) RevealUntil(p int, ok func(*Def) bool, n int) ([]Inst, []Inst) {
 	}
 	if len(all) > 0 {
 		c.Log("REVEAL", Seat(p), c.G.ids(all))
+		c.revealed(p, all)
 	}
 	return all, found
 }
@@ -804,6 +837,9 @@ func (c *Ctx) PlayFrom(x Inst) {
 
 // PlayNow plays a card from where it is, e.g. Vassal's discarded Action or a Reaction that plays itself.
 func (c *Ctx) PlayNow(x Inst) { c.G.play(c.P, x, c.level, playHow{}) }
+
+// PlayAgain plays a card again where it is, with nothing holding it: Citadel's "plays a Settlers again."
+func (c *Ctx) PlayAgain(x Inst) { c.G.play(c.P, x, c.level, playHow{times: 1}) }
 
 // PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
 func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }

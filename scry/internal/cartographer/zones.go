@@ -160,9 +160,11 @@ var (
 	staysIfDiscards = names("Secret Cave", "Tactician")
 	// cards that discard or trash from hand, never themselves: a copy they name is the one in hand,
 	// not one they just discarded (Count discards a Rats, then trashes the hand)
-	fromHandOnly = names("Amulet", "Count", "Dungeon", "Enlarge")
+	fromHandOnly = names("Amulet", "Count", "Dungeon", "Enlarge", "Hideout", "Priest", "Recruiter", "Research", "Scholar")
 	// cards that draw, then may trash themselves: "trashes a Mining Village." is the one in play
 	trashesItself = names("Mining Village", "Tragic Hero")
+	// cards that draw, then return themselves: "returns an Experiment" is the one in play
+	returnsItself = names("Experiment")
 	// Durations that work now or next turn, by choice: the line that shows "now"
 	leavesIfNow = map[string]string{"Amphora": "GETS_BUY", "Barge": "GETS_BUY", "Gondola": "GETS_COIN", "Village Green": "GETS_ACTIONS"}
 	// stay for the rest of the game
@@ -509,7 +511,8 @@ func (r *zoneReplay) find(e Event, p, card string, want []string, usePending boo
 			nearReveal,
 			func(x pending) bool { return r.above(e, x) && contains(want, x.zone) },
 			func(x pending) bool {
-				itself := trashesItself[card] && card == e.Cause && strings.HasPrefix(e.Template, "TRASH") && strings.HasPrefix(e.CauseOf, "PLAY") // not the one it drew
+				itself := card == e.Cause && strings.HasPrefix(e.CauseOf, "PLAY") && // not the one it drew
+					(trashesItself[card] && strings.HasPrefix(e.Template, "TRASH") || returnsItself[card] && e.Template == "RETURN_TO")
 				// not a card no card moved: Frog's topdecked Page isn't the one exchanged after it
 				// nor one it put on the deck: two Landing Parties topdeck themselves after one Treasure
 				return contains(want, x.zone) && x.src != "" && x.src == source(e) && !(x.gained && x.level == e.Level && strings.HasPrefix(e.Template, "TRASH")) && !(itself && x.zone != ZonePlay) &&
@@ -1169,10 +1172,13 @@ func (r *zoneReplay) step(i int, e Event) {
 		if cause == "Bonfire" {
 			want = []string{ZonePlay} // Coppers in play, not those in hand
 		}
+		if r.parent(i) == "BEGINS_CLEANUP_PHASE" {
+			want = []string{ZonePlay, ZoneHand} // Improve's Action it would discard from play (a Raze may have trashed another)
+		}
 		if cause == "Hermit" && strings.HasPrefix(e.CauseOf, "PLAY") {
 			want = []string{ZoneDiscard, ZoneHand} // never itself: the Hermit it looked at in the discard pile
 		}
-		if topTrashers[cause] && !gains[e.CauseOf] { // a Swindler played, not one a Watchtower trashes as it's gained
+		if topTrashers[cause] && !gains[e.CauseOf] && source(e) == cause { // a Swindler played, not one a Watchtower trashes as it's gained, nor Sewers after it
 			want = []string{ZoneDeck}
 		}
 		if n := i + 1; len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Urchin" && n < len(r.events) &&
@@ -1434,6 +1440,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.move(e, p, cards, []string{ZoneSetAside, ZoneNativeVillage, ZonePlay}, ZoneHand) // Blockade's gained card; Conjurer itself from play
 	case t == "PUT_IN_HAND" && cause == "Native Village" && !gains[e.CauseOf]: // the mat's cards, not the Native Village just played; a Sleigh puts in hand the one gained
 		r.move(e, p, cards, []string{ZoneNativeVillage}, ZoneHand)
+	case t == "PUT_IN_HAND" && cause == "Mountain Village" && strings.HasPrefix(e.CauseOf, "PLAY"): // from the discard pile it looked at, even a Mountain Village
+		r.move(e, p, cards, []string{ZoneDiscard}, ZoneHand)
 	case t == "PUT_IN_HAND" && cause == "" && (r.parent(i) == "NEW_TURN" || r.parent(i) == "STARTS_TURN"): // Donate's deck and discard pile, not what an Archive set aside
 		r.move(e, p, cards, []string{ZoneDeck, ZoneDiscard}, ZoneHand)
 	case t == "PUT_IN_HAND":
@@ -1445,7 +1453,11 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.move(e, p, cards, []string{ZoneDeck}, ZoneNativeVillage)
 	case t == "SET_ASIDE" && setsAsideFromDeck[cause]:
 		r.move(e, p, cards, []string{ZoneDeck}, ZoneSetAside)
-		r.note("set aside", cause)
+		if x := r.playAt[e.Level-1]; e.Level > 0 && x != nil && (x.name == cause || x.inherits != nil && x.inherits.Name == cause) {
+			x.aside = true // this Research: a Throne Room's that set cards aside, not the one before it that didn't
+		} else {
+			r.note("set aside", cause)
+		}
 	case t == "SET_ASIDE", t == "SET_ASIDE_WITH":
 		want := []string{ZoneHand, ZonePlay, ZoneDeck, ZoneDiscard} // Faithful Hound from the discard pile
 		switch {
@@ -1616,6 +1628,9 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN, holder string) {
 			x.again = true
 			x.agains++
 			x.none = false // played again with its own text: a Royal Carriage replays a Wharf played with Way of the Seal
+			if x.card != nil && x.card.Is("Duration") {
+				x.inherits = nil // nor as the Herbalist Way of the Mouse played: a Scepter replays the Amulet
+			}
 		}
 		if x == nil || !cn.Card.Is("Duration") && x.holds == nil {
 			continue

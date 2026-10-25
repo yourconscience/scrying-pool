@@ -61,7 +61,7 @@ func (g *Game) takeTurn(extra CardID) {
 
 	// Clean-up, except after the last turn: dominion.games ends the game and its log there
 	g.T2.Phase = CleanupPhase
-	if g.over() || g.capped() {
+	if g.over() && len(g.fleetLeft()) == 0 || !g.over() && g.capped() { // once over, the Fleet round decides
 		g.prevGained[p], g.prevTrashed[p] = g.T2.Gained, g.T2.Trashed
 		return
 	}
@@ -154,7 +154,7 @@ func (g *Game) actionOptions(p int) []Option {
 func (g *Game) buyPhase(p int) {
 	pl := &g.P[p]
 	for {
-		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() || d.ID == g.curse && g.CurseTreasure })
+		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() || d.ID == g.curse && g.CurseTreasure || g.alsoTreasure(p, d) })
 		if len(opts) == 0 {
 			break
 		}
@@ -573,6 +573,16 @@ func (g *Game) tokenBonus(p int, x Inst, level int) {
 			g.Log.add(Entry{Level: level, Template: "PLUS_COIN_FROM", Args: []any{Seat(p), by}})
 		}
 	}
+}
+
+// alsoTreasure: a Project makes the card a Treasure for player p (Capitalism).
+func (g *Game) alsoTreasure(p int, d *Def) bool {
+	for _, c := range g.Land {
+		if r := g.T.Defs[c].Rules; r != nil && r.AlsoTreasure != nil && r.AlsoTreasure(g, p, d) {
+			return true
+		}
+	}
+	return false
 }
 
 // isTreasure: the card is a Treasure in this game (Charlatan makes Curses Treasures).
