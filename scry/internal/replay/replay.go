@@ -617,6 +617,17 @@ func (r *replayer) beforeTake(p int) {
 				return
 			}
 		}
+		// a line names its cards by kind, not in the order drawn: across a shuffle the
+		// old deck's come first, "draws 3 Coppers, a Moneylender, and a Forager." with a Forager left
+		for k := r.took[p]; k < len(r.takes[p]) && r.takes[p][k].Line == take.Line; k++ {
+			for i := len(deck) - 1; i >= 0; i-- {
+				if c := r.takes[p][k].Card; c != "" && r.g.Def(deck[i]).Name == c {
+					r.takes[p][k].Card = take.Card
+					r.g.PutOnTop(deck[i])
+					return
+				}
+			}
+		}
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
 	}
 	// an unnamed card: one this player shows from their hand while it's there,
