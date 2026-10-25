@@ -6,6 +6,7 @@ package replay
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -631,28 +632,54 @@ func (r *replayer) beforeTake(p int) {
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
 	}
 	// an unnamed card: one this player shows from their hand while it's there,
-	// else one they won't need in their next hand either
+	// else one they won't need in their next hand either; never one a later
+	// line takes from this deck by name before it's shuffled again (a Cardinal's
+	// "reveals an Estate and Dame Sylvia.")
+	in, later := map[string]int{}, r.laterTakes(p, take.Line)
+	for _, x := range deck {
+		in[r.g.Def(x).Name]++
+	}
 	need := r.demand(p, take.Line, 1)
 	for i := len(deck) - 1; i >= 0; i-- {
-		if need[r.g.Def(deck[i]).Name] > 0 {
+		if n := r.g.Def(deck[i]).Name; need[n] > 0 && in[n] > later[n] {
 			r.g.PutOnTop(deck[i])
 			return
 		}
 	}
 	soon := r.demand(p, take.Line, 2)
-	in := map[string]int{}
-	for _, x := range deck {
-		in[r.g.Def(x).Name]++
-	}
 	best, spare := -1, -1
 	for i, x := range deck {
-		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name]; n > spare {
+		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name] - later[r.g.Def(x).Name]; n > spare {
 			best, spare = i, n
 		}
 	}
 	if best >= 0 {
 		r.g.PutOnTop(deck[best])
 	}
+}
+
+// laterTakes counts the cards the log takes by name from player p's deck after
+// the take at line, until their next shuffle.
+func (r *replayer) laterTakes(p, line int) map[string]int {
+	end := math.MaxInt
+	if i, ok := r.line[line]; ok {
+		for _, x := range r.real[i+1:] {
+			if x.Template == "SHUFFLES" && x.Player == r.names[p] {
+				end = x.Line
+				break
+			}
+		}
+	}
+	later := map[string]int{}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if t.Line >= end {
+			break
+		}
+		if t.Card != "" {
+			later[t.Card]++
+		}
+	}
+	return later
 }
 
 // demand counts the cards player p shows from their hand by name in the next
