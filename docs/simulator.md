@@ -1,6 +1,6 @@
 # Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-23; the decisions at the end are agreed. Built: the engine with Base, Intrigue, Seaside, Prosperity, Hinterlands, Cornucopia & Guilds, Alchemy without Possession, Dark Ages and Adventures, random and Big Money bots, `scry sim play`, `scry sim fuzz` and `scry sim check`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-24; the decisions at the end are agreed. Built: the engine with Base, Intrigue, Seaside, Prosperity, Hinterlands, Cornucopia & Guilds, Alchemy without Possession, Dark Ages, Adventures and Empires, random and Big Money bots, `scry sim play`, `scry sim fuzz` and `scry sim check`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 
@@ -235,7 +235,7 @@ The milestones follow mechanisms, since each expansion brings its own. Effort is
 
 **Writing 819 cards.** Card files can be written in parallel by coding-agent sessions on the user's subscriptions, one set per session. The steps for each card:
 
-1. read the card's text locally (dominiontabs or the rulebook) and the rulings;
+1. read the card's text locally and the rulings. The dominion.games web client's `EnglishCardTexts` (in `js/dominion-webclient-body-*.min.js`) has the current errata; dominiontabs still has older wording for some cards (Overlord's non-Duration, Basilica's "gain in your Buy phase");
 2. write the card file;
 3. run `scry sim check` on the saved games that use the card.
 
