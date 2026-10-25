@@ -540,9 +540,9 @@ func (r *zoneReplay) leavePlay(p, name string) {
 		if pick < 0 {
 			pick = i
 		}
-		// in Clean-up Scheme topdecks the Monkey that's done, not the one staying out;
-		// but Herbalist's Treasure is one still in play, played after it, not last turn's Astrolabe, discarded first
-		if r.cleaning == p && ps[i].stays == 0 && !(ps[i].card != nil && ps[i].card.Is("Treasure")) {
+		// in Clean-up Scheme topdecks the Monkey that's done, not the one staying out,
+		// and Herbalist the Treasure discarded: last turn's Astrolabe, not this turn's
+		if r.cleaning == p && ps[i].stays == 0 {
 			pick = i
 			break
 		}
