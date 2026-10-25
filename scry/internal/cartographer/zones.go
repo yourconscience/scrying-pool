@@ -123,6 +123,10 @@ var (
 	topTrashers   = names("Barbarian", "Locusts", "Swindler", "Zombie Mason")
 )
 
+// Cards in play that trash themselves when their player gains a card: a Cage
+// for a Victory card, a Search when the gain empties a pile.
+var trashedFromPlayOnGain = names("Cage", "Search")
+
 // Cards gained somewhere other than the discard pile, without a line saying so:
 // by the card gained, or by what gained it (the line above, or "(Sickness)").
 var (
@@ -540,9 +544,9 @@ func (r *zoneReplay) leavePlay(p, name string) {
 		if pick < 0 {
 			pick = i
 		}
-		// in Clean-up Scheme topdecks the Monkey that's done, not the one staying out;
-		// but Herbalist's Treasure is one still in play, played after it, not last turn's Astrolabe, discarded first
-		if r.cleaning == p && ps[i].stays == 0 && !(ps[i].card != nil && ps[i].card.Is("Treasure")) {
+		// in Clean-up Scheme topdecks the Monkey that's done, not the one staying out,
+		// and Herbalist the Treasure discarded: last turn's Astrolabe, not this turn's
+		if r.cleaning == p && ps[i].stays == 0 {
 			pick = i
 			break
 		}
@@ -615,6 +619,26 @@ func (r *zoneReplay) parent(i int) string {
 		}
 	}
 	return ""
+}
+
+// overpaid reports whether line i is under the gain of a card bought with
+// overpay: "buys a Herald.", "loses 1 Coin.", "gains a Herald."
+func (r *zoneReplay) overpaid(i int) bool {
+	for k := i - 1; k >= 0; k-- {
+		if r.events[k].Level >= r.events[i].Level {
+			continue
+		}
+		if r.events[k].Template != "GAIN" {
+			return false
+		}
+		for j := k - 1; j >= 0; j-- {
+			if b := r.events[j]; b.Level <= r.events[k].Level {
+				return b.Template == "BUY" && b.Player == r.events[k].Player && b.Args[1].Text == r.events[k].Args[1].Text
+			}
+		}
+		return false
+	}
+	return false
 }
 
 // note records the parts of a turn that decide whether a Duration stays.
@@ -916,11 +940,19 @@ func (r *zoneReplay) step(i int, e Event) {
 			break
 		}
 		want := self(ZoneHand, ZonePlay, ZoneDiscard)
-		if e.CauseOf == "BUY_AND_GAIN" && cause != "Mint" && !(i > 0 && r.events[i-1].Template == "REACTS_WITH") {
-			want = []string{ZoneHand} // Plan's Trashing token, a Hovel: not the card just bought, unless a Watchtower reacts
+		reacted := i > 0 && r.events[i-1].Template == "REACTS_WITH"
+		fromHand := (e.CauseOf == "BUY_AND_GAIN" || e.CauseOf == "GAIN" || e.CauseOf == "GAIN_SETTING_ASIDE") && cause != "Mint" && !reacted
+		if fromHand {
+			want = []string{ZoneHand} // Plan's Trashing token, a Hovel: not the card just gained, unless a Watchtower reacts
+			if len(cards) == 1 && cards[0].Card != nil && trashedFromPlayOnGain[cards[0].Card.Name] {
+				want = []string{ZonePlay, ZoneHand}
+			}
 		}
 		if cause == "Jack of All Trades" && strings.HasPrefix(e.CauseOf, "PLAY") || fromHandOnly[cause] && !gains[e.CauseOf] { // not a Watchtower trashing the Jack just bought
 			want = []string{ZoneHand} // not the card it just discarded from the deck, nor the Amulet in play
+		}
+		if cause == "Bonfire" {
+			want = []string{ZonePlay} // Coppers in play, not those in hand
 		}
 		if topTrashers[cause] && !gains[e.CauseOf] { // a Swindler played, not one a Watchtower trashes as it's gained
 			want = []string{ZoneDeck}
@@ -934,11 +966,11 @@ func (r *zoneReplay) step(i int, e Event) {
 		for _, cn := range cards {
 			itself = itself || cn.Card == nil || cn.Card.Name == e.Cause
 		}
-		if strings.Contains(e.CauseOf, "GAIN") && itself {
+		if strings.Contains(e.CauseOf, "GAIN") && itself && !fromHand { // Plan's token trashes a Magpie from hand as a Magpie is gained
 			want = append(want, ZoneDeck, ZoneSetAside) // Watchtower trashing what Develop gained onto the deck, or Blockade set aside
 		}
 		r.lose(e, p, cards, want)
-		if e.CauseOf == "GAIN_SETTING_ASIDE" {
+		if e.CauseOf == "GAIN_SETTING_ASIDE" && reacted { // a Watchtower trashed what a Blockade set aside, not Plan's token a card from hand
 			r.leftAside(i)
 		}
 	case t == "PUT_ON_BOTTOM_OF" && !strings.EqualFold(strings.TrimSpace(e.Args[2].Text), "Draw Pile") && !toSupplyPile(e.Args[2].Text):
@@ -1100,8 +1132,12 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.move(e, p, cards, []string{ZoneDiscard, ZoneDeck}, ZoneDeck)
 	case t == "SHUFFLE_INTO_DECK" && (cause == "Inn" && gains[e.CauseOf] || cause == "Annex"): // the discard pile's cards, not those in hand
 		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
-	case t == "TOPDECK" && e.CauseOf == "BUY_AND_GAIN" && r.othersPlay(p, "Haunted Woods"): // the hand, not the card just bought
-		r.move(e, p, cards, []string{ZoneHand}, ZoneDeck)
+	case t == "TOPDECK" && (e.CauseOf == "BUY_AND_GAIN" || r.overpaid(i)) && r.othersPlay(p, "Haunted Woods") && !(i > 0 && r.events[i-1].Template == "REACTS_WITH"):
+		want := []string{ZoneHand} // the hand, not the card just bought
+		if h := r.z(p)[ZoneHand]; len(cards) == 1 && cards[0].Card != nil && (h == nil || h.Known[cards[0].Card.Name] == 0) {
+			want = append(want, ZoneDiscard) // a Tiara's topdeck after it, of that card
+		}
+		r.move(e, p, cards, want, ZoneDeck)
 	case t == "TOPDECK" && discardLookers[cause]: // Harbinger's pick from the discard pile, not the Harbinger in play
 		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
 	case t == "TOPDECK", t == "TOPDECK_WITH", t == "BACK_ON_DECK", t == "BOTTOMDECKS", t == "INSERT_IN_DECK", t == "SHUFFLE_INTO_DECK",

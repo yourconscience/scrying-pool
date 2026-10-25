@@ -344,7 +344,7 @@ func init() {
 			if !e.Cleanup || c.G.Where(c.Me) != (engine.Loc{Zone: discard, Owner: int16(c.P)}) { // a Scheme took it first
 				return
 			}
-			for _, b := range c.T2().Bought {
+			for _, b := range c.T2().BuyGained {
 				if c.G.D(b).Victory() {
 					return
 				}

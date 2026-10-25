@@ -138,11 +138,12 @@ func init() {
 		},
 	})
 	reg("Hoard", rules{Coins: 2,
-		Hears: engine.On(engine.EvBuy),
-		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && e.X >= 0 && c.G.D(e.C).Victory() {
-				c.Gain(c.P, c.Card("Gold"), discard)
+		Play: func(c *ctx) { c.AddWatch(engine.On(engine.EvGain), 0) },
+		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // this turn, for each bought Victory card gained
+			if e.P == w.P && e.Bought && c.G.D(e.C).Victory() {
+				c.Gain(w.P, c.Card("Gold"), discard)
 			}
+			return false
 		},
 	})
 	reg("Investment", rules{Alone: true, Play: func(c *ctx) {
@@ -187,8 +188,8 @@ func init() {
 				c.Gain(c.P, c.G.CardOf(x), discard)
 			}
 		},
-		OnBuy: func(c *ctx, e *ev) {
-			c.Trash(c.P, cards(c.Options(c.P, inPlay, treasure)))
+		OnGain: func(c *ctx, e *ev) {
+			c.Trash(c.P, cards(c.Options(c.P, inPlay, and(treasure, not(duration)))))
 		},
 	})
 	reg("Monument", rules{Play: func(c *ctx) {
@@ -213,12 +214,7 @@ func init() {
 			cost.Coins = max(0, cost.Coins)
 		},
 	})
-	reg("Quarry", rules{Coins: 1, Reduce: func(g *engine.Game, me inst, c engine.CardID) int {
-		if g.D(c).Action() {
-			return 2
-		}
-		return 0
-	}})
+	reg("Quarry", rules{Coins: 1, Play: func(c *ctx) { c.T2().ReduceAct += 2 }})
 	reg("Rabble", rules{Play: func(c *ctx) {
 		c.Draw(3)
 		c.Attack(func(v int) {

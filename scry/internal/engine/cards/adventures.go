@@ -254,15 +254,14 @@ func init() {
 				c.Attack(func(int) { d.N = 1 })
 			},
 			Next:  func(c *ctx, d *engine.Dur) bool { d.N = 0; next(c); return true },
-			Hears: engine.On(engine.EvBuy),
-			Hear: func(c *ctx, e *ev) {
-				if e.P == c.P || e.X < 0 {
+			Hears: engine.On(engine.EvGain),
+			Hear: func(c *ctx, e *ev) { // when another player gains a card they bought
+				if e.P == c.P || !e.Bought {
 					return
 				}
 				for _, d := range c.Durs() {
-					if d.N == 1 {
+					if d.N == 1 { // once per play: a Throne Roomed Swamp Hag gives 2 Curses
 						effect(c.Here(), e)
-						return
 					}
 				}
 			},
@@ -278,15 +277,10 @@ func init() {
 		Play: func(c *ctx) {
 			c.Attack(func(v int) { c.Pl(v).MinusCoin = c.Src }) // silent
 			c.PlusBuys(1)
+			c.T2().Reduce++ // this turn and the next
 			c.Stay()
 		},
-		Next: func(c *ctx, _ *engine.Dur) bool { c.PlusBuys(1); return true },
-		Reduce: func(g *engine.Game, me inst, _ engine.CardID) int {
-			if g.Owner(me) == g.Cur {
-				return 1
-			}
-			return 0
-		},
+		Next: func(c *ctx, _ *engine.Dur) bool { c.PlusBuys(1); c.T2().Reduce++; return true },
 	})
 
 	// Actions and Treasures
@@ -348,8 +342,8 @@ func init() {
 				c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
 			}
 		},
-		OnBuy: func(c *ctx, _ *ev) { // the first buy of the turn: "gains a Silver.", the other player "gains a Silver."
-			if len(c.T2().Bought) != 1 {
+		OnGain: func(c *ctx, _ *ev) { // the first gain of the Buy phase: "gains a Silver.", the other player "gains a Silver."
+			if c.P != c.G.Cur || c.T2().Phase != engine.BuyPhase || len(c.T2().BuyGained) != 1 {
 				return
 			}
 			if x := c.ChooseGain(c.P, c.CostsUpTo(4), discard); x >= 0 {
@@ -358,8 +352,12 @@ func init() {
 		},
 	})
 	reg("Port", rules{
-		Play:  func(c *ctx) { c.Draw(1); c.PlusActions(2) },
-		OnBuy: func(c *ctx, _ *ev) { c.Gain(c.P, c.Src, discard) },
+		Play: func(c *ctx) { c.Draw(1); c.PlusActions(2) },
+		OnGain: func(c *ctx, e *ev) {
+			if e.By != c.Src { // the Port it gains doesn't come with another
+				c.Gain(c.P, c.Src, discard)
+			}
+		},
 	})
 	reg("Ranger", rules{Play: func(c *ctx) {
 		c.PlusBuys(1)
@@ -481,7 +479,7 @@ func init() {
 		c.ChooseGain(c.P, c.CostsUpTo(4), discard)
 		c.ChooseGain(c.P, c.CostsUpTo(4), discard)
 	}})
-	reg("Bonfire", rules{Buy: func(c *ctx) { c.Trash(c.P, pick(c, c.P, engine.ToTrash, inPlay, nil, 0, 2)) }})
+	reg("Bonfire", rules{Buy: func(c *ctx) { c.Trash(c.P, pick(c, c.P, engine.ToTrash, inPlay, named("Copper"), 0, 2)) }})
 	reg("Borrow", rules{Buy: func(c *ctx) { // "gets +1 Buy.", "moves -Card token to Draw Pile.", "gets +$1."
 		c.PlusBuys(1)
 		if c.T2().Used[c.Src] == 0 && c.MinusCardOn(c.P) {

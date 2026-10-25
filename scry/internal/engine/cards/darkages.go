@@ -70,8 +70,8 @@ func init() {
 
 	// Shelters and Ruins
 	reg("Hovel", rules{
-		Reacts:   engine.On(engine.EvBuy),
-		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && e.X >= 0 && c.G.D(e.C).Victory() },
+		Reacts:   engine.On(engine.EvGain),
+		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && c.G.D(e.C).Victory() },
 		React: func(c *ctx, e *ev) bool { // "buys and gains an Estate.", "trashes a Hovel."
 			c.Trash(c.P, one(c.Me))
 			return true
@@ -146,7 +146,7 @@ func init() {
 	}})
 	reg("Armory", rules{Play: func(c *ctx) { c.ChooseGain(c.P, c.CostsUpTo(4), deck) }})
 	reg("Band of Misfits", rules{Play: func(c *ctx) {
-		ok := and(action, not(func(d *def) bool { return d.Is(engine.TCommand) }), cheaperThan(c, c.Src))
+		ok := and(action, not(func(d *def) bool { return d.Is(engine.TCommand) || d.Is(engine.TDuration) }), cheaperThan(c, c.Src))
 		o := c.ChooseOne(c.P, engine.ToPlay, c.SupplyOptions(ok), false)
 		if o == nil {
 			return
@@ -208,7 +208,7 @@ func init() {
 	}})
 	reg("Counterfeit", rules{Coins: 1, Play: func(c *ctx) {
 		c.PlusBuys(1)
-		x := pick1(c, c.P, engine.ToPlay, hand, treasure, true)
+		x := pick1(c, c.P, engine.ToPlay, hand, and(treasure, not(duration)), true)
 		if x < 0 {
 			return
 		}

@@ -145,7 +145,9 @@ type turnState struct {
 	Played    []Inst   // cards played this turn, in order
 	Gained    []CardID // cards the player whose turn it is gained
 	Bought    []CardID
-	Reduce    int // cards cost $ less (Bridge)
+	Reduce    int      // cards cost $ less (Bridge)
+	ReduceAct int      // Actions cost $ less (Quarry)
+	BuyGained []CardID // what the player whose turn it is gained in their Buy phase
 	Phase     Phase
 	Outpost   bool // this is an Outpost turn
 	Extra     CardID

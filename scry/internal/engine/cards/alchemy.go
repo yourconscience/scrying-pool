@@ -14,12 +14,14 @@ func init() {
 		Play: func(c *ctx) {
 			c.Draw(2)
 			c.PlusActions(1)
+			c.AddWatch(engine.On(engine.EvCleanup), 0)
 		},
-		OnDiscard: func(c *ctx, e *ev) {
-			if e.From == inPlay && c.G.Where(c.Me) == (engine.Loc{Zone: discard, Owner: int16(c.P)}) &&
-				c.Count(c.P, inPlay, named("Potion")) > 0 && c.Yes(c.P, "put it on your deck", "TOPDECK") {
-				c.Topdeck(c.P, one(c.Me))
+		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // at the start of Clean-up
+			if e.P == w.P && c.G.Where(c.Me) == (engine.Loc{Zone: inPlay, Owner: int16(w.P)}) &&
+				c.Count(w.P, inPlay, named("Potion")) > 0 && c.Yes(w.P, "put it on your deck", "TOPDECK") {
+				c.Topdeck(w.P, one(c.Me))
 			}
+			return true
 		},
 	})
 	reg("Apothecary", rules{Play: func(c *ctx) {
@@ -76,11 +78,15 @@ func init() {
 		Play: func(c *ctx) {
 			c.PlusBuys(1)
 			c.PlusCoins(1)
+			c.AddWatch(engine.On(engine.EvDiscard), 0)
 		},
-		OnDiscard: func(c *ctx, e *ev) {
-			if e.From == inPlay {
-				c.Topdeck(c.P, pick(c, c.P, engine.ToTopdeck, inPlay, treasure, 0, 1))
+		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // once this turn, a Treasure discarded from play
+			if e.P != w.P || e.From != inPlay || !c.G.D(e.C).Treasure() || c.G.Where(e.X) != (engine.Loc{Zone: discard, Owner: int16(w.P)}) ||
+				!c.Yes(w.P, "put it on your deck", "TOPDECK") {
+				return false
 			}
+			c.Topdeck(w.P, one(e.X))
+			return true
 		},
 	})
 	reg("Philosopher's Stone", rules{Worth: func(g *engine.Game, p int) int {
