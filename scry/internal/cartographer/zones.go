@@ -608,6 +608,26 @@ func (r *zoneReplay) parent(i int) string {
 	return ""
 }
 
+// overpaid reports whether line i is under the gain of a card bought with
+// overpay: "buys a Herald.", "loses 1 Coin.", "gains a Herald."
+func (r *zoneReplay) overpaid(i int) bool {
+	for k := i - 1; k >= 0; k-- {
+		if r.events[k].Level >= r.events[i].Level {
+			continue
+		}
+		if r.events[k].Template != "GAIN" {
+			return false
+		}
+		for j := k - 1; j >= 0; j-- {
+			if b := r.events[j]; b.Level <= r.events[k].Level {
+				return b.Template == "BUY" && b.Player == r.events[k].Player && b.Args[1].Text == r.events[k].Args[1].Text
+			}
+		}
+		return false
+	}
+	return false
+}
+
 // note records the parts of a turn that decide whether a Duration stays.
 func (r *zoneReplay) note(kind, card string) {
 	if card != "" {
@@ -1079,7 +1099,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.move(e, p, cards, []string{ZoneDiscard, ZoneDeck}, ZoneDeck)
 	case t == "SHUFFLE_INTO_DECK" && cause == "Inn" && gains[e.CauseOf]: // the Actions in the discard pile, not those in hand
 		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
-	case t == "TOPDECK" && e.CauseOf == "BUY_AND_GAIN" && r.othersPlay(p, "Haunted Woods") && !(i > 0 && r.events[i-1].Template == "REACTS_WITH"):
+	case t == "TOPDECK" && (e.CauseOf == "BUY_AND_GAIN" || r.overpaid(i)) && r.othersPlay(p, "Haunted Woods") && !(i > 0 && r.events[i-1].Template == "REACTS_WITH"):
 		want := []string{ZoneHand} // the hand, not the card just bought
 		if h := r.z(p)[ZoneHand]; len(cards) == 1 && cards[0].Card != nil && (h == nil || h.Known[cards[0].Card.Name] == 0) {
 			want = append(want, ZoneDiscard) // a Tiara's topdeck after it, of that card
