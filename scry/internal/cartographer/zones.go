@@ -1268,6 +1268,9 @@ func (r *zoneReplay) replay(e Event, p string, cards []CardN, holder string) {
 		// and the Throne Room that played that Throne Room, though it played it before the Duration
 		for k := e.Level - 1; k > 0; k-- {
 			in, out := r.playAt[k], r.playAt[k-1]
+			if in != nil && in == out {
+				continue // an Overlord is at its own level and at the one of the card it plays
+			}
 			if in == nil || out == nil || in.holds == nil || !in.again || out.holds != nil || in.by != out.name && (out.inherits == nil || out.inherits.Name != in.by) { // an Overlord's Crown
 				break
 			}

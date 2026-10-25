@@ -270,18 +270,20 @@ func init() {
 		OnGain: func(c *ctx, _ *ev) { c.GainN(c.P, gold(c), c.Count(c.P, inPlay, named("Gladiator")), discard, "GAIN") },
 	})
 	reg("Groundskeeper", rules{
-		Play:  func(c *ctx) { c.Draw(1); c.PlusActions(1) },
-		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "buys and gains an Estate.", "gets 2 VP from Groundskeeper." for two in play
-			if e.P != c.P || !c.G.D(e.C).Victory() {
-				return
+		Play: func(c *ctx) {
+			c.Draw(1)
+			c.PlusActions(1)
+			if c.T2().Used[c.Src]++; c.T2().Used[c.Src] == 1 { // one watch counts this turn's plays
+				c.AddWatch(engine.On(engine.EvGain), 0)
 			}
-			if firstOf(c, c.Zone(c.P, inPlay), c.Src) != c.Me {
-				return
+		},
+		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // "buys and gains an Estate.", "gets 2 VP from Groundskeeper." for two plays
+			if e.P == w.P && c.G.D(e.C).Victory() {
+				n := c.T2().Used[c.Src]
+				c.Pl(w.P).VP += n
+				c.Log("PLAYER_GETS_VP_FROM", engine.Seat(w.P), n, engine.Name(c.Src))
 			}
-			n := c.Count(c.P, inPlay, named(c.Name()))
-			c.Pl(c.P).VP += n
-			c.Log("PLAYER_GETS_VP_FROM", engine.Seat(c.P), n, engine.Name(c.Src))
+			return false
 		},
 	})
 	reg("Legionary", rules{Play: func(c *ctx) { // "reveals a Gold.", the other player "discards 3 cards.", "draws a Copper."
@@ -297,7 +299,7 @@ func init() {
 		})
 	}})
 	reg("Overlord", rules{Play: func(c *ctx) { // "plays an Overlord.", "plays an Upgrade."
-		ok := and(action, not(func(d *def) bool { return d.Is(engine.TCommand) }), c.CostsUpTo(5))
+		ok := and(action, not(func(d *def) bool { return d.Is(engine.TCommand) || d.Is(engine.TDuration) }), c.CostsUpTo(5))
 		o := c.ChooseOne(c.P, engine.ToPlay, c.SupplyOptions(ok), false)
 		if o == nil {
 			return
@@ -570,10 +572,10 @@ func init() {
 				c.Log("TAX_ADD_DEBT", engine.Seat(c.P), "2 Debt", engine.PileName(o.Card))
 			}
 		},
-		Hears: engine.On(engine.EvBuy),
+		Hears: engine.On(engine.EvGain),
 		Hear: func(c *ctx, e *ev) { // "buys and gains a Courtier.", "takes 1 Debt from the Courtier pile."
 			i := c.G.PileOf(e.C)
-			if e.X < 0 || i < 0 || c.G.Piles[i].Debt == 0 {
+			if !inBuyPhase(c, e.P) || i < 0 || c.G.Piles[i].Debt == 0 {
 				return
 			}
 			n := c.G.Piles[i].Debt
@@ -627,15 +629,15 @@ func init() {
 	reg("Bandit Fort", rules{VP: func(g *engine.Game, p int) int {
 		return -2 * g.Count(p, func(d *def) bool { return d.Name == "Silver" || d.Name == "Gold" })
 	}})
-	landVP("Basilica", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool { // "buys and gains a Silver.", "takes 2 VP from Basilica."
-		return e.X >= 0 && c.Pl(e.P).Coins >= 2
+	landVP("Basilica", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // "buys and gains a Silver.", "takes 2 VP from Basilica."
+		return inBuyPhase(c, e.P) && c.Pl(e.P).Coins >= 2
 	})
 	landVP("Baths", engine.On(engine.EvTurnEnd), func(c *ctx, e *ev) bool { // after the Clean-up draw
 		return len(c.T2().Gained) == 0
 	})
 	landVP("Battlefield", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return c.G.D(e.C).Victory() })
-	landVP("Colonnade", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool {
-		return e.X >= 0 && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
+	landVP("Colonnade", engine.On(engine.EvGain), func(c *ctx, e *ev) bool {
+		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
 	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return e.P == c.G.Cur && len(c.T2().Gained) == 2 })
 	reg("Defiled Shrine", rules{
@@ -646,14 +648,14 @@ func init() {
 				}
 			}
 		},
-		Hears: engine.On(engine.EvGain, engine.EvBuy),
+		Hears: engine.On(engine.EvGain),
 		Hear: func(c *ctx, e *ev) { // "moves 1 VP from the Clerk pile to Defiled Shrine."
 			switch d := c.G.D(e.C); {
-			case e.Kind == engine.EvGain && d.Action():
+			case d.Action():
 				if i := c.G.PileOf(e.C); i >= 0 {
 					c.MoveVPToLand(i)
 				}
-			case e.Kind == engine.EvBuy && d.Name == "Curse":
+			case d.Name == "Curse" && inBuyPhase(c, e.P):
 				c.TakeLandVP(c.G.LandVP[c.Src])
 			}
 		},
@@ -762,23 +764,16 @@ func init() {
 	}})
 }
 
+// inBuyPhase: it is player p's Buy phase.
+func inBuyPhase(c *ctx, p int) bool { return c.G.Cur == p && c.T2().Phase == engine.BuyPhase }
+
 // rocks gains a Silver: onto the deck in its owner's Buy phase, else into their hand.
 func rocks(c *ctx) {
-	if c.G.Cur == c.P && c.T2().Phase == engine.BuyPhase {
+	if inBuyPhase(c, c.P) {
 		c.GainAs(c.P, c.Card("Silver"), deck, "GAIN_ON_DRAWPILE")
 	} else {
 		c.Gain(c.P, c.Card("Silver"), hand)
 	}
-}
-
-// firstOf is the first copy of a card in a zone, -1 for none.
-func firstOf(c *ctx, xs []inst, id engine.CardID) inst {
-	for _, x := range xs {
-		if c.G.CardOf(x) == id {
-			return x
-		}
-	}
-	return -1
 }
 
 // bid is Mountain Pass's auction: each player bids once, ending with the one who gained the Province.

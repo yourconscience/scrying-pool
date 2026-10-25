@@ -235,7 +235,7 @@ The milestones follow mechanisms, since each expansion brings its own. Effort is
 
 **Writing 819 cards.** Card files can be written in parallel by coding-agent sessions on the user's subscriptions, one set per session. The steps for each card:
 
-1. read the card's text locally (dominiontabs or the rulebook) and the rulings;
+1. read the card's text locally and the rulings. The dominion.games web client's `EnglishCardTexts` (in `js/dominion-webclient-body-*.min.js`) has the current errata; dominiontabs still has older wording for some cards (Overlord's non-Duration, Basilica's "gain in your Buy phase");
 2. write the card file;
 3. run `scry sim check` on the saved games that use the card.
 
