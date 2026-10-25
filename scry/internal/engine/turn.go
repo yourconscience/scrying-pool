@@ -321,7 +321,7 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	x := pile[len(pile)-1]
 	over := 0
 	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
-		over = g.ctx(p, x, 1).Number(p, 0, pl.Coins, "LOSES_COINS")
+		over = g.ctx(p, x, 1).Amount(p, 0, pl.Coins, "LOSES_COIN", "LOSES_COINS")
 	}
 	switch {
 	case over > 0: // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."

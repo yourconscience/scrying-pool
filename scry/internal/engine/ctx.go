@@ -314,6 +314,23 @@ func (c *Ctx) Number(p, lo, hi int, line string) int {
 	return c.Choose(p, ToChoose, opts, 1, 1)[0].Mode
 }
 
+// Amount asks player p how much to spend, from lo to hi: none writes nothing,
+// one writes the line one ("loses 1 Coin."), more the line many.
+func (c *Ctx) Amount(p, lo, hi int, one, many string) int {
+	var opts []Option
+	for n := lo; n <= hi; n++ {
+		line := many
+		switch n {
+		case 0:
+			line = ""
+		case 1:
+			line = one
+		}
+		opts = append(opts, Option{Inst: -1, Mode: n, Label: fmt.Sprint(n), Line: line})
+	}
+	return c.Choose(p, ToChoose, opts, 1, 1)[0].Mode
+}
+
 // Yes asks player p whether to do something optional; line is what doing it writes first.
 func (c *Ctx) Yes(p int, label, line string) bool {
 	return c.Mode1(p, Mode{"no", ""}, Mode{label, line}) == 1
