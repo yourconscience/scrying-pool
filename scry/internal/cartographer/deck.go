@@ -46,6 +46,16 @@ var (
 	}
 )
 
+// exilesFromSupply: the line exiles a card from the Supply. A gained Camel Train exiles only
+// a Gold: "exiles a Camel Train." under its gain is a Gatekeeper's, of the card itself.
+func exilesFromSupply(e Event) bool {
+	if e.Template != "EXILE" || !supplyExilers[e.Cause] {
+		return false
+	}
+	cs := e.Args[1].Cards
+	return !(e.Cause == "Camel Train" && gains[e.CauseOf] && len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Name != "Gold")
+}
+
 // trashesSupply reports a trash from the Supply: a Lurker played, not one a
 // Watchtower trashes as it's gained.
 func trashesSupply(e Event) bool { return supplyTrashers[e.Cause] && !gains[e.CauseOf] }
@@ -75,7 +85,7 @@ func (e Event) Changes() []Change {
 		return []Change{{e.Player, cards, -1}}
 	case backFromTrashed(e, cards):
 		return []Change{{e.Player, cards, 1}}
-	case e.Template == "EXILE" && supplyExilers[e.Cause]:
+	case exilesFromSupply(e):
 		return []Change{{e.Player, cards, 1}}
 	case e.Template == "PASS":
 		return []Change{{e.Player, cards, -1}, {e.Args[2].Player, cards, 1}}

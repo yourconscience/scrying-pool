@@ -394,13 +394,20 @@ func (g *Game) cleanup(p int) {
 	}
 	// the other player's cards too: what they played on this turn (Guard Dog) leaves with it
 	for _, q := range [2]int{p, 1 - p} {
+		if q == p && g.T2.KeepPlay {
+			pl.Kept = append([]Inst{}, pl.Z[InPlay]...)
+			continue
+		}
 		for _, x := range append([]Inst{}, g.P[q].Z[InPlay]...) {
-			if stay[x] || g.loc[x].Zone != InPlay {
+			if stay[x] || g.loc[x].Zone != InPlay || q != p && contains(g.P[q].Kept, x) {
 				continue
 			}
 			g.move(x, InPlay, Loc{Discard, int16(q)})
 			g.fire(&Ev{Kind: EvDiscard, P: q, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 		}
+	}
+	if !g.T2.KeepPlay {
+		pl.Kept = nil
 	}
 	for len(pl.Z[Hand]) > 0 {
 		g.move(pl.Z[Hand][0], Hand, Loc{Discard, int16(p)})
@@ -434,6 +441,7 @@ type playHow struct {
 	line    string // the play line's template instead of PLAY: REACTS_PLAYING
 	way     CardID // the Way used instead of the card's effect
 	by      CardID // the card that plays it outside its own turn's flow ("(Prince)"), for PLAY_WITH
+	blank   bool   // PLAY_WITH naming nothing: Patient's "plays a Nobles. (|)"
 	holders []Inst // cards that played it: they stay in play while it does
 	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
 	self    Inst   // with inPlace: the Estate or Overlord that plays it, which stays in play for a Duration
@@ -463,7 +471,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			panic(MissingRules{g.T.Defs[how.way].Name})
 		}
 		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
-	case how.by != 0: // each of Mastermind's three plays too
+	case how.by != 0 || how.blank: // each of Mastermind's three plays too
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
@@ -507,8 +515,16 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			coins--
 		}
 		g.P[p].Coins += coins
+		reckless := g.T.Defs[g.TraitOf(g.cards[x])].Name == "Reckless"
+		if reckless { // its instructions twice, a level down: "plays a Laboratory.", "draws 2 Coppers." at 2
+			c.level++
+			g.P[p].Coins += coins
+		}
 		if d.Rules.Play != nil {
 			d.Rules.Play(c)
+			if reckless {
+				d.Rules.Play(c)
+			}
 		}
 		if g.inherits(p, x) { // "plays an Estate.", "plays an Alley."
 			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x, holders: how.holders})

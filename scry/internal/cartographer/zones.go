@@ -136,7 +136,7 @@ var (
 		"Mine", "Pickaxe", "Pirate", "Plague", "Rocks", "Sculptor", "Silver Mine", "Swap", "Torturer", "Trading Post",
 		"Transmogrify", "Treasurer", "Wish")
 	gainsOntoDeck = names("Armory", "Artificer", "Bureaucrat", "Demand", "Develop", "Fool's Gold",
-		"Greed", "Invasion", "Sickness", "Stampede", "Supplies")
+		"Greed", "Sickness", "Stampede", "Supplies")
 	gainsSettingAside = names("Quartermaster")
 	// Research sets cards aside from the deck, not the hand
 	setsAsideFromDeck = names("Research")
@@ -160,7 +160,7 @@ var (
 	staysIfDiscards = names("Secret Cave", "Tactician")
 	// cards that discard or trash from hand, never themselves: a copy they name is the one in hand,
 	// not one they just discarded (Count discards a Rats, then trashes the hand)
-	fromHandOnly = names("Amulet", "Count", "Dungeon")
+	fromHandOnly = names("Amulet", "Count", "Dungeon", "Enlarge")
 	// cards that draw, then may trash themselves: "trashes a Mining Village." is the one in play
 	trashesItself = names("Mining Village", "Tragic Hero")
 	// Durations that work now or next turn, by choice: the line that shows "now"
@@ -190,11 +190,12 @@ type played struct {
 	by     string  // the card whose line played it: a Throne Room
 	again  bool    // played more than once: by a Throne Room, not a Shop
 	agains int     // how many times it was played again
-	fired  bool    // an untilTriggered card whose time came
+	fired  bool    // an untilTriggered card whose time came; a Taskmaster that saw a $5 card gained this turn
 	back   bool    // played by Prince: set aside again instead of discarded
 	aside  bool    // its own play set cards aside: this Gear, not another one played on the turn
 	nAside int     // how many cards its own play set aside (Archive)
 	none   bool    // enchanted: its instructions didn't happen, so it doesn't stay
+	spent  bool    // a Taskmaster whose turn ended without a $5 card gained, kept in play by Journey
 	// inherits is the card an Estate played by Inheritance: the Estate stays in play like it
 	inherits *Card
 }
@@ -220,6 +221,8 @@ func source(e Event) string {
 type zoneReplay struct {
 	zones    map[string]Zones
 	avoid    map[string]Deck     // cards Avoid keeps out of the next shuffle
+	fated    map[string][]string // Fated cards topdecked while shuffling: they go on the new deck, the last one on top
+	traits   map[string]string   // the Trait on each card's pile: "The Tireless Trait is acquired by the Crown pile."
 	kept     map[string]Deck     // cards kept in hand through this Clean-up
 	top      map[string][]string // cards known to be on top of the deck, top first ("" for an unnamed one)
 	bottom   map[string][]string // cards known to be at the bottom, the one nearest the middle first
@@ -245,7 +248,7 @@ type zoneReplay struct {
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
-	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, reacted: map[string][]pending{}, playAt: map[int]*played{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}, latest: map[int]int{}}
+	r := &zoneReplay{zones: map[string]Zones{}, avoid: map[string]Deck{}, fated: map[string][]string{}, traits: map[string]string{}, kept: map[string]Deck{}, top: map[string][]string{}, bottom: map[string][]string{}, owned: Decks{}, received: map[string][]pending{}, reacted: map[string][]pending{}, playAt: map[int]*played{}, inPlay: map[string][]*played{}, pend: map[string][]pending{}, evidence: map[string]int{}, latest: map[int]int{}}
 	for _, p := range g.Players {
 		r.zones[p] = Zones{}
 	}
@@ -254,7 +257,70 @@ func newZoneReplay(g *Game) *zoneReplay {
 	return r
 }
 
-var beforeShuffle = names("PUT_IN_DISCARD", "SPENDS_FAVOR", "SPENDS_FAVORS", "BOTTOMDECKS")
+var beforeShuffle = names("PUT_IN_DISCARD", "SPENDS_FAVOR", "SPENDS_FAVORS", "BOTTOMDECKS", "SHUFFLES_CARDS")
+
+// shyDiscard: "discards a Patron.", "draws 2 cards. (Shy)": a Shy card from hand at the start of a turn.
+func (r *zoneReplay) shyDiscard(i int) bool {
+	j := i + 1
+	for j < len(r.events) && r.events[j].Template == "SHUFFLES" { // the draw shuffles first
+		j++
+	}
+	if j >= len(r.events) {
+		return false
+	}
+	n := r.events[j]
+	cs := n.Args[2].Cards
+	return n.Template == "DRAW_FROM" && n.Player == r.events[i].Player && len(cs) > 0 && cs[0].Card != nil && cs[0].Card.Name == "Shy"
+}
+
+// movedAbove: the line above, at this level, discards or reveals the same card: "discards a Maroon.",
+// "plays a Maroon." (Vassal); not a Pilgrim's "topdecks a Mining Road." nor a Gear's "sets a Guide aside"
+// before an Inspiring play of another one
+func (r *zoneReplay) movedAbove(i int, cards []CardN) bool {
+	if i < 1 || len(cards) != 1 || cards[0].Card == nil {
+		return false
+	}
+	x := r.events[i-1]
+	if x.Template != "DISCARD" && !strings.HasPrefix(x.Template, "REVEAL") {
+		return false
+	}
+	cs := x.Args[1].Cards
+	return x.Level == r.events[i].Level && len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Name == cards[0].Card.Name
+}
+
+// traitOf is the Trait on a card's pile: "the Castles pile" for a Humble Castle.
+func (r *zoneReplay) traitOf(card string) string {
+	if g, ok := pileGroups[card]; ok {
+		return r.traits[g]
+	}
+	return r.traits[card]
+}
+
+// landingTop: "plays a Hammer.", ..., "topdecks a Landing Party.": a Landing Party in play
+// whose time came, after the first card played on the turn, a Treasure.
+func (r *zoneReplay) landingTop(e Event, p string, cards []CardN) bool {
+	if len(cards) != 1 || cards[0].Card == nil || cards[0].Card.Name != "Landing Party" || !strings.HasPrefix(e.CauseOf, "PLAY") {
+		return false
+	}
+	c, play := r.cardOf(p, e.Cause), r.z(p)[ZonePlay]
+	return c != nil && c.Is("Treasure") && play != nil && play.Known["Landing Party"] > 0
+}
+
+// fatedTop: a topdeck between "shuffles 3 Coppers and a Replace." and "shuffles
+// their deck.": a Fated card going on top of the new deck.
+func fatedTop(es []Event, i int) bool {
+	p, level := es[i].Player, es[i].Level
+	for j := i; j >= 0 && es[j].Player == p && es[j].Level == level; j-- {
+		switch es[j].Template {
+		case "SHUFFLES_CARDS":
+			return true
+		case "TOPDECK":
+		default:
+			return false
+		}
+	}
+	return false
+}
 
 // cleanupPoints finds where each turn's Clean-up discards: just before the turn
 // player's last draw at the top level (the next hand), or the shuffle that
@@ -268,6 +334,17 @@ func cleanupPoints(g *Game) map[int]bool {
 		}
 		p := g.Events[start].Player
 		at := end
+		// before the shuffle, and what was done while shuffling: Order of Masons and
+		// Avoid keep cards in the discard pile, Shadow cards go under the deck
+		beforeIt := func() {
+			for at-1 > start {
+				x := g.Events[at-1]
+				if x.Player != p || !(x.Template == "SHUFFLES" && x.Level == 0 || beforeShuffle[x.Template] || x.Template == "TOPDECK" && fatedTop(g.Events, at-1)) {
+					break
+				}
+				at--
+			}
+		}
 		for i := end - 1; i > start; i-- {
 			e := g.Events[i]
 			if e.Template == "DRAWS_LESS_BECAUSE" && e.Level == 0 && e.Player == p { // the -1 Card token: "skips a draw (because of Relic).", the draw one level in
@@ -276,17 +353,12 @@ func cleanupPoints(g *Game) map[int]bool {
 			}
 			if e.Template == "DRAW" && e.Level == 0 && e.Player == p {
 				at = i
-				// and before the shuffle, and what was done while shuffling: Order of
-				// Masons and Avoid keep cards in the discard pile, Shadow cards go under the deck
-				for at-1 > start {
-					x := g.Events[at-1]
-					if x.Player != p || !(x.Template == "SHUFFLES" && x.Level == 0 || beforeShuffle[x.Template]) {
-						break
-					}
-					at--
-				}
+				beforeIt()
 				break
 			}
+		}
+		if x := g.Events[end-1]; at == end && x.Template == "SHUFFLES" && x.Level == 0 && x.Player == p {
+			beforeIt() // nothing to draw: Avoid kept every card in the discard pile
 		}
 		if at < len(g.Events) {
 			out[at] = true
@@ -298,7 +370,14 @@ func cleanupPoints(g *Game) map[int]bool {
 			start = i
 		}
 	}
-	// the log's last turn is usually cut off mid-turn: no Clean-up
+	// the log's last turn is usually cut off mid-turn: no Clean-up; but a game that ends
+	// in Clean-up (a Friendly card gains a third pile's last card) logs it whole
+	for i := max(start, 0); start >= 0 && i < len(g.Events); i++ {
+		if e := g.Events[i]; e.Template == "BEGINS_CLEANUP_PHASE" && e.Player == g.Events[start].Player {
+			flush(len(g.Events))
+			break
+		}
+	}
 	return out
 }
 
@@ -432,7 +511,9 @@ func (r *zoneReplay) find(e Event, p, card string, want []string, usePending boo
 			func(x pending) bool {
 				itself := trashesItself[card] && card == e.Cause && strings.HasPrefix(e.Template, "TRASH") && strings.HasPrefix(e.CauseOf, "PLAY") // not the one it drew
 				// not a card no card moved: Frog's topdecked Page isn't the one exchanged after it
-				return contains(want, x.zone) && x.src != "" && x.src == source(e) && !(x.gained && x.level == e.Level && strings.HasPrefix(e.Template, "TRASH")) && !(itself && x.zone != ZonePlay)
+				// nor one it put on the deck: two Landing Parties topdeck themselves after one Treasure
+				return contains(want, x.zone) && x.src != "" && x.src == source(e) && !(x.gained && x.level == e.Level && strings.HasPrefix(e.Template, "TRASH")) && !(itself && x.zone != ZonePlay) &&
+					!(x.zone == ZoneDeck && (strings.HasPrefix(e.Template, "TOPDECK") || e.Template == "INSERT_IN_DECK")) // a replayed Secret Passage inserts another
 			},
 		} {
 			for i := len(ps) - 1; i >= 0; i-- {
@@ -546,7 +627,8 @@ func (r *zoneReplay) gain(e Event, p string, cards []CardN, to string) {
 			switch {
 			case gainedToHand[name] || gainsToHand[by]:
 				dest = ZoneHand
-			case gainedOntoDeck[name] || gainsOntoDeck[by]:
+			case gainedOntoDeck[name] || gainsOntoDeck[by],
+				by == "Invasion" && cn.Card != nil && cn.Card.Is("Action") && !cn.Card.Is("Loot"): // its Action card, not the Duchy or the Loot
 				dest = ZoneDeck
 			case gainsSettingAside[by]:
 				dest = ZoneSetAside
@@ -582,7 +664,8 @@ func (r *zoneReplay) leavePlay(p, name string) {
 			break
 		}
 		// before Clean-up Bonfire trashes the Caravan Guard whose turn this is, not the one just played
-		if r.cleaning != p && ps[i].turn < r.turn && ps[i].stays <= 0 && ps[i].holds == nil && !permanent[ps[i].name] {
+		// (a Flagship still waiting stays: Way of the Horse returns the one it played)
+		if r.cleaning != p && ps[i].turn < r.turn && ps[i].stays <= 0 && ps[i].holds == nil && !permanent[ps[i].name] && !(untilTriggered[ps[i].name] && !ps[i].fired) {
 			pick = i
 			break
 		}
@@ -638,6 +721,15 @@ func (r *zoneReplay) before(i int) int {
 	k := i - 1
 	for k >= 0 && r.events[k].Level > r.events[i].Level {
 		k--
+	}
+	return k
+}
+
+// after is the line after line i at its level or above, past the lines nested under it, or len(r.events).
+func (r *zoneReplay) after(i int) int {
+	k := i + 1
+	for k < len(r.events) && r.events[k].Level > r.events[i].Level {
+		k++
 	}
 	return k
 }
@@ -732,7 +824,16 @@ func (r *zoneReplay) othersPlay(p, name string) bool {
 }
 
 // cleanUp discards the turn player's hand and the cards in play that don't stay.
-func (r *zoneReplay) cleanUp(p string) {
+func (r *zoneReplay) cleanUp(p string, i int) {
+	// a Taskmaster stays for the replay its owner's next turn shows: Bridge can make a $5 card cost $4
+	if n, ok := r.taskmasterReplays(p, i); ok {
+		for _, x := range r.inPlay[p] {
+			if x.name == "Taskmaster" {
+				x.fired, x.spent = n > 0, false
+				n--
+			}
+		}
+	}
 	for q := range r.zones {
 		if r.z(q)[ZoneRevealed] != nil {
 			r.moveAll(q, ZoneRevealed, ZoneDeck)
@@ -746,6 +847,14 @@ func (r *zoneReplay) cleanUp(p string) {
 	}
 	delete(r.kept, p)
 	for q, ps := range r.inPlay {
+		if q == p && r.evidence["bought:Journey"] > 0 {
+			for _, x := range ps { // a Taskmaster decides now all the same: the extra turn's gains are another turn's
+				if x.name == "Taskmaster" {
+					x.spent = !x.decideStays(r, p, q)
+				}
+			}
+			continue // they leave in the extra turn's Clean-up
+		}
 		var keep []*played
 		for _, x := range ps {
 			if !x.decideStays(r, p, q) {
@@ -782,6 +891,28 @@ func (r *zoneReplay) cleanUp(p string) {
 		r.inPlay[q] = out
 	}
 	r.evidence = map[string]int{}
+}
+
+// taskmasterReplays counts the Taskmasters replayed at the start of p's next turn after line i:
+// "starts their turn.", "gets +1 Action. (Taskmaster)"; false when the log ends first.
+func (r *zoneReplay) taskmasterReplays(p string, i int) (int, bool) {
+	for k := i; k < len(r.events); k++ {
+		if e := r.events[k]; e.Template != "NEW_TURN" || e.Player != p {
+			continue
+		}
+		n := 0
+		for k++; k < len(r.events) && (r.events[k].Level > 0 || r.events[k].Template == "STARTS_TURN"); k++ {
+			if e := r.events[k]; e.Template == "GETS_ACTION_FROM" && e.Player == p {
+				for _, a := range e.Args {
+					if len(a.Cards) == 1 && a.Cards[0].Card != nil && a.Cards[0].Card.Name == "Taskmaster" {
+						n++
+					}
+				}
+			}
+		}
+		return n, true
+	}
+	return 0, false
 }
 
 func containsPlayed(ps []*played, x *played) bool {
@@ -825,6 +956,11 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 	}
 	if x.holds != nil {
 		return true // decided by the card it holds
+	}
+	if x.name == "Taskmaster" { // it stays for each turn it saw a card costing exactly $5 gained
+		ok := x.fired && !x.spent
+		x.fired = false
+		return ok
 	}
 	if x.stays < 0 { // played on a turn whose Clean-up hasn't come yet
 		if x.turn != r.turn { // a Duration played on another player's turn (Caravan Guard) has done its work
@@ -889,7 +1025,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.deckPos = "bottom"
 	}
 	if r.cleanup[i] {
-		r.cleanUp(r.turnOf)
+		r.cleanUp(r.turnOf, i)
 	}
 	r.expire(e)
 	r.fire(e)
@@ -911,6 +1047,13 @@ func (r *zoneReplay) step(i int, e Event) {
 		if x := r.playAt[e.Level-2]; e.Level >= 2 && x != nil && x.name == strings.TrimSpace(e.Args[0].Text) {
 			x.none = true
 		}
+	}
+	if cs := e.Args[1].Cards; e.Template == "ACQUIRES_TRAIT" && len(cs) > 0 && cs[0].Card != nil {
+		pile := pileName(e.Args[0].Text)
+		if g, ok := pileGroups[pile+" Pile"]; ok { // "the Augur pile"
+			pile = g
+		}
+		r.traits[pile] = cs[0].Card.Name
 	}
 	if p == "" {
 		return
@@ -950,7 +1093,7 @@ func (r *zoneReplay) step(i int, e Event) {
 			treasure = c.Is("Treasure")
 		}
 		for _, cn := range cards {
-			if cn.Card != nil && (cn.Card.Name == e.Cause || cn.Card.Name == arg2 || cn.Card.Name == way || cn.Card.Name == "Landing Party" && treasure) {
+			if cn.Card != nil && (cn.Card.Name == e.Cause || cn.Card.Name == arg2 || cn.Card.Name == way || cn.Card.Name == "Landing Party" && treasure && e.Template == "TOPDECK") {
 				return append([]string{ZonePlay}, want...)
 			}
 		}
@@ -995,7 +1138,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		r.gain(e, p, cards, ZoneDeck) // another player's Province: "trashes a Fool's Gold.", ("gets 1 VP from Tomb."), "gains a Gold." onto the deck
 	case gains[t]:
 		r.gain(e, p, cards, ZoneDiscard)
-	case t == "EXILE" && supplyExilers[e.Cause]:
+	case exilesFromSupply(e):
 		r.gain(e, p, cards, ZoneExile)
 
 	// cards that leave the player
@@ -1005,11 +1148,19 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 		want := self(ZoneHand, ZonePlay, ZoneDiscard)
 		reacted := i > 0 && r.events[i-1].Template == "REACTS_WITH"
-		fromHand := (e.CauseOf == "BUY_AND_GAIN" || e.CauseOf == "GAIN" || e.CauseOf == "GAIN_SETTING_ASIDE") && cause != "Mint" && !reacted
+		fromHand := (e.CauseOf == "BUY_AND_GAIN" || e.CauseOf == "GAIN" || e.CauseOf == "GAIN_WITH" || e.CauseOf == "GAIN_SETTING_ASIDE") && cause != "Mint" && !reacted
+		sirenAside := false // a Siren a Blockade set aside trashes itself: the Blockade has nothing left to do
 		if fromHand {
 			want = []string{ZoneHand} // Plan's Trashing token, a Hovel: not the card just gained, unless a Watchtower reacts
-			if len(cards) == 1 && cards[0].Card != nil && trashedFromPlayOnGain[cards[0].Card.Name] {
-				want = []string{ZonePlay, ZoneHand}
+			if len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Siren" && cause == "Siren" {
+				// a Siren trashes itself unless an Action is trashed from hand: the one just gained, where it went
+				for k := len(r.pend[p]) - 1; k >= 0; k-- {
+					if x := r.pend[p][k]; x.gained && x.card == "Siren" && x.level == e.Level-1 {
+						want = []string{x.zone, ZoneHand}
+						sirenAside = x.zone == ZoneSetAside
+						break
+					}
+				}
 			}
 		}
 		if cause == "Jack of All Trades" && strings.HasPrefix(e.CauseOf, "PLAY") || fromHandOnly[cause] && !gains[e.CauseOf] { // not a Watchtower trashing the Jack just bought
@@ -1036,8 +1187,16 @@ func (r *zoneReplay) step(i int, e Event) {
 		if strings.Contains(e.CauseOf, "GAIN") && itself && !fromHand { // Plan's token trashes a Magpie from hand as a Magpie is gained
 			want = append(want, ZoneDeck, ZoneSetAside) // Watchtower trashing what Develop gained onto the deck, or Blockade set aside
 		}
+		if strings.HasSuffix(t, "_WITH") && source(e) == "Secluded Shrine" {
+			want = []string{ZoneHand} // not the Silver a Beggar just gained onto the deck
+		}
+		if c := cards[0].Card; len(cards) == 1 && c != nil && trashedFromPlayOnGain[c.Name] && gains[e.CauseOf] && !reacted && // not a Watchtower's
+			(!strings.HasSuffix(t, "_WITH") || source(e) == c.Name) && // not a Cage a Secluded Shrine trashes from hand
+			(c.Name != "Search" || r.after(i) < len(r.events) && r.events[r.after(i)].Template == "DURATION_STOPS_WORKING") { // nor a Search a Siren does
+			want = []string{ZonePlay, ZoneHand} // also under "gains an Estate. (Shaman)", not the Search just gained
+		}
 		r.lose(e, p, cards, want)
-		if e.CauseOf == "GAIN_SETTING_ASIDE" && reacted { // a Watchtower trashed what a Blockade set aside, not Plan's token a card from hand
+		if e.CauseOf == "GAIN_SETTING_ASIDE" && (reacted || sirenAside) { // a Watchtower trashed what a Blockade set aside, not Plan's token a card from hand
 			r.leftAside(i)
 		}
 	case t == "PUT_ON_BOTTOM_OF" && !strings.EqualFold(strings.TrimSpace(e.Args[2].Text), "Draw Pile") && !toSupplyPile(e.Args[2].Text):
@@ -1083,6 +1242,13 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "PLAY_WITH" && (arg2 == "Mastermind" && r.replayed(i, 3) || arg2 == "Ghost" && r.replayed(i, 2)): // they log each play
 		r.replay(e, p, cards, arg2) // a Mastermind that played a Duration stays in play with it
 	case t == "PLAY_WITH" && playsInPlace[arg2]:
+		r.playAt[e.Level] = nil // its lines are the replayed card's: "plays a Grotto. (Flagship)", "sets a Grotto aside with Grotto."
+		for k := len(r.inPlay[p]) - 1; k >= 0 && len(cards) == 1 && cards[0].Card != nil; k-- {
+			if r.inPlay[p][k].name == cards[0].Card.Name {
+				r.playAt[e.Level] = r.inPlay[p][k]
+				break
+			}
+		}
 	case t == "PLAY_WITH" && (arg2 == "Mastermind" || (arg2 == "Royal Galley" || arg2 == "") && e.Cause != ""): // at the start of a turn they come from set aside
 		r.play(e, p, cards, []string{ZoneHand, ZoneSetAside, ZoneDiscard})
 	case t == "PLAY_WITH" && gains[e.CauseOf]: // Sailor plays what a Blockade set aside, or Develop put onto the deck
@@ -1103,6 +1269,10 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "REACTS_PLAYING" && e.CauseOf == "GAIN_SETTING_ASIDE": // "gains a Trail setting it aside.", "reacts with a Trail, playing it."
 		r.play(e, p, cards, []string{ZoneSetAside, ZoneHand, ZoneDiscard, ZoneDeck})
 		r.leftAside(i)
+	case t == "PLAY" && r.traitOf(cause) == "Inspiring" && strings.HasPrefix(e.CauseOf, "PLAY") && !r.movedAbove(i, cards):
+		r.play(e, p, cards, []string{ZoneHand}) // an Action from hand, not the copy the Inspiring card topdecked (but a Vassal's own)
+	case t == "PLAY" && len(cards) == 1 && cards[0].Card != nil && r.reactedWith(i, cards[0].Card.Name):
+		r.play(e, p, cards, []string{ZoneHand}) // "reacts with a Stowaway.", "plays a Stowaway.": from hand, not the one just gained
 	case t == "PLAY" && e.Cause == "Way of the Mouse" && e.CauseOf == "PLAY_USING_WAY":
 		// the set-aside card, played where it is: the card that used the Way stays in play like it
 		if x := r.playAt[e.Level-1]; x != nil && len(cards) == 1 && cards[0].Card != nil {
@@ -1136,7 +1306,9 @@ func (r *zoneReplay) step(i int, e Event) {
 			want, rest = []string{ZoneHand}, nil // Arena's Action, not one an Archive set aside
 		case cause == "Tactician", fromHandOnly[cause]:
 			want, rest = []string{ZoneHand}, nil // the hand, with any other Tactician in it
-		case e.Cause == "" && e.Level > 0 && t == "DISCARD": // at the start of a turn: Grotto discards what it set aside (Tide Pools names itself)
+		case p == r.turnOf && r.othersPlay(p, "Frigate") && strings.HasPrefix(e.CauseOf, "PLAY") && (i+1 == len(r.events) || r.events[i+1].Level < e.Level):
+			want, rest = []string{ZoneHand}, nil // down to 4 after the Action, not the Action itself
+		case e.Cause == "" && e.Level > 0 && (t == "DISCARD" || arg2 == "Prepare") && !r.shyDiscard(i): // at the start of a turn: Grotto and Prepare discard what they set aside (Tide Pools names itself)
 			want = []string{ZoneSetAside, ZoneHand}
 		}
 		r.move(e, p, cards, append(want, rest...), ZoneDiscard)
@@ -1192,6 +1364,25 @@ func (r *zoneReplay) step(i int, e Event) {
 			r.put(p, ZoneDiscard, n, k)
 		}
 		delete(r.avoid, p)
+		r.deckPos = "top"
+		for _, n := range r.fated[p] {
+			r.put(p, ZoneDeck, n, 1)
+		}
+		delete(r.fated, p)
+	case t == "TOPDECK" && fatedTop(r.events, i):
+		for _, cn := range cards {
+			for k := 0; cn.Card != nil && k < cn.N; k++ {
+				if r.takeOne(p, ZoneDiscard, cn.Card.Name, false) {
+					r.fated[p] = append(r.fated[p], cn.Card.Name)
+				}
+			}
+		}
+	case t == "SET_ASIDE" && r.parent(i) == "BEGINS_CLEANUP_PHASE" && len(cards) == 1 && cards[0].Card != nil && r.traitOf(cards[0].Card.Name) == "Tireless":
+		r.move(e, p, cards, []string{ZonePlay, ZoneHand}, ZoneSetAside) // discarded from play, aside until the turn ends
+	case t == "TOPDECK" && e.Level == 0 && r.cleaning == p && len(cards) == 1 && cards[0].Card != nil && r.traitOf(cards[0].Card.Name) == "Tireless":
+		r.move(e, p, cards, []string{ZoneSetAside, ZonePlay, ZoneHand}, ZoneDeck) // after the Clean-up draw
+	case t == "BUY" && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Journey":
+		r.note("bought", "Journey") // this turn's Clean-up leaves the cards in play
 	case t == "BEGINS_CLEANUP_PHASE":
 		r.cleaning = p
 	case (t == "LOOK_AT" || t == "TOPDECK") && cause == "Pearl Diver" && strings.HasPrefix(e.CauseOf, "PLAY"): // the bottom card of the deck, maybe put on top
@@ -1226,8 +1417,12 @@ func (r *zoneReplay) step(i int, e Event) {
 			want = append(want, ZoneDiscard) // a Tiara's topdeck after it, of that card
 		}
 		r.move(e, p, cards, want, ZoneDeck)
+	case t == "TOPDECK" && r.landingTop(e, p, cards): // from play: not one the Treasure gained (Hammer) or looked at (Orb)
+		r.move(e, p, cards, []string{ZonePlay}, ZoneDeck)
 	case t == "TOPDECK" && discardLookers[cause]: // Harbinger's pick from the discard pile, not the Harbinger in play
 		r.move(e, p, cards, []string{ZoneDiscard}, ZoneDeck)
+	case t == "PUT_ON_BOTTOM_OF" && cause == "" && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Jewels":
+		r.move(e, p, cards, []string{ZonePlay}, ZoneDeck) // the last turn's Jewels at the start of this one
 	case t == "TOPDECK", t == "TOPDECK_WITH", t == "BACK_ON_DECK", t == "BOTTOMDECKS", t == "INSERT_IN_DECK", t == "SHUFFLE_INTO_DECK",
 		t == "PUT_ON_BOTTOM_OF": // "on the bottom of Draw Pile"
 		// Inn shuffles first
@@ -1294,6 +1489,8 @@ func (r *zoneReplay) step(i int, e Event) {
 	// looking at cards
 	case t == "REVEAL", t == "LOOK_AT":
 		switch {
+		case t == "REVEAL" && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Is("Loot") && i+1 < len(r.events) && gains[r.events[i+1].Template]:
+			// "reveals a Hammer.", "gains a Hammer.": the top of the Loot pile
 		case t == "REVEAL" && i > 0 && r.events[i-1].Template == "REACTS_WITH" && r.events[i-1].Player == e.Player && r.events[i-1].Level == e.Level:
 			// "reacts with a Tunnel.", "reveals a Tunnel.": it shows itself where it is, not a Vagrant's top card when a Storeroom discarded both
 		case t == "LOOK_AT" && r.afterSleigh(i): // "reacts with a Sleigh.", "discards a Sleigh.", and it looks at the discard pile
@@ -1554,12 +1751,20 @@ func (r *zoneReplay) fire(e Event) {
 	t := e.Template
 	for q, ps := range r.inPlay {
 		for _, x := range ps {
-			if !untilTriggered[x.name] || x.fired {
+			if !untilTriggered[x.name] && x.name != "Taskmaster" || x.fired || x.spent {
 				continue
 			}
 			switch x.name {
-			case "Secluded Shrine", "Abundance", "Cutthroat":
-				if !gains[t] {
+			case "Cutthroat":
+				if cs := e.Args[1].Cards; gains[t] && q == e.Player && source(e) == x.name && len(cs) > 0 && cs[0].Card != nil && cs[0].Card.Is("Loot") {
+					x.fired = true // its Loot: "gains a Jewels. (Cutthroat)", not a Rich Cutthroat's Silver; a Quarry can make a Crown cost $3
+				}
+			case "Secluded Shrine", "Abundance", "Taskmaster":
+				if x.name == "Secluded Shrine" && t == "TRASH_WITH" && source(e) == x.name && q == e.Player {
+					x.fired = true // "trashes an Estate. (Secluded Shrine)": also one a gained Gondola played; not Plan's token on a Shrine bought
+					return
+				}
+				if !gains[t] || t == "RECEIVES" || t == "EXCHANGE_RECEIVE" { // a Traveller exchanged isn't gained
 					continue
 				}
 				for _, cn := range e.Args[1].Cards {
@@ -1568,7 +1773,7 @@ func (r *zoneReplay) fire(e Event) {
 					case c == nil:
 					case x.name == "Secluded Shrine" && q == e.Player && c.Is("Treasure"),
 						x.name == "Abundance" && q == e.Player && c.Is("Action"),
-						x.name == "Cutthroat" && c.Is("Treasure") && c.Coin >= 5:
+						x.name == "Taskmaster" && q == e.Player && q == r.turnOf && c.Coin == 5 && c.Potion == 0 && c.Debt == 0:
 						x.fired = true
 					}
 				}
@@ -1583,6 +1788,7 @@ func (r *zoneReplay) fire(e Event) {
 						for i := len(ps) - 1; i >= 0; i-- {
 							if ps[i].name == cn.Card.Name && ps[i] != x {
 								x.holds = ps[i]
+								ps[i].none = false // played again in full: an enchanted Enchantress stays after all
 								break
 							}
 						}

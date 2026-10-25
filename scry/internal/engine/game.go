@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"math/rand/v2"
+	"slices"
 )
 
 // Inst is one physical card in the game: an index into Game.cards. Supply cards
@@ -26,10 +27,11 @@ const (
 	nPlayerZones
 	Supply = nPlayerZones // a pile, Supply or not
 	Trash  = Supply + 1
+	Box    = Trash + 1 // out of the game: Inherited's starting card
 )
 
 // zone names as Cartographer writes them
-var zoneNames = [...]string{"deck", "hand", "discard", "in play", "set aside", "revealed", "Tavern mat", "Island mat", "Native Village mat", "Exile", "supply", "trash"}
+var zoneNames = [...]string{"deck", "hand", "discard", "in play", "set aside", "revealed", "Tavern mat", "Island mat", "Native Village mat", "Exile", "supply", "trash", "box"}
 
 func (z Zone) String() string { return zoneNames[z] }
 
@@ -68,6 +70,7 @@ type Player struct {
 	Tokens      [nTokens]int    // the pile each token is on, -1 for none
 	TokenBy     [nTokens]CardID // the card that last moved each token: "gets +1 Action (from Lost Arts)"
 	Inherited   Inst            // the card set aside with the Estate token, -1 for none
+	Kept        []Inst          // cards Journey kept in play: they stay through the other player's Clean-up
 
 	Projects []CardID // Projects with this player's cube
 	// Mat is tokens a card keeps for the player, by card: Pirate Ship's coins, Sinister Plot's
@@ -90,7 +93,8 @@ type Game struct {
 	P       [2]Player
 	Piles   []Pile
 	Trashed []Inst
-	Cur     int // whose turn it is
+	Boxed   []Inst // cards returned to the box
+	Cur     int    // whose turn it is
 	Agents  [2]Agent
 	Log     *Log // nil: no log
 
@@ -167,6 +171,7 @@ type turnState struct {
 
 	NoActions bool // Snowy Village: further +Actions are ignored
 	Trashed   int  // cards the player whose turn it is trashed (Goatherd)
+	KeepPlay  bool // Journey: the player's cards in play aren't discarded in Clean-up
 }
 
 type Phase uint8
@@ -282,11 +287,54 @@ func New(t *Table, s Setup) (*Game, error) {
 			g.newCard(c, Loc{Discard, int16(p)})
 		}
 	}
+	for _, c := range s.Landscapes {
+		if t.Defs[c].Is(TTrait) {
+			g.placeTrait(c)
+		}
+	}
 	for _, c := range append(append([]CardID{}, s.Kingdom...), s.Landscapes...) {
 		g.setupCard(c)
 	}
 	g.listening()
 	return g, nil
+}
+
+// placeTrait puts a Trait on a random kingdom pile of Actions or Treasures that has none.
+func (g *Game) placeTrait(trait CardID) {
+	var ok []int
+	for _, k := range g.Kingdom {
+		i := g.PileOf(k)
+		if i < 0 || g.Piles[i].Trait != 0 {
+			continue
+		}
+		for _, m := range g.Piles[i].kinds(g) {
+			if g.T.Defs[m].Is(TAction | TTreasure) {
+				ok = append(ok, i)
+				break
+			}
+		}
+	}
+	if len(ok) > 0 {
+		g.Piles[ok[g.rng.IntN(len(ok))]].Trait = trait
+	}
+}
+
+// TraitOf is the Trait on the pile a card comes from, 0 for none.
+func (g *Game) TraitOf(c CardID) CardID {
+	if i := g.PileOf(c); i >= 0 {
+		return g.Piles[i].Trait
+	}
+	return 0
+}
+
+// traitPile is the pile with the Trait of that name, -1 for none.
+func (g *Game) traitPile(name string) int {
+	for i, p := range g.Piles {
+		if p.Trait != 0 && g.T.Defs[p.Trait].Name == name {
+			return i
+		}
+	}
+	return -1
 }
 
 func (g *Game) addKingdomPile(k CardID, supply bool) int {
@@ -437,6 +485,8 @@ func (g *Game) slice(l Loc) *[]Inst {
 		return &g.Piles[l.Owner].Cards
 	case Trash:
 		return &g.Trashed
+	case Box:
+		return &g.Boxed
 	}
 	return &g.P[l.Owner].Z[l.Zone]
 }
@@ -542,14 +592,23 @@ func (g *Game) VP(p int) int {
 // shuffle turns the discard pile into the deck, under what is left of it.
 func (g *Game) shuffle(p int, level int) {
 	pl := &g.P[p]
-	d := pl.Z[Discard]
+	ev := &Ev{Kind: EvShuffling, P: p, X: -1, Level: level}
+	g.fire(ev) // Fated cards go on top first; Avoid keeps cards out
+	var d, keep []Inst
+	for _, x := range pl.Z[Discard] {
+		if slices.Contains(ev.Keep, x) {
+			keep = append(keep, x)
+		} else {
+			d = append(d, x)
+		}
+	}
 	g.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
 	g.Log.add(Entry{Level: level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
 	for _, x := range d {
 		g.loc[x] = Loc{Deck, int16(p)}
 	}
 	pl.Z[Deck] = append(d, pl.Z[Deck]...)
-	pl.Z[Discard] = nil
+	pl.Z[Discard] = keep
 	g.fire(&Ev{Kind: EvShuffle, P: p, X: -1})
 }
 
@@ -562,6 +621,9 @@ func (g *Game) top(p int, to Zone, level int) Inst {
 			return -1
 		}
 		g.shuffle(p, level)
+		if len(pl.Z[Deck]) == 0 { // Avoid kept every card in the discard pile
+			return -1
+		}
 	}
 	if g.BeforeTake != nil {
 		g.BeforeTake(p)
@@ -637,6 +699,13 @@ func (g *Game) Play() Result {
 			r.Start(g, c)
 		}
 	}
+	for _, c := range g.Land { // "The Fated Trait is acquired by the Replace pile."
+		for _, pile := range g.Piles {
+			if pile.Trait == c {
+				g.Log.add(Entry{Template: "ACQUIRES_TRAIT", Args: []any{PileName(pile.Card), Name(c)}})
+			}
+		}
+	}
 	for p := range g.P {
 		// one line for the Estates (or Shelters), one for Heirlooms, one for the Coppers
 		var groups [3][]CardID
@@ -655,6 +724,9 @@ func (g *Game) Play() Result {
 				g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), cs}})
 			}
 		}
+	}
+	if i := g.traitPile("Inherited"); i >= 0 {
+		g.inherit(i)
 	}
 	for p := range g.P {
 		g.shuffle(p, 0)
@@ -684,6 +756,23 @@ func (g *Game) Play() Result {
 			return g.result(true)
 		}
 		g.Cur = 1 - g.Cur
+	}
+}
+
+// inherit gives each player a card of the Inherited pile for a starting card
+// they choose: "returns a Hovel to the Box.", "starts with an Armory."
+func (g *Game) inherit(i int) {
+	for p := range g.P {
+		if len(g.Piles[i].Cards) == 0 {
+			return
+		}
+		got := g.ask(&Decision{Player: p, Kind: ToReturn, Source: g.Piles[i].Trait, Options: g.options(p, Discard, nil), Min: 1, Max: 1, Level: 1})
+		x := got[0].Inst
+		g.move(x, Discard, Loc{Box, 0})
+		g.Log.add(Entry{Level: 1, Template: "RETURN_TO", Args: []any{Seat(p), []CardID{g.cards[x]}, "the Box"}})
+		y := g.Piles[i].Cards[len(g.Piles[i].Cards)-1]
+		g.move(y, Supply, Loc{Discard, int16(p)})
+		g.Log.add(Entry{Level: 1, Template: "STARTS_WITH", Args: []any{Seat(p), []CardID{g.cards[y]}}})
 	}
 }
 
@@ -824,6 +913,9 @@ func (g *Game) Check() error {
 		}
 	}
 	if err := visit(Loc{Trash, 0}, g.Trashed); err != nil {
+		return err
+	}
+	if err := visit(Loc{Box, 0}, g.Boxed); err != nil {
 		return err
 	}
 	for x, ok := range seen {

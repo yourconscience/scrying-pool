@@ -180,7 +180,7 @@ func (g *Game) Supply(c *Client) SupplyState {
 				if trashesSupply(e) {
 					take(name, cn.N)
 				}
-			case e.Template == "EXILE" && supplyExilers[e.Cause]:
+			case exilesFromSupply(e):
 				take(name, cn.N)
 			case toPile[e.Template] && toSupplyPile(e.Args[2].Text) && strings.ToLower(e.Args[2].Text) != "the box":
 				take(name, -cn.N)

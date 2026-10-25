@@ -213,9 +213,9 @@ func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) en
 	s := engine.Setup{Kingdom: piles[:min(10, len(piles))], Colony: r.IntN(5) == 0, Shelters: shelters && r.IntN(5) == 0}
 	s.Pool = piles[len(s.Kingdom):] // for a Bane or Ferryman's pile
 	sort.Slice(s.Kingdom, func(i, j int) bool { return t.Defs[s.Kingdom[i]].Name < t.Defs[s.Kingdom[j]].Name })
-	ways := 0
+	ways, n := 0, r.IntN(3)
 	for _, c := range lands {
-		if len(s.Landscapes) == r.IntN(3) {
+		if len(s.Landscapes) == n {
 			break
 		}
 		if t.Defs[c].Is(engine.TWay) {

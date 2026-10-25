@@ -65,7 +65,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	var start [2][]engine.CardID
 	for _, e := range rg.Events {
-		if e.Template != "STARTS_WITH" {
+		if e.Template != "STARTS_WITH" || e.Level > 0 { // "1 starts with an Armory." is Inherited's
 			continue
 		}
 		p := r.seat(e.Player)
@@ -93,6 +93,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	r.g = g
 	r.arrangePiles()
+	r.placeTraits()
 	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
 		if x.Template == "OBELISK_CHOOSES_PILE" {
 			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
@@ -208,11 +209,35 @@ func (r *replayer) hook(i int) {
 	r.arrangePiles()
 }
 
+// placeTraits puts the Traits on the piles the log says: "The Cheap Trait is acquired by the Pilgrim pile."
+func (r *replayer) placeTraits() {
+	for _, x := range r.real {
+		if x.Template != "ACQUIRES_TRAIT" {
+			continue
+		}
+		name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
+		pc, ok := r.t.KingdomPile(name)
+		trait, ok2 := r.t.Landscape(x.Args[1].Text)
+		if cs := x.Args[1].Cards; len(cs) > 0 && cs[0].Card != nil {
+			trait, ok2 = r.t.Landscape(cs[0].Card.Name)
+		}
+		if !ok || !ok2 || r.g.PileOf(pc) < 0 {
+			continue
+		}
+		for i := range r.g.Piles {
+			if r.g.Piles[i].Trait == trait {
+				r.g.Piles[i].Trait = 0
+			}
+		}
+		r.g.Piles[r.g.PileOf(pc)].Trait = trait
+	}
+}
+
 // arrangePiles puts the cards the next real line gains on top of their piles,
 // for piles of different cards (Knights, Ruins) whose order the log shows only as they go.
 func (r *replayer) arrangePiles() {
 	x, ok := r.peek()
-	if !ok || x.Template != "BUY_AND_GAIN" && x.Template != "GAIN" && x.Template != "GAIN_WITH" && x.Template != "GAIN_TO_HAND" && x.Template != "GAIN_ON_DRAWPILE" {
+	if !ok || x.Template != "BUY_AND_GAIN" && x.Template != "GAIN" && x.Template != "GAIN_WITH" && x.Template != "GAIN_TO_HAND" && x.Template != "GAIN_ON_DRAWPILE" && x.Template != "REVEAL" {
 		return
 	}
 	cs := x.Args[1].Cards
@@ -355,7 +380,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToTrash:       {"TRASH"},
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED"}, // Hostelry: "discards and reveals 2 Coppers."
 	engine.ToTopdeck:     {"TOPDECK"},
-	engine.ToPlay:        {"PLAY", "PLAY_WITH"}, // Mastermind: "plays a Smithy with Mastermind."
+	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"}, // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
@@ -363,7 +388,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToPass:        {"PASS"},
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
-	engine.ToPick:        {"REVEAL"},
+	engine.ToPick:        {"REVEAL", "PUT_IN_HAND", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF"},
 }
 
 // Decide answers with what the next real line shows.
@@ -646,14 +671,20 @@ func (r *replayer) beforeTake(p int) {
 	for _, x := range deck {
 		in[r.g.Def(x).Name]++
 	}
-	need := r.demand(p, take.Line, 1)
+	// of the cards that hand shows, the one it shows first: cards shown later may
+	// come from draws in that turn ("plays a Page.", "draws a Copper.", "plays 4 Coppers.")
+	need, first := r.demand(p, take.Line, 1)
+	pick := -1
 	for i := len(deck) - 1; i >= 0; i-- {
-		if n := r.g.Def(deck[i]).Name; need[n] > 0 && in[n] > later[n] {
-			r.g.PutOnTop(deck[i])
-			return
+		if n := r.g.Def(deck[i]).Name; need[n] > 0 && in[n] > later[n] && (pick < 0 || first[n] < first[r.g.Def(deck[pick]).Name]) {
+			pick = i
 		}
 	}
-	soon := r.demand(p, take.Line, 2)
+	if pick >= 0 {
+		r.g.PutOnTop(deck[pick])
+		return
+	}
+	soon, _ := r.demand(p, take.Line, 2)
 	best, spare := -1, -1
 	for i, x := range deck {
 		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name] - later[r.g.Def(x).Name]; n > spare {
@@ -693,12 +724,15 @@ func (r *replayer) laterTakes(p, line int) map[string]int {
 // hands while cards drawn at a line are still there (windows 1: that hand;
 // 2: that hand and the next), less the named cards already in hand, which
 // serve only the first: they're discarded before the next hand is drawn.
-func (r *replayer) demand(p int, line, windows int) map[string]int {
-	need, next := map[string]int{}, map[string]int{}
-	cur := need
+// first is the line where the first hand shows each card. A card drawn in
+// that hand's turn before it is shown, known by name ("draws a card.",
+// "reveals a Copper." under Chariot Race), needn't come from this draw.
+func (r *replayer) demand(p int, line, windows int) (map[string]int, map[string]int) {
+	need, next, first, last := map[string]int{}, map[string]int{}, map[string]int{}, map[string]int{}
+	cur, second := need, false
 	i, ok := r.line[line]
 	if !ok {
-		return need
+		return need, first
 	}
 	name := r.names[p]
 	ev := r.real[i]
@@ -711,7 +745,7 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 				if windows--; windows == 0 {
 					break
 				}
-				inTurn, cur = false, next
+				inTurn, cur, second = false, next, true
 			}
 			continue
 		}
@@ -724,7 +758,14 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 		}
 		for _, cn := range x.Args[1].Cards {
 			if cn.Card != nil {
-				cur[cn.Card.Name] += max(0, cn.N-off[cn.Card.Name])
+				k := max(0, cn.N-off[cn.Card.Name])
+				cur[cn.Card.Name] += k
+				if _, ok := first[cn.Card.Name]; !ok && k > 0 && !second {
+					first[cn.Card.Name] = x.Line
+				}
+				if k > 0 && !second {
+					last[cn.Card.Name] = x.Line
+				}
 			}
 		}
 	}
@@ -733,10 +774,15 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 			need[n]--
 		}
 	}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if k, ok := r.line[t.Line]; ok && r.real[k].Template == "DRAW" && t.Card != "" && t.Line > line && t.Line < last[t.Card] && need[t.Card] > 0 {
+			need[t.Card]--
+		}
+	}
 	for n, k := range next {
 		need[n] += k
 	}
-	return need
+	return need, first
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
