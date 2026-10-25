@@ -123,6 +123,10 @@ var (
 	topTrashers   = names("Barbarian", "Locusts", "Swindler", "Zombie Mason")
 )
 
+// Cards in play that trash themselves when their player gains a card: a Cage
+// for a Victory card, a Search when the gain empties a pile.
+var trashedFromPlayOnGain = names("Cage", "Search")
+
 // Cards gained somewhere other than the discard pile, without a line saying so:
 // by the card gained, or by what gained it (the line above, or "(Sickness)").
 var (
@@ -896,8 +900,12 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 		want := self(ZoneHand, ZonePlay, ZoneDiscard)
 		reacted := i > 0 && r.events[i-1].Template == "REACTS_WITH"
-		if (e.CauseOf == "BUY_AND_GAIN" || e.CauseOf == "GAIN" || e.CauseOf == "GAIN_SETTING_ASIDE") && cause != "Mint" && !reacted {
+		fromHand := (e.CauseOf == "BUY_AND_GAIN" || e.CauseOf == "GAIN" || e.CauseOf == "GAIN_SETTING_ASIDE") && cause != "Mint" && !reacted
+		if fromHand {
 			want = []string{ZoneHand} // Plan's Trashing token, a Hovel: not the card just gained, unless a Watchtower reacts
+			if len(cards) == 1 && cards[0].Card != nil && trashedFromPlayOnGain[cards[0].Card.Name] {
+				want = []string{ZonePlay, ZoneHand}
+			}
 		}
 		if cause == "Jack of All Trades" && strings.HasPrefix(e.CauseOf, "PLAY") || fromHandOnly[cause] && !gains[e.CauseOf] { // not a Watchtower trashing the Jack just bought
 			want = []string{ZoneHand} // not the card it just discarded from the deck, nor the Amulet in play
@@ -917,7 +925,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		for _, cn := range cards {
 			itself = itself || cn.Card == nil || cn.Card.Name == e.Cause
 		}
-		if strings.Contains(e.CauseOf, "GAIN") && itself {
+		if strings.Contains(e.CauseOf, "GAIN") && itself && !fromHand { // Plan's token trashes a Magpie from hand as a Magpie is gained
 			want = append(want, ZoneDeck, ZoneSetAside) // Watchtower trashing what Develop gained onto the deck, or Blockade set aside
 		}
 		r.lose(e, p, cards, want)
