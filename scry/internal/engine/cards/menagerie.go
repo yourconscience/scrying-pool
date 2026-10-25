@@ -426,7 +426,9 @@ func init() {
 			if e.X != inst(w.N) || e.From != inPlay {
 				return false
 			}
-			c.Topdeck(e.P, one(e.X))
+			if c.G.Where(e.X) == (engine.Loc{Zone: discard, Owner: int16(e.P)}) { // a Scheme may have topdecked it
+				c.Topdeck(e.P, one(e.X))
+			}
 			return true
 		},
 	})
@@ -445,9 +447,9 @@ func init() {
 				c.PlayHere(s[len(s)-1])
 			}
 		},
-		Setup: func(g *engine.Game) { // an unused Action costing $2 or $3, set aside as a pile of one
+		Setup: func(g *engine.Game) { // an unused non-Duration Action costing $2 or $3, set aside as a pile of one
 			us := g.Unused(func(d *def) bool {
-				return d.Action() && !strings.Contains(d.Name, " / ") && (d.Cost == engine.Upto(2) || d.Cost == engine.Upto(3))
+				return d.Action() && !duration(d) && !strings.Contains(d.Name, " / ") && (d.Cost == engine.Upto(2) || d.Cost == engine.Upto(3))
 			})
 			if len(us) == 0 {
 				return

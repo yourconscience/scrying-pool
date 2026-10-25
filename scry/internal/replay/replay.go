@@ -346,7 +346,7 @@ func (r *replayer) peek() (cartographer.Event, bool) {
 // lines a decision's answer writes, by the decision's kind
 var answers = map[engine.Kind][]string{
 	engine.PlayAction:    {"PLAY"},
-	engine.PlayTreasures: {"PLAY_TREASURES_FOR"},
+	engine.PlayTreasures: {"PLAY_TREASURES_FOR", "PLAY"},
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
 	engine.ToGain:        {"GAIN"},
 	engine.ToTrash:       {"TRASH"},
@@ -526,6 +526,10 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 	}
 	for _, t := range answers[d.Kind] {
 		if x.Template == t || r.english[x.Template] == r.english[t] {
+			if d.Kind == engine.PlayTreasures && x.Template == "PLAY" { // a Treasure with lines of its own: "plays a Stockpile."
+				cs := x.Args[1].Cards
+				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is("Treasure")
+			}
 			if d.Kind == engine.PlayAction || d.Kind == engine.PlayNight {
 				cs := x.Args[1].Cards
 				want := "Action"
@@ -681,7 +685,7 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 	return need
 }
 
-var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "DISCARD": true, "TRASH": true,
+var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
 	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true}
 
 // kingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"

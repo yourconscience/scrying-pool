@@ -83,7 +83,14 @@ func init() {
 		Next: func(c *ctx, d *engine.Dur) bool { // "puts a Copper in hand (Archive)."
 			left := c.In(aside, d.Aside)
 			if len(left) > 0 {
-				c.ToHand(c.P, pickOf(c, c.P, engine.ToPick, left, 1, 1), "PUT_IN_HAND_FROM", engine.Name(c.Src))
+				got := pickOf(c, c.P, engine.ToPick, left, 1, 1)
+				c.ToHand(c.P, got, "PUT_IN_HAND_FROM", engine.Name(c.Src))
+				for i, x := range d.Aside { // it no longer has that card, even if a Delay sets it aside again
+					if len(got) == 1 && x == got[0] {
+						d.Aside = append(d.Aside[:i:i], d.Aside[i+1:]...)
+						break
+					}
+				}
 			}
 			return len(c.In(aside, d.Aside)) == 0
 		},

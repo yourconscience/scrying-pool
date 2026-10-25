@@ -296,6 +296,16 @@ func (t *Template) match(text string, empty bool) map[int]string {
 	return args
 }
 
+// ShowCards prints a template's card keys as the client does: "[Stampede]" is "Stampede".
+func (c *Client) ShowCards(s string) string {
+	return reCardRef.ReplaceAllStringFunc(s, func(m string) string {
+		if card := c.byKeyName(m[1 : len(m)-1]); card != nil {
+			return card.Name
+		}
+		return m[1 : len(m)-1]
+	})
+}
+
 // byKeyName finds a card by the client's key ("The Skys Gift").
 func (c *Client) byKeyName(key string) *Card {
 	for _, card := range c.Cards {
