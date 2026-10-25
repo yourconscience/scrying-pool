@@ -172,8 +172,8 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 		if cs := e.Args[1].Cards; len(cs) > 0 && cs[0].Card != nil {
 			card = cs[0].Card.Name
 		}
-		if e.Template == "PLAY_USING_WAY" { // the Way's text applies, e.g. Way of the Camel exiles a Gold
-			if cs := e.Args[2].Cards; len(cs) > 0 && cs[0].Card != nil {
+		if e.Template == "PLAY_USING_WAY" { // the Way's text applies, e.g. Way of the Camel exiles a Gold; Way of the Chameleon follows the card's
+			if cs := e.Args[2].Cards; len(cs) > 0 && cs[0].Card != nil && cs[0].Card.Name != "Way of the Chameleon" {
 				card = cs[0].Card.Name
 			}
 		}

@@ -163,6 +163,10 @@ type Rules struct {
 	// CanBuy forbids buying the card (Grand Market with a Copper in play).
 	CanBuy func(g *Game, p int) bool
 
+	// PayWith is a way to buy the card instead of paying its cost: trashing a
+	// card from hand that passes the test (Animal Fair's Action).
+	PayWith func(d *Def) bool
+
 	// Overpay is what paying $n more than a card's cost when buying it does,
 	// after the card is gained (Masterpiece's Silvers).
 	Overpay func(c *Ctx, n int)

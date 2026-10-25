@@ -1028,8 +1028,19 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "REACTS_PLAYING" && e.CauseOf == "GAIN_SETTING_ASIDE": // "gains a Trail setting it aside.", "reacts with a Trail, playing it."
 		r.play(e, p, cards, []string{ZoneSetAside, ZoneHand, ZoneDiscard, ZoneDeck})
 		r.leftAside(i)
+	case t == "REACTS_PLAYING" && gains[e.CauseOf]: // a Sheepdog plays from hand, not the Sheepdog just gained
+		r.play(e, p, cards, []string{ZoneHand})
+	case t == "PLAY" && e.Cause == "Way of the Mouse" && e.CauseOf == "PLAY_USING_WAY":
+		// the set-aside card, played where it is: the card that used the Way stays in play like it
+		if x := r.playAt[e.Level-1]; x != nil && len(cards) == 1 && cards[0].Card != nil {
+			x.none, x.inherits = false, cards[0].Card
+			r.playAt[e.Level] = x
+		}
 	case t == "PLAY", t == "PLAY_TREASURES_FOR", t == "PLAY_USING_WAY", t == "PLAY_ENLIGHTENED", t == "PLAY_NULLIFIED", t == "REACTS_PLAYING":
 		r.play(e, p, cards, []string{ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
+		if x := r.playAt[e.Level]; t == "PLAY_USING_WAY" && x != nil {
+			x.none = true // a Duration played with a Way does nothing of its own
+		}
 	case t == "DISCARD", t == "DISCARD_WITH", t == "DISCARD_REVEALED":
 		want := self(ZoneHand)
 		rest := []string{ZonePlay, ZoneSetAside, ZoneTavern} // Wine Merchant from the Tavern mat
