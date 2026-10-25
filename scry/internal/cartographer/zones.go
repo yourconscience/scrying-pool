@@ -939,8 +939,12 @@ func (r *zoneReplay) step(i int, e Event) {
 		if x := r.playAt[e.Level-1]; e.CauseOf == "PLAY_USING_WAY" && x != nil {
 			way = x.name
 		}
+		treasure := false // a Landing Party topdecks itself when a Treasure is played: "plays a Silver.", "topdecks a Landing Party."
+		if c := r.cardOf(p, e.Cause); c != nil && strings.HasPrefix(e.CauseOf, "PLAY") {
+			treasure = c.Is("Treasure")
+		}
 		for _, cn := range cards {
-			if cn.Card != nil && (cn.Card.Name == e.Cause || cn.Card.Name == arg2 || cn.Card.Name == way) {
+			if cn.Card != nil && (cn.Card.Name == e.Cause || cn.Card.Name == arg2 || cn.Card.Name == way || cn.Card.Name == "Landing Party" && treasure) {
 				return append([]string{ZonePlay}, want...)
 			}
 		}
@@ -1032,7 +1036,8 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 	case t == "PUT_ON_BOTTOM_OF" && !strings.EqualFold(strings.TrimSpace(e.Args[2].Text), "Draw Pile") && !toSupplyPile(e.Args[2].Text):
 		// the Black Market deck: not the player's card
-	case t == "RETURN_TO" && r.parent(i) == "BEGINS_CLEANUP_PHASE": // the Encampment it set aside, not one in hand
+	case t == "RETURN_TO" && r.parent(i) == "BEGINS_CLEANUP_PHASE" && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Encampment":
+		// the Encampment it set aside, not one in hand; a Reckless card returns from play
 		r.lose(e, p, cards, []string{ZoneSetAside, ZonePlay, ZoneHand, ZoneDiscard, ZoneDeck})
 	case t == "RETURN_TO", t == "PUT_ON_BOTTOM_OF" && toSupplyPile(e.Args[2].Text), t == "EXCHANGE_RETURN", t == "RETURN":
 		r.lose(e, p, cards, []string{ZonePlay, ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})

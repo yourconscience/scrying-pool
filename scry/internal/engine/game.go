@@ -111,6 +111,7 @@ type Game struct {
 
 	durs    []*Dur  // Durations and other cards waiting for later turns
 	watches []Watch // effects waiting for something this turn, or longer
+	watchN  int     // watches added so far
 	hears   EvMask  // the events anything in the game responds to
 	extra   []CardID
 	ended   bool // the game is over
