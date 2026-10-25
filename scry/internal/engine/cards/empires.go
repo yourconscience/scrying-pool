@@ -677,15 +677,12 @@ func init() {
 		return vp
 	}})
 	reg("Mountain Pass", rules{
-		Hears: engine.On(engine.EvGain, engine.EvCleanup),
-		Hear: func(c *ctx, e *ev) { // LandVP is 1 once a Province is gained, 2 after the bids
-			switch {
-			case e.Kind == engine.EvGain && c.G.D(e.C).Name == "Province" && c.G.LandVP[c.Src] == 0:
+		Hears: engine.On(engine.EvGain),
+		Hear: func(c *ctx, e *ev) { // LandVP is 1 once the bids are done
+			if c.G.D(e.C).Name == "Province" && c.G.LandVP[c.Src] == 0 {
 				c.G.LandVP[c.Src] = 1
-			case e.Kind == engine.EvCleanup && c.G.LandVP[c.Src] == 1:
-				c.G.LandVP[c.Src] = 2
-				// before the Clean-up draw, without its line: "bids 15 debt", "bids 0 debt", "takes 15 debt.", "gets 8 VP from Mountain Pass."
-				c.Quietly(func() { bid(c, e.P) })
+				// right under the gain: "bids 15 debt", "bids 0 debt", "takes 15 debt.", "gets 8 VP from Mountain Pass."
+				bid(c, e.P)
 			}
 		},
 	})
