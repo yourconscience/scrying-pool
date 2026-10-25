@@ -243,7 +243,7 @@ func init() {
 			n := min(2, len(c.Hand(c.P)))
 			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, n, n))
 		},
-		OnBuy: func(c *ctx, _ *ev) { c.PlusBuys(1) },
+		OnGain: func(c *ctx, _ *ev) { c.PlusBuys(1) },
 	})
 	reg("Gladiator", rules{Play: func(c *ctx) { // "reveals a Lackeys.", "gets +$1.", "trashes a Gladiator."
 		c.PlusCoins(2)
