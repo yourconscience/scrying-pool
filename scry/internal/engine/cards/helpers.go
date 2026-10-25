@@ -35,6 +35,7 @@ func treasure(d *def) bool { return d.Treasure() }
 func action(d *def) bool   { return d.Action() }
 func victory(d *def) bool  { return d.Victory() }
 func attack(d *def) bool   { return d.Attack() }
+func duration(d *def) bool { return d.Is(engine.TDuration) }
 func any(*def) bool        { return true }
 
 func not(f func(*def) bool) func(*def) bool { return func(d *def) bool { return !f(d) } }

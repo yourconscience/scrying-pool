@@ -82,7 +82,7 @@ func init() {
 	}})
 	reg("Farmland", rules{VP: worth(2), OnGain: func(c *ctx, e *ev) {
 		if x := pick1(c, c.P, engine.ToTrash, hand, nil, false); x >= 0 {
-			up := costExactly(c, x, 2)
+			up := and(costExactly(c, x, 2), not(named("Farmland")))
 			c.Trash(c.P, one(x))
 			c.ChooseGain(c.P, up, discard)
 		}
@@ -121,20 +121,20 @@ func init() {
 		},
 	})
 	reg("Haggler", rules{
-		Play:  func(c *ctx) { c.PlusCoins(2) },
-		Hears: engine.On(engine.EvBuy),
-		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && e.X >= 0 {
-				c.ChooseGain(c.P, and(not(victory), cheaperThan(c, e.C)), discard)
+		Play: func(c *ctx) { c.PlusCoins(2); c.AddWatch(engine.On(engine.EvGain), 0) },
+		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // this turn, for each bought card gained
+			if e.P == w.P && e.Bought {
+				c.ChooseGain(w.P, and(not(victory), cheaperThan(c, e.C)), discard)
 			}
+			return false
 		},
 	})
 	reg("Highway", rules{
 		Play: func(c *ctx) {
 			c.Draw(1)
 			c.PlusActions(1)
+			c.T2().Reduce++
 		},
-		Reduce: func(g *engine.Game, me inst, c engine.CardID) int { return 1 },
 	})
 	reg("Inn", rules{
 		Play: func(c *ctx) {

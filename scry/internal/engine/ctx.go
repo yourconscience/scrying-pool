@@ -380,6 +380,13 @@ func (g *Game) gainX(p int, x Inst, to Zone, level int, by CardID, bought bool) 
 	}
 	if p == g.Cur {
 		g.T2.Gained = append(g.T2.Gained, g.cards[x])
+		if g.T2.Phase == BuyPhase {
+			g.T2.BuyGained = append(g.T2.BuyGained, g.cards[x])
+		}
+	}
+	if from.Zone == Supply && g.P[p].Tokens[TokTrash] == int(from.Owner) { // Plan's Trashing token: "buys and gains a Fortress.", "trashes a Copper."
+		cx := g.ctx(p, -1, level)
+		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
 	}
 	if ex := g.copies(p, Exile, g.cards[x]); len(ex) > 0 {
 		c := g.ctx(p, x, level)

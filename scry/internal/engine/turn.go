@@ -312,10 +312,6 @@ func (g *Game) buy(p int, c CardID) {
 	g.P[p].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
-	if g.P[p].Tokens[TokTrash] == i { // Plan's Trashing token: "buys and gains a Fortress.", "trashes a Copper."
-		cx := g.ctx(p, -1, 1)
-		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
-	}
 	for range g.Piles[i].Embargo {
 		g.ctx(p, -1, 1).Gain(p, g.curse, Discard)
 	}
@@ -567,6 +563,9 @@ func (g *Game) CostOf(c CardID) Cost {
 		return cost
 	}
 	off := g.T2.Reduce
+	if d.Action() {
+		off += g.T2.ReduceAct
+	}
 	for p := range g.P {
 		for _, x := range g.P[p].Z[InPlay] {
 			if r := g.Def(x).Rules; r != nil && r.Reduce != nil {
