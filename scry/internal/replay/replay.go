@@ -704,15 +704,39 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 			}
 		}
 	}
-	for i := range d.Options {
-		if unknown == 0 {
+	// an unnamed card is one the hand can spare: not a Copper it plays next turn
+	// ("discards a card and an Estate.", then "plays 3 Coppers.")
+	var need map[string]int
+	left := map[string]int{}
+	if unknown > 0 {
+		x, _ := r.peek()
+		need, _, _, _ = r.shown(r.whose(d), x.Line, 1)
+		for _, cn := range cards {
+			if cn.Card != nil {
+				need[cn.Card.Name] -= cn.N // the line's own cards
+			}
+		}
+		for i, o := range d.Options {
+			if !used[i] {
+				left[r.t.Defs[o.Card].Name]++
+			}
+		}
+	}
+	for ; unknown > 0; unknown-- {
+		k := -1
+		for i, o := range d.Options {
+			if n := r.t.Defs[o.Card].Name; !used[i] && (k < 0 || left[n] > need[n]) {
+				if k = i; left[n] > need[n] {
+					break
+				}
+			}
+		}
+		if k < 0 {
 			break
 		}
-		if !used[i] {
-			used[i] = true
-			out = append(out, i)
-			unknown--
-		}
+		used[k] = true
+		out = append(out, k)
+		left[r.t.Defs[d.Options[k].Card].Name]--
 	}
 	if d.Kind == engine.ToPick && len(out) > d.Max { // one of the cards the line names: Hunter's Action of "puts a Copper and a Mystic into their hand"
 		out = out[:d.Max]
@@ -816,11 +840,45 @@ func (r *replayer) laterTakes(p, line int) map[string]int {
 // that hand's turn before it is shown, known by name ("draws a card.",
 // "reveals a Copper." under Chariot Race), needn't come from this draw.
 func (r *replayer) demand(p int, line, windows int) (map[string]int, map[string]int) {
-	need, next, first, last := map[string]int{}, map[string]int{}, map[string]int{}, map[string]int{}
+	need, next, first, last := r.shown(p, line, windows)
+	for _, x := range r.g.P[p].Z[engine.Hand] {
+		if n := r.g.Def(x).Name; need[n] > 0 {
+			need[n]--
+		}
+	}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if k, ok := r.line[t.Line]; ok && r.real[k].Template == "DRAW" && t.Card != "" && t.Line > line && t.Line < last[t.Card] && need[t.Card] > 0 {
+			need[t.Card]--
+		}
+	}
+	// and one a line puts into the hand from elsewhere: Border Guard's "puts a Copper into their hand." of the two it revealed
+	if i, ok := r.line[line]; ok {
+		for _, x := range r.real[i+1:] {
+			if x.Player != r.names[p] || x.Template != "PUT_IN_HAND" && x.Template != "PUT_IN_HAND_FROM" {
+				continue
+			}
+			for _, cn := range x.Args[1].Cards {
+				if cn.Card != nil && x.Line < last[cn.Card.Name] {
+					need[cn.Card.Name] -= min(cn.N, need[cn.Card.Name])
+				}
+			}
+		}
+	}
+	for n, k := range next {
+		need[n] += k
+	}
+	return need, first
+}
+
+// shown counts the cards player p shows from their hand by name from line on,
+// in that hand and with windows 2 the next one (next); first and last are the
+// lines where the first hand shows each card first and last.
+func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[string]int) {
+	need, next, first, last = map[string]int{}, map[string]int{}, map[string]int{}, map[string]int{}
 	cur, second := need, false
 	i, ok := r.line[line]
 	if !ok {
-		return need, first
+		return
 	}
 	name := r.names[p]
 	ev := r.real[i]
@@ -857,20 +915,7 @@ func (r *replayer) demand(p int, line, windows int) (map[string]int, map[string]
 			}
 		}
 	}
-	for _, x := range r.g.P[p].Z[engine.Hand] {
-		if n := r.g.Def(x).Name; need[n] > 0 {
-			need[n]--
-		}
-	}
-	for _, t := range r.takes[p][r.took[p]:] {
-		if k, ok := r.line[t.Line]; ok && r.real[k].Template == "DRAW" && t.Card != "" && t.Line > line && t.Line < last[t.Card] && need[t.Card] > 0 {
-			need[t.Card]--
-		}
-	}
-	for n, k := range next {
-		need[n] += k
-	}
-	return need, first
+	return
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
