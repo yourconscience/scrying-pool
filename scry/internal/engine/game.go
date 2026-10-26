@@ -72,6 +72,9 @@ type Player struct {
 	Inherited   Inst            // the card set aside with the Estate token, -1 for none
 	Kept        []Inst          // cards Journey kept in play: they stay through the other player's Clean-up
 
+	Skip     int // turns to skip (Lich)
+	Shuffles int // times the player shuffled (Emissary)
+
 	Projects []CardID // Projects with this player's cube
 	// Mat is tokens a card keeps for the player, by card: Pirate Ship's coins, Sinister Plot's
 	Mat map[CardID]int
@@ -179,6 +182,12 @@ type turnState struct {
 
 	Envious bool // returned at the start of the Buy phase: Silver and Gold make $1
 	Deluded bool // returned at the start of the Buy phase: no buying Actions
+
+	Nullify   bool   // Highwayman: the next Treasure the player plays does nothing
+	Elder     []Inst // cards that may choose an extra option this turn
+	HandLimit int    // Voyage's turn: how many cards the player may play from hand; 0 for any
+	FromHand  int    // cards the player whose turn it is played from hand
+	KeepHand  []Inst // cards that stay in hand in Clean-up (Coastal Haven)
 }
 
 type Phase uint8
@@ -590,7 +599,7 @@ func (g *Game) VP(p int) int {
 		}
 	}
 	for _, c := range g.Land {
-		if r := g.T.Defs[c].Rules; r != nil && r.VP != nil && g.T.Defs[c].Is(TLandmark) {
+		if r := g.T.Defs[c].Rules; r != nil && r.VP != nil && g.T.Defs[c].Is(TLandmark|TAlly) {
 			vp += r.VP(g, p)
 		}
 	}
@@ -617,6 +626,7 @@ func (g *Game) shuffle(p int, level int) {
 	}
 	g.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
 	g.Log.add(Entry{Level: level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
+	pl.Shuffles++
 	for _, x := range d {
 		g.loc[x] = Loc{Deck, int16(p)}
 	}

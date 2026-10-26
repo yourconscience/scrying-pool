@@ -34,6 +34,9 @@ var extraCards = func() []cardFacts {
 	return out
 }()
 
+// typeFixes are the current types of cards whose types scry/cards/cards.json has from an older printing.
+var typeFixes = map[string][]string{"Student": {"Action", "Wizard", "Liaison"}}
+
 type member struct {
 	name string
 	n    int
@@ -83,6 +86,7 @@ type Pile struct {
 	Trait   CardID // the Trait on it
 	Coins   int    // coin tokens (Aqueduct-like landmarks keep VP; Silver/Gold piles for Aqueduct use VP)
 	Bane    bool   // Young Witch's or Ferryman's pile
+	Favors  int    // Family of Inventors' Favor tokens
 	members []CardID
 }
 

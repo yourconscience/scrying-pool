@@ -13,7 +13,7 @@ var fixedVP = map[string]int{
 	"Estate": 1, "Duchy": 3, "Province": 6, "Colony": 10, "Curse": -1,
 	"Mill": 1, "Crumbling Castle": 1, "Great Hall": 1, "Harem": 2,
 	"Nobles": 2, "Farm": 2, "Island": 2, "Tunnel": 2, "Cemetery": 2, "Farmland": 2,
-	"Distant Shore": 2, "Small Castle": 2, "Haunted Castle": 2, "Dame Josephine": 2,
+	"Distant Shore": 2, "Stronghold": 2, "Small Castle": 2, "Haunted Castle": 2, "Dame Josephine": 2,
 	"Opulent Castle": 3, "Sprawling Castle": 4, "Grand Castle": 5,
 }
 

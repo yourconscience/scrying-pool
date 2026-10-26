@@ -449,7 +449,7 @@ func init() {
 		},
 		Setup: func(g *engine.Game) { // an unused non-Duration Action costing $2 or $3, set aside as a pile of one
 			us := g.Unused(func(d *def) bool {
-				return d.Action() && !duration(d) && !strings.Contains(d.Name, " / ") && (d.Cost == engine.Upto(2) || d.Cost == engine.Upto(3))
+				return d.Action() && !duration(d) && !strings.Contains(d.Name, " / ") && d.Rules != nil && (d.Cost == engine.Upto(2) || d.Cost == engine.Upto(3)) // not a split pile such as the Augurs
 			})
 			if len(us) == 0 {
 				return

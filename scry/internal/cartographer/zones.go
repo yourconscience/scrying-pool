@@ -116,7 +116,7 @@ var deckLookers = names("Adventurer", "Advisor", "Apothecary", "Archive", "Bandi
 
 // Cards that look through a discard pile: what they reveal stays there.
 var discardLookers = names("Annex", "Bad Omens", "Bury", "Bustling Village", "Counting House", "Courier", "Harbinger", "Herald",
-	"Hermit", "Inn", "March", "Mountain Village", "Orb", "Scavenger", "Settlers", "The Moon's Gift")
+	"Herb Gatherer", "Hermit", "Inn", "March", "Mountain Village", "Orb", "Scavenger", "Settlers", "The Moon's Gift")
 
 // Cards that discard or trash the top card of a deck without revealing it first.
 var (
@@ -136,7 +136,7 @@ var (
 	gainsToHand    = names("Artisan", "Beggar", "Cobbler", "Falconer", "Joust", "Kind Emperor",
 		"Mine", "Pickaxe", "Pirate", "Plague", "Rocks", "Sculptor", "Silver Mine", "Swap", "Torturer", "Trading Post",
 		"Transmogrify", "Treasurer", "Wish")
-	gainsOntoDeck = names("Armory", "Artificer", "Bureaucrat", "Demand", "Develop", "Fool's Gold",
+	gainsOntoDeck = names("Armory", "Artificer", "Bureaucrat", "Crafters' Guild", "Demand", "Develop", "Fool's Gold",
 		"Greed", "Sickness", "Stampede", "Supplies")
 	gainsSettingAside = names("Quartermaster")
 	// Research sets cards aside from the deck, not the hand
@@ -161,7 +161,8 @@ var (
 	staysIfDiscards = names("Secret Cave", "Tactician")
 	// cards that discard or trash from hand, never themselves: a copy they name is the one in hand,
 	// not one they just discarded (Count discards a Rats, then trashes the hand)
-	fromHandOnly = names("Amulet", "Bat", "Count", "Crucible", "Dungeon", "Enlarge", "Exorcist", "Hideout", "Priest", "Recruiter", "Research", "Scholar", "Secret Cave")
+	fromHandOnly = names("Amulet", "Bat", "Broker", "Capital City", "Carpenter", "Count", "Crucible", "Dungeon", "Enlarge", "Exorcist", "Hideout", "Innkeeper",
+		"Marquis", "Modify", "Old Map", "Priest", "Recruiter", "Research", "Scholar", "Secret Cave", "Student", "Swap", "Sycophant")
 	// cards that topdeck a card from hand, never themselves
 	topdecksFromHand = names("Artisan", "Courtyard", "Haunting")
 	// cards that draw, then may trash themselves: "trashes a Mining Village." is the one in play
@@ -169,7 +170,7 @@ var (
 	// cards that draw, then return themselves: "returns an Experiment" is the one in play
 	returnsItself = names("Experiment")
 	// Durations that work now or next turn, by choice: the line that shows "now"
-	leavesIfNow = map[string]string{"Amphora": "GETS_BUY", "Barge": "GETS_BUY", "Gondola": "GETS_COIN", "Village Green": "GETS_ACTIONS"}
+	leavesIfNow = map[string]string{"Amphora": "GETS_BUY", "Barge": "GETS_BUY", "Gondola": "GETS_COIN", "Stronghold": "GETS_COIN", "Village Green": "GETS_ACTIONS"}
 	// stay for the rest of the game
 	permanent = names("Champion", "Endless Chalice", "Hireling", "Quartermaster", "Samurai")
 	// stay until something happens (Secluded Shrine: the next Treasure gained),
@@ -206,6 +207,14 @@ type played struct {
 	inherits *Card
 }
 
+// galleyPlay is a card a Royal Galley played: once its lines end it is set
+// aside, unless it left play (a Pillage trashes itself).
+type galleyPlay struct {
+	p     string
+	rg, x *played
+	level int
+}
+
 // pending is a card a recent line moved or looked at. Lines nested under it, or
 // right after it under the same card, take that card from there first.
 type pending struct {
@@ -235,6 +244,8 @@ type zoneReplay struct {
 	deckPos  string              // where the current line puts cards in the deck: "top", "bottom" or ""
 	took     string              // the card the last takeOne took, when the deck's order names an unnamed one
 	cleaning string              // the player whose Clean-up has begun
+	galleys  []*galleyPlay       // the cards Royal Galleys are playing, set aside when their lines end
+	gang     bool                // Gang of Pickpockets is in the game: players discard down to 4 at the start of their turns
 	owned    Decks
 	received map[string][]pending // Boons and Hexes being resolved: their lines follow at the same level
 	shared   map[string][]pending // under "": the Boon just discarded, whose share Sacred Grove's other player's lines follow
@@ -261,6 +272,12 @@ func newZoneReplay(g *Game) *zoneReplay {
 	}
 	r.cleanup = cleanupPoints(g)
 	r.events = g.Events
+	for _, e := range g.Events {
+		if cs := e.Args[2].Cards; len(cs) > 0 && cs[0].Card != nil && cs[0].Card.Name == "Gang of Pickpockets" {
+			r.gang = true
+			break
+		}
+	}
 	return r
 }
 
@@ -325,13 +342,20 @@ func (r *zoneReplay) landingTop(i int, p string, cards []CardN) bool {
 }
 
 // fatedTop: a topdeck between "shuffles 3 Coppers and a Replace." and "shuffles
-// their deck.": a Fated card going on top of the new deck.
+// their deck.": a Fated card going on top of the new deck; or Order of Astrologers'
+// between "spends 1 Favor." and the shuffle.
 func fatedTop(es []Event, i int) bool {
 	p, level := es[i].Player, es[i].Level
 	for j := i; j >= 0 && es[j].Player == p && es[j].Level == level; j-- {
 		switch es[j].Template {
 		case "SHUFFLES_CARDS":
 			return true
+		case "SPENDS_FAVOR", "SPENDS_FAVORS":
+			k := i + 1
+			for k < len(es) && es[k].Template == "TOPDECK" && es[k].Player == p {
+				k++
+			}
+			return k < len(es) && es[k].Template == "SHUFFLES" && es[k].Player == p
 		case "TOPDECK":
 		default:
 			return false
@@ -351,6 +375,9 @@ func cleanupPoints(g *Game) map[int]bool {
 			return
 		}
 		p := g.Events[start].Player
+		if x := g.Events[start+1 : end]; len(x) > 0 && (x[len(x)-1].Template == "SKIPS_A_TURN" || x[len(x)-1].Template == "SKIPS_A_TURN_REMAINING") {
+			return // Lich: a skipped turn keeps the hand
+		}
 		at := end
 		// before the shuffle, and what was done while shuffling: Order of Masons and
 		// Avoid keep cards in the discard pile, Shadow cards go under the deck
@@ -532,7 +559,7 @@ func (r *zoneReplay) find(e Event, p, card string, want []string, usePending boo
 				// not a card no card moved: Frog's topdecked Page isn't the one exchanged after it
 				// nor one it put on the deck: two Landing Parties topdeck themselves after one Treasure
 				return contains(want, x.zone) && x.src != "" && x.src == source(e) && !(x.gained && x.level == e.Level && strings.HasPrefix(e.Template, "TRASH")) && !(itself && x.zone != ZonePlay) &&
-					!(x.zone == ZoneDeck && (strings.HasPrefix(e.Template, "TOPDECK") || e.Template == "INSERT_IN_DECK")) // a replayed Secret Passage inserts another
+					!(x.zone == ZoneDeck && (strings.HasPrefix(e.Template, "TOPDECK") || e.Template == "INSERT_IN_DECK" || e.Template == "BOTTOMDECKS")) // a replayed Secret Passage inserts another; Sibyl puts another under
 			},
 		} {
 			for i := len(ps) - 1; i >= 0; i-- {
@@ -1014,6 +1041,10 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 			return false
 		case staysIfDiscards[x.name] && !x.aside && !use("discard"):
 			return false
+		case x.name == "Garrison" && !use("token"): // it stays with tokens on it
+			return false
+		case x.name == "Voyage" && !use("extra turn"): // only for the extra turn it gave
+			return false
 		case leavesIfNow[x.name] != "" && (x.nows > x.agains || allNow(1+x.agains-x.nows)):
 			return false
 		case x.name == "Outpost" && r.evidence["extra turn"]+r.evidence["stays:Outpost"] > 0:
@@ -1042,6 +1073,10 @@ func (r *zoneReplay) step(i int, e Event) {
 	r.line = e.Line
 	r.latest[e.Level] = e.Line
 	r.deckPos = ""
+	for k := len(r.galleys) - 1; k >= 0 && (e.Level <= r.galleys[k].level || e.Template == "NEW_TURN" || r.cleanup[i]); k-- {
+		r.setAsideByGalley(r.galleys[k]) // the inner one first: a Courier played by one plays another from the discard pile
+		r.galleys = r.galleys[:k]
+	}
 	switch e.Template {
 	case "TOPDECK", "TOPDECK_WITH", "BACK_ON_DECK", "GAIN_ON_DRAWPILE":
 		r.deckPos = "top"
@@ -1136,6 +1171,12 @@ func (r *zoneReplay) step(i int, e Event) {
 		} else {
 			r.note("now", cause)
 		}
+	}
+	if n := e.Args[1].Number; e.Template == "GARRISON_ADDS_TOKEN" && n != nil && *n == 1 { // a Garrison's first token
+		r.note("token", "Garrison")
+	}
+	if e.Template == "VOYAGE_SUCCESS" {
+		r.note("extra turn", "Voyage")
 	}
 	fromTrash := backFromTrashed(e, cards)
 
@@ -1255,6 +1296,8 @@ func (r *zoneReplay) step(i int, e Event) {
 	case t == "RETURN_TO" && r.parent(i) == "BEGINS_CLEANUP_PHASE" && len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Name == "Encampment":
 		// the Encampment it set aside, not one in hand; a Reckless card returns from play
 		r.lose(e, p, cards, []string{ZoneSetAside, ZonePlay, ZoneHand, ZoneDiscard, ZoneDeck})
+	case t == "RETURN_TO" && fromHandOnly[cause]: // Swap returns a card from hand, not the Duration in play
+		r.lose(e, p, cards, []string{ZoneHand, ZonePlay, ZoneSetAside, ZoneDiscard, ZoneDeck})
 	case t == "RETURN_TO", t == "PUT_ON_BOTTOM_OF" && toSupplyPile(e.Args[2].Text), t == "EXCHANGE_RETURN", t == "RETURN":
 		r.lose(e, p, cards, []string{ZonePlay, ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
 		if e.CauseOf == "GAIN_SETTING_ASIDE" { // a Trader exchanges what a Blockade set aside
@@ -1370,6 +1413,14 @@ func (r *zoneReplay) step(i int, e Event) {
 			}
 		case e.Cause == "" && cause == "" && e.Level > 0 && (t == "DISCARD" || arg2 == "Prepare") && !r.shyDiscard(i): // at the start of a turn: Grotto and Prepare discard what they set aside (Tide Pools names itself), not a Boon Lost in the Woods gives
 			want = []string{ZoneSetAside, ZoneHand}
+			if n := 0; r.gang {
+				for _, cn := range cards {
+					n += cn.N
+				}
+				if h := r.z(p)[ZoneHand]; h != nil && h.Size()-n == 4 {
+					want = []string{ZoneHand, ZoneSetAside} // down to 4, not the cards a Cage set aside
+				}
+			}
 		}
 		r.move(e, p, cards, append(want, rest...), ZoneDiscard)
 		if n := 0; e.Cause == "Secret Cave" {
@@ -1426,7 +1477,8 @@ func (r *zoneReplay) step(i int, e Event) {
 						n += cn.N
 					}
 				}
-				if d := r.z(p)[ZoneDeck]; d != nil && d.Size() >= n {
+				empty := r.z(p)[ZoneDiscard] == nil || r.z(p)[ZoneDiscard].Size() == 0 // Order of Masons kept every card out of it: the draw takes the deck
+				if d := r.z(p)[ZoneDeck]; d != nil && d.Size() >= n && !(empty && d.Size() == n) {
 					r.misses = append(r.misses, ZoneMiss{Line: e.Line, Player: p, Template: t, Cause: e.Cause, Want: "a deck smaller than the next draw", Found: ZoneDeck})
 				}
 			}
@@ -1643,21 +1695,35 @@ func (r *zoneReplay) play(e Event, p string, cards []CardN, want []string) {
 		}
 	}
 	n := len(r.inPlay[p])
-	if e.Cause == "Royal Galley" && e.Template == "PLAY" { // it sets the card aside without a line
-		r.move(e, p, mine, want, ZoneSetAside)
-		r.note("set aside", "Royal Galley")
-		return
-	}
 	r.move(e, p, mine, want, ZonePlay)
 	r.playAt[e.Level] = nil
 	if len(r.inPlay[p]) == n+1 {
 		r.playAt[e.Level] = r.inPlay[p][n]
 		r.inPlay[p][n].by = e.Cause
+		if e.Cause == "Royal Galley" && e.Template == "PLAY" && strings.HasPrefix(e.CauseOf, "PLAY") { // not a Stowaway reacting to its gain
+			r.galleys = append(r.galleys, &galleyPlay{p: p, rg: r.playAt[e.Level-1], x: r.inPlay[p][n], level: e.Level})
+		}
 	}
 	if strings.TrimSpace(e.Args[2].Text) == "Prince" {
 		for _, x := range r.inPlay[p][n:] {
 			x.back = true
 		}
+	}
+}
+
+// setAsideByGalley sets aside, without a line, the card a Royal Galley played, if it's still in play.
+func (r *zoneReplay) setAsideByGalley(g *galleyPlay) {
+	if !containsPlayed(r.inPlay[g.p], g.x) {
+		return
+	}
+	r.inPlay[g.p] = slices.DeleteFunc(r.inPlay[g.p], func(y *played) bool { return y == g.x })
+	if r.takeOne(g.p, ZonePlay, g.x.name, false) {
+		r.put(g.p, ZoneSetAside, g.x.name, 1)
+	}
+	if g.rg != nil && g.rg.name == "Royal Galley" {
+		g.rg.aside = true
+	} else {
+		r.note("set aside", "Royal Galley")
 	}
 }
 
@@ -1794,7 +1860,16 @@ func (g *Game) FinalZones() map[string]Zones {
 	for i, e := range g.Events {
 		r.step(i, e)
 	}
+	r.end()
 	return r.snapshot()
+}
+
+// end finishes what the log's last lines left open: the card a Royal Galley was playing.
+func (r *zoneReplay) end() {
+	for k := len(r.galleys) - 1; k >= 0; k-- {
+		r.setAsideByGalley(r.galleys[k])
+	}
+	r.galleys = nil
 }
 
 func contains(xs []string, s string) bool {
@@ -2012,7 +2087,7 @@ func (r *zoneReplay) takeDeck(p string, c *Cards, card string, allowUnknown bool
 }
 
 // topdeckFromPlay are cards that may put themselves onto the deck when they leave play.
-var topdeckFromPlay = names("Alchemist", "Merchant Camp", "Treasury", "Walled Village")
+var topdeckFromPlay = names("Alchemist", "Merchant Camp", "Tent", "Treasury", "Walled Village")
 
 // guessTopdeck picks the card in play an unnamed Clean-up topdeck most likely
 // was: a card that topdecks itself, else the last Action played that would be

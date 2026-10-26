@@ -195,6 +195,7 @@ func (g *Game) Turns() []Turn {
 			}
 		}
 	}
+	zones.end()
 	finish()
 	return turns
 }

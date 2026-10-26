@@ -1,6 +1,9 @@
 package engine
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 // Dur is a card waiting for a later turn: a Duration in play, with what it set
 // aside, or anything else that acts at the start of its owner's turns.
@@ -31,6 +34,16 @@ func (g *Game) takeTurn(extra CardID) {
 		text += " [" + g.T.Defs[extra].Name + "]"
 	}
 	g.Log.add(Entry{Kind: 'T', Text: text})
+	if pl.Skip > 0 { // Lich: "fails to take a Turn (from |).", "skips a Turn."
+		pl.Skip--
+		g.Log.add(Entry{Template: "CANCELS_A_TURN", Args: []any{Seat(p), Name(0)}})
+		if pl.Skip > 0 {
+			g.Log.add(Entry{Template: "SKIPS_A_TURN_REMAINING", Args: []any{Seat(p), pl.Skip}})
+		} else {
+			g.Log.add(Entry{Template: "SKIPS_A_TURN", Args: []any{Seat(p)}})
+		}
+		return
+	}
 
 	g.T2.Phase = StartPhase
 	g.Log.lazy(&Entry{Template: "STARTS_TURN", Args: []any{Seat(p)}})
@@ -133,12 +146,15 @@ func (g *Game) actionOptions(p int) []Option {
 	}
 	var out []Option
 	add := func(x Inst) {
+		if g.forbidden(p, x) {
+			return
+		}
 		out = append(out, Option{Card: g.cards[x], Inst: x})
 		for _, w := range ways {
 			out = append(out, Option{Card: g.cards[x], Inst: x, Mode: w + 1, Label: g.T.Defs[g.Land[w]].Name})
 		}
 	}
-	for _, x := range g.P[p].Z[Hand] {
+	for _, x := range g.handPlays(p) {
 		if g.Def(x).Action() || g.inherits(p, x) {
 			add(x)
 		}
@@ -151,14 +167,36 @@ func (g *Game) actionOptions(p int) []Option {
 	return out
 }
 
+// handPlays is the player's hand, or nothing when Voyage's limit on cards played from hand is reached.
+func (g *Game) handPlays(p int) []Inst {
+	if g.T2.HandLimit > 0 && g.T2.FromHand >= g.T2.HandLimit {
+		return nil
+	}
+	return g.P[p].Z[Hand]
+}
+
+// forbidden: a card in the other player's play forbids playing x from hand (Warlord).
+func (g *Game) forbidden(p int, x Inst) bool {
+	for _, y := range g.P[1-p].Z[InPlay] {
+		if r := g.Def(y).Rules; r != nil && r.Forbid != nil && r.Forbid(g, y, p, x) {
+			return true
+		}
+	}
+	return false
+}
+
 func (g *Game) buyPhase(p int) {
 	pl := &g.P[p]
 	for {
 		opts := g.options(p, Hand, func(d *Def) bool { return d.Treasure() || d.ID == g.curse && g.CurseTreasure || g.alsoTreasure(p, d) })
-		if len(opts) == 0 {
+		if len(g.handPlays(p)) == 0 || len(opts) == 0 {
 			break
 		}
-		got := g.ask(&Decision{Player: p, Kind: PlayTreasures, Options: opts, Min: 0, Max: len(opts)})
+		max := len(opts)
+		if g.T2.HandLimit > 0 {
+			max = min(max, g.T2.HandLimit-g.T2.FromHand)
+		}
+		got := g.ask(&Decision{Player: p, Kind: PlayTreasures, Options: opts, Min: 0, Max: max})
 		if len(got) == 0 {
 			break
 		}
@@ -364,7 +402,7 @@ func (g *Game) takeDebt(p, n, level int) {
 func (g *Game) nightPhase(p int) {
 	for {
 		opts := g.options(p, Hand, func(d *Def) bool { return d.Is(TNight) })
-		if len(opts) == 0 {
+		if len(g.handPlays(p)) == 0 || len(opts) == 0 {
 			return
 		}
 		got := g.ask(&Decision{Player: p, Kind: PlayNight, Options: opts, Min: 0, Max: 1})
@@ -404,8 +442,10 @@ func (g *Game) cleanup(p int) {
 	if !g.T2.KeepPlay {
 		pl.Kept = nil
 	}
-	for len(pl.Z[Hand]) > 0 {
-		g.move(pl.Z[Hand][0], Hand, Loc{Discard, int16(p)})
+	for _, x := range slices.Clone(pl.Z[Hand]) {
+		if !contains(g.T2.KeepHand, x) {
+			g.move(x, Hand, Loc{Discard, int16(p)})
+		}
 	}
 	g.Log.lazy(nil)
 	live := g.durs[:0]
@@ -452,6 +492,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	}
 	if z := g.loc[x].Zone; how.times == 0 && !how.inPlace && z != InPlay && z != Supply { // a Trail played from the trash comes into play
 		g.move(x, z, Loc{InPlay, int16(p)})
+		if z == Hand && p == g.Cur {
+			g.T2.FromHand++
+		}
 	}
 	coins := g.coinsOf(p, x) // before it counts as played this turn (Fool's Gold)
 	c := g.ctx(p, x, level+1)
@@ -460,6 +503,11 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		c.Me, c.InPlace = how.self, true
 	}
 	card := []CardID{g.cards[x]}
+	null := g.T2.Nullify && p == g.Cur && how.times == 0 && g.isTreasure(x)
+	if null { // Highwayman: "plays a Copper. (+$1)", then "plays Copper (nullified by Highwayman)." on a line of its own
+		g.T2.Nullify = false
+		g.Log.flush()
+	}
 	switch {
 	case how.way != 0:
 		if g.T.Defs[how.way].Rules == nil {
@@ -481,6 +529,12 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		g.Log.add(Entry{Level: level, Template: "PLAY_THIRD", Args: []any{Seat(p), card}})
 	default:
 		g.Log.add(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), card}})
+	}
+	if null {
+		g.Log.flush()
+		g.Log.add(Entry{Level: 3, Template: "PLAY_NULLIFIED", Args: []any{Seat(p), Name(g.cards[x])}})
+		g.T2.Played = append(g.T2.Played, x)
+		return
 	}
 	g.T2.Played = append(g.T2.Played, x)
 	if d.Action() {
