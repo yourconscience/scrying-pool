@@ -60,6 +60,7 @@ func atStart(f func(c *ctx, p int)) rules {
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) {
 			if project(c, e.P) {
+				phaseLine(c) // "starts their turn." every turn, even when it does nothing (Crop Rotation without a Victory card)
 				f(c.Away(), e.P)
 			}
 		},
@@ -371,8 +372,8 @@ func init() {
 	}})
 	reg("Silk Merchant", rules{
 		Play:    func(c *ctx) { c.Draw(2); c.PlusBuys(1) },
-		OnGain:  func(c *ctx, e *ev) { c.As(e.P).PlusCoffers(1); c.As(e.P).PlusVillagers(1) },
-		OnTrash: func(c *ctx, e *ev) { c.As(e.P).PlusCoffers(1); c.As(e.P).PlusVillagers(1) },
+		OnGain:  func(c *ctx, e *ev) { c.As(e.P).PlusVillagers(1); c.As(e.P).PlusCoffers(1) }, // "gets +1 Villager.", then "gets +1 Coffers."
+		OnTrash: func(c *ctx, e *ev) { c.As(e.P).PlusVillagers(1); c.As(e.P).PlusCoffers(1) },
 	})
 	reg("Spices", rules{
 		Coins:  2,
