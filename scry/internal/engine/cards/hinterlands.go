@@ -171,13 +171,22 @@ func init() {
 			}
 		})
 	}})
+	// nomadsCoins: "gets +$2." under its gain or trash; at the start of a turn
+	// (an Importer's gain) it names itself, "gets +$2. (Nomads)".
+	nomadsCoins := func(c *ctx) {
+		if c.T2().Phase == engine.StartPhase {
+			c.Away().PlusCoins(2)
+		} else {
+			c.PlusCoins(2)
+		}
+	}
 	reg("Nomads", rules{
 		Play: func(c *ctx) {
 			c.PlusBuys(1)
 			c.PlusCoins(2)
 		},
-		OnGain:  func(c *ctx, e *ev) { c.Away().PlusCoins(2) },
-		OnTrash: func(c *ctx, e *ev) { c.Away().PlusCoins(2) },
+		OnGain:  func(c *ctx, e *ev) { nomadsCoins(c) },
+		OnTrash: func(c *ctx, e *ev) { nomadsCoins(c) },
 	})
 	reg("Oasis", rules{Play: func(c *ctx) {
 		c.Draw(1)
