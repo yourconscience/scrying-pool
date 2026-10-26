@@ -10,14 +10,16 @@ import (
 // Capitalism makes the Actions it names Treasures only for playing them in the
 // Buy phase; Improve offers every Action in play that isn't staying for a Duration.
 
-// take gives player p an Artifact: "takes the Flag."; nothing when they have it already.
+// take gives player p an Artifact or a State: "takes the Flag."; nothing when they have it
+// already. An Artifact and Lost in the Woods move from whoever has them; other States have a copy each.
 func take(c *ctx, p int, name string) {
 	a := c.Card(name)
+	single := c.G.D(a).Is(engine.TArtifact) || name == "Lost in the Woods"
 	for i, h := range c.G.Held {
-		if h.C == a {
-			if h.P == p {
-				return
-			}
+		if h.C == a && h.P == p {
+			return
+		}
+		if h.C == a && single {
 			c.G.Held = slices.Delete(c.G.Held, i, i+1)
 			break
 		}
@@ -101,6 +103,8 @@ var capitalism = nameSet(
 	// Empires, Renaissance
 	"Archive", "Capital", "Chariot Race", "City Quarter", "Emporium", "Enchantress", "Engineer", "Forum", "Gladiator", "Legionary", "Royal Blacksmith", "Sacrifice", "Settlers", "Temple", "Villa", "Wild Hunt",
 	"Cargo Ship", "Flag Bearer", "Improve", "Patron", "Priest", "Treasurer", "Swashbuckler",
+	// Nocturne
+	"Bard", "Conclave", "Sacred Grove", "Secret Cave", "Tormentor", "Tracker",
 	// Menagerie, Plunder
 	"Animal Fair", "Barge", "Bounty Hunter", "Camel Train", "Cavalry", "Coven", "Falconer", "Fisherman", "Goatherd", "Hunting Lodge", "Livery", "Paddock", "Sanctuary", "Scrap", "Wayfarer",
 	"Buried Treasure", "Cabin Boy", "Crucible", "Flagship", "Fortune Hunter", "Gondola", "Harbor Village", "King's Cache", "Longship", "Mapmaker", "Maroon", "Mining Road", "Pickaxe", "Pilgrim", "Quartermaster", "Rope", "Sack of Loot", "Silver Mine", "Swamp Shacks", "Tools", "Trickster", "Wealthy Village",

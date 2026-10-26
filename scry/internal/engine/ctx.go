@@ -20,6 +20,7 @@ type Ctx struct {
 	InPlace bool
 
 	from       bool    // the effect happens away from the card's play (a Duration's next turn): lines name the card
+	name       CardID  // with from, the card +Cards, +Actions, +Buys and +$ lines name instead of Src
 	swap       bool    // Way of the Chameleon: its player's +Cards give +$ instead, and +$ give +Cards
 	holders    []Inst  // the cards that played this one (Throne Room), which stay in play with it
 	unaffected [2]bool // players a Reaction protected from this Attack
@@ -90,9 +91,30 @@ func (c *Ctx) Log(template string, args ...any) {
 // from picks a template's "(Card)" variant when the effect is away from the card's play.
 func (c *Ctx) withFrom(template string, args []any) (string, []any) {
 	if c.from {
-		return template + "_FROM", append(args, Name(c.Src))
+		return template + "_FROM", append(args, Name(c.named()))
 	}
 	return template, args
+}
+
+// named is the card +Cards and the like name away from the card's play.
+func (c *Ctx) named() CardID {
+	if c.name != 0 {
+		return c.name
+	}
+	return c.Src
+}
+
+// Receiving is the effect of a Boon or Hex b that this card's effect gives player p.
+// Away from the card's play (at the start of a turn) gains and most moves name the
+// Boon, but +Cards, +Buys and +$ name the card: "gets +1 Buy. (Blessed Village)",
+// "gains a Silver. (The Mountain's Gift)".
+func (c *Ctx) Receiving(p int, b CardID) *Ctx {
+	d := *c
+	d.P, d.Me, d.Src, d.InPlace = p, -1, b, false
+	if d.from && d.name == 0 {
+		d.name = c.Src
+	}
+	return &d
 }
 
 // Swapped is the effect with +Cards and +$ traded, for Way of the Chameleon.
@@ -115,7 +137,7 @@ func (c *Ctx) DrawFor(p, n int) []Inst {
 	}
 	var from CardID
 	if c.from {
-		from = c.Src
+		from = c.named()
 	}
 	return c.G.draw(p, n, c.level, from)
 }
@@ -600,6 +622,12 @@ func (c *Ctx) with(template string) (string, []any) {
 // Topdeck puts cards onto the deck; the last one ends on top.
 func (c *Ctx) Topdeck(p int, xs []Inst) []Inst {
 	return c.moveAll(p, xs, Loc{Deck, int16(p)}, "TOPDECK")
+}
+
+// TopdeckNamed topdecks cards "with" the card, away from its play: The Sun's Gift at the start of a turn.
+func (c *Ctx) TopdeckNamed(p int, xs []Inst) []Inst {
+	t, a := c.with("TOPDECK")
+	return c.moveAll(p, xs, Loc{Deck, int16(p)}, t, a...)
 }
 
 // Bottomdeck puts cards on the bottom of the deck.
