@@ -519,7 +519,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && !d.Attack() && (level == 0 && how.times == 0 && g.T2.Phase == BuyPhase || how.merge):
-		g.Log.treasure(p, g.cards[x], coins, level) // a Relic has a line of its own
+		g.Log.treasure(p, g.cards[x], coins, level, d.Rules.Coins == 0 && d.Rules.Worth == nil && coins == 0) // a Relic has a line of its own
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
