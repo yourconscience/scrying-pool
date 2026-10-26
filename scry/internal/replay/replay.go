@@ -527,7 +527,7 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		}
 		k := -1
 		for j, o := range d.Options {
-			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) && sameCount(o, x) {
+			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) && sameCount(o, x) && r.sameCard(o, x) {
 				k = j
 				break
 			}
@@ -551,6 +551,20 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		r.fail(fmt.Sprintf("no mode of %s writes the log's next line %s", r.t.Defs[d.Source].Name, x.Template), "")
 	}
 	return out
+}
+
+// sameCard: a mode that names a card matches a line that names it: Kitsune's
+// "gains a Curse." for the other player, not its "gain a Silver".
+func (r *replayer) sameCard(o engine.Option, x cartographer.Event) bool {
+	if o.Card == 0 {
+		return true
+	}
+	for _, cn := range x.Args[1].Cards {
+		if cn.Card != nil && norm(cn.Card.Name) == norm(r.t.Defs[o.Card].Name) {
+			return true
+		}
+	}
+	return false
 }
 
 // sameNumber: a numbered mode matches the number its line shows, when it shows one.

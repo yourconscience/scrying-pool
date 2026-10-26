@@ -365,6 +365,14 @@ func (g *Game) addKingdomPile(k CardID, supply bool) int {
 	return g.AddPile(k, n, supply)
 }
 
+// AddKingdom adds a kingdom pile a landscape's Setup chose, and runs its own
+// Setup: Approaching Army's Attack.
+func (g *Game) AddKingdom(k CardID) {
+	g.addKingdomPile(k, true)
+	g.Kingdom = append(g.Kingdom, k)
+	g.setupCard(k)
+}
+
 // AddBane adds a kingdom pile a card's Setup chose, and runs its own Setup:
 // Young Witch's Bane in the Supply, Ferryman's pile outside it.
 func (g *Game) AddBane(k CardID, supply bool) {
@@ -616,21 +624,27 @@ func (g *Game) shuffle(p int, level int) {
 	pl := &g.P[p]
 	ev := &Ev{Kind: EvShuffling, P: p, X: -1, Level: level}
 	g.fire(ev) // Fated cards go on top first; Avoid keeps cards out
-	var d, keep []Inst
+	var d, keep, shadows []Inst
 	for _, x := range pl.Z[Discard] {
-		if slices.Contains(ev.Keep, x) {
+		switch {
+		case slices.Contains(ev.Keep, x):
 			keep = append(keep, x)
-		} else {
+		case g.Def(x).Is(TShadow):
+			shadows = append(shadows, x)
+		default:
 			d = append(d, x)
 		}
+	}
+	if len(shadows) > 0 { // "puts an Alley on the bottom of their deck.", then the shuffle
+		g.Log.add(Entry{Level: level, Template: "BOTTOMDECKS", Args: []any{Seat(p), g.ids(shadows)}})
 	}
 	g.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
 	g.Log.add(Entry{Level: level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
 	pl.Shuffles++
-	for _, x := range d {
+	for _, x := range append(d, shadows...) {
 		g.loc[x] = Loc{Deck, int16(p)}
 	}
-	pl.Z[Deck] = append(d, pl.Z[Deck]...)
+	pl.Z[Deck] = append(append(shadows, d...), pl.Z[Deck]...)
 	pl.Z[Discard] = keep
 	g.fire(&Ev{Kind: EvShuffle, P: p, X: -1})
 }

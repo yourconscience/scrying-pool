@@ -161,8 +161,9 @@ var (
 	staysIfDiscards = names("Secret Cave", "Tactician")
 	// cards that discard or trash from hand, never themselves: a copy they name is the one in hand,
 	// not one they just discarded (Count discards a Rats, then trashes the hand)
-	fromHandOnly = names("Amulet", "Bat", "Broker", "Capital City", "Carpenter", "Count", "Crucible", "Dungeon", "Enlarge", "Exorcist", "Hideout", "Innkeeper",
-		"Marquis", "Modify", "Old Map", "Priest", "Recruiter", "Research", "Scholar", "Secret Cave", "Student", "Swap", "Sycophant")
+	fromHandOnly = names("Alley", "Amulet", "Bat", "Broker", "Capital City", "Carpenter", "Change", "Count", "Crucible", "Dungeon", "Enlarge", "Exorcist", "Hideout", "Innkeeper",
+		"Marquis", "Modify", "Mountain Shrine", "Old Map", "Priest", "Recruiter", "Research", "Rice Broker", "River Shrine", "Rustic Village", "Scholar", "Secret Cave",
+		"Student", "Swap", "Sycophant", "Tanuki")
 	// cards that topdeck a card from hand, never themselves
 	topdecksFromHand = names("Artisan", "Courtyard", "Haunting")
 	// cards that draw, then may trash themselves: "trashes a Mining Village." is the one in play
@@ -234,35 +235,38 @@ func source(e Event) string {
 }
 
 type zoneReplay struct {
-	zones    map[string]Zones
-	avoid    map[string]Deck     // cards Avoid keeps out of the next shuffle
-	fated    map[string][]string // Fated cards topdecked while shuffling: they go on the new deck, the last one on top
-	traits   map[string]string   // the Trait on each card's pile: "The Tireless Trait is acquired by the Crown pile."
-	kept     map[string]Deck     // cards kept in hand through this Clean-up
-	top      map[string][]string // cards known to be on top of the deck, top first ("" for an unnamed one)
-	bottom   map[string][]string // cards known to be at the bottom, the one nearest the middle first
-	deckPos  string              // where the current line puts cards in the deck: "top", "bottom" or ""
-	took     string              // the card the last takeOne took, when the deck's order names an unnamed one
-	cleaning string              // the player whose Clean-up has begun
-	galleys  []*galleyPlay       // the cards Royal Galleys are playing, set aside when their lines end
-	gang     bool                // Gang of Pickpockets is in the game: players discard down to 4 at the start of their turns
-	owned    Decks
-	received map[string][]pending // Boons and Hexes being resolved: their lines follow at the same level
-	shared   map[string][]pending // under "": the Boon just discarded, whose share Sacred Grove's other player's lines follow
-	reacted  map[string][]pending // reactions being resolved: "reacts with a Tunnel", then its Gold
-	playAt   map[int]*played      // the card the latest play line at each level played
-	inPlay   map[string][]*played
-	pend     map[string][]pending
-	turn     int            // NEW_TURN lines so far
-	turnOf   string         // whose turn it is
-	evidence map[string]int // this turn: "set aside:Gear", "discard:Tactician", "draw:Barge" counts
-	cleanup  map[int]bool   // event indices that start a Clean-up
-	events   []Event
-	misses   []ZoneMiss
-	line     int                   // the line being replayed
-	latest   map[int]int           // the last line at each level: the current line's parents
-	takes    map[string][]DeckTake // every card taken from each player's deck
-	offHand  map[int][]string      // the named cards each line took from a zone other than the hand
+	zones      map[string]Zones
+	avoid      map[string]Deck     // cards Avoid keeps out of the next shuffle
+	fated      map[string][]string // Fated cards topdecked while shuffling: they go on the new deck, the last one on top
+	traits     map[string]string   // the Trait on each card's pile: "The Tireless Trait is acquired by the Crown pile."
+	kept       map[string]Deck     // cards kept in hand through this Clean-up
+	top        map[string][]string // cards known to be on top of the deck, top first ("" for an unnamed one)
+	bottom     map[string][]string // cards known to be at the bottom, the one nearest the middle first
+	deckPos    string              // where the current line puts cards in the deck: "top", "bottom" or ""
+	took       string              // the card the last takeOne took, when the deck's order names an unnamed one
+	cleaning   string              // the player whose Clean-up has begun
+	galleys    []*galleyPlay       // the cards Royal Galleys are playing, set aside when their lines end
+	gang       bool                // Gang of Pickpockets is in the game: players discard down to 4 at the start of their turns
+	biding     map[string][]string // the hand Biding Time set aside, back in hand unlogged at the start of the next turn ("" for an unnamed card)
+	bidingDue  string              // the player whose turn began: their Biding Time cards come back with its first line, after the last turn's snapshot
+	shadowPlay bool                // the line plays a Shadow card, from the deck if not from hand
+	owned      Decks
+	received   map[string][]pending // Boons and Hexes being resolved: their lines follow at the same level
+	shared     map[string][]pending // under "": the Boon just discarded, whose share Sacred Grove's other player's lines follow
+	reacted    map[string][]pending // reactions being resolved: "reacts with a Tunnel", then its Gold
+	playAt     map[int]*played      // the card the latest play line at each level played
+	inPlay     map[string][]*played
+	pend       map[string][]pending
+	turn       int            // NEW_TURN lines so far
+	turnOf     string         // whose turn it is
+	evidence   map[string]int // this turn: "set aside:Gear", "discard:Tactician", "draw:Barge" counts
+	cleanup    map[int]bool   // event indices that start a Clean-up
+	events     []Event
+	misses     []ZoneMiss
+	line       int                   // the line being replayed
+	latest     map[int]int           // the last line at each level: the current line's parents
+	takes      map[string][]DeckTake // every card taken from each player's deck
+	offHand    map[int][]string      // the named cards each line took from a zone other than the hand
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
@@ -468,7 +472,7 @@ func (r *zoneReplay) takeOne(p, zone, card string, allowUnknown bool) (ok bool) 
 		if !r.takeDeck(p, c, card, allowUnknown) {
 			return false
 		}
-		if r.takes != nil {
+		if r.takes != nil && !r.shadowPlay {
 			r.takes[p] = append(r.takes[p], DeckTake{r.line, r.took})
 		}
 		return true
@@ -1069,6 +1073,15 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 
 // step applies one event.
 func (r *zoneReplay) step(i int, e Event) {
+	if p := r.bidingDue; p != "" && e.Template != "NEW_TURN" {
+		for _, c := range r.biding[p] {
+			if r.takeOne(p, ZoneSetAside, c, true) {
+				r.put(p, ZoneHand, r.took, 1)
+			}
+		}
+		delete(r.biding, p)
+		r.bidingDue = ""
+	}
 	defer r.owned.Apply(e)
 	r.line = e.Line
 	r.latest[e.Level] = e.Line
@@ -1094,6 +1107,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		}
 		r.turn++
 		r.turnOf = e.Player
+		r.bidingDue = e.Player
 		r.pend = map[string][]pending{}
 		r.received = map[string][]pending{}
 		r.shared = map[string][]pending{}
@@ -1375,7 +1389,14 @@ func (r *zoneReplay) step(i int, e Event) {
 			r.playAt[e.Level] = x
 		}
 	case t == "PLAY", t == "PLAY_TREASURES_FOR", t == "PLAY_USING_WAY", t == "PLAY_ENLIGHTENED", t == "PLAY_NULLIFIED", t == "REACTS_PLAYING":
-		r.play(e, p, cards, []string{ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck})
+		want := []string{ZoneHand, ZoneSetAside, ZoneDiscard, ZoneDeck}
+		shadow := len(cards) == 1 && cards[0].Card != nil && cards[0].Card.Is("Shadow")
+		if shadow {
+			want = []string{ZoneHand, ZoneDeck, ZoneSetAside, ZoneDiscard} // played from the deck as if in the hand, not one Rapid Expansion set aside
+		}
+		r.shadowPlay = shadow // not a take from the deck's top: a replay plays that very card
+		r.play(e, p, cards, want)
+		r.shadowPlay = false
 		if x := r.playAt[e.Level]; t == "PLAY_USING_WAY" && x != nil && arg2 != "Way of the Chameleon" {
 			x.none = true // a Duration played with a Way does nothing of its own; with Chameleon it follows its own text
 		}
@@ -1554,6 +1575,9 @@ func (r *zoneReplay) step(i int, e Event) {
 		if t == "TOPDECK" && topdecksFromHand[cause] && (strings.HasPrefix(e.CauseOf, "PLAY") || cause != e.Cause) { // not a Watchtower's; Haunting a gained Cursed Village gave
 			want = []string{ZoneHand} // a Courtyard topdecks a Courtyard from hand, not itself
 		}
+		if t == "BOTTOMDECKS" && i+1 < len(r.events) && r.events[i+1].Template == "SHUFFLES" && r.events[i+1].Player == e.Player {
+			want = []string{ZoneDiscard} // Shadow cards go under the deck as the discard pile is shuffled
+		}
 		r.move(e, p, cards, want, ZoneDeck)
 		if e.CauseOf == "GAIN_SETTING_ASIDE" { // Watchtower topdecked what Blockade set aside
 			r.leftAside(i)
@@ -1591,6 +1615,20 @@ func (r *zoneReplay) step(i int, e Event) {
 			want = []string{ZoneHand, ZoneDeck, ZoneDiscard}
 		}
 		r.move(e, p, cards, want, ZoneSetAside)
+		if arg2 == "Biding Time" {
+			if r.biding == nil {
+				r.biding = map[string][]string{}
+			}
+			for _, cn := range cards {
+				name := ""
+				if cn.Card != nil {
+					name = cn.Card.Name
+				}
+				for range cn.N {
+					r.biding[p] = append(r.biding[p], name)
+				}
+			}
+		}
 		holder := e.Cause
 		if arg2 != "" {
 			holder = arg2
