@@ -155,6 +155,7 @@ func init() {
 			if c.Me >= 0 {
 				return
 			}
+			phaseLine(c)
 			a := c.Away()
 			if o := a.ChooseOne(c.P, engine.ToGain, a.OptionsOf(inTrash(c, c.CostsUpTo(6))), false); o != nil {
 				a.GainInst(c.P, o.Inst, discard, "GAIN")
@@ -887,8 +888,12 @@ func init() {
 		},
 	})
 	reg("Friendly", rules{
-		Hears: engine.On(engine.EvCleanup),
+		Hears: engine.On(engine.EvTurnStart, engine.EvCleanup),
 		Hear: func(c *ctx, e *ev) {
+			if e.Kind == engine.EvTurnStart { // dominion.games logs "starts their turn." every turn with Friendly, as with Patient
+				phaseLine(c)
+				return
+			}
 			if x := pick1(c, e.P, engine.ToDiscard, hand, traited(c), true); x >= 0 && len(c.Discard(e.P, one(x))) == 1 {
 				if top := traitTop(c); top != 0 {
 					c.Gain(e.P, top, discard)
@@ -936,8 +941,12 @@ func init() {
 		},
 	})
 	reg("Patient", rules{
-		Hears: engine.On(engine.EvCleanup),
+		Hears: engine.On(engine.EvTurnStart, engine.EvCleanup),
 		Hear: func(c *ctx, e *ev) { // "sets a Nobles aside."; next turn "plays a Nobles. (|)"
+			if e.Kind == engine.EvTurnStart {
+				phaseLine(c)
+				return
+			}
 			if xs := c.SetAside(e.P, pick(c, e.P, engine.ToSetAside, hand, traited(c), 0, len(c.Hand(e.P)))); len(xs) > 0 {
 				c.Later().Aside = xs
 			}
@@ -977,6 +986,7 @@ func init() {
 	reg("Shy", rules{
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) { // "discards a Patron.", "draws 2 cards. (Shy)"
+			phaseLine(c)
 			if x := pick1(c, e.P, engine.ToDiscard, hand, traited(c), true); x >= 0 && len(c.Discard(e.P, one(x))) == 1 {
 				c.Away().Draw(2)
 			}
