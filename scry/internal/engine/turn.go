@@ -213,20 +213,20 @@ func (g *Game) buyPhase(p int) {
 			return
 		}
 	}
-	if pl.Coffers > 0 {
-		var opts []Option
-		for n := 0; n <= pl.Coffers; n++ {
-			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
-		}
-		got := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})
-		if n := got[0].Mode; n > 0 {
-			pl.Coffers -= n
-			g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
-			pl.Coins += n
-			g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
-		}
-	}
 	for {
+		if pl.Coffers > 0 && pl.Buys > 0 { // before any buy: "buys and gains a Conclave.", "uses 2 Coffers."
+			var opts []Option
+			for n := 0; n <= pl.Coffers; n++ {
+				opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+			}
+			got := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})
+			if n := got[0].Mode; n > 0 {
+				pl.Coffers -= n
+				g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
+				pl.Coins += n
+				g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
+			}
+		}
 		g.repay(p)
 		if pl.Buys == 0 && pl.Actions > 0 && g.CameTrue("Flourishing Trade") { // an Action play used as a Buy, unlogged
 			pl.Actions--

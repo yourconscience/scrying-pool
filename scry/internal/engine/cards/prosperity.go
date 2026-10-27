@@ -243,8 +243,8 @@ func init() {
 			c.PlayCard(x, 1)
 		}
 	}, Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
-		if e.P == w.P && stillGained(c, e) && c.Yes(c.P, "put it onto your deck", "TOPDECK") {
-			c.Topdeck(c.P, one(e.X))
+		if e.P == w.P && stillGained(c, e) && c.Yes(w.P, "put it onto your deck", "TOPDECK_WITH") { // "topdecks a Courtyard with Tiara."
+			c.MoveTo(w.P, one(e.X), deck, "TOPDECK_WITH", engine.Name(c.Src))
 			e.Done = true
 		}
 		return false

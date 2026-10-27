@@ -92,6 +92,9 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
 	kingdom, pool := divineWind(t, kingdom, lands, r.real)
+	if ferry, ok := t.KingdomPile("Ferryman"); ok && pool == nil && slices.Contains(kingdom, ferry) {
+		pool = otherKingdom(t, kingdom, score) // Ferryman's pile: "# other cards: Imp, Develop, Horse"
+	}
 	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Pool: pool, Landscapes: lands, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Colony: colony, Partial: true})
 	if err != nil {
 		rep.Stop = err.Error()
@@ -490,6 +493,11 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		case "Divine Wind": // the new piles the score file has
 			return firstN(d.Min)
 		}
+		if x, ok := r.peek(); ok && x.Template == "PLAYER_MOVES_TOKEN_TO" && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile."
+			if i := r.pilePick(d, x); i >= 0 {
+				return []int{i}
+			}
+		}
 	case engine.ToDiscard:
 		if r.t.Defs[d.Source].Name == "Hamlet" {
 			return r.hamletDiscard(d)
@@ -731,6 +739,26 @@ func sameCount(o engine.Option, x cartographer.Event) bool {
 		n += cn.N
 	}
 	return n == o.Count
+}
+
+// pilePick is the option on the pile a line names: "to the Fortress pile".
+func (r *replayer) pilePick(d *engine.Decision, x cartographer.Event) int {
+	for _, a := range x.Args {
+		name := strings.TrimSpace(a.Text)
+		if !strings.HasSuffix(name, " pile") {
+			continue
+		}
+		id, ok := r.t.KingdomPile(strings.TrimSuffix(strings.TrimPrefix(name, "the "), " pile"))
+		if !ok {
+			continue
+		}
+		for i, o := range d.Options {
+			if r.g.PileOf(o.Card) == r.g.PileOf(id) {
+				return i
+			}
+		}
+	}
+	return -1
 }
 
 // chooseName picks the card the next naming line names.
@@ -1399,6 +1427,21 @@ func inferLandscapes(t *engine.Table, events []cartographer.Event, score string)
 
 // KingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
 // and "# landscapes:" lines.
+// otherKingdom is the kingdom cards a score file lists besides the kingdom.
+func otherKingdom(t *engine.Table, kingdom []engine.CardID, score string) []engine.CardID {
+	var out []engine.CardID
+	for _, l := range strings.Split(score, "\n") {
+		if rest, ok := strings.CutPrefix(l, "# other cards:"); ok {
+			for _, n := range strings.Split(rest, ",") {
+				if id, ok := t.KingdomPile(strings.TrimSpace(n)); ok && !slices.Contains(kingdom, id) {
+					out = append(out, id)
+				}
+			}
+		}
+	}
+	return out
+}
+
 func KingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
 	var kingdom, lands []engine.CardID
 	found := false

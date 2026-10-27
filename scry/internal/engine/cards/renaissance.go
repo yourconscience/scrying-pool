@@ -546,7 +546,7 @@ func init() {
 	}))
 	reg("Sinister Plot", atStart(func(c *ctx, p int) { // a token silently; "draws 2 cards. (Sinister Plot)"
 		mat := c.Pl(p).Mat
-		if n := mat[c.Src]; n > 0 && c.Mode1(p, mode("add a token", ""), mode("remove the tokens", "DRAW")) == 1 {
+		if n := mat[c.Src]; n > 0 && c.Mode1(p, mode("add a token", ""), mode("remove the tokens", "DRAW_FROM")) == 1 {
 			mat[c.Src] = 0
 			c.Draw(n)
 			return
