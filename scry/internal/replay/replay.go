@@ -152,23 +152,26 @@ func (r *replayer) run() {
 }
 
 type replayer struct {
-	c       *cartographer.Client
-	t       *engine.Table
-	g       *engine.Game
-	rep     *Report
-	names   [2]string
-	real    []cartographer.Event // the real log's events the engine writes too
-	line    map[int]int          // real event index by log line
-	english map[string]string    // template text by name: templates with the same text are the same line
-	pos     int                  // the next real event the engine hasn't written
-	matched int                  // the real event the last engine entry matched
-	entry   int                  // that engine entry
-	turn    string
-	takes   [2][]cartographer.DeckTake
-	took    [2]int
-	offHand map[int][]string     // named cards a line took from outside the hand
-	hamlet  int                  // the engine line that played the Hamlet whose first discard was answered
-	hidden  map[engine.Inst]bool // cards the replay chose for draws the log doesn't name, while no line has shown them
+	c          *cartographer.Client
+	t          *engine.Table
+	g          *engine.Game
+	rep        *Report
+	names      [2]string
+	real       []cartographer.Event // the real log's events the engine writes too
+	line       map[int]int          // real event index by log line
+	english    map[string]string    // template text by name: templates with the same text are the same line
+	pos        int                  // the next real event the engine hasn't written
+	matched    int                  // the real event the last engine entry matched
+	entry      int                  // that engine entry
+	turn       string
+	takes      [2][]cartographer.DeckTake
+	took       [2]int
+	offHand    map[int][]string     // named cards a line took from outside the hand
+	hamlet     int                  // the engine line that played the Hamlet whose first discard was answered
+	hidden     map[engine.Inst]bool // cards the replay chose for draws the log doesn't name, while no line has shown them
+	schemeTurn string               // the turn Scheme's picks were counted in
+	schemes    int                  // Scheme picks answered in it
+	flat       bool                 // the log writes the choice the engine nests at the top level
 }
 
 // skip lists real lines the engine doesn't write.
@@ -220,6 +223,9 @@ func (r *replayer) hook(i int) {
 	if (e.Template == "GETS_COIN" || e.Template == "GETS_COINS") && i > 0 && strings.HasPrefix(l.Entries[i-1].Template, "USES_COFFER") &&
 		x.Template != "GETS_COIN" && x.Template != "GETS_COINS" {
 		return // "uses 1 Coffers. (+$1)" has its "gets +$1." only sometimes
+	}
+	if e.Level == 0 {
+		r.flat = false
 	}
 	if why := r.same(e, x, false); why != "" {
 		r.fail(why, r.show(e))
@@ -345,7 +351,7 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 	if e.Template != x.Template && r.english[e.Template] != r.english[x.Template] {
 		return "a different line"
 	}
-	if e.Level != x.Level {
+	if e.Level != x.Level && !(r.flat && e.Level == x.Level+1) {
 		return "a different nesting"
 	}
 	for n, a := range e.Args {
@@ -488,6 +494,11 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			return r.pick(d, []cartographer.CardN{c})
 		}
 	}
+	if d.Kind == engine.ToTrash {
+		if cs, ok := r.moreTrash(d); ok {
+			return r.pick(d, cs)
+		}
+	}
 	switch d.Kind {
 	case engine.ToPick:
 		switch r.t.Defs[d.Source].Name {
@@ -495,6 +506,8 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			return r.blackMarket(d)
 		case "Divine Wind": // the new piles the score file has
 			return firstN(d.Min)
+		case "Scheme":
+			return r.schemePick(d)
 		}
 		if x, ok := r.peek(); ok && x.Template == "PLAYER_MOVES_TOKEN_TO" && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile."
 			if i := r.pilePick(d, x); i >= 0 {
@@ -659,12 +672,17 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		x.Args[1].Cards[0].Card.Name == r.t.Defs[d.Source].Name {
 		start++ // the overpay is chosen before "buys a Farrier." is written, then "loses 1 Coin."
 	}
+	level := d.Level
+	if start < len(r.real) && start > 0 && r.real[start].Level == 0 && d.Level == 1 && (r.flat || r.real[start-1].Level == 1) &&
+		r.real[start].Template != "NEW_TURN" && r.real[start].Player == r.names[d.Player] {
+		level = 0 // the log writes the choice at the top level: Hunting Lodge's "discards 4 other cards and a Copper."
+	}
 	for i := start; i < len(r.real) && len(out) < d.Max; i++ {
 		x := r.real[i]
-		if x.Template == "NEW_TURN" || x.Level < d.Level {
+		if x.Template == "NEW_TURN" || x.Level < level {
 			break
 		}
-		if x.Template == "SHUFFLES" || x.Level > d.Level {
+		if x.Template == "SHUFFLES" || x.Level > level {
 			continue
 		}
 		k := -1
@@ -693,6 +711,9 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		}
 		used[k] = true
 		out = append(out, k)
+		if level != d.Level {
+			r.flat = true
+		}
 	}
 	if len(out) < d.Min {
 		for j, o := range d.Options { // the mode that writes nothing ("no")
@@ -742,6 +763,53 @@ func sameCount(o engine.Option, x cartographer.Event) bool {
 		n += cn.N
 	}
 	return n == o.Count
+}
+
+// schemePick answers each Scheme's pick in Clean-up with one of the turn's
+// "topdecks a card." lines, by the card the next hand draws.
+func (r *replayer) schemePick(d *engine.Decision) []int {
+	if r.schemeTurn != r.turn {
+		r.schemeTurn, r.schemes = r.turn, 0
+	}
+	name := r.names[d.Player]
+	var tops []cartographer.Event
+	var drawn []cartographer.CardN
+	for _, x := range r.real[r.pos:] {
+		if x.Template == "NEW_TURN" {
+			break
+		}
+		if x.Player == name && x.Template == "TOPDECK" {
+			tops = append(tops, x)
+		}
+		if x.Player == name && x.Template == "DRAW" && x.Level == 0 {
+			drawn = append(drawn, x.Args[1].Cards...)
+		}
+	}
+	if r.schemes >= len(tops) || len(d.Options) == 0 {
+		return nil
+	}
+	want := tops[r.schemes].Args[1].Cards
+	r.schemes++
+	var short []cartographer.CardN // drawn more often than the deck has it: it's the one topdecked
+	inDeck := map[string]int{}
+	for _, x := range r.g.P[d.Player].Z[engine.Deck] {
+		inDeck[norm(r.g.Def(x).Name)]++
+	}
+	for _, cn := range drawn {
+		if cn.Card != nil && cn.N > inDeck[norm(cn.Card.Name)] {
+			short = append(short, cn)
+		}
+	}
+	for _, cs := range [][]cartographer.CardN{want, short, drawn} {
+		for _, cn := range cs {
+			for i, o := range d.Options {
+				if cn.Card != nil && norm(cn.Card.Name) == norm(r.t.Defs[o.Card].Name) {
+					return []int{i}
+				}
+			}
+		}
+	}
+	return []int{0}
 }
 
 // pilePick is the option on the pile a line names: "to the Fortress pile".
@@ -818,8 +886,16 @@ func norm(s string) string {
 
 // answers says whether a real event is what a decision's answer writes.
 func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
-	if x.Player != r.names[r.whose(d)] || x.Level != d.Level {
+	if x.Player != r.names[r.whose(d)] {
 		return false
+	}
+	if x.Level != d.Level {
+		// the log sometimes writes a card's choice and what follows at the top level:
+		// "gets +2 Actions.", then "discards 4 other cards and a Copper." (Hunting Lodge)
+		if !(x.Level == 0 && d.Level == 1 && r.pos > 0 && (r.flat || r.real[r.pos-1].Level == 1)) {
+			return false
+		}
+		r.flat = true
 	}
 	for _, t := range answers[d.Kind] {
 		if x.Template == t || r.english[x.Template] == r.english[t] {
@@ -850,6 +926,39 @@ func (r *replayer) whose(d *engine.Decision) int {
 		}
 	}
 	return d.Player
+}
+
+// moreTrash: the last real line trashed more cards than the engine has yet,
+// the rest of "trashes a Copper and a Ghost Town." for Remake's second trash.
+func (r *replayer) moreTrash(d *engine.Decision) ([]cartographer.CardN, bool) {
+	l := r.g.Log
+	if r.entry >= len(l.Entries) || r.matched < 0 || r.pos == 0 {
+		return nil, false
+	}
+	e, x := l.Entries[r.entry], r.real[r.matched]
+	if e.Template != "TRASH" || x.Template != "TRASH" || x.Player != r.names[d.Player] || x.Level != d.Level {
+		return nil, false
+	}
+	done := map[string]int{}
+	for _, c := range e.Args[1].([]engine.CardID) {
+		done[norm(r.t.Defs[c].Name)]++
+	}
+	var rest []cartographer.CardN
+	n := 0
+	for _, cn := range x.Args[1].Cards {
+		k := cn.N
+		if cn.Card != nil {
+			m := min(k, done[norm(cn.Card.Name)])
+			done[norm(cn.Card.Name)] -= m
+			k -= m
+		}
+		if k > 0 && n < d.Max {
+			k = min(k, d.Max-n)
+			rest = append(rest, cartographer.CardN{Card: cn.Card, N: k})
+			n += k
+		}
+	}
+	return rest, len(rest) > 0
 }
 
 // moreOfLast: the last real line bought more copies than the engine has yet ("buys and gains 2 Silvers").
@@ -940,6 +1049,9 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 	}
 	if d.Kind == engine.ToPick && len(out) > d.Max { // one of the cards the line names: Hunter's Action of "puts a Copper and a Mystic into their hand"
 		out = out[:d.Max]
+	}
+	if x, ok := r.peek(); ok && d.Kind == engine.ToTrash && x.Template == "TRASH" && len(out) > d.Max && d.Max > 0 {
+		out = out[:d.Max] // two trashes on one line: Remake's "trashes 2 Coppers." when the first gains nothing; moreTrash the rest
 	}
 	if len(out) > d.Max || len(out) < d.Min {
 		r.fail(fmt.Sprintf("the log has %d cards for %s, the engine wants %d to %d", len(out), d.Kind, d.Min, d.Max), "")

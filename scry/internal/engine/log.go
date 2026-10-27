@@ -36,10 +36,14 @@ type Log struct {
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
 	pending *Entry  // a lazy line
-	byNorm  map[string]*cartographer.Card
+	// handTrash: the TRASH line being added is of cards from the hand; lastHandTrash
+	// is the entry such a line went to, or -1
+	handTrash     bool
+	lastHandTrash int
+	byNorm        map[string]*cartographer.Card
 }
 
-func NewLog(t *Table) *Log { return &Log{T: t} }
+func NewLog(t *Table) *Log { return &Log{T: t, lastHandTrash: -1} }
 
 // addAside adds a line that doesn't bring out the pending one: the other
 // player's cards leaving play in Clean-up don't begin it.
@@ -69,8 +73,11 @@ func (l *Log) add(e Entry) {
 		}
 		l.flush()
 	}
-	// drawing again with nothing between: one line, Blacksmith's two choices under Elder
-	if n := len(l.Entries); n > 0 && e.Template == "DRAW" && len(e.Args) == 2 {
+	// drawing or trashing from the hand again with nothing between: one line, Blacksmith's
+	// two choices under Elder, Remake's "trashes 2 Coppers." when the first gains nothing
+	// (but Monastery's from the hand, then from play, are two)
+	merge := e.Template == "DRAW" || e.Template == "TRASH" && l.handTrash && l.lastHandTrash == len(l.Entries)-1
+	if n := len(l.Entries); n > 0 && merge && len(e.Args) == 2 {
 		last := &l.Entries[n-1]
 		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == 2 && last.Args[0] == e.Args[0] {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
@@ -88,6 +95,9 @@ func (l *Log) add(e Entry) {
 		}
 	}
 	l.Entries = append(l.Entries, e)
+	if e.Template == "TRASH" && l.handTrash {
+		l.lastHandTrash = len(l.Entries) - 1
+	}
 	l.changed(len(l.Entries) - 1)
 }
 

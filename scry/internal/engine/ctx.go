@@ -623,6 +623,10 @@ func (c *Ctx) moveAll(p int, xs []Inst, to Loc, template string, args ...any) []
 // Trash trashes a player's cards and runs what trashing them causes.
 func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 	t, a := c.with("TRASH")
+	if l := c.G.Log; l != nil {
+		l.handTrash = len(xs) > 0 && !slices.ContainsFunc(xs, func(x Inst) bool { return c.G.loc[x] != Loc{Hand, int16(p)} })
+		defer func() { l.handTrash = false }()
+	}
 	moved := c.moveAll(p, xs, Loc{Trash, 0}, t, a...)
 	from := c.moved
 	if p == c.G.Cur {

@@ -199,8 +199,12 @@ func init() {
 	}})
 
 	// Durations
-	amulet := func(c *ctx) {
-		switch c.Mode1(c.P, mode("+$1", "GETS_COIN"), mode("trash a card from your hand", "TRASH"), mode("gain a Silver", "GAIN")) {
+	amulet := func(c *ctx, away bool) {
+		coin, trash, gain := "GETS_COIN", "TRASH", "GAIN"
+		if away { // next turn: "trashes an Estate. (Amulet)"
+			coin, trash, gain = "GETS_COIN_FROM", "TRASH_WITH", "GAIN_WITH"
+		}
+		switch c.Mode1(c.P, mode("+$1", coin), mode("trash a card from your hand", trash), mode("gain a Silver", gain)) {
 		case 0:
 			c.PlusCoins(1)
 		case 1:
@@ -210,8 +214,8 @@ func init() {
 		}
 	}
 	reg("Amulet", rules{
-		Play: func(c *ctx) { amulet(c); c.Stay() },
-		Next: func(c *ctx, _ *engine.Dur) bool { amulet(c); return true },
+		Play: func(c *ctx) { amulet(c, false); c.Stay() },
+		Next: func(c *ctx, _ *engine.Dur) bool { amulet(c, true); return true },
 	})
 	dungeon := func(c *ctx) {
 		c.Draw(2)
