@@ -268,12 +268,7 @@ func (g *Game) allowed(p int, c CardID) bool {
 	if r := d.Rules; r != nil && r.CanBuy != nil && !r.CanBuy(g, p) {
 		return false
 	}
-	for _, h := range g.Held {
-		if h.P == p && g.T.Defs[h.C].Name == "Deluded" && d.Action() && !d.Landscape() {
-			return false
-		}
-	}
-	return true
+	return !(g.T2.Deluded && p == g.Cur && d.Action() && !d.Landscape())
 }
 
 // HasProject: player p has a cube on Project c.
@@ -603,12 +598,8 @@ func (g *Game) coinsOf(p int, x Inst) int {
 	if g.cards[x] == g.copper {
 		n += g.T2.CopperBonus
 	}
-	if n > 1 && (g.cards[x] == g.silver || g.cards[x] == g.gold) {
-		for _, h := range g.Held {
-			if h.P == p && g.T.Defs[h.C].Name == "Envious" {
-				return 1
-			}
-		}
+	if n > 1 && g.T2.Envious && p == g.Cur && (g.cards[x] == g.silver || g.cards[x] == g.gold) {
+		return 1
 	}
 	return n
 }

@@ -149,6 +149,46 @@ func (g *Game) AddLoot() {
 	}
 }
 
+// AddBoons shuffles the Boons into their deck for the Fate cards, with the
+// Will-o'-Wisps The Swamp's Gift gains.
+func (g *Game) AddBoons() {
+	if len(g.Boons) > 0 {
+		return
+	}
+	g.Boons = g.landOf(TBoon)
+	g.Need("Will-o'-Wisp", 12)
+}
+
+// AddHexes shuffles the Hexes into their deck for the Doom cards.
+func (g *Game) AddHexes() {
+	if len(g.Hexes) == 0 {
+		g.Hexes = g.landOf(THex)
+	}
+}
+
+// landOf is every card of a type, shuffled: the Boons, the Hexes.
+func (g *Game) landOf(t Types) []CardID {
+	var out []CardID
+	for _, d := range g.T.Defs {
+		if d.Is(t) {
+			out = append(out, d.ID)
+		}
+	}
+	g.rng.Shuffle(len(out), func(i, j int) { out[i], out[j] = out[j], out[i] })
+	return out
+}
+
+// Reshuffle turns a discarded Boons or Hexes pile into its deck, shuffled.
+func (g *Game) Reshuffle(deck, out *[]CardID) {
+	*deck = append(*out, *deck...)
+	*out = nil
+	d := *deck
+	g.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
+}
+
+// AddToTrash puts a new card into the trash at setup: Necromancer's Zombies.
+func (g *Game) AddToTrash(name string) { g.newCard(g.T.MustCard(name), Loc{Trash, 0}) }
+
 // Need adds a non-Supply pile a card uses, e.g. Spoils for Bandit Camp.
 func (g *Game) Need(name string, n int) {
 	g.AddPile(g.T.MustCard(name), n, false)

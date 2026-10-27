@@ -7,6 +7,7 @@ package replay
 import (
 	"fmt"
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -94,6 +95,11 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	r.g = g
 	r.arrangePiles()
 	r.placeTraits()
+	for i := len(r.real) - 1; i >= 0; i-- { // "Druid sets The Field's Gift aside.": Druid's Start takes them off the top first to last
+		if x := r.real[i]; x.Template == "DRUID_SELECTS_BOONS" {
+			r.raiseBoon(x)
+		}
+	}
 	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
 		if x.Template == "OBELISK_CHOOSES_PILE" {
 			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
@@ -233,10 +239,38 @@ func (r *replayer) placeTraits() {
 	}
 }
 
+// raiseBoon puts the Boon or Hex a real line takes on top of its deck.
+func (r *replayer) raiseBoon(x cartographer.Event) {
+	cs := x.Args[1].Cards
+	if len(cs) != 1 || cs[0].Card == nil {
+		return
+	}
+	d, ok := r.t.Card(cs[0].Card.Name)
+	if !ok || !d.Is(engine.TBoon|engine.THex) {
+		return
+	}
+	deck, out := &r.g.Boons, &r.g.BoonsOut
+	if d.Is(engine.THex) {
+		deck, out = &r.g.Hexes, &r.g.HexesOut
+	}
+	for _, s := range []*[]engine.CardID{deck, out} {
+		if i := slices.Index(*s, d.ID); i >= 0 {
+			*s = slices.Delete(*s, i, i+1)
+			*deck = append(*deck, d.ID)
+			return
+		}
+	}
+}
+
 // arrangePiles puts the cards the next real line gains on top of their piles,
-// for piles of different cards (Knights, Ruins) whose order the log shows only as they go.
+// for piles of different cards (Knights, Ruins) whose order the log shows only as they go,
+// and the Boon or Hex it takes on top of its deck.
 func (r *replayer) arrangePiles() {
 	x, ok := r.peek()
+	if ok && x.Template == "TAKE" {
+		r.raiseBoon(x)
+		return
+	}
 	if !ok || x.Template != "BUY_AND_GAIN" && x.Template != "GAIN" && x.Template != "GAIN_WITH" && x.Template != "GAIN_TO_HAND" && x.Template != "GAIN_ON_DRAWPILE" && x.Template != "REVEAL" {
 		return
 	}
@@ -326,9 +360,9 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 }
 
 func sameCards(have []string, want []cartographer.CardN) string {
-	n := map[string]int{}
+	n := map[string]int{} // by norm: the log's "Lost In The Woods" is "Lost in the Woods"
 	for _, c := range have {
-		n[c]++
+		n[norm(c)]++
 	}
 	unknown := 0
 	for _, cn := range want {
@@ -336,10 +370,10 @@ func sameCards(have []string, want []cartographer.CardN) string {
 			unknown += cn.N
 			continue
 		}
-		if n[cn.Card.Name] < cn.N {
+		if n[norm(cn.Card.Name)] < cn.N {
 			return "different cards"
 		}
-		n[cn.Card.Name] -= cn.N
+		n[norm(cn.Card.Name)] -= cn.N
 	}
 	left := 0
 	for _, k := range n {
@@ -376,9 +410,9 @@ var answers = map[engine.Kind][]string{
 	engine.PlayAction:    {"PLAY"},
 	engine.PlayTreasures: {"PLAY_TREASURES_FOR", "PLAY"},
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
-	engine.ToGain:        {"GAIN"},
-	engine.ToTrash:       {"TRASH"},
-	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED"}, // Hostelry: "discards and reveals 2 Coppers."
+	engine.ToGain:        {"GAIN", "GAIN_WITH"},                           // "(The Earth's Gift)" at the start of a turn
+	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                         // "(The Flame's Gift)" at the start of a turn
+	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"}, // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
 	engine.ToTopdeck:     {"TOPDECK"},
 	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"}, // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
@@ -388,7 +422,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToPass:        {"PASS"},
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
-	engine.ToPick:        {"REVEAL", "PUT_IN_HAND", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF"},
+	engine.ToPick:        {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES"}, // Druid's and Fool's Boons
 }
 
 // Decide answers with what the next real line shows.
@@ -443,7 +477,26 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 		r.fail(fmt.Sprintf("the engine asks %s to %s, the log doesn't", r.names[d.Player], d.Kind), "")
 	}
+	if d.Min == 0 && r.offersNone(d, x.Args[1].Cards) {
+		return nil
+	}
 	return r.pick(d, x.Args[1].Cards)
+}
+
+// offersNone: the line names cards, none of which the decision offers, so it is a
+// later decision's: Monastery's Coppers in play, after nothing from hand.
+func (r *replayer) offersNone(d *engine.Decision, cards []cartographer.CardN) bool {
+	for _, cn := range cards {
+		if cn.Card == nil {
+			return false
+		}
+		for _, o := range d.Options {
+			if r.t.Defs[o.Card].Name == cn.Card.Name {
+				return false
+			}
+		}
+	}
+	return len(cards) > 0
 }
 
 // chooseModes picks the modes whose first lines are the next real lines, in order.

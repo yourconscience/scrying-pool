@@ -176,6 +176,9 @@ type turnState struct {
 	NoActions bool // Snowy Village: further +Actions are ignored
 	Trashed   int  // cards the player whose turn it is trashed (Goatherd)
 	KeepPlay  bool // Journey: the player's cards in play aren't discarded in Clean-up
+
+	Envious bool // returned at the start of the Buy phase: Silver and Gold make $1
+	Deluded bool // returned at the start of the Buy phase: no buying Actions
 }
 
 type Phase uint8
@@ -382,6 +385,12 @@ func (g *Game) Rand(n int) int { return g.rng.IntN(n) }
 // setupCard runs a kingdom card's (and its pile members') or a landscape's Setup.
 func (g *Game) setupCard(c CardID) {
 	d := g.T.Defs[c]
+	if d.Is(TFate) { // before its Setup: Druid sets Boons aside
+		g.AddBoons()
+	}
+	if d.Is(TDoom) {
+		g.AddHexes()
+	}
 	if d.Rules != nil && d.Rules.Setup != nil {
 		d.Rules.Setup(g)
 	}

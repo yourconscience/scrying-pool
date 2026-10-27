@@ -148,7 +148,7 @@ func (g *Game) fire(ev *Ev) {
 			r.Hear(cx, ev)
 		}
 	}
-	for _, h := range g.Held {
+	for _, h := range slices.Clone(g.Held) { // a State may return itself
 		if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
 			cx := g.ctx(h.P, -1, ev.Level)
 			cx.Src = h.C
