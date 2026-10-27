@@ -41,6 +41,18 @@ type Log struct {
 
 func NewLog(t *Table) *Log { return &Log{T: t} }
 
+// addAside adds a line that doesn't bring out the pending one: the other
+// player's cards leaving play in Clean-up don't begin it.
+func (l *Log) addAside(e Entry) {
+	if l == nil {
+		return
+	}
+	p := l.pending
+	l.pending = nil
+	l.add(e)
+	l.pending = p
+}
+
 func (l *Log) add(e Entry) {
 	if l == nil {
 		return
@@ -56,6 +68,15 @@ func (l *Log) add(e Entry) {
 			return
 		}
 		l.flush()
+	}
+	// drawing again with nothing between: one line, Blacksmith's two choices under Elder
+	if n := len(l.Entries); n > 0 && e.Template == "DRAW" && len(e.Args) == 2 {
+		last := &l.Entries[n-1]
+		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == 2 && last.Args[0] == e.Args[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			return
+		}
 	}
 	// buying the same card again: "buys and gains 2 Silvers"
 	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" {

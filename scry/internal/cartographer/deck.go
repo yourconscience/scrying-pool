@@ -79,7 +79,7 @@ func (e Event) Changes() []Change {
 	switch {
 	case gains[e.Template]:
 		return []Change{{e.Player, cards, 1}}
-	case losses[e.Template] && !(strings.HasPrefix(e.Template, "TRASH") && trashesSupply(e)):
+	case losses[e.Template] && !(strings.HasPrefix(e.Template, "TRASH") && (trashesSupply(e) || e.Possessed)):
 		return []Change{{e.Player, cards, -1}}
 	case toPile[e.Template] && toSupplyPile(e.Args[2].Text):
 		return []Change{{e.Player, cards, -1}}

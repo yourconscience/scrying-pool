@@ -344,9 +344,9 @@ func init() {
 			c.PlusActions(1)
 			c.PlusBuys(1)
 		},
-		// +1 Card per $1 at the end of this turn: dominion.games draws them with
-		// the next hand, "draws 7 cards." in Clean-up
-		Overpay: func(c *ctx, n int) { c.T2().HandSize += n },
+		// +1 Card per $1 at the end of this turn: dominion.games draws them after
+		// the next hand, "draws 7 cards." in Clean-up unless a shuffle comes between
+		Overpay: func(c *ctx, n int) { c.T2().LateDraw += n },
 	})
 	reg("Footpad", rules{
 		Setup: func(g *engine.Game) { g.Global = append(g.Global, g.T.MustCard("Footpad")) },

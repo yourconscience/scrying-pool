@@ -139,7 +139,7 @@ func (b *Money) Decide(v *engine.View, d *engine.Decision) []int {
 		for i := range all {
 			all[i] = i
 		}
-		return all
+		return all[:d.Max] // a limit on cards played from hand caps it
 	case engine.Buy:
 		return b.buy(v, d)
 	case engine.ToGain:

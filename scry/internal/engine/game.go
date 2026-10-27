@@ -121,7 +121,13 @@ type Game struct {
 	watchN  int     // watches added so far
 	hears   EvMask  // the events anything in the game responds to
 	extra   []CardID
-	ended   bool // the game is over
+	possess CardID // the Possession that gives the other player a Possession turn after this one
+	// Possessed: this is a Possession turn; the other player decides for the
+	// player taking it and gains what they would, and their trashed cards wait
+	// set aside in possTrash until it ends.
+	Possessed bool
+	possTrash []Inst
+	ended     bool // the game is over
 
 	fleet     []int // fleetLeft
 	fleetSet  bool
@@ -145,8 +151,9 @@ type Game struct {
 	Mouse         CardID // the card Way of the Mouse uses
 	Obelisk       int    // the pile Obelisk chose, -1
 	Riverboat     CardID
-	Approach      bool // Approaching Army's Attack pile
-	TradeRoute    int  // coin tokens on the Trade Route mat
+	Approach      bool     // Approaching Army's Attack pile
+	BlackMarket   []CardID // the Black Market deck, its top last; each card is a pile of one outside the Supply
+	TradeRoute    int      // coin tokens on the Trade Route mat
 	prevGained    [2][]CardID
 	prevTrashed   [2]int
 
@@ -168,6 +175,7 @@ type turnState struct {
 	Used      map[CardID]int
 	ActionsIn int // Actions played this turn
 	HandSize  int // cards drawn for the next hand in Clean-up
+	LateDraw  int // cards drawn after it: Farrier's
 
 	CopperBonus int // Coppersmith: Copper makes $ more
 
@@ -365,12 +373,26 @@ func (g *Game) addKingdomPile(k CardID, supply bool) int {
 	return g.AddPile(k, n, supply)
 }
 
+// gainer is who gains what player p would: the possessor in a Possession turn.
+func (g *Game) gainer(p int) int {
+	if g.Possessed && p == g.Cur {
+		return 1 - p
+	}
+	return p
+}
+
+// CameTrue: the Prophecy is this one and its last Sun is gone.
+func (g *Game) CameTrue(name string) bool {
+	return g.Prophecy != 0 && g.Sun == 0 && g.T.Defs[g.Prophecy].Name == name
+}
+
 // AddKingdom adds a kingdom pile a landscape's Setup chose, and runs its own
 // Setup: Approaching Army's Attack.
 func (g *Game) AddKingdom(k CardID) {
 	g.addKingdomPile(k, true)
 	g.Kingdom = append(g.Kingdom, k)
 	g.setupCard(k)
+	g.listening() // mid-game too: Divine Wind's new piles
 }
 
 // AddBane adds a kingdom pile a card's Setup chose, and runs its own Setup:
@@ -380,8 +402,9 @@ func (g *Game) AddBane(k CardID, supply bool) {
 	g.setupCard(k)
 }
 
-// Unused lists the kingdom piles with rules that aren't in the game, by name,
-// for a Setup to choose from with Rand.
+// Unused lists the kingdom piles with rules that aren't in the game, nor any
+// of their cards (Black Market's Sibyl keeps Augurs out), by name, for a Setup
+// to choose from with Rand.
 func (g *Game) Unused(ok func(*Def) bool) []CardID {
 	pool := g.pool
 	if len(pool) == 0 {
@@ -389,7 +412,7 @@ func (g *Game) Unused(ok func(*Def) bool) []CardID {
 	}
 	var out []CardID
 	for _, c := range pool {
-		if d := g.T.Defs[c]; !d.Landscape() && g.PileOf(c) < 0 && ok(d) {
+		if d := g.T.Defs[c]; !d.Landscape() && ok(d) && !slices.ContainsFunc(g.T.Members(c), func(m CardID) bool { return g.PileOf(m) >= 0 }) && g.PileOf(c) < 0 {
 			out = append(out, c)
 		}
 	}
@@ -398,6 +421,12 @@ func (g *Game) Unused(ok func(*Def) bool) []CardID {
 
 // Rand is a random number in [0, n) from the game's seed.
 func (g *Game) Rand(n int) int { return g.rng.IntN(n) }
+
+// SetupCard runs a card's Setup mid-game: Black Market's Cutthroat needs Loot.
+func (g *Game) SetupCard(c CardID) {
+	g.setupCard(c)
+	g.listening()
+}
 
 // setupCard runs a kingdom card's (and its pile members') or a landscape's Setup.
 func (g *Game) setupCard(c CardID) {
@@ -540,6 +569,15 @@ func (g *Game) move(x Inst, from Zone, to Loc) bool {
 	*t = append(*t, x)
 	g.loc[x] = to
 	return true
+}
+
+// Swap exchanges two cards' places: a replay mending its guess of a hidden draw.
+func (g *Game) Swap(x, y Inst) {
+	lx, ly := g.loc[x], g.loc[y]
+	sx, sy := g.slice(lx), g.slice(ly)
+	i, j := slices.Index(*sx, x), slices.Index(*sy, y)
+	(*sx)[i], (*sy)[j] = y, x
+	g.loc[x], g.loc[y] = ly, lx
 }
 
 // Move moves a card from wherever it is.
@@ -786,6 +824,24 @@ func (g *Game) Play() Result {
 				g.AfterTurn(g)
 			}
 		}
+		if k := g.possess; k != 0 && !g.over() && !g.capped() { // "Turn 6 - Lord Rattington [Possession]"
+			g.possess = 0
+			g.Cur = 1 - g.Cur
+			g.turn = g.P[g.Cur].Turns
+			g.Possessed = true
+			g.takeTurn(k)
+			g.Possessed = false
+			for _, x := range g.possTrash {
+				if g.loc[x] == (Loc{Aside, int16(g.Cur)}) && !g.over() && !g.capped() { // the log ends with the last turn
+					g.move(x, Aside, Loc{Discard, int16(g.Cur)})
+				}
+			}
+			g.possTrash, g.extra = nil, nil // no second extra turn in a row
+			if g.AfterTurn != nil {
+				g.AfterTurn(g)
+			}
+			g.Cur = 1 - g.Cur
+		}
 		if g.over() {
 			for len(g.fleetLeft()) > 0 { // "Turn 17 - gamrevinu [Fleet]"
 				g.Cur, g.fleet = g.fleet[0], g.fleet[1:]
@@ -908,7 +964,14 @@ func (g *Game) ask(d *Decision) []Option {
 	if d.Max == 0 {
 		return nil
 	}
-	got := g.Agents[d.Player].Decide(&View{g: g, p: d.Player}, d)
+	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level { // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+		l.flush()
+	}
+	who := d.Player
+	if g.Possessed && who == g.Cur { // the possessor decides
+		who = 1 - who
+	}
+	got := g.Agents[who].Decide(&View{g: g, p: d.Player}, d)
 	if len(got) < d.Min || len(got) > d.Max {
 		panic(fmt.Sprintf("engine: %s answered %d options for %s, want %d..%d", g.P[d.Player].Name, len(got), d.Kind, d.Min, d.Max))
 	}

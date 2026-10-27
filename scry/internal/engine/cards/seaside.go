@@ -87,8 +87,8 @@ func init() {
 				}
 			}
 			for _, d := range c.Durs() {
-				if first && d.N == 0 {
-					c.As(e.P).Trash(e.P, one(e.X))
+				if first && d.N == 0 { // "trashes a Silver.", unnamed
+					c.As(e.P).Here().Trash(e.P, one(e.X))
 					return
 				}
 			}
@@ -240,11 +240,11 @@ func init() {
 			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) || !stillGained(c, e) {
 				return false
 			}
-			if !c.Yes(c.P, "play it", "PLAY_WITH") {
+			if !c.Yes(c.P, "play it", "PLAY") { // "plays a Sailor.", unnamed
 				return false
 			}
 			e.Done = true
-			c.PlayWith(e.X)
+			c.PlayNow(e.X)
 			return true
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {

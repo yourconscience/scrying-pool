@@ -6,10 +6,12 @@ import (
 	"github.com/yourconscience/scrying-pool/scry/internal/engine"
 )
 
-// Alchemy: Potions. Possession is not here yet: it needs the possessor to
-// decide for the possessed player and to take what they gain.
+// Alchemy: Potions, and Possession. Possession's turn keeps its coin tokens and
+// Villagers with the player taking it; no saved game has one, so its log
+// lines are a guess: "buys a Gold.", and the possessor "gains a Gold.".
 
 func init() {
+	reg("Possession", rules{Play: func(c *ctx) { c.Possess() }})
 	reg("Alchemist", rules{
 		Play: func(c *ctx) {
 			c.Draw(2)
