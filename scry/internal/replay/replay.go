@@ -5,6 +5,7 @@
 package replay
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"slices"
@@ -60,6 +61,9 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	copy(r.names[:], rg.Players)
 	kingdom, lands, err := kingdomOf(t, score)
+	if errors.Is(err, errNoKingdom) {
+		kingdom, lands, err = inferKingdom(t, rg.Events, score), inferLandscapes(t, rg.Events, score), nil
+	}
 	if err != nil {
 		rep.Stop = err.Error()
 		return rep
@@ -1341,6 +1345,58 @@ func divineWind(t *engine.Table, kingdom, lands []engine.CardID, real []cartogra
 	return first, rest
 }
 
+var errNoKingdom = errors.New("the score file has no kingdom line")
+
+// namesIn lists the names a log and a score screen show: its lines' cards and
+// texts ("uses Way of the Pig."), and the score screen's lines (Tower).
+func namesIn(events []cartographer.Event, score string) []string {
+	var out []string
+	for _, e := range events {
+		for _, a := range e.Args {
+			for _, cn := range a.Cards {
+				if cn.Card != nil {
+					out = append(out, cn.Card.Name)
+				}
+			}
+			if len(a.Cards) == 0 && a.Player == "" && a.Number == nil {
+				out = append(out, strings.TrimSpace(a.Text))
+			}
+		}
+	}
+	for _, l := range strings.Split(score, "\n") {
+		out = append(out, strings.TrimSpace(l))
+	}
+	return out
+}
+
+// inferKingdom guesses a kingdom the score file doesn't give from the piles
+// the log and the score screen name; piles nothing touched stay out.
+func inferKingdom(t *engine.Table, events []cartographer.Event, score string) []engine.CardID {
+	seen := map[engine.CardID]bool{}
+	var out []engine.CardID
+	for _, n := range namesIn(events, score) {
+		if id, ok := t.KingdomPile(n); ok && t.Defs[id].Kind == "kingdom" && !seen[id] {
+			seen[id] = true
+			out = append(out, id)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
+	return out
+}
+
+// inferLandscapes does the same for the landscapes.
+func inferLandscapes(t *engine.Table, events []cartographer.Event, score string) []engine.CardID {
+	seen := map[engine.CardID]bool{}
+	var out []engine.CardID
+	for _, n := range namesIn(events, score) {
+		if id, ok := t.Landscape(n); ok && !seen[id] {
+			seen[id] = true
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
 // kingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
 // and "# landscapes:" lines.
 func kingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
@@ -1372,7 +1428,7 @@ func kingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID,
 		}
 	}
 	if !found {
-		return nil, nil, fmt.Errorf("the score file has no kingdom line")
+		return nil, nil, errNoKingdom
 	}
 	sort.Slice(kingdom, func(i, j int) bool { return kingdom[i] < kingdom[j] })
 	return kingdom, lands, nil
