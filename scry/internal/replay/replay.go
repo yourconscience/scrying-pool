@@ -509,7 +509,7 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		case "Scheme":
 			return r.schemePick(d)
 		}
-		if x, ok := r.peek(); ok && x.Template == "PLAYER_MOVES_TOKEN_TO" && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile."
+		if x, ok := r.peek(); ok && (x.Template == "PLAYER_MOVES_TOKEN_TO" || x.Template == "TAX_ADD_DEBT") && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile.", Tax's "adds 2 Debt to the Silver pile."
 			if i := r.pilePick(d, x); i >= 0 {
 				return []int{i}
 			}
@@ -819,9 +819,14 @@ func (r *replayer) pilePick(d *engine.Decision, x cartographer.Event) int {
 		if !strings.HasSuffix(name, " pile") {
 			continue
 		}
-		id, ok := r.t.KingdomPile(strings.TrimSuffix(strings.TrimPrefix(name, "the "), " pile"))
+		name = strings.TrimSuffix(strings.TrimPrefix(name, "the "), " pile")
+		id, ok := r.t.KingdomPile(name)
 		if !ok {
-			continue
+			d, found := r.t.Card(name) // the Silver pile
+			if !found {
+				continue
+			}
+			id = d.ID
 		}
 		for i, o := range d.Options {
 			if r.g.PileOf(o.Card) == r.g.PileOf(id) {
@@ -1128,9 +1133,10 @@ func (r *replayer) beforeTake(p int) {
 		return
 	}
 	soon, _ := r.demand(p, take.Line, 2)
+	after := r.takesAfterShuffle(p, take.Line)
 	best, spare := -1, -1
 	for i, x := range deck {
-		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name] - later[r.g.Def(x).Name]; n > spare {
+		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name] - later[r.g.Def(x).Name] - after[r.g.Def(x).Name]; n > spare {
 			best, spare = i, n
 		}
 	}
@@ -1354,6 +1360,51 @@ func (r *replayer) laterTakes(p, line int) map[string]int {
 	return later
 }
 
+// takesAfterShuffle counts the cards player p takes by name after their next
+// shuffle and before their next Clean-up draws a new hand: a card drawn into
+// the hand now is still there then, so it can't be one of them (Sentinel's
+// "looks at 5 cards.", "trashes a Copper and an Estate." right after a shuffle).
+func (r *replayer) takesAfterShuffle(p, line int) map[string]int {
+	i, ok := r.line[line]
+	if !ok {
+		return nil
+	}
+	from, end := -1, math.MaxInt
+	for _, x := range r.real[i+1:] {
+		if x.Player != r.names[p] {
+			continue
+		}
+		if x.Template == "DRAW" && x.Level == 0 {
+			end = x.Line
+			break
+		}
+		if from < 0 && x.Template == "SHUFFLES" {
+			from = x.Line
+		}
+	}
+	if from < 0 {
+		return nil
+	}
+	after, looked := map[string]int{}, map[int]bool{}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if t.Line >= end {
+			break
+		}
+		if t.Line <= from {
+			continue
+		}
+		if t.Card != "" {
+			after[t.Card]++
+		} else if k, ok := r.line[t.Line]; ok && r.real[k].Template == "LOOK_AT" && !looked[k] { // what the lines below name
+			looked[k] = true
+			for n, m := range r.namedBelow(k) {
+				after[n] += m
+			}
+		}
+	}
+	return after
+}
+
 // demand counts the cards player p shows from their hand by name in the next
 // hands while cards drawn at a line are still there (windows 1: that hand;
 // 2: that hand and the next), less the named cards already in hand, which
@@ -1440,8 +1491,8 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 	return
 }
 
-var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
-	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true,
+var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "DISCARD_WITH": true, "TRASH": true,
+	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REACTS_PLAYING": true, "REVEAL": true,
 	"TRASH_WITH": true, // "trashes a Copper. (Sailor)" at the start of a turn
 	"SET_ASIDE":  true} // Patient's "sets a Dungeon aside." in Clean-up
 

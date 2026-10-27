@@ -321,6 +321,7 @@ func init() {
 			if e.P != c.P {
 				return
 			}
+			phaseLine(c) // "starts their turn." whether or not a card is discarded
 			if x := pick1(c, c.P, engine.ToDiscard, hand, nil, true); x >= 0 && len(c.Away().Discard(c.P, one(x))) == 1 {
 				boon(c.Away())
 			}

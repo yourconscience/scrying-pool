@@ -500,10 +500,11 @@ func (g *Game) CtxFor(p int, c CardID, level int) *Ctx {
 	return cx
 }
 
-// Raise moves a card of a kind to the top of its pile, for replays of mixed piles.
+// Raise moves a card of a kind to the top of its pile, for replays of piles
+// shuffled at setup; other piles keep their order (Odysseys, Castles).
 func (g *Game) Raise(c CardID) bool {
 	i := g.PileOf(c)
-	if i < 0 {
+	if i < 0 || !g.Piles[i].mixed {
 		return false
 	}
 	s := g.Piles[i].Cards

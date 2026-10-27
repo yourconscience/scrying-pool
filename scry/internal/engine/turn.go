@@ -400,6 +400,7 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	if over > 0 {
 		d.Rules.Overpay(g.ctx(p, x, 1), over)
 	}
+	g.fire(&Ev{Kind: EvBought, P: p, X: x, C: c, Level: 1})
 }
 
 func (g *Game) takeDebt(p, n, level int) {

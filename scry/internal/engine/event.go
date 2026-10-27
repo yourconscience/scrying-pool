@@ -24,6 +24,7 @@ const (
 	EvShuffle                 // P shuffled
 	EvReveal                  // P reveals X, from their hand or deck
 	EvShuffling               // P is about to shuffle their discard pile into their deck
+	EvBought                  // P bought C and gained X, after what the gain caused (Tax's debt)
 	nEvKinds
 )
 

@@ -35,7 +35,11 @@ func startCall(play, called func(c *ctx)) rules {
 		Play:  func(c *ctx) { play(c); reserve(c) },
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && call(c) {
+			if e.P != c.P || c.G.Where(c.Me) != (engine.Loc{Zone: tavern, Owner: int16(c.P)}) {
+				return
+			}
+			phaseLine(c) // "starts their turn." whether or not it's called
+			if call(c) {
 				called(c)
 			}
 		},

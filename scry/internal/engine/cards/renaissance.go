@@ -505,7 +505,11 @@ func init() {
 	reg("Pageant", rules{
 		Hears: engine.On(engine.EvBuyEnd),
 		Hear: func(c *ctx, e *ev) { // "ends their buy phase.", "loses 1 Coin.", "gets +1 Coffers. (Pageant)"
-			if project(c, e.P) && c.Pl(e.P).Coins > 0 && c.Yes(e.P, "pay $1 for +1 Coffers", "LOSES_COIN") {
+			if !project(c, e.P) {
+				return
+			}
+			phaseLine(c) // "ends their buy phase." with $0 too
+			if c.Pl(e.P).Coins > 0 && c.Yes(e.P, "pay $1 for +1 Coffers", "LOSES_COIN") {
 				c.LoseCoins(1)
 				c.Away().PlusCoffers(1)
 			}

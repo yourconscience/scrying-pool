@@ -579,10 +579,10 @@ func init() {
 				c.Log("TAX_ADD_DEBT", engine.Seat(c.P), "2 Debt", engine.PileName(o.Card))
 			}
 		},
-		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "buys and gains a Courtier.", "takes 1 Debt from the Courtier pile."
+		Hears: engine.On(engine.EvBought),
+		Hear: func(c *ctx, e *ev) { // "buys and gains a Courtier.", what the gain causes, "takes 1 Debt from the Courtier pile."
 			i := c.G.PileOf(e.C)
-			if !inBuyPhase(c, e.P) || i < 0 || c.G.Piles[i].Debt == 0 {
+			if i < 0 || c.G.Piles[i].Debt == 0 {
 				return
 			}
 			n := c.G.Piles[i].Debt
