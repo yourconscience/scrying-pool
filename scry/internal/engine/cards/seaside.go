@@ -9,9 +9,9 @@ func init() {
 			c.PlusBuys(1)
 			c.Stay()
 		},
-		Next: func(c *ctx, d *engine.Dur) bool {
-			c.PlusCoins(1)
+		Next: func(c *ctx, d *engine.Dur) bool { // "gets +1 Buy. (Astrolabe)", "gets +$1. (Astrolabe)"
 			c.PlusBuys(1)
+			c.PlusCoins(1)
 			return true
 		},
 	})

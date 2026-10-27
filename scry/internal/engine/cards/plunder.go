@@ -383,10 +383,14 @@ func init() {
 	reg("Buried Treasure", rules{Alone: true,
 		Play: func(c *ctx) { c.Stay() },
 		Next: func(c *ctx, d *engine.Dur) bool { c.PlusBuys(1); c.PlusCoins(3); return true },
-		OnGain: func(c *ctx, e *ev) { // "gains a Buried Treasure.", "plays a Buried Treasure."
+		OnGain: func(c *ctx, e *ev) { // "gains a Buried Treasure.", "plays a Buried Treasure."; "(|)" at the start of a turn
 			if stillGained(c, e) {
 				e.Done = true
-				c.PlayNow(e.X)
+				if c.T2().Phase == engine.StartPhase {
+					c.PlayBlank(e.X)
+				} else {
+					c.PlayNow(e.X)
+				}
 			}
 		},
 	})

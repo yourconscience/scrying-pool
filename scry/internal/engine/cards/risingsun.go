@@ -146,7 +146,8 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, _ *engine.Watch) bool { // at the start of Clean-up, with no gains in the Buy phase
 			if e.P == c.P && len(c.T2().BuyGained) == 0 {
-				c.Away().ChooseGain(c.P, c.CostsUpTo(4), discard)
+				phaseLine(c) // "begins their Cleanup phase.", "gains a Night Watchman."
+				c.Here().ChooseGain(c.P, c.CostsUpTo(4), discard)
 			}
 			return true
 		},
@@ -478,7 +479,7 @@ func init() {
 		}
 	}})
 	reg("Asceticism", rules{Buy: func(c *ctx) { // "loses 1 Coin.", "trashes an Estate."
-		n := c.Amount(c.P, 0, min(c.Pl(c.P).Coins, len(c.Hand(c.P))), "trash a card", "trash cards")
+		n := c.Amount(c.P, 0, min(c.Pl(c.P).Coins, len(c.Hand(c.P))), "LOSES_COIN", "LOSES_COINS")
 		if n > 0 {
 			c.LoseCoins(n)
 			c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, n, n))
