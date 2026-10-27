@@ -231,8 +231,10 @@ func init() {
 
 	// the Hexes
 	reg("Bad Omens", rules{Play: func(c *ctx) { // "moves their deck to the discard.", "looks at 8 cards.", "topdecks 2 Coppers."
-		c.MoveTo(c.P, slices.Clone(c.Zone(c.P, deck)), discard, "")
-		c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
+		if len(c.Zone(c.P, deck)) > 0 { // no line for an empty deck
+			c.MoveTo(c.P, slices.Clone(c.Zone(c.P, deck)), discard, "")
+			c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
+		}
 		c.LookAt(c.P, c.Zone(c.P, discard))
 		var coppers []inst
 		for _, x := range c.Zone(c.P, discard) {

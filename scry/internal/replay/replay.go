@@ -428,7 +428,7 @@ func (r *replayer) handCard(name string) bool {
 func (r *replayer) revealedStopLast() {
 	for i, x := range r.real[:max(0, len(r.real)-1)] {
 		y := r.real[i+1]
-		if x.Template != "REVEAL" || y.Template != "PUT_IN_HAND" || y.Player != x.Player || y.Level != x.Level {
+		if x.Template != "REVEAL" || y.Template != "PUT_IN_HAND" && y.Template != "TRASH" || y.Player != x.Player || y.Level != x.Level { // War trashes the card it stopped at
 			continue
 		}
 		cs := y.Args[1].Cards
@@ -686,7 +686,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
 	engine.ToPick: {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES", // Druid's and Fool's Boons
-		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS", "SHUFFLE_INTO_DECK", "INHERITS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl, Inn, Inheritance
+		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS", "SHUFFLE_INTO_DECK", "INHERITS", "PUT_ON_MAT"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl, Inn, Inheritance, Miser
 }
 
 // villager is the line after "uses 1 Villager.", written before the play it's for.
