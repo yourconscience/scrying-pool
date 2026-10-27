@@ -963,6 +963,9 @@ func (g *Game) ask(d *Decision) []Option {
 	if d.Max == 0 {
 		return nil
 	}
+	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level { // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+		l.flush()
+	}
 	who := d.Player
 	if g.Possessed && who == g.Cur { // the possessor decides
 		who = 1 - who
