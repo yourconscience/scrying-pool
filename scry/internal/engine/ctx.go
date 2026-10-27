@@ -310,6 +310,16 @@ func (c *Ctx) ShuffleLine(p int) {
 	c.G.Log.add(Entry{Level: c.level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
 }
 
+// PlayThere plays a card where it is, as itself, leaving it there: Captain's
+// Supply card, "plays a Swamp Shacks."; named, "plays a Swamp Shacks. (Captain)".
+func (c *Ctx) PlayThere(x Inst, named bool) {
+	how := playHow{inPlace: true, self: x, holders: c.holders}
+	if named {
+		how.by = c.Src
+	}
+	c.G.play(c.P, x, c.level, how)
+}
+
 // PlayHereBlank plays a card where it is, leaving it there, with an empty name
 // on the line: Riverboat's "plays a Scholar. (|)".
 func (c *Ctx) PlayHereBlank(x Inst) {
@@ -480,6 +490,7 @@ func (c *Ctx) Gain(p int, card CardID, to Zone) Inst {
 
 // GainAs gains a card with a template of its own, e.g. GAIN_TO_HAND.
 func (c *Ctx) GainAs(p int, card CardID, to Zone, template string) Inst {
+	p = c.G.gainer(p)
 	i := c.G.PileOf(card)
 	if i < 0 || c.G.Top(i) != card {
 		return -1
@@ -504,6 +515,7 @@ func (c *Ctx) logGain(p int, x Inst, template string) {
 // causes comes between: "gains 4 Golds onto their drawpile". A mixed pile's
 // card (Ruins) gains whatever is on top: "gains a Ruined Library and a Survivors".
 func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst {
+	p = c.G.gainer(p)
 	i := c.G.PileOf(card)
 	var xs []Inst
 	seen := -1
@@ -527,6 +539,7 @@ func (c *Ctx) GainN(p int, card CardID, n int, to Zone, template string) []Inst 
 
 // GainInst gains a particular card, e.g. one from the trash.
 func (c *Ctx) GainInst(p int, x Inst, to Zone, template string) {
+	p = c.G.gainer(p)
 	c.logGain(p, x, template)
 	c.G.gainX(p, x, to, c.level+1, c.Src, false)
 }
@@ -617,6 +630,13 @@ func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 	}
 	for i, x := range moved {
 		c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: c.G.cards[x], From: from[i], By: c.Src, Level: c.level + 1})
+	}
+	if g := c.G; g.Possessed && p == g.Cur { // set aside until the Possession turn ends, unlogged
+		for _, x := range moved {
+			if g.loc[x].Zone == Trash && g.move(x, Trash, Loc{Aside, int16(p)}) {
+				g.possTrash = append(g.possTrash, x)
+			}
+		}
 	}
 	return moved
 }
@@ -906,8 +926,17 @@ func (c *Ctx) PlayAgain(x Inst) { c.G.play(c.P, x, c.level, playHow{times: 1}) }
 // PlayAs plays a card with its own play line, e.g. REACTS_PLAYING ("reacts with a Clerk, playing it.").
 func (c *Ctx) PlayAs(x Inst, template string) { c.G.play(c.P, x, c.level, playHow{line: template}) }
 
-// PlayMerged plays a Treasure on one line with the others this card plays: "plays 2 Coppers. (+$2)" (Storyteller).
-func (c *Ctx) PlayMerged(x Inst) { c.G.play(c.P, x, c.level, playHow{merge: true}) }
+// PlayMerged plays Treasures from the hand on one line, ended before what
+// comes next: "plays 2 Coppers. (+$2)" (Storyteller). One a Pickaxe before it
+// trashed isn't played.
+func (c *Ctx) PlayMerged(xs []Inst) {
+	for _, x := range xs {
+		if c.G.loc[x] == (Loc{Hand, int16(c.P)}) {
+			c.G.play(c.P, x, c.level, playHow{merge: true})
+		}
+	}
+	c.G.Log.flush()
+}
 
 // PlayWith plays a card with this card named on the line ("(Sailor)").
 func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
@@ -957,6 +986,14 @@ func (c *Ctx) Later() *Dur {
 	d := &Dur{P: c.P, X: -1, C: c.Src, Made: c.G.turns}
 	c.G.durs = append(c.G.durs, d)
 	return d
+}
+
+// Possess gives the other player a Possession turn after this one, but not
+// from an extra turn.
+func (c *Ctx) Possess() {
+	if c.G.T2.Extra == 0 {
+		c.G.possess = c.Src
+	}
 }
 
 // ExtraTurn gives the player an extra turn after this one.

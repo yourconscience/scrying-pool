@@ -155,8 +155,11 @@ func (g *Game) actionOptions(p int) []Option {
 		}
 	}
 	for _, x := range g.handPlays(p) {
-		if g.Def(x).Action() || g.inherits(p, x) {
+		switch {
+		case g.Def(x).Action() || g.inherits(p, x):
 			add(x)
+		case g.CameTrue("Enlightenment") && g.isTreasure(x) && !g.forbidden(p, x): // Treasures are also Actions
+			out = append(out, Option{Card: g.cards[x], Inst: x})
 		}
 	}
 	for _, x := range g.P[p].Z[Deck] {
@@ -225,6 +228,10 @@ func (g *Game) buyPhase(p int) {
 	}
 	for {
 		g.repay(p)
+		if pl.Buys == 0 && pl.Actions > 0 && g.CameTrue("Flourishing Trade") { // an Action play used as a Buy, unlogged
+			pl.Actions--
+			pl.Buys++
+		}
 		if pl.Buys == 0 {
 			break
 		}
@@ -337,7 +344,7 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 			panic(MissingRules{d.Name})
 		}
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
-		g.P[p].Debt += cost.Debt
+		g.P[g.gainer(p)].Debt += cost.Debt
 		if d.Is(TProject) {
 			pl.Projects = append(pl.Projects, c)
 		}
@@ -366,11 +373,14 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 		cx := g.ctx(p, -1, 1)
 		cx.Src = c
 		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, d.Rules.PayWith), 1, 1)))
+	case g.gainer(p) != p: // a Possession turn: "buys a Gold.", and the possessor "gains a Gold."
+		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
 	default:
 		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
 	}
 	line := g.Log.last()
-	g.P[p].Debt += cost.Debt
+	gp := g.gainer(p)
+	g.P[gp].Debt += cost.Debt
 	ev := &Ev{Kind: EvBuy, P: p, X: x, C: c, Level: 1}
 	g.fire(ev)
 	for range g.Piles[i].Embargo {
@@ -383,16 +393,17 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 		}
 		x = pile[len(pile)-1]
 	}
-	if over > 0 || instead {
-		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(p), []CardID{c}}})
+	if over > 0 || instead || gp != p {
+		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(gp), []CardID{c}}})
 	}
-	g.gainX(p, x, Discard, 1, 0, true)
+	g.gainX(gp, x, Discard, 1, 0, true)
 	if over > 0 {
 		d.Rules.Overpay(g.ctx(p, x, 1), over)
 	}
 }
 
 func (g *Game) takeDebt(p, n, level int) {
+	p = g.gainer(p)
 	if n > 0 {
 		g.P[p].Debt += n
 		g.Log.add(Entry{Level: level, Template: "TAKES_DEBT", Args: []any{Seat(p), n}})
@@ -545,6 +556,12 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	g.fire(playing)
 	if playing.Skip {
 		// nothing of its own
+	} else if g.T2.Phase == ActionPhase && p == g.Cur && how.times == 0 && how.way == 0 && g.CameTrue("Enlightenment") && g.isTreasure(x) && !d.Action() {
+		// instead of its instructions, two levels down: "Copper plays Enlightenment for +1 Card +1 Action"
+		g.Log.add(Entry{Level: level + 2, Template: "PLAY_ENLIGHTENED", Args: []any{Name(g.cards[x]), Name(g.Prophecy)}})
+		e := g.ctx(p, x, level+3)
+		e.Draw(1)
+		e.PlusActions(1)
 	} else if how.way != 0 {
 		w := g.T.Defs[how.way]
 		c.Src = how.way

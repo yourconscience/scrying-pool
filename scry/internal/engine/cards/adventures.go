@@ -389,9 +389,7 @@ func init() {
 	}})
 	reg("Storyteller", rules{Play: func(c *ctx) { // "plays 2 Coppers. (+$2)", "draws a card.", "loses 2 Coins.", "draws 2 cards."
 		c.PlusActions(1)
-		for _, x := range pick(c, c.P, engine.ToPlay, hand, treasure, 0, 3) {
-			c.PlayMerged(x)
-		}
+		c.PlayMerged(pick(c, c.P, engine.ToPlay, hand, treasure, 0, 3))
 		c.Draw(1)
 		n := c.Pl(c.P).Coins
 		c.LoseCoins(n)

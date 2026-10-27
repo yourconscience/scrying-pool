@@ -42,7 +42,7 @@ Everything the app needs lives in `scry/`; `go install github.com/yourconscience
 - **VP.** `Client.Score()` scores each player from their deck, VP tokens and Misery. That includes the cards whose worth depends on the deck: Gardens, Duke, Fairgrounds, Feodum, Vineyard, the Castles, Pasture, Marchland, Territory, Demesne, Distant Lands on the Tavern mat. It also covers the landmarks that score at the end, and Plateau Shepherds.
 - **Current cards only.** The rules cover the cards on dominion.games today. Cards the second editions removed (Silk Road, Great Hall, Sea Hag, the Prizes...) appear in none of the saved and test games.
 
-Not covered yet: Possession, and cards played from other players' decks.
+Not covered yet: cards played from other players' decks. Possession turns follow a guessed log format, since no saved game has one: the possessed player's trashed cards wait set aside until the next turn begins.
 
 ### What the saved games showed
 

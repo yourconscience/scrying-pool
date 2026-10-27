@@ -257,6 +257,19 @@ func (t *Table) PileCard(c CardID) CardID {
 	return c
 }
 
+// Members is each different card in a kingdom pile, top first: Farm for Harem / Farm.
+func (t *Table) Members(c CardID) []CardID {
+	ms, ok := pileMembers[t.Defs[c].Name]
+	if !ok {
+		return []CardID{c}
+	}
+	var out []CardID
+	for _, m := range ms {
+		out = append(out, t.MustCard(m.name))
+	}
+	return out
+}
+
 // Landscape finds a landscape by name, ignoring case and punctuation.
 func (t *Table) Landscape(name string) (CardID, bool) {
 	norm := normName(name)

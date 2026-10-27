@@ -1,13 +1,16 @@
 package cards
 
 import (
+	"slices"
+
 	"github.com/yourconscience/scrying-pool/scry/internal/engine"
 )
 
 // Rising Sun: Omens' +1 Sun, the Prophecies, Shadow cards and the Events.
 // Simplifications: Shadow cards are played from the deck only in the Action
-// phase, not by Throne Rooms; Divine Wind isn't written; Flourishing Trade's
-// Action plays as Buys aren't offered.
+// phase, not by Throne Rooms; Flourishing Trade's Action plays become Buys
+// only once the Buys run out; Enlightenment's Treasures are Actions only for
+// playing them in the Action phase.
 
 // sun removes a Sun token from the Prophecy: "+1 Sun". The last one makes it
 // come true, "Great Leader comes true.", and Kind Emperor acts then too.
@@ -376,6 +379,30 @@ func init() {
 			}
 		},
 	})
+	reg("Flourishing Trade", rules{Reduce: func(g *engine.Game, _ inst, _ engine.CardID) int {
+		if g.CameTrue("Flourishing Trade") {
+			return 1
+		}
+		return 0
+	}})
+	reg("Divine Wind", rules{Play: func(c *ctx) { // the Supply's kingdom piles go, and 10 new ones come, unlogged
+		g := c.G
+		for i := range g.Piles {
+			if p := &g.Piles[i]; p.Supply && slices.Contains(g.Kingdom, p.Card) {
+				p.Supply = false
+			}
+		}
+		var opts []engine.Option
+		for _, k := range g.Unused(func(d *def) bool { return d.Kind == "kingdom" }) {
+			opts = append(opts, engine.Option{Card: k, Inst: -1})
+		}
+		n := min(10, len(opts))
+		g.Kingdom = nil
+		for _, o := range c.Choose(c.P, engine.ToPick, opts, n, n) {
+			g.AddKingdom(o.Card)
+		}
+	}})
+	reg("Enlightenment", rules{}) // the engine plays Treasures as Actions once it came true
 	reg("Kind Emperor", rules{
 		Play:  func(c *ctx) { c.Away().ChooseGain(c.P, action, hand) }, // also when its last Sun goes
 		Hears: engine.On(engine.EvTurnStart),

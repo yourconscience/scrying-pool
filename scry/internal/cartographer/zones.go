@@ -157,7 +157,7 @@ var playsFromElsewhere = names("Band of Misfits", "Captain", "Necromancer", "Ove
 
 // Durations whose staying in play depends on what they did this turn.
 var (
-	staysIfSetAside = names("Archive", "Blockade", "Cargo Ship", "Church", "Contract", "Crypt", "Gear", "Ghost", "Grotto", "Haven", "Research", "Royal Galley")
+	staysIfSetAside = names("Archive", "Blockade", "Cargo Ship", "Church", "Contract", "Crypt", "Gear", "Ghost", "Grotto", "Haven", "Prince", "Research", "Royal Galley")
 	staysIfDiscards = names("Secret Cave", "Tactician")
 	// cards that discard or trash from hand, never themselves: a copy they name is the one in hand,
 	// not one they just discarded (Count discards a Rats, then trashes the hand)
@@ -249,6 +249,7 @@ type zoneReplay struct {
 	gang       bool                // Gang of Pickpockets is in the game: players discard down to 4 at the start of their turns
 	biding     map[string][]string // the hand Biding Time set aside, back in hand unlogged at the start of the next turn ("" for an unnamed card)
 	bidingDue  string              // the player whose turn began: their Biding Time cards come back with its first line, after the last turn's snapshot
+	possTrash  map[string][]string // what a Possession turn trashed, set aside until the next turn begins
 	shadowPlay bool                // the line plays a Shadow card, from the deck if not from hand
 	owned      Decks
 	received   map[string][]pending // Boons and Hexes being resolved: their lines follow at the same level
@@ -719,7 +720,7 @@ func (r *zoneReplay) leavePlay(p, name string) {
 		// before Clean-up Bonfire trashes the Caravan Guard whose turn this is, not the one just played
 		// (a Flagship still waiting stays: Way of the Horse returns the one it played); in it a
 		// Tireless Stowaway played on another's turn is set aside, not the one played on this
-		if ps[i].turn < r.turn && ps[i].stays <= 0 && ps[i].holds == nil && !permanent[ps[i].name] && !(untilTriggered[ps[i].name] && !ps[i].fired) {
+		if ps[i].turn < r.turn && ps[i].stays <= 0 && ps[i].holds == nil && !permanent[ps[i].name] && !(ps[i].name == "Prince" && ps[i].aside) && !(untilTriggered[ps[i].name] && !ps[i].fired) {
 			pick = i
 			break
 		}
@@ -991,7 +992,7 @@ func (x *played) decideStays(r *zoneReplay, p, owner string) bool {
 		x.stays = y.stays
 		return ok
 	}
-	if permanent[x.name] {
+	if permanent[x.name] || x.name == "Prince" && x.aside { // a Prince stays with the card it set aside
 		return true
 	}
 	if x.holds != nil {
@@ -1105,6 +1106,14 @@ func (r *zoneReplay) step(i int, e Event) {
 		if e.Extra != "" {
 			r.evidence["extra turn"]++
 		}
+		for p, cs := range r.possTrash { // back in the discard pile, unlogged
+			for _, c := range cs {
+				if r.takeOne(p, ZoneSetAside, c, c == "") {
+					r.put(p, ZoneDiscard, r.took, 1)
+				}
+			}
+		}
+		r.possTrash = nil
 		r.turn++
 		r.turnOf = e.Player
 		r.bidingDue = e.Player
@@ -1300,6 +1309,22 @@ func (r *zoneReplay) step(i int, e Event) {
 			(!strings.HasSuffix(t, "_WITH") || source(e) == c.Name) && // not a Cage a Secluded Shrine trashes from hand
 			(c.Name != "Search" || r.after(i) < len(r.events) && r.events[r.after(i)].Template == "DURATION_STOPS_WORKING") { // nor a Search a Siren does
 			want = []string{ZonePlay, ZoneHand} // also under "gains an Estate. (Shaman)", not the Search just gained
+		}
+		if e.Possessed {
+			r.move(e, p, cards, want, ZoneSetAside)
+			if r.possTrash == nil {
+				r.possTrash = map[string][]string{}
+			}
+			for _, cn := range cards {
+				for range cn.N {
+					name := ""
+					if cn.Card != nil {
+						name = cn.Card.Name
+					}
+					r.possTrash[p] = append(r.possTrash[p], name)
+				}
+			}
+			break
 		}
 		r.lose(e, p, cards, want)
 		if e.CauseOf == "GAIN_SETTING_ASIDE" && (reacted || sirenAside) { // a Watchtower trashed what a Blockade set aside, not Plan's token a card from hand

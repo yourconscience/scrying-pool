@@ -32,6 +32,9 @@ type Event struct {
 	CauseOf  string // that line's template, e.g. "TRASH" when a trashed Lich discards itself
 	Player   string // Argument0 when it is a player
 	Args     map[int]Arg
+	// Possessed: a line of the player taking a Possession turn, whose trashed
+	// cards come back to their discard pile when it ends
+	Possessed bool `json:",omitempty"`
 }
 
 // Unknown is a line no template matches. A complete parser has none.
@@ -120,7 +123,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 
 	g.Initials = initials
 
-	turn, turnOf, started := 0, "", false
+	turn, turnOf, started, possessed := 0, "", false, false
 	type parent struct{ card, template string }
 	var stack []parent // line at each nesting level, for Cause
 	for _, r := range rows {
@@ -133,7 +136,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 		if r.kind == "T" {
 			if m := reTurn.FindStringSubmatch(text); m != nil {
 				turn, _ = strconv.Atoi(m[1])
-				turnOf, started = rename(m[2]), true
+				turnOf, started, possessed = rename(m[2]), true, m[3] == "Possession"
 				g.Events = append(g.Events, Event{Line: r.n, Turn: turn, TurnOf: turnOf, Player: turnOf, Extra: m[3], Template: "NEW_TURN"})
 				stack = stack[:0]
 				continue
@@ -161,6 +164,7 @@ func (c *Client) Parse(text string, names map[string]string) (*Game, error) {
 			e.Args[n] = a
 		}
 		e.Player = e.Args[0].Player
+		e.Possessed = possessed && e.Player == turnOf
 		// the nearest line above with a card; levels can skip ("plays a Coven. (Royal Galley)" at 0, its effects at 2)
 		for i := min(r.level, len(stack)) - 1; i >= 0; i-- {
 			if stack[i].card != "" {
