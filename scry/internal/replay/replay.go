@@ -110,6 +110,16 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 			r.raiseBoon(x)
 		}
 	}
+	for i, x := range r.real[:max(0, len(r.real)-1)] { // "plays a Ratcatcher using Way of the Mouse.", "plays an Herb Gatherer."
+		if y := r.real[i+1]; x.Template == "PLAY_USING_WAY" && strings.TrimSpace(x.Args[2].Text) == "Way of the Mouse" && y.Template == "PLAY" && y.Level == x.Level+1 {
+			if cs := y.Args[1].Cards; len(cs) == 1 && cs[0].Card != nil {
+				if d, ok := t.Card(cs[0].Card.Name); ok {
+					g.SetMouse(d.ID)
+				}
+			}
+			break
+		}
+	}
 	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
 		if x.Template == "OBELISK_CHOOSES_PILE" {
 			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
@@ -493,7 +503,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"}, // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
 	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                     // City Gate's "topdecks a Copper with City Gate."
 	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"},     // Mastermind: "plays a Smithy with Mastermind."
-	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
+	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},   // Island's "puts a Copper on their Island mat."
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
 	engine.ToExile:       {"EXILE"},
@@ -501,7 +511,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
 	engine.ToPick: {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES", // Druid's and Fool's Boons
-		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS", "SHUFFLE_INTO_DECK"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl, Inn
+		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS", "SHUFFLE_INTO_DECK", "INHERITS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl, Inn, Inheritance
 }
 
 // villager is the line after "uses 1 Villager.", written before the play it's for.

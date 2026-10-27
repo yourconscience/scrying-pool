@@ -78,7 +78,12 @@ func init() {
 		},
 	})
 	reg("Necropolis", rules{Play: func(c *ctx) { c.PlusActions(2) }})
-	reg("Overgrown Estate", rules{VP: worth(0), OnTrash: func(c *ctx, e *ev) { c.Draw(1) }})
+	reg("Overgrown Estate", rules{VP: worth(0), OnTrash: func(c *ctx, e *ev) { // "draws a Copper."; "(Overgrown Estate)" at the start of a turn
+		if c.T2().Phase == engine.StartPhase {
+			c = c.Away()
+		}
+		c.Draw(1)
+	}})
 	reg("Abandoned Mine", rules{Play: func(c *ctx) { c.PlusCoins(1) }})
 	reg("Ruined Library", rules{Play: func(c *ctx) { c.Draw(1) }})
 	reg("Ruined Market", rules{Play: func(c *ctx) { c.PlusBuys(1) }})
