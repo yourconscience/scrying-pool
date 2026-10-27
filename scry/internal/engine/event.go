@@ -22,7 +22,7 @@ const (
 	EvCleanup                 // the start of P's Clean-up
 	EvTurnEnd                 // the end of P's turn
 	EvShuffle                 // P shuffled
-	EvReveal                  // P reveals X
+	EvReveal                  // P reveals X, from their hand or deck
 	EvShuffling               // P is about to shuffle their discard pile into their deck
 	nEvKinds
 )
@@ -101,6 +101,8 @@ func (g *Game) fire(ev *Ev) {
 				h = r.OnTrash
 			case EvDiscard:
 				h = r.OnDiscard
+			case EvReveal:
+				h = r.OnReveal
 			}
 			if h != nil {
 				h(g.ctx(ev.P, ev.X, ev.Level), ev)

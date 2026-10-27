@@ -58,7 +58,7 @@ func exilesFromSupply(e Event) bool {
 
 // trashesSupply reports a trash from the Supply: a Lurker played, not one a
 // Watchtower trashes as it's gained.
-func trashesSupply(e Event) bool { return supplyTrashers[e.Cause] && !gains[e.CauseOf] }
+func trashesSupply(e Event) bool { return supplyTrashers[source(e)] && !gains[e.CauseOf] } // not Sewers trashing from hand
 
 // backFromTrashed reports a line that takes a card just trashed out of the
 // trash; the trash line may name it after another: "trashes a Curse and a Trail".

@@ -120,6 +120,10 @@ type Game struct {
 	extra   []CardID
 	ended   bool // the game is over
 
+	fleet     []int // fleetLeft
+	fleetSet  bool
+	fleetCard CardID
+
 	T2 turnState // this turn's facts
 
 	// shared game state of the expansions
@@ -750,6 +754,15 @@ func (g *Game) Play() Result {
 			}
 		}
 		if g.over() {
+			for len(g.fleetLeft()) > 0 { // "Turn 17 - gamrevinu [Fleet]"
+				g.Cur, g.fleet = g.fleet[0], g.fleet[1:]
+				g.P[g.Cur].Turns++
+				g.turn = g.P[g.Cur].Turns
+				g.takeTurn(g.fleetCard)
+				if g.AfterTurn != nil {
+					g.AfterTurn(g)
+				}
+			}
 			return g.result(false)
 		}
 		if g.capped() {
@@ -782,6 +795,26 @@ func repeat(c CardID, n int) []CardID {
 		out[i] = c
 	}
 	return out
+}
+
+// fleetLeft are the players yet to take their Fleet turn once the game is over,
+// in turn order from the player after the one whose turn ended it.
+func (g *Game) fleetLeft() []int {
+	if !g.fleetSet {
+		g.fleetSet = true
+		for _, c := range g.Land {
+			if g.T.Defs[c].Name != "Fleet" {
+				continue
+			}
+			g.fleetCard = c
+			for _, q := range [2]int{1 - g.Cur, g.Cur} {
+				if g.HasProject(q, c) {
+					g.fleet = append(g.fleet, q)
+				}
+			}
+		}
+	}
+	return g.fleet
 }
 
 // over: the Provinces (or Colonies) or any three Supply piles are empty.

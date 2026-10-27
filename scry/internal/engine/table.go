@@ -140,6 +140,7 @@ type Rules struct {
 	OnBuy     func(c *Ctx, ev *Ev)
 	OnTrash   func(c *Ctx, ev *Ev)
 	OnDiscard func(c *Ctx, ev *Ev) // discarded from play in Clean-up, or discarded other than in Clean-up (ev.From)
+	OnReveal  func(c *Ctx, ev *Ev) // revealed from a hand or deck (Patron)
 
 	// React is a card in hand its owner may reveal (or play) when an event in
 	// Reacts happens and CanReact allows it. It returns true when it did.
@@ -160,6 +161,8 @@ type Rules struct {
 	// cheaper while this one is in play (Highway).
 	SelfCost func(g *Game, p int, cost *Cost)
 	Reduce   func(g *Game, me Inst, c CardID) int
+	// AlsoTreasure is a Project's: the cards it makes Treasures for player p to play (Capitalism).
+	AlsoTreasure func(g *Game, p int, d *Def) bool
 	// CanBuy forbids buying the card (Grand Market with a Copper in play).
 	CanBuy func(g *Game, p int) bool
 
