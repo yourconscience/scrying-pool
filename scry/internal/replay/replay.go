@@ -1033,14 +1033,18 @@ func (r *replayer) schemePick(d *engine.Decision) []int {
 		r.schemeTurn, r.schemes = r.turn, 0
 	}
 	name := r.names[d.Player]
-	var tops []cartographer.Event
+	var tops []cartographer.CardN // one a Scheme: two Schemes' "topdecks 2 cards." is one line
 	var drawn []cartographer.CardN
 	for _, x := range r.real[r.pos:] {
 		if x.Template == "NEW_TURN" {
 			break
 		}
 		if x.Player == name && x.Template == "TOPDECK" {
-			tops = append(tops, x)
+			for _, cn := range x.Args[1].Cards {
+				for range cn.N {
+					tops = append(tops, cartographer.CardN{Card: cn.Card, N: 1})
+				}
+			}
 		}
 		if x.Player == name && x.Template == "DRAW" && x.Level == 0 {
 			drawn = append(drawn, x.Args[1].Cards...)
@@ -1049,7 +1053,7 @@ func (r *replayer) schemePick(d *engine.Decision) []int {
 	if r.schemes >= len(tops) || len(d.Options) == 0 {
 		return nil
 	}
-	want := tops[r.schemes].Args[1].Cards
+	want := tops[r.schemes : r.schemes+1]
 	r.schemes++
 	var short []cartographer.CardN // drawn more often than the deck has it: it's the one topdecked
 	inDeck := map[string]int{}

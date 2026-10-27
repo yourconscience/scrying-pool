@@ -643,7 +643,7 @@ func init() {
 		return len(c.T2().Gained) == 0
 	})
 	landVP("Battlefield", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return c.G.D(e.C).Victory() })
-	landVP("Colonnade", engine.On(engine.EvBought), func(c *ctx, e *ev) bool {
+	landVP("Colonnade", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool {
 		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
 	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return e.P == c.G.Cur && len(c.T2().Gained) == 2 && c.T2().Gained[1] == e.C }) // the second gain, not the first whose own gain came between

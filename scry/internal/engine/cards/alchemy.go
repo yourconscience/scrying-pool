@@ -67,8 +67,10 @@ func init() {
 			}
 		}
 		c.Discard(c.P, rest)
-		if len(found) == 2 { // in either order
-			found = pickOf(c, c.P, engine.ToPlay, found, 2, 2)
+		if len(found) == 2 { // in either order: the one picked first
+			if first := pickOf(c, c.P, engine.ToPlay, found, 1, 1); len(first) == 1 && first[0] == found[1] {
+				found[0], found[1] = found[1], found[0]
+			}
 		}
 		for _, x := range found {
 			if len(c.In(revealed, one(x))) == 1 {
