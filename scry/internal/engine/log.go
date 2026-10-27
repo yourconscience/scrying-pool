@@ -76,10 +76,11 @@ func (l *Log) add(e Entry) {
 	// drawing or trashing from the hand again with nothing between: one line, Blacksmith's
 	// two choices under Elder, Remake's "trashes 2 Coppers." when the first gains nothing
 	// (but Monastery's from the hand, then from play, are two)
-	merge := e.Template == "DRAW" || e.Template == "TRASH" && l.handTrash && l.lastHandTrash == len(l.Entries)-1
-	if n := len(l.Entries); n > 0 && merge && len(e.Args) == 2 {
+	// (but Monastery's from the hand, then from play, are two); two Caravans' "draws a Copper and a Militia. (Caravan)"
+	merge := e.Template == "DRAW" || e.Template == "DRAW_FROM" || e.Template == "TRASH" && l.handTrash && l.lastHandTrash == len(l.Entries)-1
+	if n := len(l.Entries); n > 0 && merge && len(e.Args) >= 2 {
 		last := &l.Entries[n-1]
-		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == 2 && last.Args[0] == e.Args[0] {
+		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == len(e.Args) && last.Args[0] == e.Args[0] && (len(e.Args) == 2 || last.Args[2] == e.Args[2]) {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
 			l.changed(n - 1)
 			return

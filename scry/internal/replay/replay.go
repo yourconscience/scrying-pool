@@ -491,8 +491,8 @@ var answers = map[engine.Kind][]string{
 	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE"},     // "(The Earth's Gift)" at the start of a turn; Blockade's
 	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                         // "(The Flame's Gift)" at the start of a turn
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"}, // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
-	engine.ToTopdeck:     {"TOPDECK"},
-	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"}, // Mastermind: "plays a Smithy with Mastermind."
+	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                     // City Gate's "topdecks a Copper with City Gate."
+	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"},     // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
