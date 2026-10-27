@@ -289,7 +289,10 @@ func (r *replayer) hook(i int) {
 	}
 	r.matched, r.entry = r.pos, i
 	r.pos++
-	if e.Template == "DRAW" || e.Template == "DRAW_FROM" { // Hunting Lodge's "draws 5 cards.", then "plays a Sailor."
+	if e.Template == "PUT_IN_HAND" || e.Template == "PUT_IN_HAND_FROM" {
+		r.hidePut(e, x)
+	}
+	if e.Template == "DRAW" || e.Template == "DRAW_FROM" || e.Template == "PUT_IN_HAND" || e.Template == "PUT_IN_HAND_FROM" { // Hunting Lodge's "draws 5 cards.", then "plays a Sailor."; Gear's "puts 2 cards in hand."
 		r.mendHand(r.matched)
 	}
 	r.arrangePiles()
@@ -381,7 +384,7 @@ func (r *replayer) hintsFor() map[takeID]string {
 			off[c]++
 		}
 		for _, cn := range y.Args[1].Cards {
-			if cn.Card == nil || y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name || !r.handCard(cn.Card.Name) {
+			if cn.Card == nil || r.selfMove(y, cn.Card.Name) || !r.handCard(cn.Card.Name) {
 				continue
 			}
 			n := cn.Card.Name
@@ -418,6 +421,44 @@ func (r *replayer) hintsFor() map[takeID]string {
 		}
 	}
 	return out
+}
+
+// hidePut marks as guesses the cards a line puts into a hand without naming
+// them, as Gear's "puts 2 cards in hand." of cards it set aside unseen.
+func (r *replayer) hidePut(e engine.Entry, x cartographer.Event) {
+	unnamed := 0
+	for _, cn := range x.Args[1].Cards {
+		if cn.Card == nil {
+			unnamed += cn.N
+		}
+	}
+	ids, _ := e.Args[1].([]engine.CardID)
+	p := int(e.Args[0].(engine.Seat))
+	for _, id := range ids {
+		for _, h := range r.g.P[p].Z[engine.Hand] {
+			if unnamed > 0 && !r.hidden[h] && r.g.CardOf(h) == id {
+				r.hide(h)
+				unnamed--
+				break
+			}
+		}
+	}
+}
+
+// selfMove: a line where a card moves itself, not one from the hand: "trashes an
+// Acting Troupe." from play; but a Stowaway that reacts to a Stowaway's gain is in
+// the hand, and so is a Market Square that "reacts with a Market Square.", then
+// "discards a Market Square. (Market Square)".
+func (r *replayer) selfMove(y cartographer.Event, name string) bool {
+	if y.Template == "PLAY" || y.Template == "REACTS_WITH" || y.Template == "REACTS_PLAYING" {
+		return false
+	}
+	if i, ok := r.line[y.Line]; ok && i > 0 {
+		if x := r.real[i-1]; x.Template == "REACTS_WITH" && x.Player == y.Player && x.Level == y.Level && cardName(x.Args[1]) == name {
+			return false
+		}
+	}
+	return y.Cause == name || strings.TrimSpace(y.Args[2].Text) == name
 }
 
 // handCard: a card that can be in a hand, not a Hex the log discards ("discards Haunting.").
@@ -1575,7 +1616,7 @@ func (r *replayer) mendHand(at int) {
 	if r.took[p] < len(r.takes[p]) {
 		stop = r.takes[p][r.took[p]].Line
 	}
-	need, came := map[string]int{}, map[string]int{} // came: gained or put into the hand on the way, so maybe not from the old hand
+	need, came, gone := map[string]int{}, map[string]int{}, map[string]int{} // came: gained or put into the hand on the way, so maybe not from the old hand; gone: out of it
 	for _, y := range r.real[at+1:] {
 		if y.Template == "NEW_TURN" || y.Line >= stop {
 			break
@@ -1604,15 +1645,19 @@ func (r *replayer) mendHand(at int) {
 			if cn.Card == nil {
 				continue
 			}
-			if y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name { // "trashes an Acting Troupe." from play, "trashes a Cabin Boy. (Cabin Boy)"
+			if r.selfMove(y, cn.Card.Name) { // "trashes an Acting Troupe." from play, "trashes a Cabin Boy. (Cabin Boy)"
 				continue
 			}
-			if d, ok := r.t.Card(cn.Card.Name); ok && !d.Is(engine.TShadow) { // a Shadow card may be played from the deck
-				k := max(0, cn.N-off[cn.Card.Name])
-				c := min(k, came[cn.Card.Name])
-				came[cn.Card.Name] -= c
+			if d, ok := r.t.Card(cn.Card.Name); ok && !d.Is(engine.TShadow) && r.handCard(cn.Card.Name) { // a Shadow card may be played from the deck
+				n := cn.Card.Name
+				k := max(0, cn.N-off[n])
+				c := min(k, came[n])
+				came[n] -= c
 				if came[""] == 0 { // after an unnamed card came, nothing more is sure
-					need[cn.Card.Name] += k - c
+					need[n] = max(need[n], gone[n]+k-c)
+				}
+				if y.Template != "REVEAL_HAND" && y.Template != "REACTS_WITH" { // those stay in the hand
+					gone[n] += k - c
 				}
 			}
 		}
