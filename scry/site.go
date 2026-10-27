@@ -19,9 +19,10 @@ import (
 //
 //	out/index.html     the page
 //	out/recent.html    the first player's latest games (Recent games)
+//	out/engine.html    what the rules engine adds (Engine), from data/engine.json when there is one
 //	out/*.css, *.js    their assets
 //	out/bookmark.json  the Recent games bookmark's script, for the page to fill in its own address
-//	out/data/players.json, out/data/<player>.json, out/data/recent.json
+//	out/data/players.json, out/data/<player>.json, out/data/recent.json, out/data/engine.json
 //
 // With data set, the profiles are copied from that folder (a players.json, the
 // files it lists and recent.json) instead of being made from the saved games, so
@@ -40,7 +41,7 @@ func buildSite(out string, players []string, data string) error {
 	if err != nil {
 		return err
 	}
-	for _, f := range []string{"style.css", "insights.css", "insights.js", "recent.css", "recent.js"} {
+	for _, f := range []string{"style.css", "insights.css", "insights.js", "recent.css", "recent.js", "engine.css", "engine.js"} {
 		b, err := webFiles.ReadFile("web/" + f)
 		if err != nil {
 			return err
@@ -53,7 +54,7 @@ func buildSite(out string, players []string, data string) error {
 	if err := os.WriteFile(filepath.Join(out, "bookmark.json"), b, 0o644); err != nil {
 		return err
 	}
-	for name, dst := range map[string]string{"insights.html": filepath.Join(out, "index.html"), "recent.html": filepath.Join(out, "recent.html")} {
+	for name, dst := range map[string]string{"insights.html": filepath.Join(out, "index.html"), "recent.html": filepath.Join(out, "recent.html"), "engine.html": filepath.Join(out, "engine.html")} {
 		page, err := webFiles.ReadFile("web/" + name)
 		if err != nil {
 			return err
@@ -143,6 +144,9 @@ func copyProfiles(src, dir string) (int, error) {
 	files := []string{"players.json", "recent.json"} // the site always has the Recent games page
 	for _, p := range list.Players {
 		files = append(files, filepath.Base(p.File))
+	}
+	if _, err := os.Stat(filepath.Join(src, "engine.json")); err == nil { // the Engine page's, from "scry sim probe"
+		files = append(files, "engine.json")
 	}
 	for _, f := range files {
 		b, err := os.ReadFile(filepath.Join(src, f))
