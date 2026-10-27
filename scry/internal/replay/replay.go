@@ -431,7 +431,7 @@ var answers = map[engine.Kind][]string{
 	engine.PlayAction:    {"PLAY"},
 	engine.PlayTreasures: {"PLAY_TREASURES_FOR", "PLAY"},
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
-	engine.ToGain:        {"GAIN", "GAIN_WITH"},                           // "(The Earth's Gift)" at the start of a turn
+	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE"},     // "(The Earth's Gift)" at the start of a turn; Blockade's
 	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                         // "(The Flame's Gift)" at the start of a turn
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"}, // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
 	engine.ToTopdeck:     {"TOPDECK"},
