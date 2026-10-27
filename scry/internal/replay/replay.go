@@ -87,7 +87,8 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		r.takes[p] = takes[n]
 	}
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
-	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Landscapes: lands, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Colony: colony, Partial: true})
+	kingdom, pool := divineWind(t, kingdom, lands, r.real)
+	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Pool: pool, Landscapes: lands, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Colony: colony, Partial: true})
 	if err != nil {
 		rep.Stop = err.Error()
 		return rep
@@ -158,7 +159,9 @@ type replayer struct {
 	turn    string
 	takes   [2][]cartographer.DeckTake
 	took    [2]int
-	offHand map[int][]string // named cards a line took from outside the hand
+	offHand map[int][]string     // named cards a line took from outside the hand
+	hamlet  int                  // the engine line that played the Hamlet whose first discard was answered
+	hidden  map[engine.Inst]bool // cards the replay chose for draws the log doesn't name, while no line has shown them
 }
 
 // skip lists real lines the engine doesn't write.
@@ -194,6 +197,11 @@ func (r *replayer) hook(i int) {
 		return // a line merged into the last one; its cards are compared when the next line comes
 	}
 	r.checkLast()
+	for x := range r.hidden { // played, trashed, set aside: shown
+		if z := r.g.Where(x).Zone; z != engine.Hand && z != engine.Deck && z != engine.Discard {
+			delete(r.hidden, x)
+		}
+	}
 	e := l.Entries[i]
 	if e.Kind == 0 && e.Template == "" {
 		return // the engine's header line
@@ -431,6 +439,15 @@ var answers = map[engine.Kind][]string{
 		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl
 }
 
+// firstN is the first n options.
+func firstN(n int) []int {
+	out := make([]int, n)
+	for i := range out {
+		out[i] = i
+	}
+	return out
+}
+
 // Decide answers with what the next real line shows.
 func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	if d.Kind == engine.ToOrder {
@@ -446,6 +463,17 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 	}
 	switch d.Kind {
+	case engine.ToPick:
+		switch r.t.Defs[d.Source].Name {
+		case "Black Market":
+			return r.blackMarket(d)
+		case "Divine Wind": // the new piles the score file has
+			return firstN(d.Min)
+		}
+	case engine.ToDiscard:
+		if r.t.Defs[d.Source].Name == "Hamlet" {
+			return r.hamletDiscard(d)
+		}
 	case engine.ToChoose:
 		return r.chooseModes(d)
 	case engine.ToName:
@@ -490,6 +518,79 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
 	}
 	return r.pick(d, x.Args[1].Cards)
+}
+
+// hamletDiscard answers Hamlet's discards, for +1 Action and then for +1 Buy:
+// the line after the log's discard says which it was ("discards an Estate.",
+// "gets +1 Buy.").
+func (r *replayer) hamletDiscard(d *engine.Decision) []int {
+	play := -1
+	for i := len(r.g.Log.Entries) - 1; i >= 0; i-- {
+		if r.g.Log.Entries[i].Level < d.Level {
+			play = i
+			break
+		}
+	}
+	first := play != r.hamlet
+	r.hamlet = play
+	x, ok := r.peek()
+	if !ok || x.Template != "DISCARD" || x.Player != r.names[d.Player] || x.Level != d.Level {
+		return nil
+	}
+	if first && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "GETS_BUY" {
+		return nil
+	}
+	return r.pick(d, x.Args[1].Cards)
+}
+
+// blackMarket picks the top of the Black Market deck: the card the next lines
+// gain and the ones they put back under it ("gains a Bridge.", "puts a Moat
+// and a Spy on the bottom of the Black Market Deck."), then any others.
+func (r *replayer) blackMarket(d *engine.Decision) []int {
+	var names []string
+	gained := false
+	for _, x := range r.real[r.pos:] {
+		if x.Template == "NEW_TURN" || x.Level < d.Level {
+			break
+		}
+		if x.Level != d.Level || x.Player != r.names[d.Player] {
+			continue
+		}
+		if x.Template == "GAIN" && !gained || x.Template == "PUT_ON_BOTTOM_OF" {
+			gained = gained || x.Template == "GAIN"
+			for _, cn := range x.Args[1].Cards {
+				if cn.Card != nil {
+					for range cn.N {
+						names = append(names, cn.Card.Name)
+					}
+				}
+			}
+		}
+		if x.Template == "PUT_ON_BOTTOM_OF" {
+			break
+		}
+	}
+	used := map[int]bool{}
+	var out []int
+	for _, n := range names {
+		for i, o := range d.Options {
+			if !used[i] && norm(r.t.Defs[o.Card].Name) == norm(n) {
+				used[i] = true
+				out = append(out, i)
+				break
+			}
+		}
+	}
+	for i := range d.Options {
+		if len(out) >= d.Min {
+			break
+		}
+		if !used[i] {
+			used[i] = true
+			out = append(out, i)
+		}
+	}
+	return out[:min(len(out), d.Max)]
 }
 
 // offersNone: the line names cards, none of which the decision offers, so it is a
@@ -713,6 +814,13 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 					break
 				}
 			}
+			if !found && d.Kind != engine.ToPick {
+				if i := r.swapIn(d, cn.Card.Name, used); i >= 0 {
+					used[i] = true
+					out = append(out, i)
+					continue
+				}
+			}
 			if !found && d.Kind != engine.ToPick { // a pick takes its cards from a line that names others too: Hunter's
 				r.fail(fmt.Sprintf("the log has %s %s %s, which the engine doesn't offer", r.names[d.Player], d.Kind, cn.Card.Name), "")
 			}
@@ -772,6 +880,7 @@ func (r *replayer) beforeTake(p int) {
 	if take.Card != "" {
 		for i := len(deck) - 1; i >= 0; i-- {
 			if r.g.Def(deck[i]).Name == take.Card {
+				delete(r.hidden, deck[i])
 				r.g.PutOnTop(deck[i])
 				return
 			}
@@ -786,6 +895,10 @@ func (r *replayer) beforeTake(p int) {
 					return
 				}
 			}
+		}
+		if y := r.swapOut(p, take.Card); y >= 0 {
+			r.g.PutOnTop(y)
+			return
 		}
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
 	}
@@ -807,6 +920,7 @@ func (r *replayer) beforeTake(p int) {
 		}
 	}
 	if pick >= 0 {
+		r.hide(deck[pick])
 		r.g.PutOnTop(deck[pick])
 		return
 	}
@@ -818,8 +932,100 @@ func (r *replayer) beforeTake(p int) {
 		}
 	}
 	if best >= 0 {
+		r.hide(deck[best])
 		r.g.PutOnTop(deck[best])
 	}
+}
+
+func (r *replayer) hide(x engine.Inst) {
+	if r.hidden == nil {
+		r.hidden = map[engine.Inst]bool{}
+	}
+	r.hidden[x] = true
+}
+
+// hiddenInHand: a card the replay chose for an unnamed draw, still in the hand.
+func (r *replayer) hiddenInHand(p int, x engine.Inst) bool {
+	return r.hidden[x] && r.g.Where(x) == engine.Loc{Zone: engine.Hand, Owner: int16(p)}
+}
+
+// swapIn mends a guess when the log names a card the hand doesn't have: a card
+// drawn unseen that the hand can best spare trades places with one in the
+// deck. It returns the option now holding the named card, or -1.
+func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) int {
+	p := r.whose(d)
+	x := engine.Inst(-1)
+	for _, y := range r.g.P[p].Z[engine.Deck] { // the bottom-most
+		if r.g.Def(y).Name == name {
+			x = y
+			break
+		}
+	}
+	for _, y := range r.g.P[p].Z[engine.Discard] { // else one discarded unseen: Clean-up's, or "discards a card."
+		if x < 0 && r.hidden[y] && r.g.Def(y).Name == name {
+			x = y
+		}
+	}
+	if x < 0 {
+		return -1
+	}
+	next, _ := r.peek()
+	need, _, _, _ := r.shown(p, next.Line, 1)
+	left := map[string]int{}
+	for _, y := range r.g.P[p].Z[engine.Hand] {
+		left[r.g.Def(y).Name]++
+	}
+	y, spare := engine.Inst(-1), 0
+	for _, h := range r.g.P[p].Z[engine.Hand] {
+		if n := r.g.Def(h).Name; r.hidden[h] && n != name && (y < 0 || left[n]-need[n] > spare) {
+			y, spare = h, left[n]-need[n]
+		}
+	}
+	if y < 0 {
+		return -1
+	}
+	r.g.Swap(x, y)
+	delete(r.hidden, x)
+	for i, o := range d.Options {
+		if o.Inst == y && !used[i] {
+			d.Options[i].Card, d.Options[i].Inst = r.g.CardOf(x), x
+			return i
+		}
+	}
+	if d.Max == len(d.Options) { // any number of them: one more
+		d.Max++
+	}
+	d.Options = append(d.Options, engine.Option{Card: r.g.CardOf(x), Inst: x})
+	return len(d.Options) - 1
+}
+
+// swapOut mends a guess when the log draws a card the deck doesn't have: a
+// card of that name drawn unseen goes back to the deck, trading places with
+// one the log doesn't name later. It returns that card, or -1.
+func (r *replayer) swapOut(p int, name string) engine.Inst {
+	y := engine.Inst(-1)
+	for _, h := range r.g.P[p].Z[engine.Hand] {
+		if r.g.Def(h).Name == name && r.hiddenInHand(p, h) {
+			y = h
+			break
+		}
+	}
+	deck := r.g.P[p].Z[engine.Deck]
+	if y < 0 || len(deck) == 0 {
+		return -1
+	}
+	in, later := map[string]int{}, r.laterTakes(p, r.takes[p][r.took[p]-1].Line)
+	for _, x := range deck {
+		in[r.g.Def(x).Name]++
+	}
+	for _, x := range deck {
+		if n := r.g.Def(x).Name; n != name && in[n] > later[n] {
+			r.g.Swap(x, y)
+			r.hide(x)
+			return y
+		}
+	}
+	return -1
 }
 
 // laterTakes counts the cards the log takes by name from player p's deck after
@@ -934,6 +1140,50 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
 	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true}
+
+// divineWind splits a kingdom of the piles before and after Divine Wind came
+// true: the ones the log names before then, and others to make 10, come first;
+// the rest are the new ones.
+func divineWind(t *engine.Table, kingdom, lands []engine.CardID, real []cartographer.Event) ([]engine.CardID, []engine.CardID) {
+	wind, ok := t.Landscape("Divine Wind")
+	if !ok || !slices.Contains(lands, wind) || len(kingdom) <= 10 {
+		return kingdom, nil
+	}
+	seen := map[engine.CardID]int{} // 1 before, 2 after
+	after := false
+	for _, x := range real {
+		if x.Template == "COMES_TRUE" {
+			after = true
+		}
+		for _, a := range x.Args {
+			for _, cn := range a.Cards {
+				if cn.Card == nil {
+					continue
+				}
+				if id, ok := t.KingdomPile(cn.Card.Name); ok && seen[id] == 0 {
+					seen[id] = 1
+					if after {
+						seen[id] = 2
+					}
+				}
+			}
+		}
+	}
+	var first, rest []engine.CardID
+	for _, want := range []int{1, 0, 2} {
+		for _, k := range kingdom {
+			if seen[k] != want {
+				continue
+			}
+			if len(first) < 10 {
+				first = append(first, k)
+			} else {
+				rest = append(rest, k)
+			}
+		}
+	}
+	return first, rest
+}
 
 // kingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
 // and "# landscapes:" lines.
