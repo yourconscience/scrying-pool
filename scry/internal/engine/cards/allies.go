@@ -526,8 +526,7 @@ func init() {
 			if len(ds) == 0 {
 				ds = append(ds, c.Stay())
 			}
-			ds[0].N++
-			c.Log("GARRISON_ADDS_TOKEN", engine.Seat(w.P), ds[0].N)
+			ds[0].N++ // silently: the logs have no "adds a token to Garrison"
 			return false
 		},
 		Next: func(c *ctx, d *engine.Dur) bool { c.Draw(d.N); return true },

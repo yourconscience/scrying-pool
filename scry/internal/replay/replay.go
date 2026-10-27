@@ -274,6 +274,9 @@ func (r *replayer) hook(i int) {
 	if e.Level == 0 {
 		r.flat = false
 	}
+	if e.Level == 1 && x.Level == 0 && r.pos > 0 && r.real[r.pos-1].Template == "STARTS_TURN" {
+		r.flat = true // some logs write a turn's start at the top level: "starts their turn.", "draws a Copper. (Garrison)"
+	}
 	if why := r.same(e, x, false); why != "" {
 		r.fail(why, r.show(e))
 	}

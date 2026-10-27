@@ -38,13 +38,12 @@ func init() {
 			c.Attack(func(v int) { c.Gain(v, c.Card("Curse"), discard) })
 		},
 	})
-	reg("City", rules{Play: func(c *ctx) {
-		n := 1
-		if c.G.EmptyPiles() >= 1 {
-			n++
-		}
-		c.Draw(n)
+	reg("City", rules{Play: func(c *ctx) { // "draws a Snowy Village.", "gets +2 Actions.", then with an empty pile "draws a Copper."
+		c.Draw(1)
 		c.PlusActions(2)
+		if c.G.EmptyPiles() >= 1 {
+			c.Draw(1)
+		}
 		if c.G.EmptyPiles() >= 2 {
 			c.PlusCoins(1)
 			c.PlusBuys(1)
