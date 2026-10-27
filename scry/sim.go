@@ -23,10 +23,13 @@ import (
 // seat names in simulated logs: distinct initials, so Cartographer tells them apart
 var simNames = [2]string{"Alice", "Bob"}
 
-// simCmd runs "scry sim play" and "scry sim fuzz".
+// simCmd runs "scry sim play" and "scry sim fuzz"; "check" and "probe" have their own.
 func simCmd(args []string) error {
 	if len(args) > 0 && args[0] == "check" {
 		return simCheck(args[1:])
+	}
+	if len(args) > 0 && args[0] == "probe" {
+		return simProbe(args[1:])
 	}
 	if len(args) == 0 || args[0] != "play" && args[0] != "fuzz" {
 		fmt.Fprint(os.Stderr, usageText)
