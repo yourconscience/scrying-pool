@@ -1126,7 +1126,7 @@ func (r *zoneReplay) step(i int, e Event) {
 		return
 	}
 	p := e.Player
-	if e.Template == "PLAY_ENCHANTED" { // "plays a Souk.", "Souk is enchanted by Enchantress": the Souk does nothing
+	if e.Template == "PLAY_ENCHANTED" || e.Template == "PLAY_ENLIGHTENED" { // "plays a Souk.", "Souk is enchanted by Enchantress": the Souk does nothing, nor Enlightenment's Cage
 		if x := r.playAt[e.Level-2]; e.Level >= 2 && x != nil && x.name == strings.TrimSpace(e.Args[0].Text) {
 			x.none = true
 		}
