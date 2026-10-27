@@ -527,8 +527,8 @@ func init() {
 			}
 			p := w.P
 			c.Quietly(func() {
-				all := append(append([]inst{}, c.Zone(p, deck)...), c.Zone(p, discard)...)
-				c.ToHand(p, all, "PUT_IN_HAND")
+				c.ToHand(p, append([]inst{}, c.Zone(p, discard)...), "PUT_IN_HAND") // the discard pile, then the deck on a line of its own
+				c.ToHand(p, append([]inst{}, c.Zone(p, deck)...), "PUT_IN_HAND")
 				c.Trash(p, pick(c, p, engine.ToTrash, hand, nil, 0, len(c.Hand(p))))
 				if len(c.Hand(p)) > 0 {
 					c.ShuffleLine(p)

@@ -1428,6 +1428,11 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 
 // beforeTake puts the card the log takes next from a deck on top of the engine's deck.
 func (r *replayer) beforeTake(p int) {
+	if r.matched >= 0 { // takes of lines already past, which the engine did otherwise: Donate's "puts 4 Coppers and an Estate into their hand."
+		for r.took[p] < len(r.takes[p]) && r.takes[p][r.took[p]].Line < r.real[r.matched].Line {
+			r.took[p]++
+		}
+	}
 	k := r.took[p]
 	could := map[string]bool{}
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 && !r.free(d[len(d)-1]) {
