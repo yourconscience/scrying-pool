@@ -509,7 +509,7 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		case "Scheme":
 			return r.schemePick(d)
 		}
-		if x, ok := r.peek(); ok && (x.Template == "PLAYER_MOVES_TOKEN_TO" || x.Template == "TAX_ADD_DEBT") && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile.", Tax's "adds 2 Debt to the Silver pile."
+		if x, ok := r.peek(); ok && (x.Template == "PLAYER_MOVES_TOKEN_TO" || x.Template == "TAX_ADD_DEBT" || x.Template == "PLAYER_ADDS_FAVOR_TOKEN_TO") && x.Player == r.names[d.Player] { // Plan's "moves Trashing token to the Fortress pile.", Tax's "adds 2 Debt to the Silver pile."
 			if i := r.pilePick(d, x); i >= 0 {
 				return []int{i}
 			}

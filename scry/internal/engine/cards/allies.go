@@ -821,10 +821,10 @@ func init() {
 					opts = append(opts, engine.Option{Card: p.Card, Inst: -1})
 				}
 			}
-			if o := c.ChooseOne(c.P, engine.ToPick, opts, true); o != nil {
-				c.G.P[c.P].Favors--
+			if o := c.ChooseOne(c.P, engine.ToPick, opts, true); o != nil { // "spends 1 Favor." below it
 				c.G.Piles[c.G.PileOf(o.Card)].Favors++
-				c.Log("PLAYER_ADDS_FAVOR_TOKEN_TO", engine.Seat(c.P), engine.PileName(o.Card))
+				c.At(0).Log("PLAYER_ADDS_FAVOR_TOKEN_TO", engine.Seat(c.P), engine.PileName(o.Card))
+				c.At(1).SpendFavors(1)
 			}
 		},
 		Reduce: func(g *engine.Game, _ inst, c engine.CardID) int {

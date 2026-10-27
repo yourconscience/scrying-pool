@@ -227,9 +227,12 @@ func init() {
 	reg("Abundance", rules{Alone: true,
 		Play:  func(c *ctx) { c.Stay() },
 		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "gets +1 Buy. (Abundance)", "gets +$3. (Abundance)"
+		Hear: func(c *ctx, e *ev) { // "gets +1 Buy.", "gets +$3."; "(Abundance)" at the start of a turn
 			if e.P != c.P || !c.G.D(e.C).Action() {
 				return
+			}
+			if c.T2().Phase != engine.StartPhase {
+				c = c.Here()
 			}
 			for _, d := range c.Durs() {
 				d.Done = true

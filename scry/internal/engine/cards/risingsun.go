@@ -342,7 +342,7 @@ func init() {
 			if !cameTrue(c) || !c.G.D(e.C).Treasure() || countPlayed(c, e.C) > 1 {
 				return
 			}
-			a := c.As(e.P).Away()
+			a := c.As(e.P).Here() // "gets +1 Buy.", "gets +$1.", unnamed
 			a.PlusBuys(1)
 			a.PlusCoins(1)
 		},
