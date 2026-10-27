@@ -52,7 +52,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		h := maps.Clone(hints)
 		maps.Copy(h, more)
 		rep2, r2 := check(c, t, logText, score, h)
-		if r2 == nil || r2.matched <= r.matched && !rep2.Done {
+		if r2 == nil || r2.matched < r.matched && !rep2.Done {
 			break
 		}
 		rep, r, hints = rep2, r2, h
