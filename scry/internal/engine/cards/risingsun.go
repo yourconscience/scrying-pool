@@ -256,8 +256,8 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // after the next non-Command Action: "plays a Treasurer. (Daimyo)"
 			d := c.G.Def(e.X)
-			if w.N > 0 || e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) {
-				return false // w.N: the replay's own play is done, not the next one
+			if w.N > 0 || e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) || e.By == c.Src {
+				return false // w.N: the replay's own play is done, not the next one; another Daimyo's replay isn't it either
 			}
 			w.N = 1
 			a := c.At(e.Level)

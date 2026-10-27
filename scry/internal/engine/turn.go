@@ -614,7 +614,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x, holders: how.holders})
 		}
 	}
-	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
+	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], By: how.by, Level: level + 1})
 }
 
 // inherits: x is an Estate that plays the card with p's Estate token on p's turn.
