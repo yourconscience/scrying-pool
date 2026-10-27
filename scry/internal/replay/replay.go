@@ -439,6 +439,9 @@ func (r *replayer) peek() (cartographer.Event, bool) {
 	if x := r.real[r.pos]; x.Template == r.g.Log.Pending() && r.pos+1 < len(r.real) {
 		return r.real[r.pos+1], true // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
 	}
+	if x := r.real[r.pos]; x.Template == "SHUFFLES" && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "SHUFFLE_INTO_DECK" && r.real[r.pos+1].Player == x.Player {
+		return r.real[r.pos+1], true // Inn's "shuffles their deck.", "shuffles an Inn into their deck."
+	}
 	return r.real[r.pos], true
 }
 
@@ -460,7 +463,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
 	engine.ToPick: {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES", // Druid's and Fool's Boons
-		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl
+		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS", "SHUFFLE_INTO_DECK"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl, Inn
 }
 
 // villager is the line after "uses 1 Villager.", written before the play it's for.

@@ -142,9 +142,12 @@ func init() {
 			c.PlusActions(2)
 			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, min(2, len(c.Hand(c.P))), 2))
 		},
-		OnGain: func(c *ctx, e *ev) {
-			xs := pick(c, c.P, engine.ToPick, discard, action, 0, len(c.Zone(c.P, discard)))
-			c.ShuffleInto(c.P, xs)
+		OnGain: func(c *ctx, e *ev) { // "looks at an Estate and an Inn.", "shuffles their deck.", "shuffles an Inn into their deck."
+			c.LookAt(c.P, c.Zone(c.P, discard))
+			if xs := pick(c, c.P, engine.ToPick, discard, action, 0, len(c.Zone(c.P, discard))); len(xs) > 0 {
+				c.ShuffleLine(c.P)
+				c.ShuffleInto(c.P, xs)
+			}
 		},
 	})
 	reg("Jack of All Trades", rules{Play: func(c *ctx) {
