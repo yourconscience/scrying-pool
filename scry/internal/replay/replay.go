@@ -34,19 +34,48 @@ type Report struct {
 // stop aborts a replay from inside the engine.
 type stop struct{ why string }
 
-// Check replays one saved game: its log and score screen.
+// Check replays one saved game: its log and score screen. When it stops on a
+// line of the player whose draws the log doesn't name, it tries again with
+// those draws named for the cards that player's hand turned out to need, and
+// keeps the run that gets furthest.
 func Check(c *cartographer.Client, t *engine.Table, logText, score string) Report {
+	rep, r := check(c, t, logText, score, nil)
+	hints := map[takeID]string{}
+	for range 8 {
+		if r == nil || rep.Done {
+			break
+		}
+		more := r.hintsFor()
+		if len(more) == 0 {
+			break
+		}
+		h := maps.Clone(hints)
+		maps.Copy(h, more)
+		rep2, r2 := check(c, t, logText, score, h)
+		if r2 == nil || r2.matched <= r.matched && !rep2.Done {
+			break
+		}
+		rep, r, hints = rep2, r2, h
+	}
+	return rep
+}
+
+// takeID is a player's k-th take from their deck.
+type takeID struct{ p, k int }
+
+func check(c *cartographer.Client, t *engine.Table, logText, score string, hints map[takeID]string) (Report, *replayer) {
 	var rep Report
 	rg, err := c.Parse(logText, nil)
 	if err != nil {
 		rep.Stop = err.Error()
-		return rep
+		return rep, nil
 	}
 	if len(rg.Players) != 2 {
 		rep.Stop = fmt.Sprintf("%d players", len(rg.Players))
-		return rep
+		return rep, nil
 	}
 	r := &replayer{c: c, t: t, rep: &rep, line: map[int]int{}, english: map[string]string{}}
+	r.hints, r.assigned = hints, map[takeID]string{}
 	for _, tm := range c.Templates {
 		r.english[tm.Name] = tm.English
 	}
@@ -67,7 +96,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	}
 	if err != nil {
 		rep.Stop = err.Error()
-		return rep
+		return rep, r
 	}
 	var start [2][]engine.CardID
 	for _, e := range rg.Events {
@@ -79,7 +108,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 			d, ok := t.Card(cn.Card.Name)
 			if !ok {
 				rep.Stop = "no card " + cn.Card.Name
-				return rep
+				return rep, r
 			}
 			for range cn.N {
 				start[p] = append(start[p], d.ID)
@@ -101,7 +130,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	g, err := engine.New(t, engine.Setup{Kingdom: kingdom, Pool: pool, Landscapes: lands, Names: r.names, Agents: [2]engine.Agent{r, r}, Start: start, Colony: colony, Partial: true})
 	if err != nil {
 		rep.Stop = err.Error()
-		return rep
+		return rep, r
 	}
 	r.g = g
 	r.arrangePiles()
@@ -134,7 +163,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	g.Log.Hook = r.hook
 	g.BeforeTake = r.beforeTake
 	r.run()
-	return rep
+	return rep, r
 }
 
 func (r *replayer) run() {
@@ -185,6 +214,8 @@ type replayer struct {
 	schemeTurn string               // the turn Scheme's picks were counted in
 	schemes    int                  // Scheme picks answered in it
 	flat       bool                 // the log writes the choice the engine nests at the top level
+	hints      map[takeID]string    // names for takes the log doesn't name, from an earlier run
+	assigned   map[takeID]string    // the card each take was
 }
 
 // skip lists real lines the engine doesn't write.
@@ -279,6 +310,103 @@ func (r *replayer) nameRevealedDraws() {
 			}
 		}
 	}
+}
+
+// hintInDeck makes sure the deck has a card named n for a hint: a copy the
+// replay chose for an unnamed draw since the shuffle, now in the discard pile,
+// may as well have stayed in the deck in its place.
+func (r *replayer) hintInDeck(p int, n string) bool {
+	deck := r.g.P[p].Z[engine.Deck]
+	if slices.ContainsFunc(deck, func(x engine.Inst) bool { return r.g.Def(x).Name == n }) {
+		return true
+	}
+	for _, x := range r.g.P[p].Z[engine.Discard] {
+		if r.hidden[x] && r.g.Def(x).Name == n {
+			for _, y := range deck {
+				if r.g.Def(y).Name != n {
+					r.g.Swap(x, y)
+					r.hide(y)
+					delete(r.hidden, x)
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// hintsFor names takes for a run again, after a stop on a line of the player
+// whose draws the log doesn't name: the cards that player shows from the hand
+// it drew at its last Clean-up (and since), which the takes didn't give it, in
+// place of takes whose cards the hand never shows.
+func (r *replayer) hintsFor() map[takeID]string {
+	if r.pos >= len(r.real) || r.pos < 0 {
+		return nil
+	}
+	x := r.real[r.pos]
+	p := r.seat(x.Player)
+	if x.Player == "" || p < 0 || !slices.ContainsFunc(r.takes[p], func(t cartographer.DeckTake) bool { return t.Card == "" }) {
+		return nil
+	}
+	from, to := -1, len(r.real) // the hand's lines: from its Clean-up draw to the next one
+	for i := r.pos - 1; i >= 0; i-- {
+		if y := r.real[i]; y.Player == x.Player && y.Template == "DRAW" && y.Level == 0 {
+			from = i
+			break
+		}
+	}
+	if from < 0 {
+		return nil
+	}
+	for i := r.pos; i < len(r.real); i++ {
+		if y := r.real[i]; y.Player == x.Player && y.Template == "DRAW" && y.Level == 0 {
+			to = i
+			break
+		}
+	}
+	need, gone := map[string]int{}, map[string]int{} // gone: cards the lines took out of the hand so far
+	for _, y := range r.real[from+1 : to] {
+		if y.Player != x.Player || !r.fromHand(y) || y.Template == "REVEAL" {
+			continue
+		}
+		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" // the cards stay in the hand
+		for _, cn := range y.Args[1].Cards {
+			if cn.Card == nil || y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name {
+				continue
+			}
+			n := cn.Card.Name
+			need[n] = max(need[n], gone[n]+cn.N)
+			if !shows {
+				gone[n] += cn.N
+			}
+		}
+	}
+	// the hand's takes: its Clean-up draw's and the turn's draws before the stop
+	var ks []int
+	for k, t := range r.takes[p] {
+		if t.Line >= r.real[from].Line && t.Line <= x.Line && t.Card == "" {
+			ks = append(ks, k)
+		}
+	}
+	have := map[string]int{}
+	for _, k := range ks {
+		have[r.assigned[takeID{p, k}]]++
+	}
+	out := map[takeID]string{}
+	for _, n := range slices.Sorted(maps.Keys(need)) {
+		for miss := need[n] - have[n]; miss > 0; miss-- {
+			for _, k := range ks {
+				m := r.assigned[takeID{p, k}]
+				if _, done := out[takeID{p, k}]; !done && have[m] > need[m] {
+					out[takeID{p, k}] = n
+					have[m]--
+					have[n]++
+					break
+				}
+			}
+		}
+	}
+	return out
 }
 
 // revealedStopLast puts last among a reveal's takes the card it stopped at:
@@ -1195,10 +1323,21 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 
 // beforeTake puts the card the log takes next from a deck on top of the engine's deck.
 func (r *replayer) beforeTake(p int) {
+	k := r.took[p]
+	r.takeNext(p)
+	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 {
+		r.assigned[takeID{p, k}] = r.g.Def(d[len(d)-1]).Name
+	}
+}
+
+func (r *replayer) takeNext(p int) {
 	if r.took[p] >= len(r.takes[p]) {
 		panic(stop{}) // the real log ends before this draw
 	}
 	take := r.takes[p][r.took[p]]
+	if h, ok := r.hints[takeID{p, r.took[p]}]; ok && take.Card == "" && r.hintInDeck(p, h) {
+		take.Card = h // an earlier run found the hand needed it
+	}
 	r.took[p]++
 	deck := r.g.P[p].Z[engine.Deck]
 	if take.Card != "" {
