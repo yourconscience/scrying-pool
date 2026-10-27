@@ -490,6 +490,15 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		if r.t.Defs[d.Source].Name == "Hamlet" {
 			return r.hamletDiscard(d)
 		}
+	case engine.ToReveal:
+		if x, ok := r.peek(); ok && x.Template == "TRASH" && x.Player == r.names[d.Player] && x.Level == d.Level { // Hovel: "trashes a Hovel."
+			cs := x.Args[1].Cards
+			for i, o := range d.Options {
+				if len(cs) == 1 && cs[0].Card != nil && r.t.Defs[o.Card].Name == cs[0].Card.Name {
+					return []int{i}
+				}
+			}
+		}
 	case engine.ToChoose:
 		return r.chooseModes(d)
 	case engine.ToName:
