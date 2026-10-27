@@ -92,6 +92,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		r.takes[p] = takes[n]
 	}
 	r.nameRevealedDraws()
+	r.revealedStopLast()
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
 	kingdom, pool := divineWind(t, kingdom, lands, r.real)
 	if ferry, ok := t.KingdomPile("Ferryman"); ok && pool == nil && slices.Contains(kingdom, ferry) {
@@ -276,6 +277,38 @@ func (r *replayer) nameRevealedDraws() {
 			if r.takes[p][j].Line == x.Line && r.takes[p][j].Card == "" {
 				r.takes[p][j].Card = y.Args[1].Cards[0].Card.Name
 			}
+		}
+	}
+}
+
+// revealedStopLast puts last among a reveal's takes the card it stopped at:
+// Sage's "reveals 5 Coppers, a Silver, and an Estate.", "puts a Silver into
+// their hand." names the cards by kind, but the Silver came last.
+func (r *replayer) revealedStopLast() {
+	for i, x := range r.real[:max(0, len(r.real)-1)] {
+		y := r.real[i+1]
+		if x.Template != "REVEAL" || y.Template != "PUT_IN_HAND" || y.Player != x.Player || y.Level != x.Level {
+			continue
+		}
+		cs := y.Args[1].Cards
+		if len(cs) != 1 || cs[0].N != 1 || cs[0].Card == nil {
+			continue
+		}
+		p := r.seat(x.Player)
+		ts := r.takes[p]
+		last, at := -1, -1
+		for j, t := range ts {
+			if t.Line == x.Line {
+				last = j
+				if t.Card == cs[0].Card.Name {
+					at = j
+				}
+			}
+		}
+		if at >= 0 && at < last {
+			t := ts[at]
+			copy(ts[at:last], ts[at+1:last+1])
+			ts[last] = t
 		}
 	}
 }

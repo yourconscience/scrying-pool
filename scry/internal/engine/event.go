@@ -152,13 +152,17 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}()
-	for _, c := range g.Land {
-		if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
-			cx := g.ctx(ev.P, -1, ev.Level)
-			cx.Src = c
-			r.Hear(cx, ev)
+	land := func(late bool) {
+		for _, c := range g.Land {
+			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
+				cx := g.ctx(ev.P, -1, ev.Level)
+				cx.Src = c
+				r.Hear(cx, ev)
+			}
 		}
 	}
+	land(false)
+	defer land(true)
 	for _, c := range g.Global {
 		if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
 			cx := g.ctx(ev.P, -1, ev.Level)

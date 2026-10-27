@@ -95,6 +95,14 @@ func (l *Log) add(e Entry) {
 			return
 		}
 	}
+	// Boons received one after another: "receives The Sky's Gift and The River's Gift."
+	if n := len(l.Entries); n > 0 && e.Template == "RECEIVES" {
+		if last := &l.Entries[n-1]; last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			return
+		}
+	}
 	l.Entries = append(l.Entries, e)
 	if e.Template == "TRASH" && l.handTrash {
 		l.lastHandTrash = len(l.Entries) - 1

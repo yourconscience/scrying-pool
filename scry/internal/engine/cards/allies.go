@@ -960,6 +960,7 @@ func init() {
 	}))
 	reg("Trappers' Lodge", ally(rules{
 		Hears: engine.On(engine.EvGain),
+		Late:  true,
 		Hear: func(c *ctx, e *ev) { // "spends 1 Favor.", "topdecks a Guildmaster with Trappers' Lodge."
 			if stillGained(c, e) && spend(c, 1, "spend a Favor to put it onto your deck") {
 				e.Done = true
