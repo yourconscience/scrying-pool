@@ -162,6 +162,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	g.Log = engine.NewLog(t)
 	g.Log.Hook = r.hook
 	g.BeforeTake = r.beforeTake
+	g.NextDur = r.nextDur
 	r.run()
 	return rep, r
 }
@@ -784,6 +785,13 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		if x, ok := r.peek(); ok && r.villager(d, x).Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
 			return r.pickWay(d, r.villager(d, x))
 		}
+		if x, ok := r.peek(); ok && x.Player == r.names[d.Player] {
+			if x = r.villager(d, x); x.Template == "PLAY" {
+				if way := r.usesWay(x); way != "" {
+					return r.wayOption(d, cardName(x.Args[1]), way)
+				}
+			}
+		}
 	}
 	x, ok := r.peek()
 	if !ok {
@@ -1103,13 +1111,63 @@ func (r *replayer) chooseName(d *engine.Decision) []int {
 
 // pickWay picks the card and the Way of a "plays X using Way of the Y" line.
 func (r *replayer) pickWay(d *engine.Decision, x cartographer.Event) []int {
-	card, way := "", strings.TrimSpace(x.Args[2].Text)
-	if cs := x.Args[1].Cards; len(cs) == 1 && cs[0].Card != nil {
-		card = cs[0].Card.Name
+	return r.wayOption(d, cardName(x.Args[1]), cardName(x.Args[2]))
+}
+
+// nextDur picks the Duration whose line comes next at the start of a turn:
+// "plays a Militia. (Way of the Turtle)" before "plays a Necropolis. (Way of the Turtle)".
+func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
+	x, ok := r.peek()
+	if !ok || x.Player != r.names[p] {
+		return 0
 	}
-	if cs := x.Args[2].Cards; len(cs) == 1 && cs[0].Card != nil {
-		way = cs[0].Card.Name
+	for i, d := range ds { // the card it set aside and plays
+		for _, a := range d.Aside {
+			if len(x.Args) > 1 && cardName(x.Args[1]) == r.g.Def(a).Name && (x.Cause == r.t.Defs[d.C].Name || len(x.Args) > 2 && cardName(x.Args[2]) == r.t.Defs[d.C].Name) {
+				return i
+			}
+		}
 	}
+	for i, d := range ds { // the card the line names as its cause
+		if n := r.t.Defs[d.C].Name; x.Cause == n || len(x.Args) > 2 && cardName(x.Args[2]) == n {
+			return i
+		}
+	}
+	return 0
+}
+
+// cardName is the one card an argument names, or its text.
+func cardName(a cartographer.Arg) string {
+	if cs := a.Cards; len(cs) == 1 && cs[0].Card != nil {
+		return cs[0].Card.Name
+	}
+	return strings.TrimSpace(a.Text)
+}
+
+// usesWay is the Way a play's own lines use after what the play caused first:
+// "plays a Warehouse.", "gets +1 Buy (from Seaway).", "uses Way of the Pig."
+func (r *replayer) usesWay(x cartographer.Event) string {
+	i, ok := r.line[x.Line]
+	if !ok {
+		return ""
+	}
+	for _, y := range r.real[i+1:] {
+		if y.Level <= x.Level || y.Template == "NEW_TURN" {
+			break
+		}
+		if y.Level == x.Level+1 && y.Player == x.Player {
+			if y.Template == "USES_WAY" {
+				return cardName(y.Args[1])
+			}
+			if strings.HasPrefix(y.Template, "PLAY") {
+				break
+			}
+		}
+	}
+	return ""
+}
+
+func (r *replayer) wayOption(d *engine.Decision, card, way string) []int {
 	for i, o := range d.Options {
 		if o.Mode > 0 && r.t.Defs[o.Card].Name == card && strings.EqualFold(normWay(o.Label), normWay(way)) {
 			return []int{i}

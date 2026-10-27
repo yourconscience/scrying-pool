@@ -106,6 +106,10 @@ type Game struct {
 	// BeforeTake runs before a card is taken from a player's draw pile, so a
 	// replay can put the card its log names on top (PutOnTop).
 	BeforeTake func(p int)
+	// NextDur picks which of a player's Durations resolves next at the start of
+	// their turn, for a replay whose log shows the order; without it they go in
+	// the order they were played.
+	NextDur func(p int, ds []*Dur) int
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst

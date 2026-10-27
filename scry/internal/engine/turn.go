@@ -88,15 +88,23 @@ func (g *Game) takeTurn(extra CardID) {
 // startTurn resolves Durations and everything else that happens at the start of a turn.
 func (g *Game) startTurn(p int) {
 	g.react(p, &Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1}) // a Clerk before the Durations, or after them below
-	for i := 0; i < len(g.durs); i++ {
-		d := g.durs[i]
-		if d.P != p || d.Done || d.Made == g.turns {
-			continue
+	ran := map[*Dur]bool{}
+	for {
+		var ds []*Dur
+		for _, d := range g.durs {
+			if r := g.T.Defs[d.C].Rules; d.P == p && !d.Done && d.Made != g.turns && !ran[d] && r != nil && r.Next != nil {
+				ds = append(ds, d)
+			}
 		}
+		if len(ds) == 0 {
+			break
+		}
+		d := ds[0]
+		if len(ds) > 1 && g.NextDur != nil {
+			d = ds[g.NextDur(p, ds)]
+		}
+		ran[d] = true
 		r := g.T.Defs[d.C].Rules
-		if r == nil || r.Next == nil {
-			continue
-		}
 		g.Log.emit()
 		c := g.ctx(p, d.X, 1)
 		c.Src, c.from = d.C, true
@@ -426,6 +434,28 @@ func (g *Game) nightPhase(p int) {
 	}
 }
 
+// offerWay lets a player use a Way on an Action another card plays: "plays a
+// Bridge Troll. (Way of the Turtle)", then "uses Way of the Turtle." a level down.
+func (g *Game) offerWay(p int, x Inst, level int) CardID {
+	ms := []Mode{{Label: "no"}}
+	var ways []CardID
+	for _, c := range g.Land {
+		if g.T.Defs[c].Is(TWay) {
+			ms = append(ms, Mode{Label: "use " + g.T.Defs[c].Name, Line: "USES_WAY", Card: c})
+			ways = append(ways, c)
+		}
+	}
+	if len(ways) == 0 {
+		return 0
+	}
+	k := g.ctx(p, x, level).Mode1(p, ms...)
+	if k == 0 {
+		return 0
+	}
+	g.Log.add(Entry{Level: level, Template: "USES_WAY", Args: []any{Seat(p), Name(ways[k-1])}})
+	return ways[k-1]
+}
+
 // cleanup discards the hand and the cards in play that don't stay, and draws the next hand.
 func (g *Game) cleanup(p int) {
 	pl := &g.P[p]
@@ -542,7 +572,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		if g.T.Defs[how.way].Rules == nil {
 			panic(MissingRules{g.T.Defs[how.way].Name})
 		}
-		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
+		g.Log.holdWay(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
 	case how.by != 0 || how.blank: // each of Mastermind's three plays too
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
 	case how.line != "":
@@ -572,8 +602,11 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	}
 	playing := &Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1}
 	g.fire(playing)
+	if !playing.Skip && how.way == 0 && d.Action() && (level > 0 || how.times > 0 || how.by != 0 || how.blank) {
+		how.way = g.offerWay(p, x, level+1)
+	}
 	if playing.Skip {
-		// nothing of its own
+		g.Log.releaseWay() // nothing of its own
 	} else if g.T2.Phase == ActionPhase && p == g.Cur && how.times == 0 && how.way == 0 && g.CameTrue("Enlightenment") && g.isTreasure(x) && !d.Action() {
 		// instead of its instructions, two levels down: "Copper plays Enlightenment for +1 Card +1 Action"
 		g.Log.add(Entry{Level: level + 2, Template: "PLAY_ENLIGHTENED", Args: []any{Name(g.cards[x]), Name(g.Prophecy)}})
@@ -581,6 +614,12 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		e.Draw(1)
 		e.PlusActions(1)
 	} else if how.way != 0 {
+		if d.Attack() { // still an Attack played: "plays an Urchin.", "trashes an Urchin.", then "uses Way of the Owl."
+			g.fire(&Ev{Kind: EvAttack, P: p, X: x, C: g.cards[x], Victim: 1 - p, Level: level + 1})
+		}
+		if g.Log.releaseWay() {
+			g.Log.add(Entry{Level: level + 1, Template: "USES_WAY", Args: []any{Seat(p), Name(how.way)}})
+		}
 		w := g.T.Defs[how.way]
 		c.Src = how.way
 		if w.Rules != nil && w.Rules.Play != nil {

@@ -165,6 +165,7 @@ func (c *Ctx) PlusCoins(n int) {
 		return
 	}
 	pl := &c.G.P[c.P]
+	d := *c
 	if n > 0 && pl.MinusCoin != 0 { // "returns -Coin token set by Bridge Troll. (-$1)"
 		c.Log("RETURNS_MINUS_COIN_TOKEN", Seat(c.P), "-Coin token", Name(pl.MinusCoin))
 		pl.MinusCoin = 0
@@ -172,10 +173,13 @@ func (c *Ctx) PlusCoins(n int) {
 		if n == 0 {
 			return
 		}
+		if !c.from {
+			d.level++ // the rest a level down: "gets +$1.", but "gets +$1. (Caravan Guard)" stays
+		}
 	}
 	pl.Coins += n
 	t, a := c.withFrom(plural(n, "GETS_COIN", "GETS_COINS"), []any{Seat(c.P), n})
-	c.Log(t, a...)
+	d.Log(t, a...)
 }
 
 // CoinsFromMerged is CoinsFrom added to the line this card just wrote at this level: two Priests'

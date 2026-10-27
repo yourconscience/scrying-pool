@@ -36,6 +36,8 @@ type Log struct {
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
 	pending *Entry  // a lazy line
+	way     *Entry  // a held "plays a Warehouse using Way of the Pig." (holdWay)
+	wayCut  bool
 	// handTrash: the TRASH line being added is of cards from the hand; lastHandTrash
 	// is the entry such a line went to, or -1
 	handTrash     bool
@@ -60,6 +62,10 @@ func (l *Log) addAside(e Entry) {
 func (l *Log) add(e Entry) {
 	if l == nil {
 		return
+	}
+	if w := l.way; w != nil { // something came before the Way's effect
+		l.way, l.wayCut = nil, true
+		l.add(Entry{Level: w.Level, Template: "PLAY", Args: w.Args[:2]})
 	}
 	if l.pending != nil && e.Kind != 'T' {
 		p := *l.pending
@@ -329,6 +335,30 @@ func normName(s string) string {
 	return b.String()
 }
 
+// holdWay holds an Action's "plays a Warehouse using Way of the Pig." until
+// the Way's effect: a line written before then (Seaway's "gets +1 Buy") makes
+// it "plays a Warehouse.", and the Way's effect starts "uses Way of the Pig."
+func (l *Log) holdWay(e Entry) {
+	if l != nil {
+		l.emit()
+		l.way, l.wayCut = &e, false
+	}
+}
+
+// releaseWay writes the held line as it is, or reports that it was cut short.
+func (l *Log) releaseWay() (cut bool) {
+	if l == nil {
+		return false
+	}
+	if w := l.way; w != nil {
+		l.way = nil
+		l.add(*w)
+		return false
+	}
+	cut, l.wayCut = l.wayCut, false
+	return cut
+}
+
 // lazy holds a line that is written only if something else is logged before
 // the next lazy call: "starts their turn" when a start-of-turn effect happens.
 func (l *Log) lazy(e *Entry) {
@@ -339,7 +369,12 @@ func (l *Log) lazy(e *Entry) {
 
 // Pending is the template of the lazy line not yet written, if any.
 func (l *Log) Pending() string {
-	if l == nil || l.pending == nil {
+	switch {
+	case l == nil:
+		return ""
+	case l.way != nil: // held, it becomes "plays an Urchin." if a line comes first
+		return "PLAY"
+	case l.pending == nil:
 		return ""
 	}
 	return l.pending.Template
