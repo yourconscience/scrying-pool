@@ -18,9 +18,9 @@ func downTo(c *ctx, v, n int) {
 }
 
 // fromDiscard lets a player reveal a card from their discard pile and put it into their hand (Settlers).
-func fromDiscard(c *ctx, name string) {
+func fromDiscard(c *ctx, name string) { // "looks at 3 Coppers and an Estate.", "puts a Copper into their hand."
+	c.LookAt(c.P, c.Zone(c.P, discard))
 	if x := pick1(c, c.P, engine.ToPick, discard, named(name), true); x >= 0 {
-		c.Reveal(c.P, one(x))
 		c.ToHand(c.P, one(x), "PUT_IN_HAND")
 	}
 }
@@ -368,7 +368,7 @@ func init() {
 			c.PlusVP(2)
 		}
 	}})
-	reg("Settlers", rules{Play: func(c *ctx) { // "reveals a Copper.", "puts a Copper into their hand."
+	reg("Settlers", rules{Play: func(c *ctx) {
 		c.Draw(1)
 		c.PlusActions(1)
 		fromDiscard(c, "Copper")
