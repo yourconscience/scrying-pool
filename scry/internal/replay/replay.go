@@ -1118,6 +1118,18 @@ func (r *replayer) pickWay(d *engine.Decision, x cartographer.Event) []int {
 // nextDur picks the Duration whose line comes next at the start of a turn:
 // "plays a Militia. (Way of the Turtle)" before "plays a Necropolis. (Way of the Turtle)".
 func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
+	if l := r.g.Log; r.matched >= 0 && r.entry < len(l.Entries) { // the last line has more cards to come: two Blockades' "puts a Silver and a Walled Village in hand."
+		e, y := l.Entries[r.entry], r.real[r.matched]
+		if len(e.Args) == 3 && y.Player == r.names[p] {
+			cause, ok1 := e.Args[2].(engine.Name)
+			got, ok2 := e.Args[1].([]engine.CardID)
+			for i, d := range ds {
+				if ok1 && ok2 && len(got) < cardCount(y.Args[1]) && d.C == engine.CardID(cause) {
+					return i
+				}
+			}
+		}
+	}
 	x, ok := r.peek()
 	if !ok || x.Player != r.names[p] {
 		return 0
@@ -1135,6 +1147,14 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	return 0
+}
+
+func cardCount(a cartographer.Arg) int {
+	n := 0
+	for _, cn := range a.Cards {
+		n += cn.N
+	}
+	return n
 }
 
 // cardName is the one card an argument names, or its text.

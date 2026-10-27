@@ -47,7 +47,7 @@ func init() {
 			}
 			for _, d := range c.Durs() {
 				if d.N == 0 && len(c.In(aside, d.Aside)) == 1 && c.G.CardOf(d.Aside[0]) == e.C {
-					c.Gain(e.P, c.Card("Curse"), discard)
+					c.Here().Gain(e.P, c.Card("Curse"), discard) // "gains a Curse.", not "with Blockade"
 				}
 			}
 		},
