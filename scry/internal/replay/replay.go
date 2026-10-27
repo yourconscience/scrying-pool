@@ -218,6 +218,7 @@ func (r *replayer) hook(i int) {
 		if x.Turn > 1 || x.Player != r.names[0] {
 			r.rep.Matched++ // the previous turn matched to its end
 		}
+		r.mendHand(r.pos)
 	}
 	r.matched, r.entry = r.pos, i
 	r.pos++
@@ -439,6 +440,14 @@ var answers = map[engine.Kind][]string{
 		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl
 }
 
+// villager is the line after "uses 1 Villager.", written before the play it's for.
+func (r *replayer) villager(d *engine.Decision, x cartographer.Event) cartographer.Event {
+	if d.Kind == engine.PlayAction && x.Template == "USES_VILLAGER" && x.Player == r.names[d.Player] && r.pos+1 < len(r.real) {
+		return r.real[r.pos+1]
+	}
+	return x
+}
+
 // firstN is the first n options.
 func firstN(n int) []int {
 	out := make([]int, n)
@@ -489,14 +498,15 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 		return []int{0}
 	case engine.PlayAction:
-		if x, ok := r.peek(); ok && x.Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
-			return r.pickWay(d, x)
+		if x, ok := r.peek(); ok && r.villager(d, x).Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
+			return r.pickWay(d, r.villager(d, x))
 		}
 	}
 	x, ok := r.peek()
 	if !ok {
 		panic(stop{})
 	}
+	x = r.villager(d, x)
 	if d.Kind == engine.ToPass { // both players pick before either pass is logged
 		for i := r.pos; i < min(len(r.real), r.pos+3); i++ {
 			if y := r.real[i]; y.Template == "PASS" && y.Player == r.names[d.Player] {
@@ -947,6 +957,81 @@ func (r *replayer) hide(x engine.Inst) {
 // hiddenInHand: a card the replay chose for an unnamed draw, still in the hand.
 func (r *replayer) hiddenInHand(p int, x engine.Inst) bool {
 	return r.hidden[x] && r.g.Where(x) == engine.Loc{Zone: engine.Hand, Owner: int16(p)}
+}
+
+// mendHand mends guessed hidden draws as a turn begins: the cards the turn
+// shows from the hand before its first draw or gain into it must be there
+// ("uses 1 Villager.", "plays a Marauder."). A hand card drawn unseen that
+// the turn doesn't show trades places with one in the deck, or with one
+// discarded unseen.
+func (r *replayer) mendHand(at int) {
+	name := r.real[at].Player
+	p := r.seat(name)
+	stop := math.MaxInt // the turn's first take from the deck
+	if r.took[p] < len(r.takes[p]) {
+		stop = r.takes[p][r.took[p]].Line
+	}
+	need := map[string]int{}
+	for _, y := range r.real[at+1:] {
+		if y.Template == "NEW_TURN" || y.Line >= stop {
+			break
+		}
+		if y.Player != name {
+			continue
+		}
+		if strings.HasPrefix(y.Template, "GAIN") || strings.HasPrefix(y.Template, "PUT_IN_HAND") {
+			break
+		}
+		if !fromHand[y.Template] || y.Template == "REVEAL" {
+			continue
+		}
+		off := map[string]int{}
+		for _, c := range r.offHand[y.Line] {
+			off[c]++
+		}
+		for _, cn := range y.Args[1].Cards {
+			if cn.Card == nil {
+				continue
+			}
+			if y.Cause == cn.Card.Name { // "trashes an Acting Troupe." from play
+				continue
+			}
+			if d, ok := r.t.Card(cn.Card.Name); ok && !d.Is(engine.TShadow) { // a Shadow card may be played from the deck
+				need[cn.Card.Name] += max(0, cn.N-off[cn.Card.Name])
+			}
+		}
+	}
+	have := map[string]int{}
+	for _, h := range r.g.P[p].Z[engine.Hand] {
+		have[r.g.Def(h).Name]++
+	}
+	for n, k := range need {
+		for ; have[n] < k; have[n]++ {
+			x := engine.Inst(-1)
+			for _, d := range r.g.P[p].Z[engine.Deck] {
+				if x < 0 && r.g.Def(d).Name == n {
+					x = d
+				}
+			}
+			for _, d := range r.g.P[p].Z[engine.Discard] {
+				if x < 0 && r.hidden[d] && r.g.Def(d).Name == n {
+					x = d
+				}
+			}
+			y := engine.Inst(-1)
+			for _, h := range r.g.P[p].Z[engine.Hand] {
+				if m := r.g.Def(h).Name; y < 0 && r.hidden[h] && have[m] > need[m] {
+					y = h
+				}
+			}
+			if x < 0 || y < 0 {
+				break
+			}
+			r.g.Swap(x, y)
+			delete(r.hidden, x)
+			have[r.g.Def(y).Name]--
+		}
+	}
 }
 
 // swapIn mends a guess when the log names a card the hand doesn't have: a card
