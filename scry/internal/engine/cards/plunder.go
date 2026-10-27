@@ -408,9 +408,17 @@ func init() {
 			if d := c.G.D(e.C); !d.Treasure() || c.CostOf(e.C).Coins < 5 {
 				return
 			}
+			// every waiting Cutthroat goes off for this gain, not for the Loot another one gains
+			for _, d := range c.G.Durs() {
+				if d.C == c.Src && !d.Done && d.N == 0 {
+					d.N = int(e.X) + 1
+				}
+			}
 			for _, d := range c.Durs() {
-				d.Done = true
-				gainLoot(c, c.P, discard)
+				if d.N == int(e.X)+1 {
+					d.Done = true
+					gainLoot(c, c.P, discard)
+				}
 			}
 		},
 		Setup: loot,

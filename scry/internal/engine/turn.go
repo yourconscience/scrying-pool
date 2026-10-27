@@ -442,8 +442,17 @@ func (g *Game) cleanup(p int) {
 			pl.Kept = append([]Inst{}, pl.Z[InPlay]...)
 			continue
 		}
-		for _, x := range append([]Inst{}, g.P[q].Z[InPlay]...) {
-			if stay[x] || g.loc[x].Zone != InPlay || q != p && contains(g.P[q].Kept, x) {
+		var xs []Inst
+		for _, x := range g.P[q].Z[InPlay] {
+			if !stay[x] && !(q != p && contains(g.P[q].Kept, x)) {
+				xs = append(xs, x)
+			}
+		}
+		if q != p && len(xs) > 0 { // "discards a Cutthroat." for the other player's
+			g.Log.addAside(Entry{Template: "DISCARD", Args: []any{Seat(q), g.ids(xs)}})
+		}
+		for _, x := range xs {
+			if g.loc[x].Zone != InPlay {
 				continue
 			}
 			g.move(x, InPlay, Loc{Discard, int16(q)})

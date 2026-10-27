@@ -41,6 +41,18 @@ type Log struct {
 
 func NewLog(t *Table) *Log { return &Log{T: t} }
 
+// addAside adds a line that doesn't bring out the pending one: the other
+// player's cards leaving play in Clean-up don't begin it.
+func (l *Log) addAside(e Entry) {
+	if l == nil {
+		return
+	}
+	p := l.pending
+	l.pending = nil
+	l.add(e)
+	l.pending = p
+}
+
 func (l *Log) add(e Entry) {
 	if l == nil {
 		return
