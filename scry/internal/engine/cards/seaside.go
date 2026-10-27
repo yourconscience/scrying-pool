@@ -240,11 +240,11 @@ func init() {
 			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) || !stillGained(c, e) {
 				return false
 			}
-			if !c.Yes(c.P, "play it", "PLAY_WITH") {
+			if !c.Yes(c.P, "play it", "PLAY") { // "plays a Sailor.", unnamed
 				return false
 			}
 			e.Done = true
-			c.PlayWith(e.X)
+			c.PlayNow(e.X)
 			return true
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
