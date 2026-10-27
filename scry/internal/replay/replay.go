@@ -709,6 +709,9 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		x.Args[1].Cards[0].Card.Name == r.t.Defs[d.Source].Name {
 		start++ // the overpay is chosen before "buys a Farrier." is written, then "loses 1 Coin."
 	}
+	if start < len(r.real) && r.real[start].Template == r.g.Log.Pending() {
+		start++ // the answer's line writes "begins their Cleanup phase." first: Trickster's "sets a Copper aside."
+	}
 	level := d.Level
 	if start < len(r.real) && start > 0 && r.real[start].Level == 0 && d.Level == 1 && (r.flat || r.real[start-1].Level == 1) &&
 		r.real[start].Template != "NEW_TURN" && r.real[start].Player == r.names[d.Player] {

@@ -283,9 +283,9 @@ func init() {
 	// Prophecies: each acts only once it came true.
 	reg("Approaching Army", rules{
 		Hears: engine.On(engine.EvPlay),
-		Hear: func(c *ctx, e *ev) { // "gets +$1. (Approaching Army)" after an Attack
+		Hear: func(c *ctx, e *ev) { // "gets +$1." after an Attack, unnamed
 			if cameTrue(c) && c.G.D(e.C).Attack() {
-				c.As(e.P).Away().PlusCoins(1)
+				c.As(e.P).Here().PlusCoins(1)
 			}
 		},
 		Setup: func(g *engine.Game) { // an Attack kingdom pile more; a replayed game's kingdom has it already

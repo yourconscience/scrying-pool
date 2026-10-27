@@ -238,12 +238,12 @@ func init() {
 	reg("Spice Merchant", rules{Play: func(c *ctx) {
 		if x := pick1(c, c.P, engine.ToTrash, hand, treasure, true); x >= 0 {
 			c.Trash(c.P, one(x))
-			if c.Mode1(c.P, mode("+2 Cards +1 Action", "DRAW"), mode("+$2 +1 Buy", "GETS_COINS")) == 0 {
+			if c.Mode1(c.P, mode("+2 Cards +1 Action", "DRAW"), mode("+1 Buy +$2", "GETS_BUY")) == 0 {
 				c.Draw(2)
 				c.PlusActions(1)
 			} else {
-				c.PlusCoins(2)
 				c.PlusBuys(1)
+				c.PlusCoins(2)
 			}
 		}
 	}})

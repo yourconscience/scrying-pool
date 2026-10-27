@@ -551,9 +551,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
-	case how.times == 1 || how.times > 2: // a fourth Infirmary is "again" too
+	case how.times == 1:
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
-	case how.times == 2:
+	case how.times >= 2: // a fourth Infirmary is "a third time" too
 		g.Log.add(Entry{Level: level, Template: "PLAY_THIRD", Args: []any{Seat(p), card}})
 	default:
 		g.Log.add(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), card}})
