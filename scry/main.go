@@ -35,6 +35,7 @@ const usageText = `usage:
   scry site [-o DIR] [-players "a,b"] [-data DIR]  the My games page as a static site, one profile per player
   scry sim play [-a bm] [-b bm+Smithy] [-n 100]    bots play each other on the rules engine (-check, -log FILE)
   scry sim fuzz [-n 1000] [-seed 1] [-check]       random players on random kingdoms, checking invariants
+  scry sim probe -player NAME [-games 20] [-o FILE]  BM+card against BM in your latest kingdoms (the Engine page)
 
 -ask, match and ask DM DomBot from your Discord account (see docs/match-notes.md for the token and the ToS risk).
 Run "scry <command> -h" for flags.

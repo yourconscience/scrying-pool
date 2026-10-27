@@ -60,7 +60,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		r.real = append(r.real, e)
 	}
 	copy(r.names[:], rg.Players)
-	kingdom, lands, err := kingdomOf(t, score)
+	kingdom, lands, err := KingdomOf(t, score)
 	if errors.Is(err, errNoKingdom) {
 		kingdom, lands, err = inferKingdom(t, rg.Events, score), inferLandscapes(t, rg.Events, score), nil
 	}
@@ -1397,9 +1397,9 @@ func inferLandscapes(t *engine.Table, events []cartographer.Event, score string)
 	return out
 }
 
-// kingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
+// KingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
 // and "# landscapes:" lines.
-func kingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
+func KingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
 	var kingdom, lands []engine.CardID
 	found := false
 	for _, l := range strings.Split(score, "\n") {

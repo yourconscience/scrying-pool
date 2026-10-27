@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="scry-data" content="api">
+<title>Dominion Rules Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="insights.css">
+<link rel="stylesheet" href="engine.css">
+</head>
+<body class="insights">
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a class="local-only" href="analyze.html">Analyze a game</a>
+  <a href="insights.html">Profiles</a>
+  <a href="recent.html">Recent games</a>
+  <a href="engine.html" aria-current="page">Engine</a>
+  <a href="notes.html">Match notes</a>
+  <a href="https://github.com/yourconscience/scrying-pool">GitHub</a>
+</nav>
+
+<main class="ins">
+  <div class="ins-head">
+    <div class="ins-title">
+      <p class="eyebrow">Dominion Online</p>
+      <h1>The rules engine</h1>
+      <p id="meta" class="hint">Reading the engine's numbers…</p>
+    </div>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+  <section class="card" aria-labelledby="adds-h">
+    <h2 id="adds-h">What the log shows, and what the engine adds</h2>
+    <div class="adds">
+      <div>
+        <h3>The log reader</h3>
+        <ul>
+          <li>who bought, played, gained and trashed what;</li>
+          <li>the player's own deck and zones on every turn;</li>
+          <li>VP, tempo, openings and endings: everything on the Profiles page.</li>
+        </ul>
+      </div>
+      <div class="engine-col">
+        <h3>The rules engine</h3>
+        <ul>
+          <li>knows every current card on dominion.games and plays a game by the rules;</li>
+          <li>replays a saved game and checks it against the log line by line;</li>
+          <li>plays any position out thousands of times with bots and shows what comes of it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="probe-h">
+    <h2 id="probe-h">Big Money with one card</h2>
+    <p class="hint" id="probe-note">For each kingdom of the latest games, the engine plays Big Money buying one kingdom card against plain Big Money, for every card of the kingdom. The share is Big Money with that card's, a tie counting half. It's a rough yardstick: it says how strong a simple money plan with one card is there, and it can't see engines or combos.</p>
+    <ul class="findings" id="findings"></ul>
+    <div class="scroll"><table class="probe" id="probe"></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="next-h">
+    <h2 id="next-h">What it opens up, as the replay grows</h2>
+    <ol class="next">
+      <li>Most saved games replayed: the whole position on every turn, with the hand, the deck and the Supply.</li>
+      <li>A value network trained on the engine's self-play: the chance to win in every position, and a win-chance bar on the game page.</li>
+      <li>Turn review: where the chance dropped most, and which buy or play would have kept it.</li>
+    </ol>
+  </section>
+
+  <section class="card" aria-labelledby="hidden-h">
+    <h2 id="hidden-h">Why the replay guesses the opponent's cards</h2>
+    <p class="hint">A dominion.games log is written from your seat. Your draws show by name; the opponent's show as "draws 5 cards". Their cards get names only when they play, discard or reveal them. The engine needs a real hand: it checks that a card can be played, counts the deck and knows when it shuffles. So the replay puts in cards that fit everything the log shows later, and swaps them when a later line says otherwise. Your own cards are never guessed.</p>
+  </section>
+
+  <p id="error" role="alert" hidden></p>
+</main>
+<footer class="site-foot">
+  Use it on finished games only: the dominion.games Terms of Service ban tools that help in games in progress. Not affiliated with Shuffle iT, Rio Grande Games, DomBot or the Dominion League.
+</footer>
+<script src="engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,1245 @@
+{
+ "player": "gamrevinu",
+ "made": "2026-10-27",
+ "per": 1000,
+ "games": [
+  {
+   "id": "184689285",
+   "date": "2026-Oct-14",
+   "opponent": "Usmasters",
+   "me": 37,
+   "them": 4,
+   "cards": [
+    {
+     "card": "Livery",
+     "rate": 0.686
+    },
+    {
+     "card": "Sacred Grove",
+     "rate": 0.668
+    },
+    {
+     "card": "Alchemist",
+     "rate": 0.495
+    },
+    {
+     "card": "Apothecary",
+     "rate": 0.495
+    },
+    {
+     "card": "Longship",
+     "rate": 0.482
+    },
+    {
+     "card": "Leprechaun",
+     "rate": 0.295
+    },
+    {
+     "card": "Shaman",
+     "rate": 0.241
+    },
+    {
+     "card": "Gold Mine",
+     "rate": 0.204
+    },
+    {
+     "card": "Cobbler",
+     "rate": 0.106
+    },
+    {
+     "card": "Tools",
+     "rate": 0.014
+    }
+   ],
+   "opening": [
+    "Leprechaun",
+    "Potion"
+   ],
+   "bought": {
+    "Alchemist": 5,
+    "Apothecary": 1,
+    "Gold Mine": 2,
+    "Leprechaun": 1,
+    "Livery": 1,
+    "Longship": 5,
+    "Potion": 1,
+    "Shaman": 1,
+    "Silver": 1
+   }
+  },
+  {
+   "id": "184687368",
+   "date": "2026-Oct-14",
+   "opponent": "Darcco",
+   "me": 9,
+   "them": 7,
+   "cards": [
+    {
+     "card": "Alley",
+     "rate": 0.597
+    },
+    {
+     "card": "Courtier",
+     "rate": 0.495
+    },
+    {
+     "card": "Spices",
+     "rate": 0.467
+    },
+    {
+     "card": "Bauble",
+     "rate": 0.37
+    },
+    {
+     "card": "Displace",
+     "rate": 0.369
+    },
+    {
+     "card": "Replace",
+     "rate": 0.269
+    },
+    {
+     "card": "Crown",
+     "rate": 0.253
+    },
+    {
+     "card": "Changeling",
+     "rate": 0.234
+    },
+    {
+     "card": "Pixie",
+     "rate": 0.198
+    }
+   ],
+   "opening": [
+    "Alley",
+    "Bauble"
+   ],
+   "bought": {
+    "Alley": 1,
+    "Bauble": 1,
+    "Crown": 1,
+    "Displace": 1,
+    "Elder": 1,
+    "Miller": 1,
+    "Pixie": 6,
+    "Province": 1,
+    "Spices": 5,
+    "Town Crier": 2
+   }
+  },
+  {
+   "id": "184686629",
+   "date": "2026-Oct-14",
+   "opponent": "TheXtrategisT",
+   "me": 33,
+   "them": 26,
+   "cards": [
+    {
+     "card": "Fortune Hunter",
+     "rate": 0.764
+    },
+    {
+     "card": "Werewolf",
+     "rate": 0.694
+    },
+    {
+     "card": "Lackeys",
+     "rate": 0.598
+    },
+    {
+     "card": "Stowaway",
+     "rate": 0.453
+    },
+    {
+     "card": "Tactician",
+     "rate": 0.374
+    },
+    {
+     "card": "Weaver",
+     "rate": 0.273
+    },
+    {
+     "card": "Taskmaster",
+     "rate": 0.256
+    },
+    {
+     "card": "Royal Galley",
+     "rate": 0.215
+    },
+    {
+     "card": "Tools",
+     "rate": 0.01
+    },
+    {
+     "card": "Market Square",
+     "rate": 0
+    }
+   ],
+   "opening": [
+    "Silver",
+    "Fortune Hunter"
+   ],
+   "bought": {
+    "Duchy": 4,
+    "Fortune Hunter": 1,
+    "Lackeys": 7,
+    "Market Square": 1,
+    "Province": 3,
+    "Royal Galley": 2,
+    "Silver": 1,
+    "Taskmaster": 4,
+    "Tools": 1,
+    "Werewolf": 4
+   }
+  },
+  {
+   "id": "184686462",
+   "date": "2026-Oct-14",
+   "opponent": "Mr. Moneybags",
+   "me": 3,
+   "them": 21,
+   "cards": [
+    {
+     "card": "Witch",
+     "rate": 0.955
+    },
+    {
+     "card": "Hunting Grounds",
+     "rate": 0.633
+    },
+    {
+     "card": "First Mate",
+     "rate": 0.514
+    },
+    {
+     "card": "Gear",
+     "rate": 0.457
+    },
+    {
+     "card": "Mountain Shrine",
+     "rate": 0.424
+    },
+    {
+     "card": "Mint",
+     "rate": 0.246
+    },
+    {
+     "card": "Tanuki",
+     "rate": 0.23
+    },
+    {
+     "card": "War Chest",
+     "rate": 0.195
+    },
+    {
+     "card": "Treasure Map",
+     "rate": 0.098
+    },
+    {
+     "card": "Stonemason",
+     "rate": 0.021
+    }
+   ],
+   "opening": [
+    "Witch"
+   ],
+   "bought": {
+    "Duchy": 1,
+    "Gear": 1,
+    "Gold": 3,
+    "Hunting Grounds": 1,
+    "Mint": 1,
+    "Mountain Shrine": 1,
+    "Province": 4,
+    "Silver": 3,
+    "Witch": 1
+   }
+  },
+  {
+   "id": "184685959",
+   "date": "2026-Oct-14",
+   "opponent": "clme",
+   "me": 3,
+   "them": 6,
+   "cards": [
+    {
+     "card": "Skulk",
+     "rate": 0.717
+    },
+    {
+     "card": "Tragic Hero",
+     "rate": 0.703
+    },
+    {
+     "card": "Sheepdog",
+     "rate": 0.554
+    },
+    {
+     "card": "Golem",
+     "rate": 0.499
+    },
+    {
+     "card": "Mountain Shrine",
+     "rate": 0.392
+    },
+    {
+     "card": "Tide Pools",
+     "rate": 0.377
+    },
+    {
+     "card": "Treasure Trove",
+     "rate": 0.225
+    },
+    {
+     "card": "Transmogrify",
+     "rate": 0.147
+    }
+   ],
+   "opening": [
+    "Transmogrify",
+    "Mountain Shrine"
+   ],
+   "bought": {
+    "Mountain Shrine": 3,
+    "Province": 4,
+    "Skulk": 1,
+    "Transmogrify": 2,
+    "Treasure Trove": 2
+   }
+  },
+  {
+   "id": "184685792",
+   "date": "2026-Oct-14",
+   "opponent": "SloeBear",
+   "me": 0,
+   "them": 1,
+   "cards": [
+    {
+     "card": "Den of Sin",
+     "rate": 0.582
+    },
+    {
+     "card": "Poacher",
+     "rate": 0.476
+    },
+    {
+     "card": "Pendant",
+     "rate": 0.461
+    },
+    {
+     "card": "Wealthy Village",
+     "rate": 0.303
+    },
+    {
+     "card": "Rope",
+     "rate": 0.282
+    },
+    {
+     "card": "Anvil",
+     "rate": 0.21
+    },
+    {
+     "card": "Scrap",
+     "rate": 0.143
+    },
+    {
+     "card": "Root Cellar",
+     "rate": 0.113
+    },
+    {
+     "card": "Ducat",
+     "rate": 0.066
+    },
+    {
+     "card": "Carpenter",
+     "rate": 0
+    }
+   ],
+   "opening": [
+    "Rope",
+    "Scrap"
+   ],
+   "bought": {
+    "Den of Sin": 2,
+    "Ducat": 1,
+    "Rope": 3,
+    "Scrap": 1,
+    "Wealthy Village": 5
+   }
+  },
+  {
+   "id": "184685493",
+   "date": "2026-Oct-14",
+   "opponent": "get_lucky",
+   "me": 5,
+   "them": -2,
+   "cards": [
+    {
+     "card": "Soothsayer",
+     "rate": 0.652
+    },
+    {
+     "card": "Haunted Woods",
+     "rate": 0.613
+    },
+    {
+     "card": "Mountain Village",
+     "rate": 0.505
+    },
+    {
+     "card": "Library",
+     "rate": 0.502
+    },
+    {
+     "card": "Imperial Envoy",
+     "rate": 0.5
+    },
+    {
+     "card": "Maroon",
+     "rate": 0.471
+    },
+    {
+     "card": "King's Cache",
+     "rate": 0.341
+    },
+    {
+     "card": "Anvil",
+     "rate": 0.216
+    },
+    {
+     "card": "Village Green",
+     "rate": 0.208
+    },
+    {
+     "card": "Pooka",
+     "rate": 0.13
+    }
+   ],
+   "opening": [
+    "Imperial Envoy"
+   ],
+   "bought": {
+    "Anvil": 3,
+    "Imperial Envoy": 1,
+    "Mountain Village": 1,
+    "Village Green": 1
+   }
+  },
+  {
+   "id": "184684101",
+   "date": "2026-Oct-14",
+   "opponent": "zf1968",
+   "me": 65,
+   "them": 28,
+   "cards": [
+    {
+     "card": "Rabble",
+     "rate": 0.742
+    },
+    {
+     "card": "Galleria",
+     "rate": 0.642
+    },
+    {
+     "card": "Monkey",
+     "rate": 0.476
+    },
+    {
+     "card": "Conclave",
+     "rate": 0.468
+    },
+    {
+     "card": "Joust",
+     "rate": 0.464
+    },
+    {
+     "card": "Sacrifice",
+     "rate": 0.438
+    },
+    {
+     "card": "Smugglers",
+     "rate": 0.408
+    },
+    {
+     "card": "Horn of Plenty",
+     "rate": 0.167
+    },
+    {
+     "card": "Diplomat",
+     "rate": 0.114
+    },
+    {
+     "card": "Cage",
+     "rate": 0.059
+    }
+   ],
+   "opening": [
+    "Joust",
+    "Cage"
+   ],
+   "bought": {
+    "Cage": 2,
+    "Colony": 1,
+    "Conclave": 1,
+    "Gold": 2,
+    "Horn of Plenty": 2,
+    "Joust": 2,
+    "Platinum": 1,
+    "Province": 2,
+    "Sacrifice": 1,
+    "Silver": 1
+   }
+  },
+  {
+   "id": "184682635",
+   "date": "2026-Oct-14",
+   "opponent": "2ndgus",
+   "me": 40,
+   "them": 13,
+   "cards": [
+    {
+     "card": "Torturer",
+     "rate": 0.903
+    },
+    {
+     "card": "Mapmaker",
+     "rate": 0.821
+    },
+    {
+     "card": "Haunted Woods",
+     "rate": 0.746
+    },
+    {
+     "card": "Magpie",
+     "rate": 0.595
+    },
+    {
+     "card": "Sanctuary",
+     "rate": 0.343
+    },
+    {
+     "card": "Priest",
+     "rate": 0.286
+    },
+    {
+     "card": "Highway",
+     "rate": 0.179
+    },
+    {
+     "card": "Overlord",
+     "rate": 0.057
+    },
+    {
+     "card": "Worker's Village",
+     "rate": 0.048
+    },
+    {
+     "card": "Steward",
+     "rate": 0.012
+    }
+   ],
+   "opening": [
+    "Silver",
+    "Magpie"
+   ],
+   "bought": {
+    "Duchy": 3,
+    "Haunted Woods": 1,
+    "Highway": 2,
+    "Magpie": 2,
+    "Overlord": 3,
+    "Sanctuary": 1,
+    "Silver": 2,
+    "Steward": 2,
+    "Worker's Village": 1
+   }
+  },
+  {
+   "id": "184642759",
+   "date": "2026-Oct-13",
+   "opponent": "Muriatic",
+   "me": 30,
+   "them": 30,
+   "cards": [
+    {
+     "card": "Capital City",
+     "rate": 0.601
+    },
+    {
+     "card": "Haggler",
+     "rate": 0.557
+    },
+    {
+     "card": "Mine",
+     "rate": 0.544
+    },
+    {
+     "card": "Shop",
+     "rate": 0.473
+    },
+    {
+     "card": "Monkey",
+     "rate": 0.453
+    },
+    {
+     "card": "Night Watchman",
+     "rate": 0.361
+    },
+    {
+     "card": "Amulet",
+     "rate": 0.358
+    },
+    {
+     "card": "Cemetery",
+     "rate": 0.272
+    },
+    {
+     "card": "Sentry",
+     "rate": 0.184
+    },
+    {
+     "card": "Chapel",
+     "rate": 0.07
+    }
+   ],
+   "opening": [
+    "Chapel",
+    "Shop"
+   ],
+   "bought": {
+    "Capital City": 1,
+    "Chapel": 1,
+    "Duchy": 2,
+    "Gold": 1,
+    "Haggler": 1,
+    "Province": 4,
+    "Shop": 1,
+    "Silver": 2
+   }
+  },
+  {
+   "id": "184642376",
+   "date": "2026-Oct-13",
+   "opponent": "Anteatereater",
+   "me": 22,
+   "them": 41,
+   "cards": [
+    {
+     "card": "Bard",
+     "rate": 0.627
+    },
+    {
+     "card": "Lackeys",
+     "rate": 0.583
+    },
+    {
+     "card": "Bandit Camp",
+     "rate": 0.464
+    },
+    {
+     "card": "Farmland",
+     "rate": 0.283
+    },
+    {
+     "card": "Mining Village",
+     "rate": 0.21
+    },
+    {
+     "card": "Anvil",
+     "rate": 0.186
+    },
+    {
+     "card": "Crown",
+     "rate": 0.145
+    },
+    {
+     "card": "Poet",
+     "rate": 0.023
+    },
+    {
+     "card": "Oasis",
+     "rate": 0.002
+    },
+    {
+     "card": "Market Square",
+     "rate": 0
+    }
+   ],
+   "opening": [
+    "Lackeys",
+    "Poet"
+   ],
+   "bought": {
+    "Bandit Camp": 1,
+    "Copper": 1,
+    "Crown": 1,
+    "Lackeys": 6,
+    "Market Square": 1,
+    "Mining Village": 2,
+    "Poet": 2,
+    "Province": 6
+   }
+  },
+  {
+   "id": "184641354",
+   "date": "2026-Oct-13",
+   "opponent": "hayabusaa100",
+   "me": 12,
+   "them": -4,
+   "cards": [
+    {
+     "card": "Charlatan",
+     "rate": 0.857
+    },
+    {
+     "card": "Crew",
+     "rate": 0.75
+    },
+    {
+     "card": "Barge",
+     "rate": 0.67
+    },
+    {
+     "card": "Baron",
+     "rate": 0.624
+    },
+    {
+     "card": "Mountain Village",
+     "rate": 0.524
+    },
+    {
+     "card": "City",
+     "rate": 0.239
+    },
+    {
+     "card": "Carpenter",
+     "rate": 0.219
+    },
+    {
+     "card": "Worker's Village",
+     "rate": 0.048
+    },
+    {
+     "card": "Dungeon",
+     "rate": 0
+    }
+   ],
+   "opening": [
+    "Silver",
+    "Baron"
+   ],
+   "bought": {
+    "Barge": 3,
+    "Baron": 1,
+    "Carpenter": 1,
+    "Charlatan": 2,
+    "City": 5,
+    "Crew": 2,
+    "Dungeon": 2,
+    "Mountain Village": 3,
+    "Platinum": 1,
+    "Province": 2,
+    "Silver": 1
+   }
+  },
+  {
+   "id": "184638173",
+   "date": "2026-Oct-13",
+   "opponent": "Smhfood",
+   "me": 5,
+   "them": 0,
+   "cards": [
+    {
+     "card": "Smithy",
+     "rate": 0.725
+    },
+    {
+     "card": "Emissary",
+     "rate": 0.655
+    },
+    {
+     "card": "Silk Merchant",
+     "rate": 0.632
+    },
+    {
+     "card": "Transmute",
+     "rate": 0.493
+    },
+    {
+     "card": "Tiara",
+     "rate": 0.319
+    },
+    {
+     "card": "Pickaxe",
+     "rate": 0.281
+    },
+    {
+     "card": "Page",
+     "rate": 0.261
+    },
+    {
+     "card": "Tunnel",
+     "rate": 0.137
+    },
+    {
+     "card": "Quartermaster",
+     "rate": 0.078
+    },
+    {
+     "card": "Spice Merchant",
+     "rate": 0.045
+    }
+   ],
+   "opening": [
+    "Page",
+    "Quartermaster"
+   ],
+   "bought": {
+    "Emissary": 1,
+    "Page": 6,
+    "Pickaxe": 1,
+    "Quartermaster": 2,
+    "Silk Merchant": 3,
+    "Tiara": 3
+   }
+  },
+  {
+   "id": "184637823",
+   "date": "2026-Oct-13",
+   "opponent": "Kya",
+   "me": 53,
+   "them": 40,
+   "cards": [
+    {
+     "card": "Vault",
+     "rate": 0.711
+    },
+    {
+     "card": "Journeyman",
+     "rate": 0.644
+    },
+    {
+     "card": "Groundskeeper",
+     "rate": 0.45
+    },
+    {
+     "card": "Duke",
+     "rate": 0.359
+    },
+    {
+     "card": "Harbor Village",
+     "rate": 0.273
+    },
+    {
+     "card": "Stables",
+     "rate": 0.141
+    },
+    {
+     "card": "Sea Chart",
+     "rate": 0.038
+    },
+    {
+     "card": "Oasis",
+     "rate": 0.001
+    }
+   ],
+   "opening": [
+    "Harbor Village"
+   ],
+   "bought": {
+    "Catapult": 1,
+    "Colony": 3,
+    "Gold": 1,
+    "Groundskeeper": 3,
+    "Harbor Village": 2,
+    "Oasis": 1,
+    "Platinum": 1,
+    "Stables": 1,
+    "Vault": 2
+   }
+  },
+  {
+   "id": "184637694",
+   "date": "2026-Oct-13",
+   "opponent": "Pichelmaus",
+   "me": 5,
+   "them": 3,
+   "cards": [
+    {
+     "card": "Margrave",
+     "rate": 0.776
+    },
+    {
+     "card": "Fortune Hunter",
+     "rate": 0.748
+    },
+    {
+     "card": "War Chest",
+     "rate": 0.744
+    },
+    {
+     "card": "Hunting Grounds",
+     "rate": 0.577
+    },
+    {
+     "card": "Supplies",
+     "rate": 0.56
+    },
+    {
+     "card": "Mountain Village",
+     "rate": 0.498
+    },
+    {
+     "card": "Sheepdog",
+     "rate": 0.467
+    },
+    {
+     "card": "Peasant",
+     "rate": 0.162
+    },
+    {
+     "card": "Tunnel",
+     "rate": 0.133
+    },
+    {
+     "card": "Wandering Minstrel",
+     "rate": 0.049
+    }
+   ],
+   "opening": [
+    "Wandering Minstrel",
+    "Peasant"
+   ],
+   "bought": {
+    "Margrave": 2,
+    "Peasant": 2,
+    "Sheepdog": 1,
+    "Supplies": 2,
+    "Tunnel": 1,
+    "Wandering Minstrel": 3,
+    "War Chest": 1
+   }
+  },
+  {
+   "id": "184637355",
+   "date": "2026-Oct-13",
+   "opponent": "jadelston",
+   "me": 16,
+   "them": 17,
+   "cards": [
+    {
+     "card": "Bounty Hunter",
+     "rate": 0.667
+    },
+    {
+     "card": "Cauldron",
+     "rate": 0.496
+    },
+    {
+     "card": "King's Cache",
+     "rate": 0.385
+    },
+    {
+     "card": "Ghost Town",
+     "rate": 0.31
+    },
+    {
+     "card": "Innkeeper",
+     "rate": 0.207
+    },
+    {
+     "card": "Cavalry",
+     "rate": 0.169
+    },
+    {
+     "card": "Daimyo",
+     "rate": 0.107
+    },
+    {
+     "card": "Cage",
+     "rate": 0.059
+    },
+    {
+     "card": "Swamp Shacks",
+     "rate": 0.041
+    },
+    {
+     "card": "Rats",
+     "rate": 0
+    }
+   ],
+   "opening": [
+    "Bounty Hunter",
+    "Daimyo"
+   ],
+   "bought": {
+    "Bounty Hunter": 1,
+    "Cage": 1,
+    "Cauldron": 2,
+    "Cavalry": 4,
+    "Daimyo": 5,
+    "Duchy": 2,
+    "Ghost Town": 1,
+    "King's Cache": 2,
+    "Province": 2,
+    "Swamp Shacks": 1
+   }
+  },
+  {
+   "id": "184636959",
+   "date": "2026-Oct-13",
+   "opponent": "Herzog Uwe",
+   "me": 20,
+   "them": 21,
+   "cards": [
+    {
+     "card": "Black Cat",
+     "rate": 0.835
+    },
+    {
+     "card": "Library",
+     "rate": 0.66
+    },
+    {
+     "card": "Silver Mine",
+     "rate": 0.613
+    },
+    {
+     "card": "Capital",
+     "rate": 0.468
+    },
+    {
+     "card": "Border Village",
+     "rate": 0.285
+    },
+    {
+     "card": "Snowy Village",
+     "rate": 0.28
+    },
+    {
+     "card": "Jewelled Egg",
+     "rate": 0.254
+    },
+    {
+     "card": "Storeroom",
+     "rate": 0.215
+    },
+    {
+     "card": "Workshop",
+     "rate": 0.179
+    },
+    {
+     "card": "Royal Blacksmith",
+     "rate": 0.03
+    }
+   ],
+   "opening": [
+    "Silver",
+    "Silver"
+   ],
+   "bought": {
+    "Black Cat": 4,
+    "Border Village": 5,
+    "Capital": 1,
+    "Duchy": 1,
+    "Library": 2,
+    "Province": 3,
+    "Silver": 2,
+    "Silver Mine": 1,
+    "Snowy Village": 3
+   }
+  },
+  {
+   "id": "184636625",
+   "date": "2026-Oct-13",
+   "opponent": "jadelston",
+   "me": 13,
+   "them": 0,
+   "cards": [
+    {
+     "card": "Corsair",
+     "rate": 0.772
+    },
+    {
+     "card": "Council Room",
+     "rate": 0.68
+    },
+    {
+     "card": "Relic",
+     "rate": 0.68
+    },
+    {
+     "card": "Scrying Pool",
+     "rate": 0.501
+    },
+    {
+     "card": "Transmute",
+     "rate": 0.501
+    },
+    {
+     "card": "Festival",
+     "rate": 0.418
+    },
+    {
+     "card": "Border Guard",
+     "rate": 0.417
+    },
+    {
+     "card": "Experiment",
+     "rate": 0.323
+    },
+    {
+     "card": "Village Green",
+     "rate": 0.216
+    },
+    {
+     "card": "Tanuki",
+     "rate": 0.156
+    }
+   ],
+   "opening": [
+    "Experiment",
+    "Potion"
+   ],
+   "bought": {
+    "Experiment": 2,
+    "Gold": 1,
+    "Potion": 1,
+    "Province": 1,
+    "Scrying Pool": 5,
+    "Silver": 1,
+    "Tanuki": 3
+   }
+  },
+  {
+   "id": "184636245",
+   "date": "2026-Oct-13",
+   "opponent": "darthvader111",
+   "me": 14,
+   "them": 24,
+   "cards": [
+    {
+     "card": "Skulk",
+     "rate": 0.798
+    },
+    {
+     "card": "Margrave",
+     "rate": 0.793
+    },
+    {
+     "card": "Relic",
+     "rate": 0.695
+    },
+    {
+     "card": "Distant Lands",
+     "rate": 0.604
+    },
+    {
+     "card": "Transmute",
+     "rate": 0.491
+    },
+    {
+     "card": "Patron",
+     "rate": 0.489
+    },
+    {
+     "card": "Storeroom",
+     "rate": 0.219
+    },
+    {
+     "card": "Gold Mine",
+     "rate": 0.189
+    },
+    {
+     "card": "Rice Broker",
+     "rate": 0.147
+    },
+    {
+     "card": "Change",
+     "rate": 0.134
+    }
+   ],
+   "opening": [
+    "Skulk",
+    "Silver"
+   ],
+   "bought": {
+    "Gold Mine": 1,
+    "Margrave": 4,
+    "Patron": 2,
+    "Province": 4,
+    "Relic": 1,
+    "Rice Broker": 2,
+    "Silver": 3,
+    "Skulk": 1
+   }
+  },
+  {
+   "id": "184636124",
+   "date": "2026-Oct-13",
+   "opponent": "haru_don",
+   "me": 26,
+   "them": 3,
+   "cards": [
+    {
+     "card": "Werewolf",
+     "rate": 0.703
+    },
+    {
+     "card": "Bard",
+     "rate": 0.678
+    },
+    {
+     "card": "Haggler",
+     "rate": 0.666
+    },
+    {
+     "card": "Supplies",
+     "rate": 0.553
+    },
+    {
+     "card": "Collection",
+     "rate": 0.515
+    },
+    {
+     "card": "Ferryman",
+     "rate": 0.499
+    },
+    {
+     "card": "Hunter",
+     "rate": 0.498
+    },
+    {
+     "card": "Sack of Loot",
+     "rate": 0.436
+    },
+    {
+     "card": "Experiment",
+     "rate": 0.339
+    },
+    {
+     "card": "Death Cart",
+     "rate": 0.001
+    }
+   ],
+   "opening": [
+    "Supplies",
+    "Haggler"
+   ],
+   "bought": {
+    "Bard": 1,
+    "Collection": 5,
+    "Experiment": 2,
+    "Haggler": 1,
+    "Supplies": 2
+   }
+  }
+ ],
+ "replay": {
+  "logs": 265,
+  "done": 8,
+  "turns": 7744,
+  "matched": 2910
+ }
+}
