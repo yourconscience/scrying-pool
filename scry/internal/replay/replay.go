@@ -1242,11 +1242,12 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		}
 		for range cn.N {
 			found := false
-			for i, o := range d.Options {
-				if !used[i] && r.t.Defs[o.Card].Name == cn.Card.Name {
-					used[i], found = true, true
-					out = append(out, i)
-					break
+			for _, guess := range []bool{false, true} { // a card the log showed before one the replay guessed: the guess may yet be wrong
+				for i, o := range d.Options {
+					if !found && !used[i] && r.t.Defs[o.Card].Name == cn.Card.Name && (o.Inst >= 0 && r.hidden[o.Inst]) == guess {
+						used[i], found = true, true
+						out = append(out, i)
+					}
 				}
 			}
 			if !found && d.Kind != engine.ToPick {
