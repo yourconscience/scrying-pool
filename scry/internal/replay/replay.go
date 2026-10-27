@@ -430,6 +430,9 @@ func (r *replayer) peek() (cartographer.Event, bool) {
 	if r.pos >= len(r.real) {
 		return cartographer.Event{}, false
 	}
+	if x := r.real[r.pos]; x.Template == r.g.Log.Pending() && r.pos+1 < len(r.real) {
+		return r.real[r.pos+1], true // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
+	}
 	return r.real[r.pos], true
 }
 
@@ -1327,7 +1330,8 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
 	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true,
-	"TRASH_WITH": true} // "trashes a Copper. (Sailor)" at the start of a turn
+	"TRASH_WITH": true, // "trashes a Copper. (Sailor)" at the start of a turn
+	"SET_ASIDE":  true} // Patient's "sets a Dungeon aside." in Clean-up
 
 // divineWind splits a kingdom of the piles before and after Divine Wind came
 // true: the ones the log names before then, and others to make 10, come first;
@@ -1425,8 +1429,6 @@ func inferLandscapes(t *engine.Table, events []cartographer.Event, score string)
 	return out
 }
 
-// KingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
-// and "# landscapes:" lines.
 // otherKingdom is the kingdom cards a score file lists besides the kingdom.
 func otherKingdom(t *engine.Table, kingdom []engine.CardID, score string) []engine.CardID {
 	var out []engine.CardID
@@ -1442,6 +1444,8 @@ func otherKingdom(t *engine.Table, kingdom []engine.CardID, score string) []engi
 	return out
 }
 
+// KingdomOf reads the kingdom and landscapes from a score file's "# kingdom:"
+// and "# landscapes:" lines.
 func KingdomOf(t *engine.Table, score string) ([]engine.CardID, []engine.CardID, error) {
 	var kingdom, lands []engine.CardID
 	found := false

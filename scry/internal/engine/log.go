@@ -318,6 +318,14 @@ func (l *Log) lazy(e *Entry) {
 	}
 }
 
+// Pending is the template of the lazy line not yet written, if any.
+func (l *Log) Pending() string {
+	if l == nil || l.pending == nil {
+		return ""
+	}
+	return l.pending.Template
+}
+
 // emit writes the lazy line now, e.g. "starts their turn" for an Outpost that does nothing then.
 func (l *Log) emit() {
 	if l != nil && l.pending != nil {

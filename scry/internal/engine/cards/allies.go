@@ -86,7 +86,13 @@ func gainTop(c *ctx, pile string) { c.GainN(c.P, c.Card(pile), 1, discard, "GAIN
 
 // topdeckFromPlay is a card that may go onto the deck when discarded from play (Merchant Camp, Tent).
 func topdeckFromPlay(c *ctx, e *ev) {
-	if e.From == inPlay && c.G.Where(c.Me) == (engine.Loc{Zone: discard, Owner: int16(c.P)}) && c.Yes(c.P, "put it onto your deck", "TOPDECK") {
+	if e.From != inPlay || c.G.Where(c.Me) != (engine.Loc{Zone: discard, Owner: int16(c.P)}) {
+		return
+	}
+	if e.Cleanup {
+		phaseLine(c) // "begins their Cleanup phase." whether or not it's taken
+	}
+	if c.Yes(c.P, "put it onto your deck", "TOPDECK") {
 		c.Topdeck(c.P, one(c.Me))
 	}
 }
