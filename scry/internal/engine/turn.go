@@ -87,6 +87,7 @@ func (g *Game) takeTurn(extra CardID) {
 
 // startTurn resolves Durations and everything else that happens at the start of a turn.
 func (g *Game) startTurn(p int) {
+	g.react(p, &Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1}) // a Clerk before the Durations, or after them below
 	for i := 0; i < len(g.durs); i++ {
 		d := g.durs[i]
 		if d.P != p || d.Done || d.Made == g.turns {

@@ -117,24 +117,41 @@ func (g *Game) fire(ev *Ev) {
 	for _, q := range order {
 		g.react(q, ev)
 	}
-	for _, q := range order {
-		for _, z := range listenZones {
-			zone := g.P[q].Z[z]
-			for i := 0; i < len(zone); i++ {
-				x := zone[i]
-				r := g.Def(x).Rules
-				if r == nil || r.Hear == nil || !r.Hears.has(ev.Kind) {
-					continue
-				}
-				cx := g.ctx(q, x, ev.Level)
-				cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
-				r.Hear(cx, ev)
-				if zone = g.P[q].Z[z]; i < len(zone) && zone[i] != x {
-					i-- // it left (a called Ratcatcher, an exchanged Hermit): the next card is at i now
-				}
+	hear := func(q int, z Zone) {
+		zone := g.P[q].Z[z]
+		for i := 0; i < len(zone); i++ {
+			x := zone[i]
+			r := g.Def(x).Rules
+			if r == nil || r.Hear == nil || !r.Hears.has(ev.Kind) {
+				continue
+			}
+			cx := g.ctx(q, x, ev.Level)
+			cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
+			r.Hear(cx, ev)
+			if zone = g.P[q].Z[z]; i < len(zone) && zone[i] != x {
+				i-- // it left (a called Ratcatcher, an exchanged Hermit): the next card is at i now
 			}
 		}
 	}
+	for _, q := range order {
+		for _, z := range listenZones {
+			if z != Tavern || ev.Kind != EvGain {
+				hear(q, z)
+			}
+		}
+	}
+	defer func() {
+		switch ev.Kind {
+		case EvGain: // a gain's Reserves are called after its other effects: "gains a Swashbuckler. (Growth)", "calls a Duplicate."
+			for _, q := range order {
+				hear(q, Tavern)
+			}
+		case EvTurnStart: // a Clerk after Crop Rotation's "draws a Copper and a Tea House."
+			for _, q := range order {
+				g.react(q, ev)
+			}
+		}
+	}()
 	for _, c := range g.Land {
 		if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
 			cx := g.ctx(ev.P, -1, ev.Level)

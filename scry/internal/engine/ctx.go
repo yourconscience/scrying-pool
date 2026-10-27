@@ -828,11 +828,10 @@ func (c *Ctx) Reveal(p int, xs []Inst) {
 	}
 }
 
-func (c *Ctx) RevealHand(p int) {
-	if xs := c.G.P[p].Z[Hand]; len(xs) > 0 {
-		c.Log("REVEAL_HAND", Seat(p), c.G.ids(xs))
-		c.revealed(p, slices.Clone(xs))
-	}
+func (c *Ctx) RevealHand(p int) { // an empty hand too: "reveals their hand: nothing."
+	xs := c.G.P[p].Z[Hand]
+	c.Log("REVEAL_HAND", Seat(p), c.G.ids(xs))
+	c.revealed(p, slices.Clone(xs))
 }
 
 // revealed runs what revealing the cards causes, below the reveal line: "gets a Coffers from Patron."
