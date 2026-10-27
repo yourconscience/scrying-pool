@@ -71,3 +71,14 @@ For an unattended run (overnight):
 - With `scryCapture.server = "http://127.0.0.1:8765"`, each game is posted to a `scry web` on the same machine as soon as it's captured. The browser may first ask whether dominion.games may connect to apps on the device.
 
 For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`) copies the log of a game you loaded yourself: `pbpaste > game.log`, then `scry review game.log`.
+
+## Every day on a Mac
+
+`scry collect` does the above for your own latest games without the console. It drives the dominion.games tab in Brave through AppleScript (it opens one if none is open), asks the server for your 100 latest two-player games, loads the ones not saved yet with the capture script and imports them.
+
+- Once: in Brave, turn on View > Developer > Allow JavaScript from Apple Events. The first run asks whether the program may control Brave: allow it.
+- It never logs in or kicks another session. When the tab isn't logged in, or you're at a table, it stops and says so (`-notify` shows it as a notification).
+- The server lists only the 100 latest games, so a weekly run misses games once you play more than about 14 a day. Run it daily.
+- `-publish REPO` then rebuilds `site-data/` in a clean checkout of this repository on a new branch from `origin/main`, pushes it and opens a pull request with `gh`.
+
+To run it every morning and publish on Sundays, put two launchd agents in `~/Library/LaunchAgents` (`scry collect -notify` daily, `scry collect -notify -publish REPO` weekly, with `StartCalendarInterval`) and load them with `launchctl bootstrap gui/$(id -u) FILE`. A Mac that was asleep at that time runs the job when it wakes.

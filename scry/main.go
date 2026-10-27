@@ -28,6 +28,7 @@ const usageText = `usage:
   scry bookmarklet [-client]                       print the "Copy log" (or "Copy client tables") bookmark
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
+  scry collect [-publish REPO] [-notify]           save your latest games from dominion.games in Brave (macOS)
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
@@ -168,6 +169,19 @@ func main() {
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
 		fs.Parse(args)
 		err = importGames(fs.Arg(0), *dir, *minTurns)
+	case "collect":
+		dir := fs.String("dir", "", "where to save the games (default: <user config>/scrying-pool/games)")
+		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
+		budget := fs.Duration("budget", 3*time.Hour, "stop loading games after this long")
+		repo := fs.String("publish", "", "then rebuild site-data/ in this checkout and open a pull request")
+		notifyFlag := fs.Bool("notify", false, "show a macOS notification when it fails (for scheduled runs)")
+		fs.Parse(args)
+		if err = collect(*dir, *minTurns, *budget); err == nil && *repo != "" {
+			err = publish(*repo)
+		}
+		if err != nil && *notifyFlag {
+			notify(err.Error())
+		}
 	case "features":
 		me := fs.String("me", "", "the player whose games to describe (default: the account that loaded most games)")
 		profiles := fs.Bool("profiles", false, "print what each card does per play, measured from the logs, instead")
