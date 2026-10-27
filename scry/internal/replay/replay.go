@@ -7,6 +7,7 @@ package replay
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"math"
 	"slices"
 	"sort"
@@ -1302,7 +1303,8 @@ func (r *replayer) mendHand(at int) {
 	for _, h := range r.g.P[p].Z[engine.Hand] {
 		have[r.g.Def(h).Name]++
 	}
-	for n, k := range need {
+	for _, n := range slices.Sorted(maps.Keys(need)) { // in a fixed order: the swaps depend on it
+		k := need[n]
 		for ; have[n] < k; have[n]++ {
 			x := engine.Inst(-1)
 			for _, d := range r.g.P[p].Z[engine.Deck] {
