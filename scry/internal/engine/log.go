@@ -85,8 +85,8 @@ func (l *Log) add(e Entry) {
 			return
 		}
 	}
-	// buying the same card again: "buys and gains 2 Silvers"
-	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" {
+	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers"
+	if n := len(l.Entries); n > 0 && (e.Template == "BUY_AND_GAIN" || e.Template == "GAIN" && len(e.Args) == 2) {
 		last := &l.Entries[n-1]
 		if last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[1].([]CardID)[0] == e.Args[1].([]CardID)[0] {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)

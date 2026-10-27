@@ -534,6 +534,11 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			return r.pick(d, []cartographer.CardN{c})
 		}
 	}
+	if d.Kind == engine.ToGain {
+		if cs, ok := r.moreOfLine(d, "GAIN"); ok { // the second of Ball's "gains 2 Poachers."
+			return r.pick(d, cs)
+		}
+	}
 	if d.Kind == engine.ToTrash {
 		if cs, ok := r.moreTrash(d); ok {
 			return r.pick(d, cs)
@@ -989,12 +994,18 @@ func (r *replayer) whose(d *engine.Decision) int {
 // moreTrash: the last real line trashed more cards than the engine has yet,
 // the rest of "trashes a Copper and a Ghost Town." for Remake's second trash.
 func (r *replayer) moreTrash(d *engine.Decision) ([]cartographer.CardN, bool) {
+	return r.moreOfLine(d, "TRASH")
+}
+
+// moreOfLine is what the last matched line of this template names beyond what
+// the engine's line has so far, up to the decision's most.
+func (r *replayer) moreOfLine(d *engine.Decision, template string) ([]cartographer.CardN, bool) {
 	l := r.g.Log
 	if r.entry >= len(l.Entries) || r.matched < 0 || r.pos == 0 {
 		return nil, false
 	}
 	e, x := l.Entries[r.entry], r.real[r.matched]
-	if e.Template != "TRASH" || x.Template != "TRASH" || x.Player != r.names[d.Player] || x.Level != d.Level {
+	if e.Template != template || x.Template != template || x.Player != r.names[d.Player] || x.Level != d.Level {
 		return nil, false
 	}
 	done := map[string]int{}
@@ -1039,6 +1050,16 @@ func (r *replayer) moreOfLast(d *engine.Decision) (cartographer.CardN, bool) {
 // pick turns the cards a real line names into option indexes; cards it
 // doesn't name are filled with options nothing later asks for.
 func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
+	if x, ok := r.peek(); ok && d.Kind == engine.ToGain && x.Template == "GAIN" { // one gain at a time from "gains 2 Poachers."
+		var cut []cartographer.CardN
+		for n := 0; len(cut) < len(cards) && n < d.Max; {
+			cn := cards[len(cut)]
+			cn.N = min(cn.N, d.Max-n)
+			n += cn.N
+			cut = append(cut, cn)
+		}
+		cards = cut
+	}
 	used := map[int]bool{}
 	var out []int
 	unknown := 0
