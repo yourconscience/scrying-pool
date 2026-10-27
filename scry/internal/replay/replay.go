@@ -198,7 +198,7 @@ func (r *replayer) hook(i int) {
 	}
 	r.checkLast()
 	for x := range r.hidden { // played, trashed, set aside: shown
-		if z := r.g.Where(x).Zone; z != engine.Hand && z != engine.Deck && z != engine.Discard {
+		if z := r.g.Where(x).Zone; z != engine.Hand && z != engine.Deck && z != engine.Discard && z != engine.Revealed {
 			delete(r.hidden, x)
 		}
 	}
@@ -869,6 +869,9 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 				left[r.t.Defs[o.Card].Name]++
 			}
 		}
+		if o := d.Options[0]; o.Inst >= 0 && r.g.Where(o.Inst).Zone == engine.Revealed { // what the next lines name stays: Miller's discarded Estate
+			need = r.namedBelow(r.pos)
+		}
 	}
 	for ; unknown > 0; unknown-- {
 		k := -1
@@ -935,6 +938,19 @@ func (r *replayer) beforeTake(p int) {
 	in, later := map[string]int{}, r.laterTakes(p, take.Line)
 	for _, x := range deck {
 		in[r.g.Def(x).Name]++
+	}
+	if k, ok := r.line[take.Line]; ok && r.real[k].Template == "LOOK_AT" { // a card the lines below name
+		want := r.namedBelow(k)
+		for _, x := range r.g.P[p].Z[engine.Revealed] {
+			want[r.g.Def(x).Name]--
+		}
+		for i := len(deck) - 1; i >= 0; i-- {
+			if n := r.g.Def(deck[i]).Name; want[n] > 0 && in[n] > later[n] {
+				r.hide(deck[i])
+				r.g.PutOnTop(deck[i])
+				return
+			}
+		}
 	}
 	// of the cards that hand shows, the one it shows first: cards shown later may
 	// come from draws in that turn ("plays a Page.", "draws a Copper.", "plays 4 Coppers.")
@@ -1049,6 +1065,29 @@ func (r *replayer) mendHand(at int) {
 			have[r.g.Def(y).Name]--
 		}
 	}
+}
+
+// namedBelow counts the cards the lines after line at name, by its player at
+// its level, until the level drops: what becomes of the cards it looked at
+// (Miller's "looks at 4 cards.", "puts a card into their hand.", "discards 2
+// other cards and an Estate.").
+func (r *replayer) namedBelow(at int) map[string]int {
+	x := r.real[at]
+	need := map[string]int{}
+	for _, y := range r.real[at+1:] {
+		if y.Template == "NEW_TURN" || y.Level < x.Level || y.Template == "LOOK_AT" || y.Template == "SHUFFLES" {
+			break
+		}
+		if y.Player != x.Player || y.Level != x.Level {
+			continue
+		}
+		for _, cn := range y.Args[1].Cards {
+			if cn.Card != nil {
+				need[cn.Card.Name] += cn.N
+			}
+		}
+	}
+	return need
 }
 
 // swapIn mends a guess when the log names a card the hand doesn't have: a card
