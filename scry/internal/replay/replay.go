@@ -1225,7 +1225,7 @@ func (r *replayer) mendHand(at int) {
 	if r.took[p] < len(r.takes[p]) {
 		stop = r.takes[p][r.took[p]].Line
 	}
-	need := map[string]int{}
+	need, came := map[string]int{}, map[string]int{} // came: gained or put into the hand on the way, so maybe not from the old hand
 	for _, y := range r.real[at+1:] {
 		if y.Template == "NEW_TURN" || y.Line >= stop {
 			break
@@ -1234,9 +1234,16 @@ func (r *replayer) mendHand(at int) {
 			continue
 		}
 		if strings.HasPrefix(y.Template, "GAIN") || strings.HasPrefix(y.Template, "PUT_IN_HAND") {
-			break
+			for _, cn := range y.Args[1].Cards {
+				if cn.Card != nil {
+					came[cn.Card.Name] += cn.N
+				} else {
+					came[""] += cn.N // unnamed: it could be any card
+				}
+			}
+			continue
 		}
-		if !fromHand[y.Template] || y.Template == "REVEAL" {
+		if !r.fromHand(y) || y.Template == "REVEAL" {
 			continue
 		}
 		off := map[string]int{}
@@ -1251,7 +1258,12 @@ func (r *replayer) mendHand(at int) {
 				continue
 			}
 			if d, ok := r.t.Card(cn.Card.Name); ok && !d.Is(engine.TShadow) { // a Shadow card may be played from the deck
-				need[cn.Card.Name] += max(0, cn.N-off[cn.Card.Name])
+				k := max(0, cn.N-off[cn.Card.Name])
+				c := min(k, came[cn.Card.Name])
+				came[cn.Card.Name] -= c
+				if came[""] == 0 { // after an unnamed card came, nothing more is sure
+					need[cn.Card.Name] += k - c
+				}
 			}
 		}
 	}
@@ -1433,7 +1445,7 @@ func (r *replayer) shownUntilDraw(p, line int) map[string]int {
 		if x.Template == "NEW_TURN" || x.Line >= stop {
 			break
 		}
-		if x.Player != name || !fromHand[x.Template] {
+		if x.Player != name || !r.fromHand(x) {
 			continue
 		}
 		off := map[string]int{}
@@ -1557,7 +1569,7 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 			}
 			continue
 		}
-		if x.Player != name || !fromHand[x.Template] {
+		if x.Player != name || !r.fromHand(x) {
 			continue
 		}
 		off := map[string]int{}
@@ -1578,6 +1590,20 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 		}
 	}
 	return
+}
+
+// fromHand: the line takes its cards from the hand. Swap's "returns a Masquerade
+// to the Masquerade pile." does; a Horse's own return from play doesn't.
+func (r *replayer) fromHand(x cartographer.Event) bool {
+	if x.Template == "RETURN_TO" {
+		i, ok := r.line[x.Line]
+		if !ok {
+			return false
+		}
+		k := r.parent(i)
+		return k >= 0 && r.real[k].Template == "PLAY" && len(r.real[k].Args[1].Cards) == 1 && r.real[k].Args[1].Cards[0].Card != nil && r.real[k].Args[1].Cards[0].Card.Name == "Swap"
+	}
+	return fromHand[x.Template]
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "DISCARD_WITH": true, "TRASH": true,
