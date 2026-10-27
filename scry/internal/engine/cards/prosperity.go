@@ -274,11 +274,7 @@ func init() {
 		}, discard)
 	}})
 	reg("Watchtower", rules{
-		Play: func(c *ctx) {
-			if n := 6 - len(c.Hand(c.P)); n > 0 {
-				c.Draw(n)
-			}
-		},
+		Play:     func(c *ctx) { drawTo(c, 6) },
 		Reacts:   engine.On(engine.EvGain),
 		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && stillGained(c, e) },
 		React: func(c *ctx, e *ev) bool {

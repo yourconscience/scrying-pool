@@ -527,7 +527,7 @@ func init() {
 	reg("Cursed Village", rules{
 		Play: func(c *ctx) {
 			c.PlusActions(2)
-			c.Draw(max(0, 6-len(c.Hand(c.P))))
+			drawTo(c, 6)
 		},
 		OnGain: func(c *ctx, _ *ev) { hex(c, c.P) },
 	})

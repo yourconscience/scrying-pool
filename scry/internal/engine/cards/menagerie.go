@@ -463,7 +463,7 @@ func init() {
 	})
 	way("Mule", func(c *ctx) { c.PlusActions(1); c.PlusCoins(1) })
 	way("Otter", func(c *ctx) { c.Draw(2) })
-	way("Owl", func(c *ctx) { c.Draw(6 - len(c.Hand(c.P))) })
+	way("Owl", func(c *ctx) { drawTo(c, 6) })
 	way("Ox", func(c *ctx) { c.PlusActions(2) })
 	way("Pig", func(c *ctx) { c.Draw(1); c.PlusActions(1) })
 	way("Rat", func(c *ctx) { // "discards a Copper.", "gains an Overlord."

@@ -90,6 +90,7 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 	for p, n := range r.names {
 		r.takes[p] = takes[n]
 	}
+	r.nameRevealedDraws()
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
 	kingdom, pool := divineWind(t, kingdom, lands, r.real)
 	if ferry, ok := t.KingdomPile("Ferryman"); ok && pool == nil && slices.Contains(kingdom, ferry) {
@@ -243,6 +244,39 @@ func (r *replayer) hook(i int) {
 		r.mendHand(r.matched)
 	}
 	r.arrangePiles()
+}
+
+// nameRevealedDraws names a hidden draw by the card revealed right after it:
+// Chariot Race's "draws a card.", "reveals a Copper."
+func (r *replayer) nameRevealedDraws() {
+	for i, x := range r.real[:max(0, len(r.real)-1)] {
+		y := r.real[i+1]
+		if x.Template != "DRAW" || y.Template != "REVEAL" || y.Player != x.Player || y.Level != x.Level {
+			continue
+		}
+		if cs, ds := y.Args[1].Cards, x.Args[1].Cards; len(cs) != 1 || cs[0].N != 1 || cs[0].Card == nil || len(ds) != 1 || ds[0].N != 1 || ds[0].Card != nil {
+			continue
+		}
+		if k := r.parent(i); k < 0 || r.real[k].Template != "PLAY" || len(r.real[k].Args[1].Cards) != 1 || r.real[k].Args[1].Cards[0].Card == nil || r.real[k].Args[1].Cards[0].Card.Name != "Chariot Race" {
+			continue
+		}
+		p := r.seat(x.Player)
+		for j := range r.takes[p] {
+			if r.takes[p][j].Line == x.Line && r.takes[p][j].Card == "" {
+				r.takes[p][j].Card = y.Args[1].Cards[0].Card.Name
+			}
+		}
+	}
+}
+
+// parent is the line one level up that a line comes under, or -1.
+func (r *replayer) parent(i int) int {
+	for k := i - 1; k >= 0; k-- {
+		if r.real[k].Level < r.real[i].Level {
+			return k
+		}
+	}
+	return -1
 }
 
 // placeTraits puts the Traits on the piles the log says: "The Cheap Trait is acquired by the Pilgrim pile."

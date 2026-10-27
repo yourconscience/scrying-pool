@@ -159,9 +159,7 @@ func init() {
 				c.Topdeck(c.P, xs)
 			}
 		}
-		if n := 5 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 5)
 		c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, not(treasure), 0, 1))
 	}})
 	reg("Margrave", rules{Play: func(c *ctx) {

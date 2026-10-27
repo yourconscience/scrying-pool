@@ -204,9 +204,7 @@ func init() {
 		}
 	}})
 	reg("Ronin", rules{Play: func(c *ctx) {
-		if n := 7 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 7)
 	}})
 	reg("Tanuki", rules{Play: func(c *ctx) {
 		x := pick1(c, c.P, engine.ToTrash, hand, nil, false)

@@ -182,9 +182,7 @@ func init() {
 			c.Stay()
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
-			if n := 8 - len(c.Hand(c.P)); n > 0 {
-				c.Draw(n)
-			}
+			drawTo(c, 8)
 			return true
 		},
 		OnGain: func(c *ctx, e *ev) { // "trashes an Importer."; or the Siren, or "Siren can no longer move Siren (it already moved)."
@@ -456,9 +454,7 @@ func init() {
 				c.PlayNow(y)
 			}
 		}
-		if n := 6 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 6)
 	}})
 	reg("Frigate", rules{ // d.N 1: a Reaction protected the other player
 		Play: func(c *ctx) {
@@ -971,9 +967,12 @@ func init() {
 	})
 	reg("Pious", rules{
 		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "trashes an Estate. (Pious)"
+		Hear: func(c *ctx, e *ev) { // "trashes an Estate."; "(Pious)" at the start of a turn
 			if traited(c)(c.G.D(e.C)) {
 				a := c.Away()
+				if c.T2().Phase != engine.StartPhase {
+					a = c.Here()
+				}
 				a.Trash(e.P, pick(a, e.P, engine.ToTrash, hand, nil, 0, 1))
 			}
 		},
