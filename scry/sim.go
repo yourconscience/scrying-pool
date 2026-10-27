@@ -213,7 +213,7 @@ func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) en
 	s := engine.Setup{Kingdom: piles[:min(10, len(piles))], Colony: r.IntN(5) == 0, Shelters: shelters && r.IntN(5) == 0}
 	s.Pool = piles[len(s.Kingdom):] // for a Bane or Ferryman's pile
 	sort.Slice(s.Kingdom, func(i, j int) bool { return t.Defs[s.Kingdom[i]].Name < t.Defs[s.Kingdom[j]].Name })
-	ways, n := 0, r.IntN(3)
+	ways, allies, n := 0, 0, r.IntN(3)
 	for _, c := range lands {
 		if len(s.Landscapes) == n {
 			break
@@ -223,7 +223,24 @@ func randomKingdom(t *engine.Table, client *cartographer.Client, seed uint64) en
 				continue
 			}
 		}
+		if t.Defs[c].Is(engine.TAlly) {
+			if allies++; allies > 1 {
+				continue
+			}
+		}
 		s.Landscapes = append(s.Landscapes, c)
+	}
+	liaison := false // a Liaison comes with an Ally
+	for _, k := range s.Kingdom {
+		if t.Defs[k].Is(engine.TLiaison) || t.Defs[k].Name == "Wizards" { // its Students
+			liaison = true
+		}
+	}
+	for _, c := range lands {
+		if liaison && allies == 0 && t.Defs[c].Is(engine.TAlly) {
+			s.Landscapes = append(s.Landscapes, c)
+			allies++
+		}
 	}
 	return s
 }

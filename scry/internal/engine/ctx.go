@@ -216,10 +216,28 @@ func (c *Ctx) PlusVillagers(n int) {
 	c.Log(t, a...)
 }
 
+// PlusFavors: +Favors, whose line always names the card: "gets +1 Favor. (Underling)".
 func (c *Ctx) PlusFavors(n int) {
 	c.G.P[c.P].Favors += n
-	t, a := c.withFrom(plural(n, "GETS_FAVOR", "GETS_FAVORS"), []any{Seat(c.P), n})
-	c.Log(t, a...)
+	c.Log(plural(n, "GETS_FAVOR", "GETS_FAVORS")+"_FROM", Seat(c.P), n, Name(c.named()))
+}
+
+// SpendFavors spends Favors: "spends 2 Favors."
+func (c *Ctx) SpendFavors(n int) {
+	c.G.P[c.P].Favors -= n
+	c.Log(plural(n, "SPENDS_FAVOR", "SPENDS_FAVORS"), Seat(c.P), n)
+}
+
+// Rotate moves the cards of a pile's top card to its bottom: "rotates 2 Town Criers."
+func (c *Ctx) Rotate(i int) {
+	s := c.G.Piles[i].Cards
+	k := len(s)
+	for k > 0 && c.G.cards[s[k-1]] == c.G.cards[s[len(s)-1]] {
+		k--
+	}
+	top := slices.Clone(s[k:])
+	copy(s, append(top, s[:k]...))
+	c.Log("ROTATES", Seat(c.P), c.G.ids(top))
 }
 
 // PlusVP gives VP tokens.
@@ -328,13 +346,14 @@ func (c *Ctx) ChooseOne(p int, k Kind, opts []Option, may bool) *Option {
 type Mode struct {
 	Label string
 	Line  string
+	Count int // how many cards the line draws, when modes share a line (Blacksmith); 0 for any
 }
 
 // Modes asks player p to pick between min and max of a card's modes; it returns their indexes.
 func (c *Ctx) Modes(p, min, max int, ms ...Mode) []int {
 	opts := make([]Option, len(ms))
 	for i, m := range ms {
-		opts[i] = Option{Inst: -1, Mode: i, Label: m.Label, Line: m.Line}
+		opts[i] = Option{Inst: -1, Mode: i, Label: m.Label, Line: m.Line, Count: m.Count}
 	}
 	got := c.Choose(p, ToChoose, opts, min, max)
 	out := make([]int, len(got))
@@ -375,7 +394,7 @@ func (c *Ctx) Amount(p, lo, hi int, one, many string) int {
 
 // Yes asks player p whether to do something optional; line is what doing it writes first.
 func (c *Ctx) Yes(p int, label, line string) bool {
-	return c.Mode1(p, Mode{"no", ""}, Mode{label, line}) == 1
+	return c.Mode1(p, Mode{Label: "no"}, Mode{Label: label, Line: line}) == 1
 }
 
 // NameCard asks player p to name a card, from all the cards that could be in

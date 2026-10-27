@@ -122,6 +122,7 @@ func (r *replayer) run() {
 		switch x := x.(type) {
 		case nil:
 			if r.pos < len(r.real) {
+				defer func() { r.rep.Stop = recover().(stop).why }() // fail panics, and this is past run's recover
 				r.fail("the engine ended the game", "")
 			}
 		case stop:
@@ -304,7 +305,11 @@ func (r *replayer) checkLast() {
 func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string {
 	switch e.Kind {
 	case 'T':
-		if x.Template != "NEW_TURN" || "Turn "+strconv.Itoa(x.Turn)+" - "+x.Player != e.Text {
+		text := "Turn " + strconv.Itoa(x.Turn) + " - " + x.Player
+		if x.Extra != "" {
+			text += " [" + x.Extra + "]" // "Turn 1 - gamrevinu [Island Folk]"
+		}
+		if x.Template != "NEW_TURN" || text != e.Text {
 			return "a different turn"
 		}
 		return ""
@@ -422,7 +427,8 @@ var answers = map[engine.Kind][]string{
 	engine.ToPass:        {"PASS"},
 	engine.ToReturn:      {"RETURN_TO"},
 	engine.ToCall:        {"CALL"},
-	engine.ToPick:        {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES"}, // Druid's and Fool's Boons
+	engine.ToPick: {"REVEAL", "PUT_IN_HAND", "PUT_IN_HAND_FROM", "PUT_IN_DISCARD", "PUT_ON_BOTTOM_OF", "RECEIVES", // Druid's and Fool's Boons
+		"ROTATES", "KEEPS_IN_HAND", "PLAYER_ADDS_FAVOR_TOKEN_TO", "BOTTOMDECKS"}, // Battle Plan's pile, Coastal Haven, Family of Inventors, Sibyl
 }
 
 // Decide answers with what the next real line shows.
@@ -480,6 +486,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	if d.Min == 0 && r.offersNone(d, x.Args[1].Cards) {
 		return nil
 	}
+	if cs := x.Args[1].Cards; d.Kind == engine.Buy && len(cs) == 1 && cs[0].N > 1 {
+		return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
+	}
 	return r.pick(d, x.Args[1].Cards)
 }
 
@@ -518,7 +527,7 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 		}
 		k := -1
 		for j, o := range d.Options {
-			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) {
+			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) && sameCount(o, x) {
 				k = j
 				break
 			}
@@ -551,6 +560,18 @@ func (r *replayer) sameNumber(o engine.Option, x cartographer.Event) bool {
 	}
 	n := x.Args[1].Number
 	return n == nil || *n == o.Mode
+}
+
+// sameCount: a mode that draws so many cards matches a line that draws as many (Innkeeper's +3 Cards).
+func sameCount(o engine.Option, x cartographer.Event) bool {
+	if o.Count == 0 {
+		return true
+	}
+	n := 0
+	for _, cn := range x.Args[1].Cards {
+		n += cn.N
+	}
+	return n == o.Count
 }
 
 // chooseName picks the card the next naming line names.
@@ -607,7 +628,7 @@ func norm(s string) string {
 
 // answers says whether a real event is what a decision's answer writes.
 func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
-	if x.Player != r.names[d.Player] || x.Level != d.Level {
+	if x.Player != r.names[r.whose(d)] || x.Level != d.Level {
 		return false
 	}
 	for _, t := range answers[d.Kind] {
@@ -628,6 +649,17 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 		}
 	}
 	return false
+}
+
+// whose is the player whose line answers a decision: the owner of the cards it offers,
+// so the attacker's pick of what Pillage's victim discards is the victim's line.
+func (r *replayer) whose(d *engine.Decision) int {
+	if len(d.Options) > 0 && d.Options[0].Inst >= 0 {
+		if p := r.g.Owner(d.Options[0].Inst); p >= 0 {
+			return p
+		}
+	}
+	return d.Player
 }
 
 // moreOfLast: the last real line bought more copies than the engine has yet ("buys and gains 2 Silvers").
@@ -667,20 +699,47 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 					break
 				}
 			}
-			if !found {
+			if !found && d.Kind != engine.ToPick { // a pick takes its cards from a line that names others too: Hunter's
 				r.fail(fmt.Sprintf("the log has %s %s %s, which the engine doesn't offer", r.names[d.Player], d.Kind, cn.Card.Name), "")
 			}
 		}
 	}
-	for i := range d.Options {
-		if unknown == 0 {
+	// an unnamed card is one the hand can spare: not a Copper it plays next turn
+	// ("discards a card and an Estate.", then "plays 3 Coppers.")
+	var need map[string]int
+	left := map[string]int{}
+	if unknown > 0 {
+		x, _ := r.peek()
+		need, _, _, _ = r.shown(r.whose(d), x.Line, 1)
+		for _, cn := range cards {
+			if cn.Card != nil {
+				need[cn.Card.Name] -= cn.N // the line's own cards
+			}
+		}
+		for i, o := range d.Options {
+			if !used[i] {
+				left[r.t.Defs[o.Card].Name]++
+			}
+		}
+	}
+	for ; unknown > 0; unknown-- {
+		k := -1
+		for i, o := range d.Options {
+			if n := r.t.Defs[o.Card].Name; !used[i] && (k < 0 || left[n] > need[n]) {
+				if k = i; left[n] > need[n] {
+					break
+				}
+			}
+		}
+		if k < 0 {
 			break
 		}
-		if !used[i] {
-			used[i] = true
-			out = append(out, i)
-			unknown--
-		}
+		used[k] = true
+		out = append(out, k)
+		left[r.t.Defs[d.Options[k].Card].Name]--
+	}
+	if d.Kind == engine.ToPick && len(out) > d.Max { // one of the cards the line names: Hunter's Action of "puts a Copper and a Mystic into their hand"
+		out = out[:d.Max]
 	}
 	if len(out) > d.Max || len(out) < d.Min {
 		r.fail(fmt.Sprintf("the log has %d cards for %s, the engine wants %d to %d", len(out), d.Kind, d.Min, d.Max), "")
@@ -781,11 +840,45 @@ func (r *replayer) laterTakes(p, line int) map[string]int {
 // that hand's turn before it is shown, known by name ("draws a card.",
 // "reveals a Copper." under Chariot Race), needn't come from this draw.
 func (r *replayer) demand(p int, line, windows int) (map[string]int, map[string]int) {
-	need, next, first, last := map[string]int{}, map[string]int{}, map[string]int{}, map[string]int{}
+	need, next, first, last := r.shown(p, line, windows)
+	for _, x := range r.g.P[p].Z[engine.Hand] {
+		if n := r.g.Def(x).Name; need[n] > 0 {
+			need[n]--
+		}
+	}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if k, ok := r.line[t.Line]; ok && r.real[k].Template == "DRAW" && t.Card != "" && t.Line > line && t.Line < last[t.Card] && need[t.Card] > 0 {
+			need[t.Card]--
+		}
+	}
+	// and one a line puts into the hand from elsewhere: Border Guard's "puts a Copper into their hand." of the two it revealed
+	if i, ok := r.line[line]; ok {
+		for _, x := range r.real[i+1:] {
+			if x.Player != r.names[p] || x.Template != "PUT_IN_HAND" && x.Template != "PUT_IN_HAND_FROM" {
+				continue
+			}
+			for _, cn := range x.Args[1].Cards {
+				if cn.Card != nil && x.Line < last[cn.Card.Name] {
+					need[cn.Card.Name] -= min(cn.N, need[cn.Card.Name])
+				}
+			}
+		}
+	}
+	for n, k := range next {
+		need[n] += k
+	}
+	return need, first
+}
+
+// shown counts the cards player p shows from their hand by name from line on,
+// in that hand and with windows 2 the next one (next); first and last are the
+// lines where the first hand shows each card first and last.
+func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[string]int) {
+	need, next, first, last = map[string]int{}, map[string]int{}, map[string]int{}, map[string]int{}
 	cur, second := need, false
 	i, ok := r.line[line]
 	if !ok {
-		return need, first
+		return
 	}
 	name := r.names[p]
 	ev := r.real[i]
@@ -822,20 +915,7 @@ func (r *replayer) demand(p int, line, windows int) (map[string]int, map[string]
 			}
 		}
 	}
-	for _, x := range r.g.P[p].Z[engine.Hand] {
-		if n := r.g.Def(x).Name; need[n] > 0 {
-			need[n]--
-		}
-	}
-	for _, t := range r.takes[p][r.took[p]:] {
-		if k, ok := r.line[t.Line]; ok && r.real[k].Template == "DRAW" && t.Card != "" && t.Line > line && t.Line < last[t.Card] && need[t.Card] > 0 {
-			need[t.Card]--
-		}
-	}
-	for n, k := range next {
-		need[n] += k
-	}
-	return need, first
+	return
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,

@@ -165,6 +165,8 @@ type Rules struct {
 	AlsoTreasure func(g *Game, p int, d *Def) bool
 	// CanBuy forbids buying the card (Grand Market with a Copper in play).
 	CanBuy func(g *Game, p int) bool
+	// Forbid, for a card in play, forbids the other player p to play x from hand (Warlord).
+	Forbid func(g *Game, me Inst, p int, x Inst) bool
 
 	// PayWith is a way to buy the card instead of paying its cost: trashing a
 	// card from hand that passes the test (Animal Fair's Action).
@@ -234,6 +236,9 @@ func NewTable(cardsJSON []byte) (*Table, error) {
 func (t *Table) add(c cardFacts) {
 	// "4", "3*", "8+": the number is the cost; the marks mean it can change
 	cost, _ := strconv.Atoi(strings.TrimRight(c.Cost, "*+"))
+	if ts, ok := typeFixes[c.Name]; ok {
+		c.Types = ts
+	}
 	d := &Def{ID: CardID(len(t.Defs)), Name: c.Name, Kind: c.Kind, Types: c.Types, Cost: Cost{cost, c.Potion, c.Debt}}
 	for _, ty := range c.Types {
 		d.T |= typeBits[ty]

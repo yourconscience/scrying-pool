@@ -39,6 +39,7 @@ type Option struct {
 	Mode  int    // which mode or number; for PlayAction, 1 + the Way's index in Game.Land
 	Label string // what the mode is, e.g. "+1 Card"
 	Line  string // the template of the first line the mode writes, for replays
+	Count int    // with Line, how many cards it draws, for replays of modes that share a line
 }
 
 // Decision is everything the engine asks a player. The answer picks between

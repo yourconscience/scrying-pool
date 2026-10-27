@@ -161,6 +161,9 @@ func ParseClient(b []byte) (*Client, error) {
 		card := &Card{Key: n.Key, Name: name, Plural: n.Plural, Noun: n.Noun}
 		byKey[n.Key] = card
 		c.Cards[card.Name] = card
+		if name != n.Singular {
+			c.Cards[n.Singular] = card // the score screen still writes "Sack Of Loot"
+		}
 	}
 	for _, x := range f.Cards {
 		card := byKey[x.Name]

@@ -60,6 +60,14 @@ func (c *Client) Check(log, score string) CheckResult {
 		return r
 	}
 	wantTurns, wantDecks := ParseScoreScreen(score, func(name string) bool { return c.Cards[name] != nil })
+	for _, d := range wantDecks { // its "Sack Of Loot" is the log's "Sack of Loot"
+		for name, n := range d {
+			if card := c.Cards[name]; card != nil && card.Name != name {
+				delete(d, name)
+				d[card.Name] += n
+			}
+		}
+	}
 	if !reflect.DeepEqual(r.Turns, wantTurns) && !(len(r.Turns) == 0 && len(wantTurns) == 0) {
 		r.Problems = append(r.Problems, fmt.Sprintf("last turns %v, score screen says %v", r.Turns, wantTurns))
 	}

@@ -121,18 +121,25 @@ func (l *Log) changed(i int) {
 	}
 }
 
-func (l *Log) treasure(p int, c CardID, coins, level int) {
+// treasure adds a Treasure play to the current line. Treasures that make no $
+// have one of their own, without it: "plays a Potion.", "plays an Abundance and a Ducat."
+func (l *Log) treasure(p int, c CardID, coins, level int, plain bool) {
 	if l == nil {
 		return
 	}
-	if l.tr != nil && (l.tr.Args[0] != Seat(p) || l.tr.Level != level) {
+	if l.tr != nil && (l.tr.Args[0] != Seat(p) || l.tr.Level != level || (l.tr.Template == "PLAY") != plain) {
 		l.flush()
 	}
-	if l == nil || l.tr == nil {
+	if l.tr == nil {
 		l.tr = &Entry{Level: level, Template: "PLAY_TREASURES_FOR", Args: []any{Seat(p), []CardID{}, 0}}
+		if plain {
+			l.tr = &Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), []CardID{}}}
+		}
 	}
 	l.tr.Args[1] = append(l.tr.Args[1].([]CardID), c)
-	l.tr.Args[2] = l.tr.Args[2].(int) + coins
+	if !plain {
+		l.tr.Args[2] = l.tr.Args[2].(int) + coins
+	}
 }
 
 func (l *Log) flush() {
