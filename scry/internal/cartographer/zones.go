@@ -372,6 +372,17 @@ func fatedTop(es []Event, i int) bool {
 // cleanupPoints finds where each turn's Clean-up discards: just before the turn
 // player's last draw at the top level (the next hand), or the shuffle that
 // draw needed. A turn without that draw cleans up at the next turn line.
+// overpaidFarrier: the player bought a Farrier with an overpay this turn ("buys a Farrier.", "loses 3 Coins.").
+func overpaidFarrier(es []Event, p string) bool {
+	for i, e := range es {
+		if e.Template == "BUY" && e.Player == p && len(e.Args[1].Cards) == 1 && e.Args[1].Cards[0].Card != nil && e.Args[1].Cards[0].Card.Name == "Farrier" &&
+			i+1 < len(es) && strings.HasPrefix(es[i+1].Template, "LOSES_COIN") {
+			return true
+		}
+	}
+	return false
+}
+
 func cleanupPoints(g *Game) map[int]bool {
 	out := map[int]bool{}
 	start := -1
@@ -409,6 +420,10 @@ func cleanupPoints(g *Game) map[int]bool {
 		}
 		if x := g.Events[end-1]; at == end && x.Template == "SHUFFLES" && x.Level == 0 && x.Player == p {
 			beforeIt() // nothing to draw: Avoid kept every card in the discard pile
+		}
+		if h := g.Events[at-1]; at-1 > start && h.Template == "DRAW" && h.Level == 0 && h.Player == p && overpaidFarrier(g.Events[start+1:at-1], p) {
+			at-- // Farrier's cards come after the hand: "draws 5 cards.", "shuffles their deck.", "draws 3 cards."
+			beforeIt()
 		}
 		if at < len(g.Events) {
 			out[at] = true

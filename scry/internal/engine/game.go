@@ -175,6 +175,7 @@ type turnState struct {
 	Used      map[CardID]int
 	ActionsIn int // Actions played this turn
 	HandSize  int // cards drawn for the next hand in Clean-up
+	LateDraw  int // cards drawn after it: Farrier's
 
 	CopperBonus int // Coppersmith: Copper makes $ more
 

@@ -475,7 +475,14 @@ func (g *Game) cleanup(p int) {
 	g.watches = w
 	left := pl.Coins
 	pl.Actions, pl.Buys, pl.Coins, pl.Potions = 0, 0, 0, 0
-	g.draw(p, g.T2.HandSize, 0, 0)
+	if n, k, d := g.T2.HandSize, g.T2.LateDraw, len(pl.Z[Deck]); k > 0 && d >= n && d < n+k {
+		// Farrier's cards after the hand, on one line with it unless a shuffle comes between:
+		// "draws 5 cards.", "shuffles their deck.", "draws 3 cards."
+		g.draw(p, n, 0, 0)
+		g.draw(p, k, 0, 0)
+	} else {
+		g.draw(p, n+k, 0, 0)
+	}
 	if left > 0 && pl.Debt > 0 { // the $ Capital's debt kept: "draws 5 cards.", "loses 2 Coins."
 		g.Log.add(Entry{Template: plural(left, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), left}})
 	}
