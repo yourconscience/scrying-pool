@@ -210,6 +210,10 @@ func (r *replayer) hook(i int) {
 		panic(stop{}) // the real game ended here
 	}
 	x := r.real[r.pos]
+	if (e.Template == "GETS_COIN" || e.Template == "GETS_COINS") && i > 0 && strings.HasPrefix(l.Entries[i-1].Template, "USES_COFFER") &&
+		x.Template != "GETS_COIN" && x.Template != "GETS_COINS" {
+		return // "uses 1 Coffers. (+$1)" has its "gets +$1." only sometimes
+	}
 	if why := r.same(e, x, false); why != "" {
 		r.fail(why, r.show(e))
 	}
