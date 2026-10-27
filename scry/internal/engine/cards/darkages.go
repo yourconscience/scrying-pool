@@ -493,7 +493,7 @@ func init() {
 	})
 	reg("Storeroom", rules{Play: func(c *ctx) {
 		c.PlusBuys(1)
-		got := c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P))))
+		got := c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P)))) // "discards 2 cards.", "draws 2 cards."
 		c.Draw(len(got))
 		if got = c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P)))); len(got) > 0 {
 			c.PlusCoins(len(got))

@@ -778,8 +778,8 @@ func init() {
 		},
 	})
 	reg("Prepare", rules{
-		Buy: func(c *ctx) { // "sets 5 cards aside."; next turn it plays the Actions and Treasures, then discards the rest
-			xs := c.SetAside(c.P, append([]inst{}, c.Hand(c.P)...))
+		Buy: func(c *ctx) { // "sets a Copper and a River Shrine aside with Prepare."; next turn it plays the Actions and Treasures, then discards the rest
+			xs := c.SetAsideWith(c.P, append([]inst{}, c.Hand(c.P)...)...)
 			c.Later().Aside = xs
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
@@ -796,7 +796,11 @@ func init() {
 					break
 				}
 				played[x[0]] = true
-				c.PlayWith(x[0])
+				if dd := c.G.Def(x[0]); dd.Treasure() && !dd.Action() { // "plays a Copper. (+$1)"; "plays a River Shrine. (|)"
+					c.PlayNow(x[0])
+				} else {
+					c.PlayBlank(x[0])
+				}
 			}
 			c.Discard(c.P, slices.DeleteFunc(c.In(aside, d.Aside), func(x inst) bool { return played[x] }))
 			return true

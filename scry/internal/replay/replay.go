@@ -396,6 +396,9 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 				return "a different player"
 			}
 		case int:
+			if !cards && y.Number != nil && *y.Number > a && strings.HasSuffix(e.Template, "_FROM") && strings.HasPrefix(e.Template, "GETS_COIN") {
+				continue // a second Priest adds to it: "gets +$4. (Priest)"; compared once the next line comes
+			}
 			if y.Number == nil || *y.Number != a {
 				return "a different number"
 			}
