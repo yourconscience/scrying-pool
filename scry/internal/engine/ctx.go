@@ -801,6 +801,9 @@ func (c *Ctx) ShuffleInto(p int, xs []Inst) {
 	if len(moved) > 0 {
 		d := c.G.P[p].Z[Deck]
 		c.G.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
+		for _, x := range d {
+			c.G.setLoose(x, true)
+		}
 	}
 }
 

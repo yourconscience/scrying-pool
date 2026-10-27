@@ -75,7 +75,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		return rep, nil
 	}
 	r := &replayer{c: c, t: t, rep: &rep, line: map[int]int{}, english: map[string]string{}}
-	r.hints, r.assigned = hints, map[takeID]string{}
+	r.hints, r.assigned, r.could = hints, map[takeID]string{}, map[takeID]map[string]bool{}
 	for _, tm := range c.Templates {
 		r.english[tm.Name] = tm.English
 	}
@@ -208,14 +208,15 @@ type replayer struct {
 	turn       string
 	takes      [2][]cartographer.DeckTake
 	took       [2]int
-	offHand    map[int][]string     // named cards a line took from outside the hand
-	hamlet     int                  // the engine line that played the Hamlet whose first discard was answered
-	hidden     map[engine.Inst]bool // cards the replay chose for draws the log doesn't name, while no line has shown them
-	schemeTurn string               // the turn Scheme's picks were counted in
-	schemes    int                  // Scheme picks answered in it
-	flat       bool                 // the log writes the choice the engine nests at the top level
-	hints      map[takeID]string    // names for takes the log doesn't name, from an earlier run
-	assigned   map[takeID]string    // the card each take was
+	offHand    map[int][]string           // named cards a line took from outside the hand
+	hamlet     int                        // the engine line that played the Hamlet whose first discard was answered
+	hidden     map[engine.Inst]bool       // cards the replay chose for draws the log doesn't name, while no line has shown them
+	schemeTurn string                     // the turn Scheme's picks were counted in
+	schemes    int                        // Scheme picks answered in it
+	flat       bool                       // the log writes the choice the engine nests at the top level
+	hints      map[takeID]string          // names for takes the log doesn't name, from an earlier run
+	assigned   map[takeID]string          // the card each take was
+	could      map[takeID]map[string]bool // the cards each take could have been: in the deck, or discarded unseen
 }
 
 // skip lists real lines the engine doesn't write.
@@ -317,13 +318,13 @@ func (r *replayer) nameRevealedDraws() {
 // may as well have stayed in the deck in its place.
 func (r *replayer) hintInDeck(p int, n string) bool {
 	deck := r.g.P[p].Z[engine.Deck]
-	if slices.ContainsFunc(deck, func(x engine.Inst) bool { return r.g.Def(x).Name == n }) {
+	if slices.ContainsFunc(deck, func(x engine.Inst) bool { return r.free(x) && r.g.Def(x).Name == n }) {
 		return true
 	}
 	for _, x := range r.g.P[p].Z[engine.Discard] {
 		if r.hidden[x] && r.g.Def(x).Name == n {
 			for _, y := range deck {
-				if r.g.Def(y).Name != n {
+				if r.free(y) && r.g.Def(y).Name != n {
 					r.g.Swap(x, y)
 					r.hide(y)
 					delete(r.hidden, x)
@@ -370,14 +371,19 @@ func (r *replayer) hintsFor() map[takeID]string {
 			continue
 		}
 		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" // the cards stay in the hand
+		off := map[string]int{}
+		for _, c := range r.offHand[y.Line] { // Ironmonger's "discards a Copper." it revealed
+			off[c]++
+		}
 		for _, cn := range y.Args[1].Cards {
-			if cn.Card == nil || y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name {
+			if cn.Card == nil || y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name || !r.handCard(cn.Card.Name) {
 				continue
 			}
 			n := cn.Card.Name
-			need[n] = max(need[n], gone[n]+cn.N)
+			k := max(0, cn.N-off[n])
+			need[n] = max(need[n], gone[n]+k)
 			if !shows {
-				gone[n] += cn.N
+				gone[n] += k
 			}
 		}
 	}
@@ -397,7 +403,7 @@ func (r *replayer) hintsFor() map[takeID]string {
 		for miss := need[n] - have[n]; miss > 0; miss-- {
 			for _, k := range ks {
 				m := r.assigned[takeID{p, k}]
-				if _, done := out[takeID{p, k}]; !done && have[m] > need[m] {
+				if _, done := out[takeID{p, k}]; !done && have[m] > need[m] && r.could[takeID{p, k}][n] {
 					out[takeID{p, k}] = n
 					have[m]--
 					have[n]++
@@ -407,6 +413,12 @@ func (r *replayer) hintsFor() map[takeID]string {
 		}
 	}
 	return out
+}
+
+// handCard: a card that can be in a hand, not a Hex the log discards ("discards Haunting.").
+func (r *replayer) handCard(name string) bool {
+	d, ok := r.t.Card(name)
+	return ok && !d.Landscape() && !d.Is(engine.TBoon|engine.THex|engine.TState|engine.TArtifact)
 }
 
 // revealedStopLast puts last among a reveal's takes the card it stopped at:
@@ -1309,6 +1321,9 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		used[k] = true
 		out = append(out, k)
 		left[r.t.Defs[d.Options[k].Card].Name]--
+		if x := d.Options[k].Inst; x >= 0 {
+			r.hide(x) // a guess: Order of Astrologers' "topdecks a card."
+		}
 	}
 	if d.Kind == engine.ToPick && len(out) > d.Max { // one of the cards the line names: Hunter's Action of "puts a Copper and a Mystic into their hand"
 		out = out[:d.Max]
@@ -1325,6 +1340,22 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 // beforeTake puts the card the log takes next from a deck on top of the engine's deck.
 func (r *replayer) beforeTake(p int) {
 	k := r.took[p]
+	could := map[string]bool{}
+	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 && !r.free(d[len(d)-1]) {
+		could[r.g.Def(d[len(d)-1]).Name] = true
+	} else {
+		for _, x := range d {
+			if r.free(x) {
+				could[r.g.Def(x).Name] = true
+			}
+		}
+		for _, x := range r.g.P[p].Z[engine.Discard] {
+			if r.hidden[x] {
+				could[r.g.Def(x).Name] = true
+			}
+		}
+	}
+	r.could[takeID{p, k}] = could
 	r.takeNext(p)
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 {
 		r.assigned[takeID{p, k}] = r.g.Def(d[len(d)-1]).Name
@@ -1365,6 +1396,9 @@ func (r *replayer) takeNext(p int) {
 			return
 		}
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
+	}
+	if top := deck[len(deck)-1]; !r.free(top) { // a card put there since the shuffle: Artificer's gain
+		return
 	}
 	// an unnamed card: one this player shows from their hand while it's there,
 	// else one they won't need in their next hand either; never one a later
@@ -1414,6 +1448,9 @@ func (r *replayer) takeNext(p int) {
 		r.g.PutOnTop(deck[best])
 	}
 }
+
+// free: a deck card at a place, or of a name, the replay guessed, which a take may yet change.
+func (r *replayer) free(x engine.Inst) bool { return r.g.Loose(x) || r.hidden[x] }
 
 func (r *replayer) hide(x engine.Inst) {
 	if r.hidden == nil {
@@ -1491,7 +1528,7 @@ func (r *replayer) mendHand(at int) {
 		for ; have[n] < k; have[n]++ {
 			x := engine.Inst(-1)
 			for _, d := range r.g.P[p].Z[engine.Deck] {
-				if x < 0 && r.g.Def(d).Name == n {
+				if x < 0 && r.free(d) && r.g.Def(d).Name == n {
 					x = d
 				}
 			}
@@ -1546,7 +1583,7 @@ func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) in
 	p := r.whose(d)
 	x := engine.Inst(-1)
 	for _, y := range r.g.P[p].Z[engine.Deck] { // the bottom-most
-		if r.g.Def(y).Name == name {
+		if r.free(y) && r.g.Def(y).Name == name {
 			x = y
 			break
 		}
@@ -1609,7 +1646,7 @@ func (r *replayer) swapOut(p int, name string) engine.Inst {
 		in[r.g.Def(x).Name]++
 	}
 	for _, x := range deck {
-		if n := r.g.Def(x).Name; n != name && in[n] > later[n] {
+		if n := r.g.Def(x).Name; n != name && in[n] > later[n] && r.free(x) {
 			r.g.Swap(x, y)
 			r.hide(x)
 			return y

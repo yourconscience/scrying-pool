@@ -107,8 +107,9 @@ type Game struct {
 	// replay can put the card its log names on top (PutOnTop).
 	BeforeTake func(p int)
 
-	cards  []CardID // by Inst
-	loc    []Loc    // by Inst
+	cards  []CardID      // by Inst
+	loc    []Loc         // by Inst
+	loose  map[Inst]bool // cards in a deck at a place no one has seen: shuffled in, not put there since
 	rng    *rand.Rand
 	pileOf map[CardID]int
 	turn   int      // the current turn's number for Cur
@@ -588,6 +589,9 @@ func (g *Game) move(x Inst, from Zone, to Loc) bool {
 	t := g.slice(to)
 	*t = append(*t, x)
 	g.loc[x] = to
+	if from != Deck || to.Zone != Deck { // PutOnTop keeps the card's flag: a replay choosing what was there
+		g.setLoose(x, false)
+	}
 	return true
 }
 
@@ -598,6 +602,23 @@ func (g *Game) Swap(x, y Inst) {
 	i, j := slices.Index(*sx, x), slices.Index(*sy, y)
 	(*sx)[i], (*sy)[j] = y, x
 	g.loc[x], g.loc[y] = ly, lx
+	fx, fy := g.loose[x], g.loose[y]
+	g.setLoose(x, fy)
+	g.setLoose(y, fx)
+}
+
+// Loose: x is in a deck at a place no one has seen, shuffled in and not put there since.
+func (g *Game) Loose(x Inst) bool { return g.loose[x] }
+
+func (g *Game) setLoose(x Inst, on bool) {
+	if !on {
+		delete(g.loose, x)
+		return
+	}
+	if g.loose == nil {
+		g.loose = map[Inst]bool{}
+	}
+	g.loose[x] = true
 }
 
 // Move moves a card from wherever it is.
@@ -701,6 +722,9 @@ func (g *Game) shuffle(p int, level int) {
 	pl.Shuffles++
 	for _, x := range append(d, shadows...) {
 		g.loc[x] = Loc{Deck, int16(p)}
+	}
+	for _, x := range d {
+		g.setLoose(x, true)
 	}
 	pl.Z[Deck] = append(append(shadows, d...), pl.Z[Deck]...)
 	pl.Z[Discard] = keep
