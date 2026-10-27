@@ -370,9 +370,12 @@ func init() {
 		},
 		Reacts:   engine.On(engine.EvTrash),
 		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && e.X != c.Me },
-		React: func(c *ctx, e *ev) bool { // "reacts with a Market Square.", "discards a Market Square. (Market Square)", "gains a Gold. (Market Square)"
+		React: func(c *ctx, e *ev) bool { // "reacts with a Market Square.", "discards a Market Square.", "gains a Gold."; "(Market Square)" on both at the start of a turn
 			c.Log("REACTS_WITH", engine.Seat(c.P), []engine.CardID{c.Src})
-			a := c.Away()
+			a := c
+			if c.G.T2.Phase == engine.StartPhase {
+				a = c.Away()
+			}
 			a.Discard(c.P, one(c.Me))
 			a.Gain(c.P, c.Card("Gold"), discard)
 			return true
