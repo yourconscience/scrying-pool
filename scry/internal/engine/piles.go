@@ -89,6 +89,7 @@ type Pile struct {
 	Favors  int    // Family of Inventors' Favor tokens
 	members []CardID
 	mixed   bool // shuffled at setup, so its order shows only as it goes (Knights, Ruins, Loot)
+	dealt   bool // some of its cards, dealt at random at setup (Ruins)
 }
 
 // AddPile adds a pile of n copies of a card; it returns the pile's index.
@@ -125,6 +126,7 @@ func (g *Game) addMixed(c CardID, ms []member, supply, shuffle bool, keep int) i
 	}
 	if keep > 0 {
 		xs = xs[len(xs)-keep:]
+		g.Piles[i].dealt = true
 	}
 	for _, id := range xs {
 		g.newCard(id, Loc{Supply, int16(i)})

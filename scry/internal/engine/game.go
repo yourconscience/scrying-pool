@@ -516,6 +516,10 @@ func (g *Game) Raise(c CardID) bool {
 			return true
 		}
 	}
+	if len(s) > 0 && g.Piles[i].dealt { // the 10 Ruins dealt didn't include it: the top one is it
+		g.cards[s[len(s)-1]] = c
+		return true
+	}
 	return false
 }
 

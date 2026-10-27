@@ -393,7 +393,7 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 		y := x.Args[n]
 		switch a := a.(type) {
 		case engine.Seat:
-			if y.Player != r.names[a] {
+			if y.Player != r.names[a] && !(n == 0 && y.Player == "" && x.Player == "") { // "Search will stop functioning after this turn." names no player
 				return "a different player"
 			}
 		case int:
