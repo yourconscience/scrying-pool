@@ -154,7 +154,11 @@ func ParseClient(b []byte) (*Client, error) {
 		if n.Singular == "" {
 			continue
 		}
-		card := &Card{Key: n.Key, Name: n.Singular, Plural: n.Plural, Noun: n.Noun}
+		name := n.Singular
+		if _, rest, ok := strings.Cut(n.Noun, " "); ok && rest != name && strings.EqualFold(rest, name) {
+			name = rest // the client's "Sack Of Loot" is "a Sack of Loot"
+		}
+		card := &Card{Key: n.Key, Name: name, Plural: n.Plural, Noun: n.Noun}
 		byKey[n.Key] = card
 		c.Cards[card.Name] = card
 	}

@@ -583,7 +583,11 @@ func (c *Ctx) Topdeck(p int, xs []Inst) []Inst {
 }
 
 // Bottomdeck puts cards on the bottom of the deck.
-func (c *Ctx) Bottomdeck(p int, xs []Inst) {
+func (c *Ctx) Bottomdeck(p int, xs []Inst) { c.BottomdeckAs(p, xs, "BOTTOMDECKS") }
+
+// BottomdeckAs puts cards on the bottom of the deck with a template of its own:
+// "puts a Jewels on the bottom of Draw Pile" (PUT_ON_BOTTOM_OF).
+func (c *Ctx) BottomdeckAs(p int, xs []Inst, template string, args ...any) {
 	var moved []Inst
 	for _, x := range xs {
 		if c.G.Owner(x) == p && !(c.InPlace && x == c.Me) {
@@ -592,7 +596,7 @@ func (c *Ctx) Bottomdeck(p int, xs []Inst) {
 		}
 	}
 	if len(moved) > 0 {
-		c.Log("BOTTOMDECKS", Seat(p), c.G.ids(moved))
+		c.Log(template, append([]any{Seat(p), c.G.ids(moved)}, args...)...)
 	}
 }
 
@@ -809,6 +813,9 @@ func (c *Ctx) PlayMerged(x Inst) { c.G.play(c.P, x, c.level, playHow{merge: true
 
 // PlayWith plays a card with this card named on the line ("(Sailor)").
 func (c *Ctx) PlayWith(x Inst) { c.G.play(c.P, x, c.level, playHow{by: c.Src}) }
+
+// PlayBlank plays a card with an empty name on the line: Patient's "plays a Nobles. (|)".
+func (c *Ctx) PlayBlank(x Inst) { c.G.play(c.P, x, c.level, playHow{blank: true}) }
 
 // Attack runs an Attack's effect on each other player a Reaction didn't protect.
 func (c *Ctx) Attack(fn func(victim int)) {

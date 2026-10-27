@@ -23,6 +23,7 @@ const (
 	EvTurnEnd                 // the end of P's turn
 	EvShuffle                 // P shuffled
 	EvReveal                  // P reveals X
+	EvShuffling               // P is about to shuffle their discard pile into their deck
 	nEvKinds
 )
 
@@ -53,9 +54,10 @@ type Ev struct {
 	Level   int    // the nesting of lines its responses write
 	Cleanup bool   // EvDiscard in Clean-up
 
-	Unaffected bool // EvAttack: a Reaction protects the victim
-	Done       bool // the card was moved already: a later listener can't move it
-	Skip       bool // EvPlaying: its instructions don't happen (Enchantress)
+	Unaffected bool   // EvAttack: a Reaction protects the victim
+	Done       bool   // the card was moved already: a later listener can't move it
+	Skip       bool   // EvPlaying: its instructions don't happen (Enchantress)
+	Keep       []Inst // EvShuffling: cards that stay in the discard pile (Avoid)
 }
 
 // Watch is an effect a card leaves for later: Merchant's +$1 for the next

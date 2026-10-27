@@ -61,10 +61,13 @@ var pileMembers = map[string][]member{
 	"Odysseys":                    {{"Old Map", 4}, {"Voyage", 4}, {"Sunken Treasure", 4}, {"Distant Shore", 4}},
 	"Townsfolk":                   {{"Town Crier", 4}, {"Blacksmith", 4}, {"Miller", 4}, {"Elder", 4}},
 	"Wizards":                     {{"Student", 4}, {"Conjurer", 4}, {"Sorcerer", 4}, {"Lich", 4}},
+	"Loot": {{"Amphora", 2}, {"Doubloons", 2}, {"Endless Chalice", 2}, {"Figurehead", 2}, {"Hammer", 2}, {"Insignia", 2},
+		{"Jewels", 2}, {"Orb", 2}, {"Prize Goat", 2}, {"Puzzle Box", 2}, {"Sextant", 2}, {"Shield", 2}, {"Spell Scroll", 2},
+		{"Staff", 2}, {"Sword", 2}},
 }
 
 // shuffledPiles are mixed piles shuffled at setup.
-var shuffledPiles = map[string]bool{"Knights": true}
+var shuffledPiles = map[string]bool{"Knights": true, "Loot": true}
 
 // Pile is a pile of cards: a Supply pile, or a non-Supply one such as the Spoils.
 type Pile struct {
@@ -136,6 +139,14 @@ func (g *Game) AddRuins() {
 		ms = append(ms, member{n, 10})
 	}
 	g.addMixed(c, ms, true, true, 10)
+}
+
+// AddLoot adds the Loot pile, outside the Supply: two of each Loot, shuffled.
+func (g *Game) AddLoot() {
+	c := g.T.MustCard("Loot")
+	if _, ok := g.pileOf[c]; !ok {
+		g.addMixed(c, pileMembers["Loot"], false, true, 0)
+	}
 }
 
 // Need adds a non-Supply pile a card uses, e.g. Spoils for Bandit Camp.
