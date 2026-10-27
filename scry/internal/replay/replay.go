@@ -1060,14 +1060,16 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 	}
 	// an unnamed card is one the hand can spare: not a Copper it plays next turn
 	// ("discards a card and an Estate.", then "plays 3 Coppers.")
-	var need map[string]int
+	var need, strict map[string]int
 	left := map[string]int{}
 	if unknown > 0 {
 		x, _ := r.peek()
 		need, _, _, _ = r.shown(r.whose(d), x.Line, 1)
+		strict = r.shownUntilDraw(r.whose(d), x.Line)
 		for _, cn := range cards {
 			if cn.Card != nil {
 				need[cn.Card.Name] -= cn.N // the line's own cards
+				strict[cn.Card.Name] -= cn.N
 			}
 		}
 		for i, o := range d.Options {
@@ -1077,6 +1079,7 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		}
 		if o := d.Options[0]; o.Inst >= 0 && r.g.Where(o.Inst).Zone == engine.Revealed { // what the next lines name stays: Miller's discarded Estate
 			need = r.namedBelow(r.pos)
+			strict = need
 		}
 	}
 	for ; unknown > 0; unknown-- {
@@ -1084,6 +1087,14 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		for i, o := range d.Options {
 			if n := r.t.Defs[o.Card].Name; !used[i] && (k < 0 || left[n] > need[n]) {
 				if k = i; left[n] > need[n] {
+					break
+				}
+			}
+		}
+		if n := r.t.Defs[d.Options[max(k, 0)].Card].Name; k >= 0 && left[n] <= need[n] && left[n] <= strict[n] {
+			for i, o := range d.Options { // none to spare: one the hand needn't show before its next draw
+				if m := r.t.Defs[o.Card].Name; !used[i] && left[m] > strict[m] {
+					k = i
 					break
 				}
 			}
@@ -1401,6 +1412,41 @@ func (r *replayer) laterTakes(p, line int) map[string]int {
 		}
 	}
 	return later
+}
+
+// shownUntilDraw counts the cards player p shows from their hand by name from
+// line on, until their next draw or the turn's end: cards shown after a draw
+// may come from it (Capital City's "discards a card and a Copper.", then Way
+// of the Owl's "draws 4 cards." and "plays 3 Coppers.").
+func (r *replayer) shownUntilDraw(p, line int) map[string]int {
+	need := map[string]int{}
+	i, ok := r.line[line]
+	if !ok {
+		return need
+	}
+	stop := math.MaxInt
+	if r.took[p] < len(r.takes[p]) {
+		stop = r.takes[p][r.took[p]].Line
+	}
+	name := r.names[p]
+	for _, x := range r.real[i:] {
+		if x.Template == "NEW_TURN" || x.Line >= stop {
+			break
+		}
+		if x.Player != name || !fromHand[x.Template] {
+			continue
+		}
+		off := map[string]int{}
+		for _, c := range r.offHand[x.Line] {
+			off[c]++
+		}
+		for _, cn := range x.Args[1].Cards {
+			if cn.Card != nil {
+				need[cn.Card.Name] += max(0, cn.N-off[cn.Card.Name])
+			}
+		}
+	}
+	return need
 }
 
 // takesAfterShuffle counts the cards player p takes by name after their next
