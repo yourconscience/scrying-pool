@@ -87,8 +87,8 @@ func init() {
 				}
 			}
 			for _, d := range c.Durs() {
-				if first && d.N == 0 {
-					c.As(e.P).Trash(e.P, one(e.X))
+				if first && d.N == 0 { // "trashes a Silver.", unnamed
+					c.As(e.P).Here().Trash(e.P, one(e.X))
 					return
 				}
 			}

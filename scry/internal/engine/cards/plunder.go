@@ -170,9 +170,9 @@ func init() {
 			if e.P != c.P || !c.G.D(e.C).Treasure() {
 				return
 			}
-			for _, d := range c.Durs() {
+			for _, d := range c.Durs() { // "trashes 2 Estates.", unnamed
 				d.Done = true
-				c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, 0, 2))
+				c.Here().Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, 0, 2))
 			}
 		},
 	})
