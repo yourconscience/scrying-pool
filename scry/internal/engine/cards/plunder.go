@@ -543,7 +543,7 @@ func init() {
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // in Clean-up "sets a Collection aside with Trickster."
 			if e.Kind == engine.EvTurnEnd {
 				if w.N > 0 {
-					c.At(0).ToHand(w.P, c.In(aside, one(inst(w.N-1))), "PUT_IN_HAND_FROM", engine.Name(c.Src))
+					c.At(0).ToHand(w.P, c.In(aside, one(inst(w.N-1))), "PUT_IN_HAND") // "puts a Silver into their hand."
 				}
 				return true
 			}
