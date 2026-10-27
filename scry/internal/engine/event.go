@@ -1,5 +1,10 @@
 package engine
 
+import (
+	"slices"
+	"sort"
+)
+
 // EvKind is something that happens that cards may respond to.
 type EvKind uint8
 
@@ -62,6 +67,7 @@ type Watch struct {
 	On   EvMask
 	N    int  // what it counts
 	Long bool // it lasts past this turn's Clean-up, until used up
+	id   int  // in the order added
 }
 
 // Watches are the effects waiting for later.
@@ -69,7 +75,8 @@ func (g *Game) Watches() []Watch { return g.watches }
 
 // AddWatch leaves an effect for later this turn.
 func (c *Ctx) AddWatch(on EvMask, n int) *Watch {
-	c.G.watches = append(c.G.watches, Watch{P: c.P, Src: c.Me, C: c.Src, On: on, N: n})
+	c.G.watchN++
+	c.G.watches = append(c.G.watches, Watch{P: c.P, Src: c.Me, C: c.Src, On: on, N: n, id: c.G.watchN})
 	c.G.hears |= on
 	return &c.G.watches[len(c.G.watches)-1]
 }
@@ -152,9 +159,10 @@ func (g *Game) fire(ev *Ev) {
 		cx := g.ctx(w.P, w.Src, ev.Level)
 		cx.Src = w.C
 		if g.T.Defs[w.C].Rules.Watch(cx, ev, &g.watches[i]) {
-			g.watches = append(g.watches[:i], g.watches[i+1:]...)
-			i--
+			g.watches = slices.DeleteFunc(g.watches, func(x Watch) bool { return x.id == w.id })
 		}
+		// what it did can use up other watches (Donate's trashing): go on after this one
+		i = sort.Search(len(g.watches), func(k int) bool { return g.watches[k].id > w.id }) - 1
 	}
 }
 

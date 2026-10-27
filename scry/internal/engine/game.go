@@ -111,6 +111,7 @@ type Game struct {
 
 	durs    []*Dur  // Durations and other cards waiting for later turns
 	watches []Watch // effects waiting for something this turn, or longer
+	watchN  int     // watches added so far
 	hears   EvMask  // the events anything in the game responds to
 	extra   []CardID
 	ended   bool // the game is over
@@ -136,6 +137,7 @@ type Game struct {
 	Approach      bool // Approaching Army's Attack pile
 	TradeRoute    int  // coin tokens on the Trade Route mat
 	prevGained    [2][]CardID
+	prevTrashed   [2]int
 
 	copper, silver, gold, estate, duchy, province, curse, platinum, colony, potion CardID
 }
@@ -162,6 +164,9 @@ type turnState struct {
 	Forbid []CardID // cards that can't be bought this turn (Contraband)
 
 	Back bool // Villa: back to the Action phase from the Buy phase
+
+	NoActions bool // Snowy Village: further +Actions are ignored
+	Trashed   int  // cards the player whose turn it is trashed (Goatherd)
 }
 
 type Phase uint8
@@ -408,6 +413,9 @@ func (g *Game) Raise(c CardID) bool {
 
 // PrevGained is what a player gained on their last turn.
 func (g *Game) PrevGained(p int) []CardID { return g.prevGained[p] }
+
+// PrevTrashed is how many cards a player trashed on their last turn.
+func (g *Game) PrevTrashed(p int) int { return g.prevTrashed[p] }
 
 // D is a card kind's Def.
 func (g *Game) D(c CardID) *Def { return g.T.Defs[c] }

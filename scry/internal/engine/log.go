@@ -51,7 +51,7 @@ func (l *Log) add(e Entry) {
 		l.add(p)
 	}
 	if l.tr != nil {
-		if e.Level > 0 && e.Kind == 0 {
+		if e.Level > l.tr.Level && e.Kind == 0 { // its own lines; one at its level ends it: Storyteller's "draws a card."
 			l.after = append(l.after, e)
 			return
 		}
@@ -177,7 +177,7 @@ func (l *Log) Render(c *cartographer.Client, players [2]string) (string, error) 
 		}
 		var pieces []string
 		addText := func(s string) {
-			if s = strings.TrimSpace(s); s != "" {
+			if s = strings.TrimSpace(c.ShowCards(s)); s != "" {
 				pieces = append(pieces, s)
 			}
 		}

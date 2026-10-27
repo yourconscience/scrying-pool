@@ -62,14 +62,14 @@ func (g *Game) takeTurn(extra CardID) {
 	// Clean-up, except after the last turn: dominion.games ends the game and its log there
 	g.T2.Phase = CleanupPhase
 	if g.over() || g.capped() {
-		g.prevGained[p] = g.T2.Gained
+		g.prevGained[p], g.prevTrashed[p] = g.T2.Gained, g.T2.Trashed
 		return
 	}
 	g.Log.lazy(&Entry{Template: "BEGINS_CLEANUP_PHASE", Args: []any{Seat(p)}})
 	g.fire(&Ev{Kind: EvCleanup, P: p, X: -1, Level: 1})
 	g.cleanup(p)
 	g.fire(&Ev{Kind: EvTurnEnd, P: p, X: -1, Level: 1})
-	g.prevGained[p] = g.T2.Gained
+	g.prevGained[p], g.prevTrashed[p] = g.T2.Gained, g.T2.Trashed
 }
 
 // startTurn resolves Durations and everything else that happens at the start of a turn.
@@ -195,7 +195,7 @@ func (g *Game) buyPhase(p int) {
 		if len(got) == 0 {
 			break
 		}
-		g.buy(p, got[0].Card)
+		g.buy(p, got[0].Card, got[0].Mode == 1)
 		if g.T2.Back {
 			return
 		}
@@ -236,6 +236,9 @@ func (g *Game) buyOptions(p int) []Option {
 		if g.CanBuy(p, c) {
 			out = append(out, Option{Card: c, Inst: -1})
 		}
+		if r := g.T.Defs[c].Rules; r != nil && r.PayWith != nil && g.P[p].Debt == 0 && g.allowed(p, c) && len(g.options(p, Hand, r.PayWith)) > 0 {
+			out = append(out, Option{Card: c, Inst: -1, Mode: 1, Label: "trash a card instead"})
+		}
 	}
 	for _, c := range g.Land {
 		d := g.T.Defs[c]
@@ -248,10 +251,12 @@ func (g *Game) buyOptions(p int) []Option {
 
 // CanBuy: player p may buy c now, cost and rules allowing.
 func (g *Game) CanBuy(p int, c CardID) bool {
+	return g.CanAfford(p, g.CostOf(c)) && g.allowed(p, c)
+}
+
+// allowed: the rules let player p buy c, whatever it costs.
+func (g *Game) allowed(p int, c CardID) bool {
 	d := g.T.Defs[c]
-	if !g.CanAfford(p, g.CostOf(c)) {
-		return false
-	}
 	if d.Is(TProject) && g.HasProject(p, c) {
 		return false
 	}
@@ -281,11 +286,15 @@ func (g *Game) HasProject(p int, c CardID) bool {
 	return false
 }
 
-// buy buys a card, Event or Project.
-func (g *Game) buy(p int, c CardID) {
+// buy buys a card, Event or Project; instead, by trashing what its PayWith
+// takes rather than paying its cost.
+func (g *Game) buy(p int, c CardID, instead bool) {
 	pl := &g.P[p]
 	d := g.T.Defs[c]
 	cost := g.CostOf(c)
+	if instead {
+		cost = Cost{}
+	}
 	pl.Buys--
 	pl.Coins -= cost.Coins
 	pl.Potions -= cost.Potion
@@ -314,11 +323,17 @@ func (g *Game) buy(p int, c CardID) {
 	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
 		over = g.ctx(p, x, 1).Number(p, 0, pl.Coins, "LOSES_COINS")
 	}
-	if over > 0 { // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
+	switch {
+	case over > 0: // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
 		pl.Coins -= over
 		g.Log.add(Entry{Level: 1, Template: plural(over, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), over}})
-	} else {
+	case instead: // "buys an Animal Fair.", "trashes a Jester.", "gains an Animal Fair."
+		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+		cx := g.ctx(p, -1, 1)
+		cx.Src = c
+		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, d.Rules.PayWith), 1, 1)))
+	default:
 		g.Log.add(Entry{Template: "BUY_AND_GAIN", Args: []any{Seat(p), []CardID{c}}})
 	}
 	line := g.Log.last()
@@ -335,7 +350,7 @@ func (g *Game) buy(p int, c CardID) {
 		}
 		x = pile[len(pile)-1]
 	}
-	if over > 0 {
+	if over > 0 || instead {
 		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(p), []CardID{c}}})
 	}
 	g.gainX(p, x, Discard, 1, 0, true)
@@ -448,7 +463,7 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			panic(MissingRules{g.T.Defs[how.way].Name})
 		}
 		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
-	case how.by != 0 && how.times == 0:
+	case how.by != 0: // each of Mastermind's three plays too
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})

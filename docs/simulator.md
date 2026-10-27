@@ -1,6 +1,6 @@
 # Simulator: a Dominion rules engine for position evaluation
 
-Status: draft for review, 2026-10-24; the decisions at the end are agreed. Built: the engine with Base, Intrigue, Seaside, Prosperity, Hinterlands, Cornucopia & Guilds, Alchemy without Possession, Dark Ages, Adventures and Empires, random and Big Money bots, `scry sim play`, `scry sim fuzz` and `scry sim check`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
+Status: draft for review, 2026-10-25; the decisions at the end are agreed. Built: the engine with Base, Intrigue, Seaside, Prosperity, Hinterlands, Cornucopia & Guilds, Alchemy without Possession, Dark Ages, Adventures, Empires and Menagerie, random and Big Money bots, `scry sim play`, `scry sim fuzz` and `scry sim check`; the rest is the plan. Back to the [README](../README.md); how the log reader works is in [internals.md](internals.md).
 
 ## Goal
 

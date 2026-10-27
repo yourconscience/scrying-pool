@@ -17,6 +17,7 @@ type Ctx struct {
 	InPlace bool
 
 	from       bool    // the effect happens away from the card's play (a Duration's next turn): lines name the card
+	swap       bool    // Way of the Chameleon: its player's +Cards give +$ instead, and +$ give +Cards
 	holders    []Inst  // the cards that played this one (Throne Room), which stay in play with it
 	unaffected [2]bool // players a Reaction protected from this Attack
 	moved      []Zone  // where the cards the last moveAll moved came from
@@ -91,11 +92,24 @@ func (c *Ctx) withFrom(template string, args []any) (string, []any) {
 	return template, args
 }
 
+// Swapped is the effect with +Cards and +$ traded, for Way of the Chameleon.
+func (c *Ctx) Swapped() *Ctx {
+	d := *c
+	d.swap = true
+	return &d
+}
+
 // Draw: +Cards.
 func (c *Ctx) Draw(n int) []Inst { return c.DrawFor(c.P, n) }
 
 // DrawFor draws cards for any player, e.g. Council Room's other player.
 func (c *Ctx) DrawFor(p, n int) []Inst {
+	if c.swap && p == c.P {
+		d := *c
+		d.swap = false
+		d.PlusCoins(n)
+		return nil
+	}
 	var from CardID
 	if c.from {
 		from = c.Src
@@ -104,6 +118,9 @@ func (c *Ctx) DrawFor(p, n int) []Inst {
 }
 
 func (c *Ctx) PlusActions(n int) {
+	if c.G.T2.NoActions && c.P == c.G.Cur { // Snowy Village: silently
+		return
+	}
 	c.G.P[c.P].Actions += n
 	t, a := c.withFrom(plural(n, "GETS_ACTION", "GETS_ACTIONS"), []any{Seat(c.P), n})
 	c.Log(t, a...)
@@ -116,6 +133,12 @@ func (c *Ctx) PlusBuys(n int) {
 }
 
 func (c *Ctx) PlusCoins(n int) {
+	if c.swap {
+		d := *c
+		d.swap = false
+		d.Draw(n)
+		return
+	}
 	pl := &c.G.P[c.P]
 	if n > 0 && pl.MinusCoin != 0 { // "returns -Coin token set by Bridge Troll. (-$1)"
 		c.Log("RETURNS_MINUS_COIN_TOKEN", Seat(c.P), "-Coin token", Name(pl.MinusCoin))
@@ -504,6 +527,9 @@ func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 	t, a := c.with("TRASH")
 	moved := c.moveAll(p, xs, Loc{Trash, 0}, t, a...)
 	from := c.moved
+	if p == c.G.Cur {
+		c.G.T2.Trashed += len(moved)
+	}
 	for i, x := range moved {
 		c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: c.G.cards[x], From: from[i], By: c.Src, Level: c.level + 1})
 	}
@@ -743,6 +769,11 @@ func (c *Ctx) DiscardTop(p int) Inst {
 // once (Throne Room), which stays in play with a Duration; times > 0 plays it again where it is.
 func (c *Ctx) PlayCard(x Inst, times int) {
 	c.G.play(c.P, x, c.level, playHow{times: times, holders: append(append([]Inst{}, c.holders...), c.Me)})
+}
+
+// PlayCardWith is PlayCard with this card named on each play line: "plays a Mining Village. (Mastermind)".
+func (c *Ctx) PlayCardWith(x Inst, times int) {
+	c.G.play(c.P, x, c.level, playHow{times: times, by: c.Src, holders: append(append([]Inst{}, c.holders...), c.Me)})
 }
 
 // PlayFrom plays a card with this card named on the play line ("(Prince)").
