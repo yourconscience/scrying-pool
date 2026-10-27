@@ -567,7 +567,8 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 		}
 		return ""
 	}
-	if e.Template != x.Template && r.english[e.Template] != r.english[x.Template] {
+	growing := !cards && (strings.HasPrefix(e.Template, "GETS_COIN") || strings.HasPrefix(e.Template, "GETS_BUY")) && strings.HasSuffix(e.Template, "_FROM") // a second Priest or Bridge Troll adds to it
+	if e.Template != x.Template && r.english[e.Template] != r.english[x.Template] && !(growing && strings.Replace(x.Template, "S_FROM", "_FROM", 1) == e.Template) {
 		return "a different line"
 	}
 	if e.Level != x.Level && !(r.flat && e.Level == x.Level+1) {
@@ -581,8 +582,8 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 				return "a different player"
 			}
 		case int:
-			if !cards && y.Number != nil && *y.Number > a && strings.HasSuffix(e.Template, "_FROM") && strings.HasPrefix(e.Template, "GETS_COIN") {
-				continue // a second Priest adds to it: "gets +$4. (Priest)"; compared once the next line comes
+			if growing && y.Number != nil && *y.Number > a {
+				continue // "gets +$4. (Priest)", "gets +2 Buys. (Bridge Troll)": compared once the next line comes
 			}
 			if y.Number == nil || *y.Number != a {
 				return "a different number"

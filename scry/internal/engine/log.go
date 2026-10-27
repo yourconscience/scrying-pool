@@ -92,6 +92,16 @@ func (l *Log) add(e Entry) {
 			return
 		}
 	}
+	// two Bridge Trolls at the start of a turn: "gets +2 Buys. (Bridge Troll)"
+	if n := len(l.Entries); n > 0 && (e.Template == "GETS_BUY_FROM" || e.Template == "GETS_BUYS_FROM") {
+		last := &l.Entries[n-1]
+		if (last.Template == "GETS_BUY_FROM" || last.Template == "GETS_BUYS_FROM") && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[2] == e.Args[2] {
+			last.Args[1] = last.Args[1].(int) + e.Args[1].(int)
+			last.Template = "GETS_BUYS_FROM"
+			l.changed(n - 1)
+			return
+		}
+	}
 	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers"
 	if n := len(l.Entries); n > 0 && (e.Template == "BUY_AND_GAIN" || e.Template == "GAIN" && len(e.Args) == 2) {
 		last := &l.Entries[n-1]
