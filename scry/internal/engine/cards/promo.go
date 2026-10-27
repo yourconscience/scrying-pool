@@ -155,9 +155,9 @@ func init() {
 		case 1:
 			c.Gain(c.P, c.Card("Gold"), discard)
 			o.Gain(o.P, c.Card("Silver"), discard)
-		case 2: // "trashes a Curse.", "gains a Squire."; the other "trashes a Squire." and, a line down, "gains a Torturer."
+		case 2: // "trashes a Curse.", "gains a Squire."; the other "trashes a Squire.", "gains a Torturer."
 			governorRemodel(c, 2)
-			governorRemodel(o.Deeper(), 1)
+			governorRemodel(o, 1)
 		}
 	}})
 	reg("Marchland", rules{

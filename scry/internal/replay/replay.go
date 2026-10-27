@@ -211,6 +211,7 @@ type replayer struct {
 	took       [2]int
 	offHand    map[int][]string           // named cards a line took from outside the hand
 	hamlet     int                        // the engine line that played the Hamlet whose first discard was answered
+	storeroom  int                        // the engine's log size when a Storeroom's first discard was answered none
 	hidden     map[engine.Inst]bool       // cards the replay chose for draws the log doesn't name, while no line has shown them
 	schemeTurn string                     // the turn Scheme's picks were counted in
 	schemes    int                        // Scheme picks answered in it
@@ -748,6 +749,12 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	case engine.ToDiscard:
 		if r.t.Defs[d.Source].Name == "Hamlet" {
 			return r.hamletDiscard(d)
+		}
+		if l := r.g.Log; r.t.Defs[d.Source].Name == "Storeroom" && len(l.Entries) > 0 && l.Entries[len(l.Entries)-1].Template == "GETS_BUY" && r.storeroom != len(l.Entries) && r.pos+1 < len(r.real) {
+			if x, y := r.real[r.pos], r.real[r.pos+1]; x.Template == "DISCARD" && strings.HasPrefix(y.Template, "GETS_COIN") && y.Level == x.Level {
+				r.storeroom = len(l.Entries)
+				return nil // the first discard is none: "discards an Overgrown Estate.", "gets +$1."
+			}
 		}
 	case engine.ToReveal:
 		if x, ok := r.peek(); ok && x.Template == "TRASH" && x.Player == r.names[d.Player] && x.Level == d.Level { // Hovel: "trashes a Hovel."
