@@ -241,6 +241,7 @@ type zoneReplay struct {
 	line     int                   // the line being replayed
 	latest   map[int]int           // the last line at each level: the current line's parents
 	takes    map[string][]DeckTake // every card taken from each player's deck
+	offHand  map[int][]string      // the named cards each line took from a zone other than the hand
 }
 
 func newZoneReplay(g *Game) *zoneReplay {
@@ -328,7 +329,12 @@ func (r *zoneReplay) put(p, zone, card string, n int) {
 }
 
 // takeOne removes one copy of card (or one unnamed card) from a zone if it can.
-func (r *zoneReplay) takeOne(p, zone, card string, allowUnknown bool) bool {
+func (r *zoneReplay) takeOne(p, zone, card string, allowUnknown bool) (ok bool) {
+	defer func() {
+		if ok && r.offHand != nil && zone != ZoneHand && card != "" {
+			r.offHand[r.line] = append(r.offHand[r.line], card)
+		}
+	}()
 	r.took = card
 	c := r.z(p)[zone]
 	if c == nil {
@@ -1296,6 +1302,8 @@ func (r *zoneReplay) step(i int, e Event) {
 			r.move(e, p, cards, []string{ZoneDeck}, ZoneHand)
 		case discardLookers[cause] && !strings.HasPrefix(e.CauseOf, "PLAY"): // Herald's overpay, Inn when gained
 			r.mark(e, p, cards, ZoneDiscard)
+		case cause == "Chariot Race" && p != r.turnOf: // the player to the left reveals their top card; the player's own is the one it drew
+			r.move(e, p, cards, []string{ZoneDeck}, ZoneRevealed)
 		case deckLookers[cause], cause == "" && e.Level > 0: // at the start of a turn: Piazza, Forest Dwellers
 			r.move(e, p, cards, []string{ZoneDeck}, ZoneRevealed)
 		case discardLookers[cause]:
@@ -1484,14 +1492,16 @@ type DeckTake struct {
 }
 
 // DeckTakes lists, for each player, every card taken from their draw pile, in
-// log order. A replay of the game draws them in this order.
-func (g *Game) DeckTakes() map[string][]DeckTake {
+// log order. A replay of the game draws them in this order. It also lists the
+// named cards each line took from somewhere other than a hand: Vagrant's
+// "reveals a Copper." and "topdecks a Copper." never were in it.
+func (g *Game) DeckTakes() (map[string][]DeckTake, map[int][]string) {
 	r := newZoneReplay(g)
-	r.takes = map[string][]DeckTake{}
+	r.takes, r.offHand = map[string][]DeckTake{}, map[int][]string{}
 	for i, e := range g.Events {
 		r.step(i, e)
 	}
-	return r.takes
+	return r.takes, r.offHand
 }
 
 // FinalZones replays the zones to the end of the log.

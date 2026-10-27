@@ -327,7 +327,7 @@ func init() {
 		}
 		cost := c.CostOf(c.G.CardOf(x))
 		c.Trash(c.P, one(x))
-		n := c.Number(c.P, 0, c.Pl(c.P).Coffers, "USES_COFFERS")
+		n := c.Amount(c.P, 0, c.Pl(c.P).Coffers, "USES_COFFER", "USES_COFFERS")
 		if n > 0 {
 			usesCoffers(c, n)
 		}
@@ -344,14 +344,9 @@ func init() {
 			c.PlusActions(1)
 			c.PlusBuys(1)
 		},
-		Overpay: func(c *ctx, n int) { c.AddWatch(engine.On(engine.EvTurnEnd), n).Long = true },
-		Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
-			if e.Kind != engine.EvTurnEnd || e.P != w.P {
-				return false
-			}
-			c.Away().Draw(w.N) // at the end of this turn
-			return true
-		},
+		// +1 Card per $1 at the end of this turn: dominion.games draws them with
+		// the next hand, "draws 7 cards." in Clean-up
+		Overpay: func(c *ctx, n int) { c.T2().HandSize += n },
 	})
 	reg("Footpad", rules{
 		Setup: func(g *engine.Game) { g.Global = append(g.Global, g.T.MustCard("Footpad")) },

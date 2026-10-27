@@ -6,6 +6,7 @@ package replay
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -79,7 +80,8 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 			}
 		}
 	}
-	takes := rg.DeckTakes()
+	takes, offHand := rg.DeckTakes()
+	r.offHand = offHand
 	for p, n := range r.names {
 		r.takes[p] = takes[n]
 	}
@@ -148,6 +150,7 @@ type replayer struct {
 	turn    string
 	takes   [2][]cartographer.DeckTake
 	took    [2]int
+	offHand map[int][]string // named cards a line took from outside the hand
 }
 
 // skip lists real lines the engine doesn't write.
@@ -350,9 +353,9 @@ var answers = map[engine.Kind][]string{
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
 	engine.ToGain:        {"GAIN"},
 	engine.ToTrash:       {"TRASH"},
-	engine.ToDiscard:     {"DISCARD"},
+	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED"}, // Hostelry: "discards and reveals 2 Coppers."
 	engine.ToTopdeck:     {"TOPDECK"},
-	engine.ToPlay:        {"PLAY"},
+	engine.ToPlay:        {"PLAY", "PLAY_WITH"}, // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE"},
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
@@ -422,7 +425,12 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 func (r *replayer) chooseModes(d *engine.Decision) []int {
 	var out []int
 	used := map[int]bool{}
-	for i := r.pos; i < len(r.real) && len(out) < d.Max; i++ {
+	start := r.pos
+	if x, ok := r.peek(); ok && x.Template == "BUY" && x.Player == r.names[d.Player] && len(x.Args[1].Cards) == 1 && x.Args[1].Cards[0].Card != nil &&
+		x.Args[1].Cards[0].Card.Name == r.t.Defs[d.Source].Name {
+		start++ // the overpay is chosen before "buys a Farrier." is written, then "loses 1 Coin."
+	}
+	for i := start; i < len(r.real) && len(out) < d.Max; i++ {
 		x := r.real[i]
 		if x.Template == "NEW_TURN" || x.Level < d.Level {
 			break
@@ -617,25 +625,38 @@ func (r *replayer) beforeTake(p int) {
 				return
 			}
 		}
+		// a line names its cards by kind, not in the order drawn: across a shuffle the
+		// old deck's come first, "draws 3 Coppers, a Moneylender, and a Forager." with a Forager left
+		for k := r.took[p]; k < len(r.takes[p]) && r.takes[p][k].Line == take.Line; k++ {
+			for i := len(deck) - 1; i >= 0; i-- {
+				if c := r.takes[p][k].Card; c != "" && r.g.Def(deck[i]).Name == c {
+					r.takes[p][k].Card = take.Card
+					r.g.PutOnTop(deck[i])
+					return
+				}
+			}
+		}
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
 	}
 	// an unnamed card: one this player shows from their hand while it's there,
-	// else one they won't need in their next hand either
+	// else one they won't need in their next hand either; never one a later
+	// line takes from this deck by name before it's shuffled again (a Cardinal's
+	// "reveals an Estate and Dame Sylvia.")
+	in, later := map[string]int{}, r.laterTakes(p, take.Line)
+	for _, x := range deck {
+		in[r.g.Def(x).Name]++
+	}
 	need := r.demand(p, take.Line, 1)
 	for i := len(deck) - 1; i >= 0; i-- {
-		if need[r.g.Def(deck[i]).Name] > 0 {
+		if n := r.g.Def(deck[i]).Name; need[n] > 0 && in[n] > later[n] {
 			r.g.PutOnTop(deck[i])
 			return
 		}
 	}
 	soon := r.demand(p, take.Line, 2)
-	in := map[string]int{}
-	for _, x := range deck {
-		in[r.g.Def(x).Name]++
-	}
 	best, spare := -1, -1
 	for i, x := range deck {
-		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name]; n > spare {
+		if n := in[r.g.Def(x).Name] - soon[r.g.Def(x).Name] - later[r.g.Def(x).Name]; n > spare {
 			best, spare = i, n
 		}
 	}
@@ -644,18 +665,44 @@ func (r *replayer) beforeTake(p int) {
 	}
 }
 
+// laterTakes counts the cards the log takes by name from player p's deck after
+// the take at line, until their next shuffle.
+func (r *replayer) laterTakes(p, line int) map[string]int {
+	end := math.MaxInt
+	if i, ok := r.line[line]; ok {
+		for _, x := range r.real[i+1:] {
+			if x.Template == "SHUFFLES" && x.Player == r.names[p] {
+				end = x.Line
+				break
+			}
+		}
+	}
+	later := map[string]int{}
+	for _, t := range r.takes[p][r.took[p]:] {
+		if t.Line >= end {
+			break
+		}
+		if t.Card != "" {
+			later[t.Card]++
+		}
+	}
+	return later
+}
+
 // demand counts the cards player p shows from their hand by name in the next
 // hands while cards drawn at a line are still there (windows 1: that hand;
-// 2: that hand and the next), less the named cards already in hand.
+// 2: that hand and the next), less the named cards already in hand, which
+// serve only the first: they're discarded before the next hand is drawn.
 func (r *replayer) demand(p int, line, windows int) map[string]int {
-	need := map[string]int{}
+	need, next := map[string]int{}, map[string]int{}
+	cur := need
 	i, ok := r.line[line]
 	if !ok {
 		return need
 	}
 	name := r.names[p]
 	ev := r.real[i]
-	inTurn := ev.TurnOf == name && !(ev.Template == "DRAW" && ev.Level == 0) // a Clean-up draw is for the next turn
+	inTurn := ev.TurnOf == name && r.g.T2.Phase != engine.CleanupPhase // a Clean-up draw is for the next turn, also one under Borrow's "skips a draw"
 	for _, x := range r.real[i:] {
 		if x.Template == "NEW_TURN" {
 			if x.Player == name {
@@ -664,16 +711,20 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 				if windows--; windows == 0 {
 					break
 				}
-				inTurn = false
+				inTurn, cur = false, next
 			}
 			continue
 		}
 		if x.Player != name || !fromHand[x.Template] {
 			continue
 		}
+		off := map[string]int{}
+		for _, c := range r.offHand[x.Line] {
+			off[c]++
+		}
 		for _, cn := range x.Args[1].Cards {
 			if cn.Card != nil {
-				need[cn.Card.Name] += cn.N
+				cur[cn.Card.Name] += max(0, cn.N-off[cn.Card.Name])
 			}
 		}
 	}
@@ -681,6 +732,9 @@ func (r *replayer) demand(p int, line, windows int) map[string]int {
 		if n := r.g.Def(x).Name; need[n] > 0 {
 			need[n]--
 		}
+	}
+	for n, k := range next {
+		need[n] += k
 	}
 	return need
 }
