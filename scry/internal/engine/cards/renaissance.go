@@ -559,9 +559,10 @@ func init() {
 	}))
 	reg("Star Chart", rules{
 		Hears: engine.On(engine.EvShuffling),
-		Hear: func(c *ctx, e *ev) { // silent: the card goes on top of the new deck
+		Hear: func(c *ctx, e *ev) { // "topdecks a Bridge.", then "shuffles their deck."; the card goes on top of the new deck
 			if project(c, e.P) {
-				c.MoveTo(e.P, one(pick1(c, e.P, engine.ToTopdeck, discard, nil, true)), deck, "")
+				d := c.Deeper()
+				d.MoveTo(e.P, one(pick1(d, e.P, engine.ToTopdeck, discard, nil, true)), deck, "TOPDECK")
 			}
 		},
 	})

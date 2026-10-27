@@ -43,7 +43,7 @@ func kindsOf(c *ctx, xs []inst) []engine.CardID {
 
 // playLine is the line a card writes when another card plays it: "plays a Gold. (+$3)" for a Treasure of fixed $.
 func playLine(d *def) string {
-	if d.Treasure() && !d.Action() && d.Rules != nil && !d.Rules.Alone {
+	if d.Treasure() && !d.Action() && d.Rules != nil && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil) { // "plays a Potion." has no $
 		return "PLAY_TREASURES_FOR"
 	}
 	return "PLAY"

@@ -507,7 +507,8 @@ func init() {
 		},
 		Hears: engine.On(engine.EvAttack),
 		Hear: func(c *ctx, e *ev) { // another Attack played: "trashes an Urchin.", "gains a Mercenary." before its effects
-			if e.P != c.P || e.X == c.Me || c.G.Where(c.Me).Zone != inPlay || !c.Yes(c.P, "trash it for a Mercenary", "TRASH") {
+			if e.P != c.P || e.X == c.Me || c.G.Where(c.Me).Zone != inPlay ||
+				c.Mode1(c.P, mode("no", ""), engine.Mode{Label: "trash it for a Mercenary", Line: "TRASH", Card: c.Src}) == 0 { // not the Attack's own "trashes 2 Estates."
 				return
 			}
 			h := c.Here()

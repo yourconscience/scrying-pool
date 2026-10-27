@@ -568,6 +568,16 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			}
 		}
 	case engine.ToChoose:
+		if r.t.Defs[d.Source].Name == "Jester" { // who gains the copy: "gains a Jester." by either player
+			for i := r.pos; i < min(len(r.real), r.pos+3); i++ {
+				if x := r.real[i]; x.Template == "GAIN" {
+					if x.Player == r.names[d.Player] {
+						return []int{1}
+					}
+					return []int{0}
+				}
+			}
+		}
 		return r.chooseModes(d)
 	case engine.ToName:
 		return r.chooseName(d)
