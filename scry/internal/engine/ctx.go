@@ -310,6 +310,12 @@ func (c *Ctx) ShuffleLine(p int) {
 	c.G.Log.add(Entry{Level: c.level, Kind: 'S', Template: "SHUFFLES", Args: []any{Seat(p)}})
 }
 
+// PlayHereBlank plays a card where it is, leaving it there, with an empty name
+// on the line: Riverboat's "plays a Scholar. (|)".
+func (c *Ctx) PlayHereBlank(x Inst) {
+	c.G.play(c.P, x, c.level, playHow{inPlace: true, blank: true, self: x, holders: c.holders})
+}
+
 // PlayHere plays a card where it is, leaving it there, with this card as its
 // "this": Overlord's card from the Supply.
 func (c *Ctx) PlayHere(x Inst) {
@@ -346,14 +352,15 @@ func (c *Ctx) ChooseOne(p int, k Kind, opts []Option, may bool) *Option {
 type Mode struct {
 	Label string
 	Line  string
-	Count int // how many cards the line draws, when modes share a line (Blacksmith); 0 for any
+	Count int    // how many cards the line draws, when modes share a line (Blacksmith); 0 for any
+	Card  CardID // the card the line names, when modes share a line (Kitsune's Curse and Silver); 0 for any
 }
 
 // Modes asks player p to pick between min and max of a card's modes; it returns their indexes.
 func (c *Ctx) Modes(p, min, max int, ms ...Mode) []int {
 	opts := make([]Option, len(ms))
 	for i, m := range ms {
-		opts[i] = Option{Inst: -1, Mode: i, Label: m.Label, Line: m.Line, Count: m.Count}
+		opts[i] = Option{Card: m.Card, Inst: -1, Mode: i, Label: m.Label, Line: m.Line, Count: m.Count}
 	}
 	got := c.Choose(p, ToChoose, opts, min, max)
 	out := make([]int, len(got))
@@ -869,12 +876,20 @@ func (c *Ctx) DiscardTop(p int) Inst {
 // PlayCard plays a card from where it is for a card that plays it more than
 // once (Throne Room), which stays in play with a Duration; times > 0 plays it again where it is.
 func (c *Ctx) PlayCard(x Inst, times int) {
-	c.G.play(c.P, x, c.level, playHow{times: times, holders: append(append([]Inst{}, c.holders...), c.Me)})
+	hs := append([]Inst{}, c.holders...)
+	if c.Me >= 0 { // not an Event's: Practice
+		hs = append(hs, c.Me)
+	}
+	c.G.play(c.P, x, c.level, playHow{times: times, holders: hs})
 }
 
 // PlayCardWith is PlayCard with this card named on each play line: "plays a Mining Village. (Mastermind)".
 func (c *Ctx) PlayCardWith(x Inst, times int) {
-	c.G.play(c.P, x, c.level, playHow{times: times, by: c.Src, holders: append(append([]Inst{}, c.holders...), c.Me)})
+	hs := append([]Inst{}, c.holders...)
+	if c.Me >= 0 {
+		hs = append(hs, c.Me)
+	}
+	c.G.play(c.P, x, c.level, playHow{times: times, by: c.Src, holders: hs})
 }
 
 // PlayFrom plays a card with this card named on the play line ("(Prince)").

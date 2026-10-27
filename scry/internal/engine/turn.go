@@ -160,8 +160,8 @@ func (g *Game) actionOptions(p int) []Option {
 		}
 	}
 	for _, x := range g.P[p].Z[Deck] {
-		if d := g.Def(x); d.Action() && d.Is(TShadow) {
-			add(x)
+		if d := g.Def(x); d.Action() && d.Is(TShadow) && !slices.ContainsFunc(g.P[p].Z[Hand], func(y Inst) bool { return g.cards[y] == g.cards[x] }) {
+			add(x) // not a copy of one in hand: the log can't tell them apart
 		}
 	}
 	return out
