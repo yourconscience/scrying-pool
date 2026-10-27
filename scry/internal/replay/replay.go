@@ -222,6 +222,9 @@ func (r *replayer) hook(i int) {
 	}
 	r.matched, r.entry = r.pos, i
 	r.pos++
+	if e.Template == "DRAW" || e.Template == "DRAW_FROM" { // Hunting Lodge's "draws 5 cards.", then "plays a Sailor."
+		r.mendHand(r.matched)
+	}
 	r.arrangePiles()
 }
 
@@ -959,15 +962,16 @@ func (r *replayer) hiddenInHand(p int, x engine.Inst) bool {
 	return r.hidden[x] && r.g.Where(x) == engine.Loc{Zone: engine.Hand, Owner: int16(p)}
 }
 
-// mendHand mends guessed hidden draws as a turn begins: the cards the turn
-// shows from the hand before its first draw or gain into it must be there
+// mendHand mends guessed hidden draws as a turn begins and after each draw:
+// the cards the turn shows from the hand before its next draw or gain into it
+// must be there
 // ("uses 1 Villager.", "plays a Marauder."). A hand card drawn unseen that
 // the turn doesn't show trades places with one in the deck, or with one
 // discarded unseen.
 func (r *replayer) mendHand(at int) {
 	name := r.real[at].Player
 	p := r.seat(name)
-	stop := math.MaxInt // the turn's first take from the deck
+	stop := math.MaxInt // the next take from the deck
 	if r.took[p] < len(r.takes[p]) {
 		stop = r.takes[p][r.took[p]].Line
 	}
@@ -993,7 +997,7 @@ func (r *replayer) mendHand(at int) {
 			if cn.Card == nil {
 				continue
 			}
-			if y.Cause == cn.Card.Name { // "trashes an Acting Troupe." from play
+			if y.Cause == cn.Card.Name || strings.TrimSpace(y.Args[2].Text) == cn.Card.Name { // "trashes an Acting Troupe." from play, "trashes a Cabin Boy. (Cabin Boy)"
 				continue
 			}
 			if d, ok := r.t.Card(cn.Card.Name); ok && !d.Is(engine.TShadow) { // a Shadow card may be played from the deck
@@ -1224,7 +1228,8 @@ func (r *replayer) shown(p int, line, windows int) (need, next, first, last map[
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "TRASH": true,
-	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true}
+	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REVEAL": true,
+	"TRASH_WITH": true} // "trashes a Copper. (Sailor)" at the start of a turn
 
 // divineWind splits a kingdom of the piles before and after Divine Wind came
 // true: the ones the log names before then, and others to make 10, come first;
