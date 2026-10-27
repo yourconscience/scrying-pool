@@ -659,6 +659,20 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 				break
 			}
 		}
+		if k < 0 && x.Template == "DRAW" && d.Max-len(out) >= 2 { // two draws on one line: Blacksmith's "draws 4 cards." under Elder
+			n := 0
+			for _, cn := range x.Args[1].Cards {
+				n += cn.N
+			}
+			for j, o := range d.Options {
+				for j2, o2 := range d.Options {
+					if k < 0 && j < j2 && !used[j] && !used[j2] && o.Line == "DRAW" && o2.Line == "DRAW" && o.Count > 0 && o2.Count > 0 && o.Count+o2.Count == n {
+						used[j], k = true, j2
+						out = append(out, j)
+					}
+				}
+			}
+		}
 		if k < 0 {
 			break
 		}
