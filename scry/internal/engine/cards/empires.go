@@ -596,7 +596,7 @@ func init() {
 			c.PlusVP(len(c.T2().Gained))
 		}
 	}})
-	reg("Wedding", rules{Buy: func(c *ctx) { c.PlusVP(1); c.Gain(c.P, gold(c), discard) }})
+	reg("Wedding", rules{Buy: func(c *ctx) { c.Gain(c.P, gold(c), discard); c.PlusVP(1) }}) // the log has the Gold first
 	reg("Windfall", rules{Buy: func(c *ctx) {
 		if len(c.Zone(c.P, deck)) == 0 && len(c.Zone(c.P, discard)) == 0 {
 			c.GainN(c.P, gold(c), 3, discard, "GAIN")
@@ -643,7 +643,7 @@ func init() {
 		return len(c.T2().Gained) == 0
 	})
 	landVP("Battlefield", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return c.G.D(e.C).Victory() })
-	landVP("Colonnade", engine.On(engine.EvGain), func(c *ctx, e *ev) bool {
+	landVP("Colonnade", engine.On(engine.EvBought), func(c *ctx, e *ev) bool {
 		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
 	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return e.P == c.G.Cur && len(c.T2().Gained) == 2 && c.T2().Gained[1] == e.C }) // the second gain, not the first whose own gain came between

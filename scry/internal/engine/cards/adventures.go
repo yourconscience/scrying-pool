@@ -262,9 +262,9 @@ func init() {
 				c.Attack(func(int) { d.N = 1 })
 			},
 			Next:  func(c *ctx, d *engine.Dur) bool { d.N = 0; next(c); return true },
-			Hears: engine.On(engine.EvGain),
-			Hear: func(c *ctx, e *ev) { // when another player gains a card they bought
-				if e.P == c.P || !e.Bought {
+			Hears: engine.On(engine.EvBought),
+			Hear: func(c *ctx, e *ev) { // when another player buys a card: after what its gain caused (Haunted Castle's Gold), before Colonnade
+				if e.P == c.P {
 					return
 				}
 				for _, d := range c.Durs() {
