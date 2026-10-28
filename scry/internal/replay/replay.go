@@ -1619,6 +1619,10 @@ func (r *replayer) takeNext(p int) {
 			r.g.PutOnTop(y)
 			return
 		}
+		if x := r.swapFromDiscard(p, take.Card); x >= 0 {
+			r.g.PutOnTop(x)
+			return
+		}
 		r.fail(fmt.Sprintf("the log takes a %s from %s's deck, which has none", take.Card, r.names[p]), "")
 	}
 	if top := deck[len(deck)-1]; !r.free(top) { // a card put there since the shuffle: Artificer's gain
@@ -1906,6 +1910,34 @@ func (r *replayer) swapOut(p int, name string) engine.Inst {
 			r.g.Swap(x, y)
 			r.hide(x)
 			return y
+		}
+	}
+	return -1
+}
+
+// swapFromDiscard mends a guess when the log draws a card the deck doesn't have
+// but one discarded unseen does: the two trade places. It returns that card, or -1.
+func (r *replayer) swapFromDiscard(p int, name string) engine.Inst {
+	x := engine.Inst(-1)
+	for _, d := range r.g.P[p].Z[engine.Discard] {
+		if x < 0 && r.hidden[d] && r.g.Def(d).Name == name {
+			x = d
+		}
+	}
+	deck := r.g.P[p].Z[engine.Deck]
+	if x < 0 || len(deck) == 0 {
+		return -1
+	}
+	in, later := map[string]int{}, r.laterTakes(p, r.takes[p][r.took[p]-1].Line)
+	for _, y := range deck {
+		in[r.g.Def(y).Name]++
+	}
+	for _, y := range deck {
+		if n := r.g.Def(y).Name; n != name && in[n] > later[n] && r.free(y) {
+			r.g.Swap(x, y)
+			delete(r.hidden, x)
+			r.hide(y)
+			return x
 		}
 	}
 	return -1
