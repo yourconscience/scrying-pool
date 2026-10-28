@@ -847,6 +847,9 @@ func (g *Game) Play() Result {
 			}
 			groups[k] = append(groups[k], c)
 		}
+		if len(groups[0]) > 0 && g.T.Defs[groups[0][0]].Is(TShelter) { // with Shelters, on their line: "a Hovel, a Necropolis, an Overgrown Estate, and a Pouch."
+			groups[0], groups[1] = append(groups[0], groups[1]...), nil
+		}
 		for _, cs := range groups {
 			if len(cs) > 0 {
 				g.Log.add(Entry{Template: "STARTS_WITH", Args: []any{Seat(p), cs}})
