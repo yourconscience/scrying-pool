@@ -115,7 +115,8 @@ func init() {
 			}
 		},
 		Next: func(c *ctx, d *engine.Dur) bool { // "discards a card and an Estate.", "draws 2 cards. (Grotto)"
-			n := len(c.Here().Discard(c.P, c.In(aside, d.Aside)))
+			xs := c.In(aside, d.Aside) // set aside face down: the replay learns them here
+			n := len(c.Here().Discard(c.P, pickOf(c, c.P, engine.ToDiscard, xs, len(xs), len(xs))))
 			c.Draw(n)
 			return true
 		},
