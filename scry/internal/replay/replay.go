@@ -1077,7 +1077,7 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 	if start < len(r.real) && r.real[start].Template == r.g.Log.Pending() {
 		start++ // the answer's line writes "begins their Cleanup phase." first: Trickster's "sets a Copper aside."
 	}
-	level := d.Level
+	level := min(d.Level, 3)
 	if start < len(r.real) && start > 0 && r.real[start].Level == 0 && d.Level == 1 && (r.flat || r.real[start-1].Level == 1) &&
 		r.real[start].Template != "NEW_TURN" && r.real[start].Player == r.names[d.Player] {
 		level = 0 // the log writes the choice at the top level: Hunting Lodge's "discards 4 other cards and a Copper."
@@ -1455,7 +1455,7 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 	if x.Player != r.names[r.whose(d)] {
 		return false
 	}
-	if x.Level != d.Level {
+	if x.Level != min(d.Level, 3) { // the log nests no deeper
 		// the log sometimes writes a card's choice and what follows at the top level:
 		// "gets +2 Actions.", then "discards 4 other cards and a Copper." (Hunting Lodge)
 		if !(x.Level == 0 && d.Level == 1 && r.pos > 0 && (r.flat || r.real[r.pos-1].Level == 1)) {

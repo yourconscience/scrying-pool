@@ -395,7 +395,11 @@ func init() {
 	}})
 	reg("Treasurer", rules{Play: func(c *ctx) {
 		c.PlusCoins(3)
-		switch c.Mode1(c.P, mode("trash a Treasure", "TRASH"), mode("gain a Treasure from the trash", "GAIN"), mode("take the Key", "TAKE")) {
+		key := "TAKE"
+		if holds(c.G, c.P, "Key") {
+			key = "" // taken again, silently
+		}
+		switch c.Mode1(c.P, mode("trash a Treasure", "TRASH"), mode("gain a Treasure from the trash", "GAIN"), mode("take the Key", key)) {
 		case 0:
 			c.Trash(c.P, one(pick1(c, c.P, engine.ToTrash, hand, treasure, false)))
 		case 1:
