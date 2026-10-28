@@ -912,11 +912,15 @@ func (r *replayer) hamletDiscard(d *engine.Decision) []int {
 	first := play != r.hamlet
 	r.hamlet = play
 	x, ok := r.peek()
-	if !ok || x.Template != "DISCARD" || x.Player != r.names[d.Player] || x.Level != d.Level {
+	flat := ok && x.Level == 0 && d.Level == 1 && (r.flat || r.pos > 0 && r.real[r.pos-1].Level == 1) // "discards an Estate.", "gets +1 Buy." at the top level
+	if !ok || x.Template != "DISCARD" || x.Player != r.names[d.Player] || x.Level != d.Level && !flat {
 		return nil
 	}
 	if first && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "GETS_BUY" {
 		return nil
+	}
+	if flat {
+		r.flat = true
 	}
 	return r.pick(d, x.Args[1].Cards)
 }
