@@ -893,6 +893,10 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		panic(stop{})
 	}
 	x = r.villager(d, x)
+	if i, ok := r.line[x.Line]; ok && x.Template == "LOOK_AT" && i == r.pos && i+1 < len(r.real) && !r.answers(d, x) && r.answers(d, r.real[i+1]) {
+		r.pos++ // a look through the discard pile the engine doesn't write: Shepherd's "looks at a Pasture, 3 Estates...", "discards an Estate and a Pasture."
+		x = r.real[r.pos]
+	}
 	if d.Kind == engine.ToPass { // both players pick before either pass is logged
 		for i := r.pos; i < min(len(r.real), r.pos+3); i++ {
 			if y := r.real[i]; y.Template == "PASS" && y.Player == r.names[d.Player] {
