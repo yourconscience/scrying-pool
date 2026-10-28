@@ -646,8 +646,8 @@ func init() {
 		return len(c.T2().Gained) == 0
 	})
 	landVP("Battlefield", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return c.G.D(e.C).Victory() })
-	landVP("Colonnade", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool {
-		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
+	landVP("Colonnade", engine.On(engine.EvBuy, engine.EvGain), func(c *ctx, e *ev) bool { // a buy's before its gain, or another gain in the Buy phase: Hammer's
+		return (e.Kind == engine.EvBuy || !e.Bought) && inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
 	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // the second gain, not the first whose own gain came between: Port's
 		if e.P != c.G.Cur || len(c.T2().Gained) != 2 || c.T2().Gained[1] != e.C || c.T2().Used[c.Src] > 0 {

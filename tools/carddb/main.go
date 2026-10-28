@@ -21,6 +21,9 @@ import (
 
 const src = "https://raw.githubusercontent.com/sumpfork/dominiontabs/%s/src/domdiv/card_db/"
 
+// typeFix corrects types dominiontabs gets wrong.
+var typeFix = map[string][]string{"Barbarian": {"Action", "Attack"}}
+
 type rawCard struct {
 	Tag        string   `json:"card_tag"`
 	Sets       []string `json:"cardset_tags"`
@@ -85,6 +88,9 @@ func run() error {
 		}
 		if _, dup := byName[name]; dup {
 			continue // same card in several editions: keep the first entry
+		}
+		if t, ok := typeFix[name]; ok {
+			r.Types = t
 		}
 		c := &Card{Name: name, Types: r.Types, Kind: kind(r, name)}
 		c.Cost = r.Cost

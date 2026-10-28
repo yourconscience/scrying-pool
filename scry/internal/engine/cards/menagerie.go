@@ -650,8 +650,7 @@ func init() {
 		CanBuy: func(g *engine.Game, p int) bool { return g.P[p].Mat[g.T.MustCard("Seize the Day")] == 0 },
 		Buy: func(c *ctx) {
 			c.Pl(c.P).Mat[c.Src]++
-			c.Log("MISSION_SUCCESS", engine.Seat(c.P))
-			c.ExtraTurn()
+			c.ExtraTurn() // silent: "buys Seize The Day.", then the turn's header names it
 		},
 	})
 	reg("Stampede", rules{Buy: func(c *ctx) { // "gains 5 Horses." onto the deck

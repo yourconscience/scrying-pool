@@ -36,6 +36,16 @@ func receive(c *ctx, p int, b engine.CardID, line bool) {
 	if line {
 		c.Log("RECEIVES", engine.Seat(p), []engine.CardID{b})
 	}
+	if name := c.G.D(b).Name; givesCoin[name] && c.Me >= 0 && c.G.Def(c.Me).Treasure() { // from an Idol its $ is silent: "gets +1 Buy.", then the next Treasures
+		r := c.Receiving(p, b)
+		if name == "The Field's Gift" {
+			r.PlusActions(1)
+		} else {
+			r.PlusBuys(1)
+		}
+		r.Pl(p).Coins++
+		return
+	}
 	c.G.D(b).Rules.Play(c.Receiving(p, b))
 }
 
