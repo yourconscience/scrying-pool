@@ -163,6 +163,10 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 		if i == 0 && early {
+			if !watchFirst { // and this turn's watches before them: Livery's "gains a Horse.", then Defiled Shrine's "moves 1 VP"
+				watchFirst = true
+				g.watch(ev)
+			}
 			land(false)
 		}
 	}
