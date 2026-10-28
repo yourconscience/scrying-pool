@@ -649,7 +649,13 @@ func init() {
 	landVP("Colonnade", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool {
 		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
-	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return e.P == c.G.Cur && len(c.T2().Gained) == 2 && c.T2().Gained[1] == e.C }) // the second gain, not the first whose own gain came between
+	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // the second gain, not the first whose own gain came between: Port's
+		if e.P != c.G.Cur || len(c.T2().Gained) != 2 || c.T2().Gained[1] != e.C || c.T2().Used[c.Src] > 0 {
+			return false
+		}
+		c.T2().Used[c.Src]++
+		return true
+	})
 	reg("Defiled Shrine", rules{
 		Setup: func(g *engine.Game) {
 			for i, p := range g.Piles {
