@@ -114,6 +114,9 @@ type Game struct {
 	// that hear the gain are done, for a replay whose log has them first:
 	// "gets +1 Buy. (Galleria)" before Skulk's "gains a Gold."
 	OwnLater func(ev *Ev) bool
+	// KeepStart says whether "starts their turn." is written though nothing
+	// happened at the start of the turn, as some logs have it.
+	KeepStart func(p int) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst

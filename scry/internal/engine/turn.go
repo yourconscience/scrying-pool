@@ -48,6 +48,9 @@ func (g *Game) takeTurn(extra CardID) {
 	g.T2.Phase = StartPhase
 	g.Log.lazy(&Entry{Template: "STARTS_TURN", Args: []any{Seat(p)}})
 	g.startTurn(p)
+	if g.KeepStart != nil && g.KeepStart(p) {
+		g.Log.emit()
+	}
 	g.Log.lazy(nil)
 
 	for { // Villa gained in the Buy phase returns to the Action phase, silently

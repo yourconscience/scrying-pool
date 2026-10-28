@@ -164,6 +164,9 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	g.BeforeTake = r.beforeTake
 	g.NextDur = r.nextDur
 	g.OwnLater = r.ownLater
+	g.KeepStart = func(p int) bool { // the real line, not peek's: that skips the waiting line
+		return r.pos < len(r.real) && r.real[r.pos].Template == "STARTS_TURN" && r.real[r.pos].Player == r.names[p]
+	}
 	r.run()
 	return rep, r
 }
