@@ -566,6 +566,9 @@ func (r *replayer) arrangePiles() {
 		r.raiseBoon(x)
 		return
 	}
+	if ok && x.Template == "PLAY_TREASURES_FOR" && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "TAKE" {
+		r.raiseBoon(r.real[r.pos+1]) // an Idol's Boon, taken while its play line still waits for more Treasures
+	}
 	if !ok || x.Template != "BUY_AND_GAIN" && x.Template != "GAIN" && x.Template != "GAIN_WITH" && x.Template != "GAIN_TO_HAND" && x.Template != "GAIN_ON_DRAWPILE" && x.Template != "REVEAL" {
 		return
 	}
