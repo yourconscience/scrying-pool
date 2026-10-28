@@ -240,7 +240,11 @@ func init() {
 			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) || !stillGained(c, e) {
 				return false
 			}
-			if !c.Yes(c.P, "play it", "PLAY") { // "plays a Sailor.", unnamed
+			line := "PLAY" // "plays a Sailor.", unnamed
+			if c.G.D(e.C).Treasure() {
+				line = "PLAY_TREASURES_FOR" // "plays an Astrolabe. (+$1)"
+			}
+			if !c.Yes(c.P, "play it", line) {
 				return false
 			}
 			e.Done = true
