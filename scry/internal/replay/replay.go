@@ -1256,10 +1256,20 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 			}
 		}
 	}
+	want := func(d *engine.Dur) bool { // two Quartermasters: the empty one gains, the other "puts a card in hand"
+		held := slices.ContainsFunc(d.Aside, func(a engine.Inst) bool { return r.g.Where(a).Zone == engine.Aside })
+		return held != strings.HasPrefix(x.Template, "GAIN")
+	}
+	k := -1
 	for i, d := range ds { // the card the line names as its cause
 		if n := r.t.Defs[d.C].Name; x.Cause == n || len(x.Args) > 2 && cardName(x.Args[2]) == n {
-			return i
+			if k < 0 || !want(ds[k]) && want(d) {
+				k = i
+			}
 		}
+	}
+	if k >= 0 {
+		return k
 	}
 	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
 		return -1

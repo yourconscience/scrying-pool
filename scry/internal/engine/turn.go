@@ -614,6 +614,8 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil || coins != 0): // played by another card: "plays a Copper again. (+$1)"; "plays a Potion."
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
+	case g.isTreasure(x) && !d.Action() && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase: // a Treasure with a choice
+		g.Log.playAlone(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), card}})
 	case how.times == 1:
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
 	case how.times >= 2: // a fourth Infirmary is "a third time" too

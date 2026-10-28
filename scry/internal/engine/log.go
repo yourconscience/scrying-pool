@@ -186,6 +186,24 @@ func (l *Log) unGain(i int) {
 	}
 }
 
+// playAlone writes a Treasure's line of its own; the same Treasure again with
+// nothing between joins it: "plays 2 Gondolas."
+func (l *Log) playAlone(e Entry) {
+	if l == nil {
+		return
+	}
+	l.flush()
+	if n := len(l.Entries); n > 0 && l.pending == nil && l.way == nil {
+		last := &l.Entries[n-1]
+		if last.Template == "PLAY" && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[1].([]CardID)[0] == e.Args[1].([]CardID)[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			return
+		}
+	}
+	l.add(e)
+}
+
 func (l *Log) changed(i int) {
 	if l.Hook != nil {
 		l.Hook(i)
@@ -221,9 +239,8 @@ func (l *Log) flush() {
 	l.tr, l.after = nil, nil
 	l.Entries = append(l.Entries, tr)
 	l.changed(len(l.Entries) - 1)
-	for _, e := range after {
-		l.Entries = append(l.Entries, e)
-		l.changed(len(l.Entries) - 1)
+	for _, e := range after { // these merge too: two Merchants' "gets +$2. (Merchant)"
+		l.add(e)
 	}
 }
 
