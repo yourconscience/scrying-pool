@@ -1178,9 +1178,15 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		e, y := l.Entries[r.entry], r.real[r.matched]
 		if len(e.Args) == 3 && y.Player == r.names[p] {
 			cause, ok1 := e.Args[2].(engine.Name)
-			got, ok2 := e.Args[1].([]engine.CardID)
+			more := false
+			switch a := e.Args[1].(type) {
+			case []engine.CardID:
+				more = len(a) < cardCount(y.Args[1])
+			case int: // two Samurais: "gets +$2. (Samurai)"
+				more = y.Args[1].Number != nil && a < *y.Args[1].Number
+			}
 			for i, d := range ds {
-				if ok1 && ok2 && len(got) < cardCount(y.Args[1]) && d.C == engine.CardID(cause) {
+				if ok1 && more && d.C == engine.CardID(cause) {
 					return i
 				}
 			}
