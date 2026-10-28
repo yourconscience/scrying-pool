@@ -217,6 +217,10 @@ func (g *Game) buyPhase(p int) {
 			max = min(max, g.T2.HandLimit-g.T2.FromHand)
 		}
 		got := g.ask(&Decision{Player: p, Kind: PlayTreasures, Options: opts, Min: 0, Max: max})
+		if len(got) == 0 && pl.Debt > 0 && pl.Coins > 0 { // the debt first, then more Treasures: "plays a Copper.", "repays 1 debt.", "plays 2 Coppers."
+			g.repay(p)
+			continue
+		}
 		if len(got) == 0 {
 			break
 		}
