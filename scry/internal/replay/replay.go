@@ -603,13 +603,16 @@ func (r *replayer) arrangePiles() {
 		return
 	}
 	cs := x.Args[1].Cards
+	placed := map[int]int{} // by pile: how many of its top cards this line put there
 	for k := len(cs) - 1; k >= 0; k-- {
 		if cs[k].Card == nil {
 			continue
 		}
 		if d, ok := r.t.Card(cs[k].Card.Name); ok {
 			for range cs[k].N {
-				r.g.Raise(d.ID)
+				if r.g.RaiseUnder(d.ID, placed[r.g.PileOf(d.ID)]) {
+					placed[r.g.PileOf(d.ID)]++
+				}
 			}
 		}
 	}
