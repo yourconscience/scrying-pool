@@ -231,20 +231,9 @@ func (g *Game) buyPhase(p int) {
 		}
 	}
 	for {
-		if pl.Coffers > 0 && pl.Buys > 0 { // before any buy: "buys and gains a Conclave.", "uses 2 Coffers."
-			var opts []Option
-			for n := 0; n <= pl.Coffers; n++ {
-				opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
-			}
-			got := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})
-			if n := got[0].Mode; n > 0 {
-				pl.Coffers -= n
-				g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
-				pl.Coins += n
-				g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
-			}
-		}
+		g.useCoffers(p) // before any buy: "buys and gains a Conclave.", "uses 2 Coffers.", maybe again: "uses 1 Coffers."
 		g.repay(p)
+		g.useCoffers(p)                                                        // or after the debt: "repays 1 debt.", "uses 1 Coffers.", "buys Piazza."
 		if pl.Buys == 0 && pl.Actions > 0 && g.CameTrue("Flourishing Trade") { // an Action play used as a Buy, unlogged
 			pl.Actions--
 			pl.Buys++
@@ -418,6 +407,25 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 		d.Rules.Overpay(g.ctx(p, x, 1), over)
 	}
 	g.fire(&Ev{Kind: EvBought, P: p, X: x, C: c, Level: 1})
+}
+
+// useCoffers lets a player spend Coffers in the buy phase, as many times as they like.
+func (g *Game) useCoffers(p int) {
+	pl := &g.P[p]
+	for pl.Coffers > 0 && pl.Buys > 0 {
+		var opts []Option
+		for n := 0; n <= pl.Coffers; n++ {
+			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+		}
+		n := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})[0].Mode
+		if n == 0 {
+			return
+		}
+		pl.Coffers -= n
+		g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
+		pl.Coins += n
+		g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
+	}
 }
 
 func (g *Game) takeDebt(p, n, level int) {
