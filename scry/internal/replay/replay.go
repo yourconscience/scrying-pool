@@ -1310,8 +1310,10 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
 		return -1
 	}
-	if x.Template == "DISCARD" && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == "Gang of Pickpockets" }) {
-		return -1 // its discard down to 4: "discards a Copper.", then Gear's "puts an Estate and a Pixie in hand."
+	for name, t := range map[string]string{"Gang of Pickpockets": "DISCARD", "Piazza": "REVEAL"} { // a landscape's first line, unnamed
+		if x.Template == t && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == name }) {
+			return -1 // Gang of Pickpockets' "discards a Copper." before Gear's "puts an Estate and a Pixie in hand."
+		}
 	}
 	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
 		for _, c := range r.g.Land { // a Project before the Durations: "draws a Hovel. (City Gate)"
