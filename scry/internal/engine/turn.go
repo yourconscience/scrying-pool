@@ -459,12 +459,12 @@ func (g *Game) nightPhase(p int) {
 
 // offerWay lets a player use a Way on an Action another card plays: "plays a
 // Bridge Troll. (Way of the Turtle)", then "uses Way of the Turtle." a level down.
-func (g *Game) offerWay(p int, x Inst, level int) CardID {
+func (g *Game) offerWay(p int, x Inst, level int, line string) CardID {
 	ms := []Mode{{Label: "no"}}
 	var ways []CardID
 	for _, c := range g.Land {
 		if g.T.Defs[c].Is(TWay) {
-			ms = append(ms, Mode{Label: "use " + g.T.Defs[c].Name, Line: "USES_WAY", Card: c})
+			ms = append(ms, Mode{Label: "use " + g.T.Defs[c].Name, Line: line, Card: c})
 			ways = append(ways, c)
 		}
 	}
@@ -475,7 +475,9 @@ func (g *Game) offerWay(p int, x Inst, level int) CardID {
 	if k == 0 {
 		return 0
 	}
-	g.Log.add(Entry{Level: level, Template: "USES_WAY", Args: []any{Seat(p), Name(ways[k-1])}})
+	if line == "USES_WAY" {
+		g.Log.add(Entry{Level: level, Template: "USES_WAY", Args: []any{Seat(p), Name(ways[k-1])}})
+	}
 	return ways[k-1]
 }
 
@@ -572,6 +574,7 @@ type playHow struct {
 	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
 	self    Inst   // with inPlace: the Estate or Overlord that plays it, which stays in play for a Duration
 	merge   bool   // a Treasure played by an Action, on one line with the others it plays (Storyteller)
+	asked   bool   // the Way was offered before the play line
 }
 
 // play puts a card into play from where it is (or plays it where it is, again)
@@ -580,6 +583,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	d := g.Def(x)
 	if d.Rules == nil {
 		panic(MissingRules{d.Name})
+	}
+	if how.way == 0 && how.times == 0 && how.by == 0 && !how.blank && how.line == "" && level > 0 && d.Action() && g.loc[x].Zone == Hand {
+		how.way, how.asked = g.offerWay(p, x, level, "PLAY_USING_WAY"), true // one from the hand on its line: Shop's "plays a Ruined Village using Way of the Ox."
 	}
 	if z := g.loc[x].Zone; how.times == 0 && !how.inPlace && z != InPlay && z != Supply { // a Trail played from the trash comes into play
 		g.move(x, z, Loc{InPlay, int16(p)})
@@ -636,8 +642,8 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	}
 	playing := &Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1}
 	g.fire(playing)
-	if !playing.Skip && how.way == 0 && d.Action() && (level > 0 || how.times > 0 || how.by != 0 || how.blank) {
-		how.way = g.offerWay(p, x, level+1)
+	if !playing.Skip && how.way == 0 && !how.asked && d.Action() && (level > 0 || how.times > 0 || how.by != 0 || how.blank) {
+		how.way = g.offerWay(p, x, level+1, "USES_WAY")
 	}
 	if playing.Skip {
 		g.Log.releaseWay() // nothing of its own

@@ -748,7 +748,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                                         // "(The Flame's Gift)" at the start of a turn
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"},                 // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
 	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                                     // City Gate's "topdecks a Copper with City Gate."
-	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"},                     // Mastermind: "plays a Smithy with Mastermind."
+	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR", "PLAY_USING_WAY"},   // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                   // Island's "puts a Copper on their Island mat."
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
@@ -1104,6 +1104,9 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 func (r *replayer) sameCard(o engine.Option, x cartographer.Event) bool {
 	if o.Card == 0 {
 		return true
+	}
+	if x.Template == "PLAY_USING_WAY" {
+		return cardName(x.Args[2]) == r.t.Defs[o.Card].Name
 	}
 	for _, cn := range x.Args[1].Cards {
 		if cn.Card != nil && norm(cn.Card.Name) == norm(r.t.Defs[o.Card].Name) {
