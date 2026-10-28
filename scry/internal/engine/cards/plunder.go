@@ -774,7 +774,7 @@ func init() {
 	reg("Mirror", rules{ // the watch's N: 1 once it gained the copy
 		Buy: func(c *ctx) { c.PlusBuys(1); c.AddWatch(engine.On(engine.EvGain), 0) },
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
-			if e.P != w.P || w.N > 0 || !c.G.D(e.C).Action() {
+			if e.P != w.P || w.N > 0 || !c.G.D(e.C).Action() || e.By == c.Src { // two Mirrors copy the bought card, not each other's copy
 				return false
 			}
 			w.N = 1
