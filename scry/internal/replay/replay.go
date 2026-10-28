@@ -284,8 +284,9 @@ func (r *replayer) hook(i int) {
 	if r.pos >= len(r.real) {
 		panic(stop{}) // the real game ended here
 	}
-	if y := r.real[r.pos]; y.Template == "LOOK_AT" && e.Template != "LOOK_AT" && r.pos > 0 && r.pos+1 < len(r.real) && (r.real[r.pos-1].Template == "PLAY" || r.real[r.pos-1].Template == "REACTS_PLAYING") &&
-		r.real[r.pos-1].Player == y.Player && r.real[r.pos-1].Level+1 == y.Level {
+	if y := r.real[r.pos]; y.Template == "LOOK_AT" && e.Template != "LOOK_AT" && r.pos > 0 && r.pos+1 < len(r.real) && (r.real[r.pos-1].Template == "PLAY" || r.real[r.pos-1].Template == "REACTS_PLAYING" ||
+		r.real[r.pos+1].Template == e.Template && r.real[r.pos+1].Player == y.Player) && // or a look through the discard pile before Shepherd's "discards an Estate and a Pasture."
+		r.real[r.pos-1].Player == y.Player && r.real[r.pos-1].Level+1 >= y.Level {
 		r.pos++ // a card played from the discard pile looks through it, only sometimes: "plays a Village Green.", "looks at a Village Green and 3 Coppers."
 	}
 	x := r.real[r.pos]
