@@ -163,6 +163,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	g.Log.Hook = r.hook
 	g.BeforeTake = r.beforeTake
 	g.NextDur = r.nextDur
+	g.OwnLater = r.ownLater
 	r.run()
 	return rep, r
 }
@@ -1202,6 +1203,20 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	return 0
+}
+
+// ownLater: the next line comes from another card than the one gained, named as
+// its source: "topdecks a Blessed Village with Tracker." before the Boon.
+func (r *replayer) ownLater(ev *engine.Ev) bool {
+	x, ok := r.peek()
+	if !ok || ev.X < 0 {
+		return false
+	}
+	by := ""
+	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_WITH") || strings.HasSuffix(x.Template, "_FROM")) {
+		by = cardName(x.Args[n-1])
+	}
+	return by != "" && by != r.g.Def(ev.X).Name
 }
 
 func cardCount(a cartographer.Arg) int {

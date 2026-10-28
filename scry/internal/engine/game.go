@@ -110,6 +110,10 @@ type Game struct {
 	// their turn, for a replay whose log shows the order; without it they go in
 	// the order they were played.
 	NextDur func(p int, ds []*Dur) int
+	// OwnLater says whether a gained card's own rule waits until the other cards
+	// that hear the gain are done, for a replay whose log has them first:
+	// "gets +1 Buy. (Galleria)" before Skulk's "gains a Gold."
+	OwnLater func(ev *Ev) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst

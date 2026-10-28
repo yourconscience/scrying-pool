@@ -90,6 +90,7 @@ var listenZones = []Zone{InPlay, Aside, Tavern, Exile, Island, NativeVillage}
 // fire runs everything that responds to an event: the card's own "when you
 // ..." rule, Reactions in hand, cards that hear it, landscapes, and watches.
 func (g *Game) fire(ev *Ev) {
+	var own func() // the card's own rule: first, or after the rest when OwnLater says so
 	if ev.X >= 0 {
 		if r := g.Def(ev.X).Rules; r != nil {
 			var h func(*Ctx, *Ev)
@@ -106,11 +107,18 @@ func (g *Game) fire(ev *Ev) {
 				h = r.OnReveal
 			}
 			if h != nil {
-				h(g.ctx(ev.P, ev.X, ev.Level), ev)
+				own = func() { h(g.ctx(ev.P, ev.X, ev.Level), ev) }
 			}
 		}
 	}
+	if own != nil && (ev.Kind != EvGain || g.OwnLater == nil || !g.OwnLater(ev)) {
+		own()
+		own = nil
+	}
 	if !g.hears.has(ev.Kind) {
+		if own != nil {
+			own()
+		}
 		return
 	}
 	order := [2]int{g.Cur, 1 - g.Cur}
@@ -189,6 +197,9 @@ func (g *Game) fire(ev *Ev) {
 		}
 		// what it did can use up other watches (Donate's trashing): go on after this one
 		i = sort.Search(len(g.watches), func(k int) bool { return g.watches[k].id > w.id }) - 1
+	}
+	if own != nil {
+		own()
 	}
 }
 
