@@ -895,7 +895,18 @@ func (c *Ctx) FromTop(p, n int, template string) []Inst {
 // the deck and discard run out; it returns the revealed cards, the found one last (or -1).
 func (c *Ctx) RevealUntil(p int, ok func(*Def) bool, n int) ([]Inst, []Inst) {
 	var all, found []Inst
+	shown := 0
+	show := func() { // a line before each shuffle: "reveals a Copper and a Silver.", "shuffles their deck.", "reveals a Farmhands."
+		if len(all) > shown {
+			c.Log("REVEAL", Seat(p), c.G.ids(all[shown:]))
+			c.revealed(p, all[shown:])
+			shown = len(all)
+		}
+	}
 	for len(found) < n {
+		if len(c.G.P[p].Z[Deck]) == 0 {
+			show()
+		}
 		x := c.G.top(p, Revealed, c.level)
 		if x < 0 {
 			break
@@ -905,10 +916,7 @@ func (c *Ctx) RevealUntil(p int, ok func(*Def) bool, n int) ([]Inst, []Inst) {
 			found = append(found, x)
 		}
 	}
-	if len(all) > 0 {
-		c.Log("REVEAL", Seat(p), c.G.ids(all))
-		c.revealed(p, all)
-	}
+	show()
 	return all, found
 }
 
