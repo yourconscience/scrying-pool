@@ -146,12 +146,28 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
-	for _, q := range order {
+	land := func(late bool) {
+		for _, c := range g.Land {
+			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
+				cx := g.ctx(ev.P, -1, ev.Level)
+				cx.Src = c
+				r.Hear(cx, ev)
+			}
+		}
+	}
+	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	for i, q := range order {
 		for _, z := range listenZones {
 			if z != Tavern || ev.Kind != EvGain {
 				hear(q, z)
 			}
 		}
+		if i == 0 && early {
+			land(false)
+		}
+	}
+	if !early { // but a buy's after them: Swamp Hag's "gains a Curse.", then Colonnade's "takes 2 VP."
+		land(false)
 	}
 	defer func() {
 		switch ev.Kind {
@@ -165,16 +181,6 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}()
-	land := func(late bool) {
-		for _, c := range g.Land {
-			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
-				cx := g.ctx(ev.P, -1, ev.Level)
-				cx.Src = c
-				r.Hear(cx, ev)
-			}
-		}
-	}
-	land(false)
 	defer land(true)
 	for _, c := range g.Global {
 		if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
