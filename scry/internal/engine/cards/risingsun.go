@@ -512,7 +512,7 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
 			if e.P == c.P {
-				c.ToHand(c.P, c.In(aside, one(inst(w.N))), "PUT_IN_HAND")
+				c.At(0).ToHand(c.P, c.In(aside, one(inst(w.N))), "PUT_IN_HAND") // after the Clean-up draw, at the top level
 				return true
 			}
 			return false
