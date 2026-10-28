@@ -457,7 +457,11 @@ func init() {
 				return
 			}
 			if c.Mode1(c.P, mode("receive it now", "RECEIVES"), mode("receive it next turn", "SET_ASIDE")) == 0 {
-				receive(c, c.P, b, true)
+				r := c
+				if c.G.T2.Phase == engine.StartPhase { // gained at the start of a turn: "gains a Gold. (The Sky's Gift)"
+					r = c.Away()
+				}
+				receive(r, c.P, b, true)
 				boonDone(c, b)
 				return
 			}
