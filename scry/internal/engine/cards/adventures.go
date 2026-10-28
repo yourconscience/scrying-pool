@@ -422,12 +422,27 @@ func init() {
 	reg("Warrior", traveller("Hero", rules{Play: func(c *ctx) { // the other player "discards an Envoy.", "trashes an Envoy."
 		c.Draw(2)
 		n := c.Count(c.P, inPlay, func(d *def) bool { return d.Is(engine.TTraveller) })
-		c.Attack(func(v int) {
+		c.Attack(func(v int) { // one line until a trash or a shuffle comes between: "discards a Hero and a Skirmisher."
+			var xs []inst
+			flush := func() {
+				c.Discard(v, xs)
+				xs = nil
+			}
 			for range n {
-				if x := c.DiscardTop(v); x >= 0 && costs3or4(c)(c.G.Def(x)) {
+				if len(c.Zone(v, deck)) == 0 {
+					flush()
+				}
+				x := c.TopCard(v)
+				if x < 0 {
+					break
+				}
+				xs = append(xs, x)
+				if costs3or4(c)(c.G.Def(x)) {
+					flush()
 					c.Trash(v, one(x))
 				}
 			}
+			flush()
 		})
 	}}))
 	reg("Hero", traveller("Champion", rules{Play: func(c *ctx) {
