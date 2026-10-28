@@ -121,6 +121,10 @@ type Game struct {
 	// though another card asks a choice on the way that writes nothing, as
 	// Kiln's for the first of "plays 6 Coppers."
 	MoreTreasures func(p, n int) bool
+	// WatchFirst says whether this turn's watches hear an event before the
+	// cards and landscapes that do, for a replay whose log has Sailor's "plays
+	// a Sailor." before Progress's "topdecks a Sailor."
+	WatchFirst func(ev *Ev) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst

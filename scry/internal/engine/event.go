@@ -122,6 +122,10 @@ func (g *Game) fire(ev *Ev) {
 		}
 		return
 	}
+	watchFirst := g.WatchFirst != nil && g.WatchFirst(ev)
+	if watchFirst {
+		g.watch(ev)
+	}
 	order := [2]int{g.Cur, 1 - g.Cur}
 	for _, q := range order {
 		g.react(q, ev)
@@ -186,6 +190,15 @@ func (g *Game) fire(ev *Ev) {
 			r.Hear(cx, ev)
 		}
 	}
+	if !watchFirst {
+		g.watch(ev)
+	}
+	if own != nil {
+		own()
+	}
+}
+
+func (g *Game) watch(ev *Ev) {
 	for i := 0; i < len(g.watches); i++ {
 		w := g.watches[i]
 		if !w.On.has(ev.Kind) {
@@ -198,9 +211,6 @@ func (g *Game) fire(ev *Ev) {
 		}
 		// what it did can use up other watches (Donate's trashing): go on after this one
 		i = sort.Search(len(g.watches), func(k int) bool { return g.watches[k].id > w.id }) - 1
-	}
-	if own != nil {
-		own()
 	}
 }
 
