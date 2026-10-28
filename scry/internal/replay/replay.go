@@ -167,6 +167,10 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	g.KeepStart = func(p int) bool { // the real line, not peek's: that skips the waiting line
 		return r.pos < len(r.real) && r.real[r.pos].Template == "STARTS_TURN" && r.real[r.pos].Player == r.names[p]
 	}
+	g.MoreTreasures = func(p, n int) bool {
+		x := r.real[min(r.pos, len(r.real)-1)]
+		return x.Template == "PLAY_TREASURES_FOR" && x.Player == r.names[p] && cardCount(x.Args[1]) > n
+	}
 	r.run()
 	return rep, r
 }

@@ -117,6 +117,10 @@ type Game struct {
 	// KeepStart says whether "starts their turn." is written though nothing
 	// happened at the start of the turn, as some logs have it.
 	KeepStart func(p int) bool
+	// MoreTreasures says whether more Treasures join the line being played,
+	// though another card asks a choice on the way that writes nothing, as
+	// Kiln's for the first of "plays 6 Coppers."
+	MoreTreasures func(p, n int) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst
@@ -1023,7 +1027,8 @@ func (g *Game) ask(d *Decision) []Option {
 	if d.Max == 0 {
 		return nil
 	}
-	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level { // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level && // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+		(g.MoreTreasures == nil || !g.MoreTreasures(int(l.tr.Args[0].(Seat)), len(l.tr.Args[1].([]CardID)))) {
 		l.flush()
 	}
 	who := d.Player
