@@ -765,6 +765,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		if c, ok := r.moreOfLast(d); ok {
 			return r.pick(d, []cartographer.CardN{c})
 		}
+		if cs, ok := r.moreOfLine(d, "BUY"); ok { // the card after the Project: "buys Capitalism and a Conclave."
+			return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}})
+		}
 	}
 	if d.Kind == engine.ToGain {
 		if cs, ok := r.moreOfLine(d, "GAIN"); ok { // the second of Ball's "gains 2 Poachers."
@@ -868,7 +871,7 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	if d.Min == 0 && r.offersNone(d, x.Args[1].Cards) {
 		return nil
 	}
-	if cs := x.Args[1].Cards; d.Kind == engine.Buy && len(cs) == 1 && cs[0].N > 1 {
+	if cs := x.Args[1].Cards; d.Kind == engine.Buy && (len(cs) == 1 && cs[0].N > 1 || len(cs) > 1) {
 		return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
 	}
 	return r.pick(d, x.Args[1].Cards)

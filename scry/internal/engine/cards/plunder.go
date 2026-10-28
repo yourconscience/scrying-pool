@@ -380,7 +380,7 @@ func init() {
 		}
 		c.ChooseGain(c.P, func(d *def) bool { return played[d.ID] }, discard)
 	}})
-	reg("Buried Treasure", rules{Alone: true,
+	reg("Buried Treasure", rules{ // "plays 2 Buried Treasures."
 		Play: func(c *ctx) { c.Stay() },
 		Next: func(c *ctx, d *engine.Dur) bool { c.PlusBuys(1); c.PlusCoins(3); return true },
 		OnGain: func(c *ctx, e *ev) { // "gains a Buried Treasure.", "plays a Buried Treasure."; "(|)" at the start of a turn

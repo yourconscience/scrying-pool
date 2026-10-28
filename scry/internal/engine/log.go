@@ -107,6 +107,15 @@ func (l *Log) add(e Entry) {
 			}
 		}
 	}
+	// a card bought right after a Project or Event: "buys Capitalism and a Conclave.", "gains a Conclave."
+	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" && len(e.Args) == 2 {
+		if last := &l.Entries[n-1]; last.Template == "BUY" && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			l.add(Entry{Level: e.Level, Template: "GAIN", Args: []any{e.Args[0], e.Args[1]}})
+			return
+		}
+	}
 	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers"
 	if n := len(l.Entries); n > 0 && (e.Template == "BUY_AND_GAIN" || e.Template == "GAIN" && len(e.Args) == 2) {
 		last := &l.Entries[n-1]
