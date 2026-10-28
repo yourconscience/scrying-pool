@@ -83,6 +83,10 @@ func twoTypes(d *def) bool { return bits.OnesCount64(uint64(d.T&(engine.TEvent-1
 // reactPlaying is a Reaction that plays itself: "reacts with a Black Cat.", "plays a Black Cat."
 func reactPlaying(c *ctx, _ *ev) bool {
 	c.Log("REACTS_WITH", engine.Seat(c.P), []engine.CardID{c.Src})
+	if c.G.Cur == c.P && c.T2().Phase == engine.StartPhase {
+		c.PlayBlank(c.Me) // "plays a Stowaway. (|)" under a gain at the start of their own turn
+		return true
+	}
 	c.PlayNow(c.Me)
 	return true
 }

@@ -866,7 +866,11 @@ func init() {
 			if c.CostOf(e.C).Coins < 3 || !spend(c, 1, "spend a Favor for +1 Card, Action or Buy") {
 				return
 			}
-			switch c.Mode1(c.P, mode("+1 Card", "DRAW"), mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY")) {
+			from := "" // at the start of a turn the lines name it: "draws a Copper. (Band of Nomads)"
+			if c.T2().Phase == engine.StartPhase {
+				from = "_FROM"
+			}
+			switch c.Mode1(c.P, mode("+1 Card", "DRAW"+from), mode("+1 Action", "GETS_ACTION"+from), mode("+1 Buy", "GETS_BUY"+from)) {
 			case 0:
 				c.Draw(1)
 			case 1:

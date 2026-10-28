@@ -1034,10 +1034,11 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 			continue
 		}
 		k := -1
-		for j, o := range d.Options {
-			if !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) && sameCount(o, x) && r.sameCard(o, x) {
-				k = j
-				break
+		for _, short := range []bool{false, true} { // an exact count first: Blacksmith's "draws a card." is +1 Card, not a short +2 Cards
+			for j, o := range d.Options {
+				if k < 0 && !used[j] && o.Line != "" && (o.Line == x.Template || r.english[o.Line] == r.english[x.Template]) && r.sameNumber(o, x) && r.sameCount(d.Player, o, x, short) && r.sameCard(o, x) {
+					k = j
+				}
 			}
 		}
 		if k < 0 && x.Template == "DRAW" && d.Max-len(out) >= 2 { // two draws on one line: Blacksmith's "draws 4 cards." under Elder
@@ -1105,7 +1106,7 @@ func (r *replayer) sameNumber(o engine.Option, x cartographer.Event) bool {
 }
 
 // sameCount: a mode that draws so many cards matches a line that draws as many (Innkeeper's +3 Cards).
-func sameCount(o engine.Option, x cartographer.Event) bool {
+func (r *replayer) sameCount(p int, o engine.Option, x cartographer.Event, short bool) bool {
 	if o.Count == 0 {
 		return true
 	}
@@ -1113,7 +1114,8 @@ func sameCount(o engine.Option, x cartographer.Event) bool {
 	for _, cn := range x.Args[1].Cards {
 		n += cn.N
 	}
-	return n == o.Count
+	z := r.g.P[p].Z
+	return n == o.Count || short && x.Template == "DRAW" && n < o.Count && n == len(z[engine.Deck])+len(z[engine.Discard]) // the deck runs out: Broker's Gold "draws 5 cards."
 }
 
 // schemePick answers each Scheme's pick in Clean-up with one of the turn's
@@ -1285,11 +1287,26 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 	if x.Template == "GAIN" && cardName(x.Args[1]) == "Horse" && slices.ContainsFunc(r.g.P[ev.P].Z[engine.InPlay], func(y engine.Inst) bool { return r.g.Def(y).Name == "Livery" }) {
 		return true // Livery's "gains a Horse." before Cavalry's "draws 2 cards."
 	}
-	by := ""
-	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_WITH") || strings.HasSuffix(x.Template, "_FROM")) {
-		by = cardName(x.Args[n-1])
+	by := func(x cartographer.Event) string {
+		if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_WITH") || strings.HasSuffix(x.Template, "_FROM")) {
+			return cardName(x.Args[n-1])
+		}
+		return ""
 	}
-	return by != "" && by != r.g.Def(ev.X).Name
+	name := r.g.Def(ev.X).Name
+	if b := by(x); b != "" {
+		return b != name
+	}
+	i := slices.IndexFunc(r.real[r.pos:], func(y cartographer.Event) bool { return y.Line == x.Line })
+	for _, y := range r.real[r.pos+i+1 : min(len(r.real), r.pos+i+6)] {
+		if y.Level < x.Level || y.Template == "NEW_TURN" {
+			break
+		}
+		if y.Level == x.Level && by(y) == name {
+			return true // Abundance's "gets +1 Buy.", "gets +$3." before "gets +2 Favors. (Sycophant)"
+		}
+	}
+	return false
 }
 
 func cardCount(a cartographer.Arg) int {
