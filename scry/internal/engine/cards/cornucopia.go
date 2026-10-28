@@ -236,8 +236,8 @@ func init() {
 			c.Draw(2)
 			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, min(2, len(c.Hand(c.P))), 2))
 			c.Attack(func(v int) {
-				if bs := c.Options(v, hand, bane(c)); len(bs) > 0 && c.Yes(v, "reveal a Bane", "REVEAL") {
-					c.Reveal(v, one(bs[0].Inst))
+				if bs := c.Options(v, hand, bane(c)); len(bs) > 0 && c.Yes(v, "reveal a Bane", "BLOCKS_WITH") {
+					c.Log("BLOCKS_WITH", engine.Seat(v), []engine.CardID{bs[0].Card}) // "blocks with a Tent."
 					return
 				}
 				c.Gain(v, c.Card("Curse"), discard)

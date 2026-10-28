@@ -158,6 +158,22 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 			}
 		}
 	}
+	for _, x := range r.real { // Young Witch's Bane: "blocks with a Tent."
+		if x.Template != "BLOCKS_WITH" {
+			continue
+		}
+		if d, ok := t.Card(cardName(x.Args[1])); ok {
+			if i := g.PileOf(d.ID); i >= 0 && !g.Piles[i].Bane {
+				for k := range g.Piles {
+					if g.Piles[k].Supply { // not Ferryman's
+						g.Piles[k].Bane = false
+					}
+				}
+				g.Piles[i].Bane = true
+			}
+		}
+		break
+	}
 	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
 		if x.Template == "OBELISK_CHOOSES_PILE" {
 			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
