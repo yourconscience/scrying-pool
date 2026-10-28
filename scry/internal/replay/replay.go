@@ -1666,8 +1666,9 @@ func (r *replayer) takeNext(p int) {
 		panic(stop{}) // the real log ends before this draw
 	}
 	take := r.takes[p][r.took[p]]
+	hinted := false
 	if h, ok := r.hints[takeID{p, r.took[p]}]; ok && take.Card == "" && r.hintInDeck(p, h) {
-		take.Card = h // an earlier run found the hand needed it
+		take.Card, hinted = h, true // an earlier run found the hand needed it
 	}
 	r.took[p]++
 	deck := r.g.P[p].Z[engine.Deck]
@@ -1675,6 +1676,9 @@ func (r *replayer) takeNext(p int) {
 		for i := len(deck) - 1; i >= 0; i-- {
 			if r.g.Def(deck[i]).Name == take.Card {
 				delete(r.hidden, deck[i])
+				if hinted {
+					r.hide(deck[i]) // still a guess: Chariot Race's "draws a card." may yet need it
+				}
 				r.g.PutOnTop(deck[i])
 				return
 			}
