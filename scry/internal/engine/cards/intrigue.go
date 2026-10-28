@@ -199,8 +199,12 @@ func init() {
 			return
 		}
 		opts := []engine.Option{{Inst: -1, Mode: 0, Label: "on top", Line: "TOPDECK"}}
-		for n := 1; n <= len(c.Zone(c.P, deck)); n++ {
-			opts = append(opts, engine.Option{Inst: -1, Mode: n, Label: "under " + itoa(n), Line: "INSERT_IN_DECK"})
+		for n, k := 1, len(c.Zone(c.P, deck)); n <= k; n++ {
+			line := "INSERT_IN_DECK"
+			if n == k {
+				line = "BOTTOMDECKS" // "puts a Silver on the bottom of their deck."
+			}
+			opts = append(opts, engine.Option{Inst: -1, Mode: n, Label: "under " + itoa(n), Line: line})
 		}
 		c.Insert(c.P, x, c.Choose(c.P, engine.ToChoose, opts, 1, 1)[0].Mode)
 	}})

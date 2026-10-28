@@ -756,7 +756,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE", "GAIN_ON_DRAWPILE"}, // "(The Earth's Gift)" at the start of a turn; Blockade's; Graverobber's
 	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                                         // "(The Flame's Gift)" at the start of a turn
 	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"},                 // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
-	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                                     // City Gate's "topdecks a Copper with City Gate."
+	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH", "INSERT_IN_DECK", "BOTTOMDECKS"},    // City Gate's "topdecks a Copper with City Gate."; Secret Passage's
 	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR", "PLAY_USING_WAY"},   // Mastermind: "plays a Smithy with Mastermind."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                   // Island's "puts a Copper on their Island mat."
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},

@@ -293,7 +293,7 @@ func init() {
 	}})
 	reg("Weaver", rules{
 		Play: func(c *ctx) {
-			if c.Mode1(c.P, mode("gain two Silvers", "GAIN"), mode("gain a card costing up to $4", "GAIN")) == 0 {
+			if c.Mode1(c.P, engine.Mode{Label: "gain two Silvers", Line: "GAIN", Card: c.Card("Silver")}, mode("gain a card costing up to $4", "GAIN")) == 0 { // "gains a Sauna." is the second
 				c.GainN(c.P, c.Card("Silver"), 2, discard, "GAIN")
 				return
 			}

@@ -1109,5 +1109,9 @@ func (c *Ctx) Insert(p int, x Inst, n int) {
 	}
 	copy(d[at+1:], d[at:len(d)-1])
 	d[at] = x
+	if at == 0 && n == len(d)-1 {
+		c.Log("BOTTOMDECKS", Seat(p), []CardID{c.G.cards[x]})
+		return
+	}
 	c.Log("INSERT_IN_DECK", Seat(p), []CardID{c.G.cards[x]})
 }
