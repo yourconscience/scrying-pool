@@ -269,7 +269,7 @@ func (r *replayer) hook(i int) {
 	}
 	r.checkLast()
 	for x := range r.hidden { // played, trashed, set aside: shown
-		if z := r.g.Where(x).Zone; z != engine.Hand && z != engine.Deck && z != engine.Discard && z != engine.Revealed {
+		if z := r.g.Where(x).Zone; z != engine.Hand && z != engine.Deck && z != engine.Discard && z != engine.Revealed && z != engine.Aside { // face down: Grotto's
 			delete(r.hidden, x)
 		}
 	}
@@ -1890,9 +1890,11 @@ func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) in
 			break
 		}
 	}
-	for _, y := range r.g.P[p].Z[engine.Discard] { // else one discarded unseen: Clean-up's, or "discards a card."
-		if x < 0 && r.hidden[y] && r.g.Def(y).Name == name {
-			x = y
+	for _, z := range []engine.Zone{engine.Discard, engine.Aside} { // else one discarded or set aside unseen: Clean-up's, "discards a card.", Grotto's "sets 2 cards aside."
+		for _, y := range r.g.P[p].Z[z] {
+			if x < 0 && r.hidden[y] && r.g.Def(y).Name == name {
+				x = y
+			}
 		}
 	}
 	if x < 0 {

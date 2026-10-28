@@ -621,6 +621,16 @@ func (g *Game) Swap(x, y Inst) {
 	fx, fy := g.loose[x], g.loose[y]
 	g.setLoose(x, fy)
 	g.setLoose(y, fx)
+	for _, d := range g.durs { // a card set aside on a Duration: Grotto's
+		for k, a := range d.Aside {
+			switch a {
+			case x:
+				d.Aside[k] = y
+			case y:
+				d.Aside[k] = x
+			}
+		}
+	}
 }
 
 // Loose: x is in a deck at a place no one has seen, shuffled in and not put there since.
