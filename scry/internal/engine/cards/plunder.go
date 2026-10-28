@@ -647,7 +647,7 @@ func init() {
 		c.Discard(c.P, pickOf(c, c.P, engine.ToDiscard, top, 0, len(top)))
 		topdeckAny(c, c.P, c.In(revealed, top))
 	}})
-	reg("Shield", rules{Alone: true,
+	reg("Shield", rules{ // "plays a Buried Treasure and a Shield.", "gets +1 Buy.", "gets +$3."
 		Play:     buy3,
 		Reacts:   engine.On(engine.EvAttack),
 		CanReact: attacked,

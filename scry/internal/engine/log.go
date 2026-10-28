@@ -35,6 +35,7 @@ type Log struct {
 	Hook    func(i int)
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
+	trLine  int     // 1 + the last line of Treasures without $
 	pending *Entry  // a lazy line
 	way     *Entry  // a held "plays a Warehouse using Way of the Pig." (holdWay)
 	wayCut  bool
@@ -186,22 +187,29 @@ func (l *Log) unGain(i int) {
 	}
 }
 
-// playAlone writes a Treasure's line of its own; the same Treasure again with
-// nothing between joins it: "plays 2 Gondolas."
+// playAlone writes the line of a Treasure with a choice, without its $. It joins
+// Treasures without $ played right before: "plays 2 Gondolas.", "plays an
+// Abundance and an Anvil.", "plays 2 Buried Treasures and a War Chest."
 func (l *Log) playAlone(e Entry) {
 	if l == nil {
 		return
 	}
+	if l.tr != nil && l.tr.Template == "PLAY" && l.tr.Level == e.Level && l.tr.Args[0] == e.Args[0] && len(l.after) == 0 {
+		l.tr.Args[1] = append(l.tr.Args[1].([]CardID), e.Args[1].([]CardID)...)
+		l.flush() // its choice's lines come right after
+		return
+	}
 	l.flush()
-	if n := len(l.Entries); n > 0 && l.pending == nil && l.way == nil {
+	if n := len(l.Entries); n > 0 && n == l.trLine && l.pending == nil && l.way == nil {
 		last := &l.Entries[n-1]
-		if last.Template == "PLAY" && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[1].([]CardID)[0] == e.Args[1].([]CardID)[0] {
+		if last.Template == "PLAY" && last.Level == e.Level && last.Args[0] == e.Args[0] {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
 			l.changed(n - 1)
 			return
 		}
 	}
 	l.add(e)
+	l.trLine = len(l.Entries)
 }
 
 func (l *Log) changed(i int) {
@@ -238,6 +246,9 @@ func (l *Log) flush() {
 	tr, after := *l.tr, l.after
 	l.tr, l.after = nil, nil
 	l.Entries = append(l.Entries, tr)
+	if tr.Template == "PLAY" {
+		l.trLine = len(l.Entries)
+	}
 	l.changed(len(l.Entries) - 1)
 	for _, e := range after { // these merge too: two Merchants' "gets +$2. (Merchant)"
 		l.add(e)
