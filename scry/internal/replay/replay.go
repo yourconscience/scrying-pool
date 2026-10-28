@@ -1547,6 +1547,29 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 			strict = need
 		}
 	}
+	if x, _ := r.peek(); unknown > 0 && strings.HasPrefix(x.Template, "PUT_IN_HAND") && d.Options[0].Inst >= 0 && r.g.Where(d.Options[0].Inst).Zone == engine.Aside {
+		in := map[string]int{} // into the hand: the card it shows next and lacks, Quartermaster's "puts a card in hand", then "plays an Encampment."
+		for _, h := range r.g.P[r.whose(d)].Z[engine.Hand] {
+			in[r.g.Def(h).Name]++
+		}
+		for ; unknown > 0; unknown-- {
+			k, best := -1, 0
+			for i, o := range d.Options {
+				if n := r.t.Defs[o.Card].Name; !used[i] && need[n]-in[n] > best {
+					k, best = i, need[n]-in[n]
+				}
+			}
+			if k < 0 {
+				break // none it lacks: as from a hand
+			}
+			used[k] = true
+			out = append(out, k)
+			in[r.t.Defs[d.Options[k].Card].Name]++
+			if x := d.Options[k].Inst; x >= 0 {
+				r.hide(x)
+			}
+		}
+	}
 	for ; unknown > 0; unknown-- {
 		k := -1
 		for i, o := range d.Options {
