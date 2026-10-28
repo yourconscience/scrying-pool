@@ -719,12 +719,12 @@ var answers = map[engine.Kind][]string{
 	engine.PlayAction:    {"PLAY"},
 	engine.PlayTreasures: {"PLAY_TREASURES_FOR", "PLAY"},
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
-	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE"},     // "(The Earth's Gift)" at the start of a turn; Blockade's
-	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                         // "(The Flame's Gift)" at the start of a turn
-	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"}, // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
-	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                     // City Gate's "topdecks a Copper with City Gate."
-	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"},     // Mastermind: "plays a Smithy with Mastermind."
-	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},   // Island's "puts a Copper on their Island mat."
+	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE", "GAIN_ON_DRAWPILE"}, // "(The Earth's Gift)" at the start of a turn; Blockade's; Graverobber's
+	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                                         // "(The Flame's Gift)" at the start of a turn
+	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"},                 // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
+	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH"},                                     // City Gate's "topdecks a Copper with City Gate."
+	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR"},                     // Mastermind: "plays a Smithy with Mastermind."
+	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                   // Island's "puts a Copper on their Island mat."
 	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
 	engine.PlayNight:     {"PLAY"},
 	engine.ToExile:       {"EXILE"},
@@ -1232,6 +1232,9 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		if n := r.t.Defs[d.C].Name; x.Cause == n || len(x.Args) > 2 && cardName(x.Args[2]) == n {
 			return i
 		}
+	}
+	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
+		return -1
 	}
 	return 0
 }

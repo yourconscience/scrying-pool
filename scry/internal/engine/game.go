@@ -108,7 +108,7 @@ type Game struct {
 	BeforeTake func(p int)
 	// NextDur picks which of a player's Durations resolves next at the start of
 	// their turn, for a replay whose log shows the order; without it they go in
-	// the order they were played.
+	// the order they were played; -1 runs the rest of the turn's start first.
 	NextDur func(p int, ds []*Dur) int
 	// OwnLater says whether a gained card's own rule waits until the other cards
 	// that hear the gain are done, for a replay whose log has them first:

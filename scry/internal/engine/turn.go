@@ -88,7 +88,7 @@ func (g *Game) takeTurn(extra CardID) {
 // startTurn resolves Durations and everything else that happens at the start of a turn.
 func (g *Game) startTurn(p int) {
 	g.react(p, &Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1}) // a Clerk before the Durations, or after them below
-	ran := map[*Dur]bool{}
+	ran, started := map[*Dur]bool{}, false
 	for {
 		var ds []*Dur
 		for _, d := range g.durs {
@@ -100,8 +100,14 @@ func (g *Game) startTurn(p int) {
 			break
 		}
 		d := ds[0]
-		if len(ds) > 1 && g.NextDur != nil {
-			d = ds[g.NextDur(p, ds)]
+		if g.NextDur != nil && (len(ds) > 1 || !started) {
+			k := g.NextDur(p, ds)
+			if k < 0 && !started { // the rest of the turn's start first: a Reserve called before an Importer's gain
+				started = true
+				g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+				continue
+			}
+			d = ds[max(k, 0)]
 		}
 		ran[d] = true
 		r := g.T.Defs[d.C].Rules
@@ -112,7 +118,9 @@ func (g *Game) startTurn(p int) {
 			d.Done = true
 		}
 	}
-	g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+	if !started {
+		g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+	}
 }
 
 func (g *Game) actionPhase(p int) {
