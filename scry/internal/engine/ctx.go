@@ -129,9 +129,11 @@ func (c *Ctx) Draw(n int) []Inst { return c.DrawFor(c.P, n) }
 
 // DrawFor draws cards for any player, e.g. Council Room's other player.
 func (c *Ctx) DrawFor(p, n int) []Inst {
-	if c.swap && p == c.P {
+	if c.swap && p == c.P { // Way of the Chameleon: "would draw 3 cards.", then a level down "gets +$3."
 		d := *c
 		d.swap = false
+		c.Log("WOULD_DRAW", Seat(c.P), slices.Repeat([]CardID{c.G.T.MustCard("Copper")}, n)) // the cards aren't named
+		d.level++
 		d.PlusCoins(n)
 		return nil
 	}
@@ -158,9 +160,11 @@ func (c *Ctx) PlusBuys(n int) {
 }
 
 func (c *Ctx) PlusCoins(n int) {
-	if c.swap {
+	if c.swap { // "would get +$1.", then a level down "draws a card."
 		d := *c
 		d.swap = false
+		c.Log("WOULD_GET_COIN", Seat(c.P), n)
+		d.level++
 		d.Draw(n)
 		return
 	}
