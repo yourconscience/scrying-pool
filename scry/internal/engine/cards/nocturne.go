@@ -231,8 +231,10 @@ func init() {
 
 	// the Hexes
 	reg("Bad Omens", rules{Play: func(c *ctx) { // "moves their deck to the discard.", "looks at 8 cards.", "topdecks 2 Coppers."
-		c.MoveTo(c.P, slices.Clone(c.Zone(c.P, deck)), discard, "")
-		c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
+		if len(c.Zone(c.P, deck)) > 0 { // no line for an empty deck
+			c.MoveTo(c.P, slices.Clone(c.Zone(c.P, deck)), discard, "")
+			c.Log("DECK_TO_DISCARD", engine.Seat(c.P))
+		}
 		c.LookAt(c.P, c.Zone(c.P, discard))
 		var coppers []inst
 		for _, x := range c.Zone(c.P, discard) {
@@ -321,6 +323,7 @@ func init() {
 			if e.P != c.P {
 				return
 			}
+			phaseLine(c) // "starts their turn." whether or not a card is discarded
 			if x := pick1(c, c.P, engine.ToDiscard, hand, nil, true); x >= 0 && len(c.Away().Discard(c.P, one(x))) == 1 {
 				boon(c.Away())
 			}
@@ -454,7 +457,11 @@ func init() {
 				return
 			}
 			if c.Mode1(c.P, mode("receive it now", "RECEIVES"), mode("receive it next turn", "SET_ASIDE")) == 0 {
-				receive(c, c.P, b, true)
+				r := c
+				if c.G.T2.Phase == engine.StartPhase { // gained at the start of a turn: "gains a Gold. (The Sky's Gift)"
+					r = c.Away()
+				}
+				receive(r, c.P, b, true)
 				boonDone(c, b)
 				return
 			}
@@ -526,7 +533,7 @@ func init() {
 	reg("Cursed Village", rules{
 		Play: func(c *ctx) {
 			c.PlusActions(2)
-			c.Draw(max(0, 6-len(c.Hand(c.P))))
+			drawTo(c, 6)
 		},
 		OnGain: func(c *ctx, _ *ev) { hex(c, c.P) },
 	})

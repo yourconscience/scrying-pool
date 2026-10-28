@@ -67,8 +67,10 @@ func init() {
 			}
 		}
 		c.Discard(c.P, rest)
-		if len(found) == 2 { // in either order
-			found = pickOf(c, c.P, engine.ToPlay, found, 2, 2)
+		if len(found) == 2 { // in either order: the one picked first
+			if first := pickOf(c, c.P, engine.ToPlay, found, 1, 1); len(first) == 1 && first[0] == found[1] {
+				found[0], found[1] = found[1], found[0]
+			}
 		}
 		for _, x := range found {
 			if len(c.In(revealed, one(x))) == 1 {
@@ -83,8 +85,11 @@ func init() {
 			c.AddWatch(engine.On(engine.EvDiscard), 0)
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // once this turn, a Treasure discarded from play
-			if e.P != w.P || e.From != inPlay || !c.G.D(e.C).Treasure() || c.G.Where(e.X) != (engine.Loc{Zone: discard, Owner: int16(w.P)}) ||
-				!c.Yes(w.P, "put it on your deck", "TOPDECK") {
+			if e.P != w.P || e.From != inPlay || !c.G.D(e.C).Treasure() || c.G.Where(e.X) != (engine.Loc{Zone: discard, Owner: int16(w.P)}) {
+				return false
+			}
+			phaseLine(c) // "begins their Cleanup phase." whether or not it's taken
+			if !c.Yes(w.P, "put it on your deck", "TOPDECK") {
 				return false
 			}
 			c.Topdeck(w.P, one(e.X))

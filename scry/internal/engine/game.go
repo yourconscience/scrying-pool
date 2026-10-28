@@ -106,9 +106,29 @@ type Game struct {
 	// BeforeTake runs before a card is taken from a player's draw pile, so a
 	// replay can put the card its log names on top (PutOnTop).
 	BeforeTake func(p int)
+	// NextDur picks which of a player's Durations resolves next at the start of
+	// their turn, for a replay whose log shows the order; without it they go in
+	// the order they were played; -1 runs the rest of the turn's start first.
+	NextDur func(p int, ds []*Dur) int
+	// OwnLater says whether a gained card's own rule waits until the other cards
+	// that hear the gain are done, for a replay whose log has them first:
+	// "gets +1 Buy. (Galleria)" before Skulk's "gains a Gold."
+	OwnLater func(ev *Ev) bool
+	// KeepStart says whether "starts their turn." is written though nothing
+	// happened at the start of the turn, as some logs have it.
+	KeepStart func(p int) bool
+	// MoreTreasures says whether more Treasures join the line being played,
+	// though another card asks a choice on the way that writes nothing, as
+	// Kiln's for the first of "plays 6 Coppers."
+	MoreTreasures func(p, n int) bool
+	// WatchFirst says whether this turn's watches hear an event before the
+	// cards and landscapes that do, for a replay whose log has Sailor's "plays
+	// a Sailor." before Progress's "topdecks a Sailor."
+	WatchFirst func(ev *Ev) bool
 
-	cards  []CardID // by Inst
-	loc    []Loc    // by Inst
+	cards  []CardID      // by Inst
+	loc    []Loc         // by Inst
+	loose  map[Inst]bool // cards in a deck at a place no one has seen: shuffled in, not put there since
 	rng    *rand.Rand
 	pileOf map[CardID]int
 	turn   int      // the current turn's number for Cur
@@ -196,6 +216,7 @@ type turnState struct {
 	HandLimit int    // Voyage's turn: how many cards the player may play from hand; 0 for any
 	FromHand  int    // cards the player whose turn it is played from hand
 	KeepHand  []Inst // cards that stay in hand in Clean-up (Coastal Haven)
+	Unswapped []Inst // Travellers not exchanged as they were discarded in Clean-up, asked again after the others
 }
 
 type Phase uint8
@@ -500,10 +521,11 @@ func (g *Game) CtxFor(p int, c CardID, level int) *Ctx {
 	return cx
 }
 
-// Raise moves a card of a kind to the top of its pile, for replays of mixed piles.
+// Raise moves a card of a kind to the top of its pile, for replays of piles
+// shuffled at setup; other piles keep their order (Odysseys, Castles).
 func (g *Game) Raise(c CardID) bool {
 	i := g.PileOf(c)
-	if i < 0 {
+	if i < 0 || !g.Piles[i].mixed {
 		return false
 	}
 	s := g.Piles[i].Cards
@@ -515,7 +537,26 @@ func (g *Game) Raise(c CardID) bool {
 			return true
 		}
 	}
+	if len(s) > 0 && g.Piles[i].dealt { // the 10 Ruins dealt didn't include it: the top one is it
+		g.cards[s[len(s)-1]] = c
+		return true
+	}
 	return false
+}
+
+// SetMouse makes c Way of the Mouse's card, for a replay whose log shows which it was.
+func (g *Game) SetMouse(c CardID) {
+	i := g.PileOf(g.Mouse)
+	if i < 0 || g.Mouse == c {
+		return
+	}
+	delete(g.pileOf, g.Mouse)
+	g.pileOf[c] = i
+	g.Piles[i].Card = c
+	for _, x := range g.Piles[i].Cards {
+		g.cards[x] = c
+	}
+	g.Mouse = c
 }
 
 // PrevGained is what a player gained on their last turn.
@@ -568,6 +609,9 @@ func (g *Game) move(x Inst, from Zone, to Loc) bool {
 	t := g.slice(to)
 	*t = append(*t, x)
 	g.loc[x] = to
+	if from != Deck || to.Zone != Deck { // PutOnTop keeps the card's flag: a replay choosing what was there
+		g.setLoose(x, false)
+	}
 	return true
 }
 
@@ -578,6 +622,33 @@ func (g *Game) Swap(x, y Inst) {
 	i, j := slices.Index(*sx, x), slices.Index(*sy, y)
 	(*sx)[i], (*sy)[j] = y, x
 	g.loc[x], g.loc[y] = ly, lx
+	fx, fy := g.loose[x], g.loose[y]
+	g.setLoose(x, fy)
+	g.setLoose(y, fx)
+	for _, d := range g.durs { // a card set aside on a Duration: Grotto's
+		for k, a := range d.Aside {
+			switch a {
+			case x:
+				d.Aside[k] = y
+			case y:
+				d.Aside[k] = x
+			}
+		}
+	}
+}
+
+// Loose: x is in a deck at a place no one has seen, shuffled in and not put there since.
+func (g *Game) Loose(x Inst) bool { return g.loose[x] }
+
+func (g *Game) setLoose(x Inst, on bool) {
+	if !on {
+		delete(g.loose, x)
+		return
+	}
+	if g.loose == nil {
+		g.loose = map[Inst]bool{}
+	}
+	g.loose[x] = true
 }
 
 // Move moves a card from wherever it is.
@@ -681,6 +752,9 @@ func (g *Game) shuffle(p int, level int) {
 	pl.Shuffles++
 	for _, x := range append(d, shadows...) {
 		g.loc[x] = Loc{Deck, int16(p)}
+	}
+	for _, x := range d {
+		g.setLoose(x, true)
 	}
 	pl.Z[Deck] = append(append(shadows, d...), pl.Z[Deck]...)
 	pl.Z[Discard] = keep
@@ -793,6 +867,9 @@ func (g *Game) Play() Result {
 				k = 2
 			}
 			groups[k] = append(groups[k], c)
+		}
+		if len(groups[0]) > 0 && g.T.Defs[groups[0][0]].Is(TShelter) { // with Shelters, on their line: "a Hovel, a Necropolis, an Overgrown Estate, and a Pouch."
+			groups[0], groups[1] = append(groups[0], groups[1]...), nil
 		}
 		for _, cs := range groups {
 			if len(cs) > 0 {
@@ -964,7 +1041,8 @@ func (g *Game) ask(d *Decision) []Option {
 	if d.Max == 0 {
 		return nil
 	}
-	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level { // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+	if l := g.Log; l != nil && l.tr != nil && d.Level > l.tr.Level && // a Treasure's own choice: "plays a Goat.", then "trashes an Estate."
+		(g.MoreTreasures == nil || !g.MoreTreasures(int(l.tr.Args[0].(Seat)), len(l.tr.Args[1].([]CardID)))) {
 		l.flush()
 	}
 	who := d.Player

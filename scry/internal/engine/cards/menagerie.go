@@ -83,6 +83,10 @@ func twoTypes(d *def) bool { return bits.OnesCount64(uint64(d.T&(engine.TEvent-1
 // reactPlaying is a Reaction that plays itself: "reacts with a Black Cat.", "plays a Black Cat."
 func reactPlaying(c *ctx, _ *ev) bool {
 	c.Log("REACTS_WITH", engine.Seat(c.P), []engine.CardID{c.Src})
+	if c.G.Cur == c.P && c.T2().Phase == engine.StartPhase {
+		c.PlayBlank(c.Me) // "plays a Stowaway. (|)" under a gain at the start of their own turn
+		return true
+	}
 	c.PlayNow(c.Me)
 	return true
 }
@@ -240,7 +244,7 @@ func init() {
 			return
 		}
 		d := c.G.Def(x)
-		if d.Action() {
+		if c.G.IsAction(x) { // an inheriting Estate too: "gains an Estate.", "gains a Horse.", "draws a card."
 			c.Gain(c.P, horse(c), discard)
 		}
 		if d.Treasure() {
@@ -394,6 +398,9 @@ func init() {
 			for i := len(g.T2.Gained) - 1; i >= 0; i-- {
 				if d := g.D(g.T2.Gained[i]); d.Name != "Wayfarer" {
 					*cost = d.Cost
+					if d.Rules != nil && d.Rules.SelfCost != nil { // as it costs now: a Fisherman's $2 with an empty discard pile
+						d.Rules.SelfCost(g, g.Cur, cost)
+					}
 					return
 				}
 			}
@@ -463,7 +470,7 @@ func init() {
 	})
 	way("Mule", func(c *ctx) { c.PlusActions(1); c.PlusCoins(1) })
 	way("Otter", func(c *ctx) { c.Draw(2) })
-	way("Owl", func(c *ctx) { c.Draw(6 - len(c.Hand(c.P))) })
+	way("Owl", func(c *ctx) { drawTo(c, 6) })
 	way("Ox", func(c *ctx) { c.PlusActions(2) })
 	way("Pig", func(c *ctx) { c.Draw(1); c.PlusActions(1) })
 	way("Rat", func(c *ctx) { // "discards a Copper.", "gains an Overlord."

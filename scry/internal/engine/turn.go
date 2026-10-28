@@ -48,6 +48,9 @@ func (g *Game) takeTurn(extra CardID) {
 	g.T2.Phase = StartPhase
 	g.Log.lazy(&Entry{Template: "STARTS_TURN", Args: []any{Seat(p)}})
 	g.startTurn(p)
+	if g.KeepStart != nil && g.KeepStart(p) {
+		g.Log.emit()
+	}
 	g.Log.lazy(nil)
 
 	for { // Villa gained in the Buy phase returns to the Action phase, silently
@@ -87,15 +90,30 @@ func (g *Game) takeTurn(extra CardID) {
 
 // startTurn resolves Durations and everything else that happens at the start of a turn.
 func (g *Game) startTurn(p int) {
-	for i := 0; i < len(g.durs); i++ {
-		d := g.durs[i]
-		if d.P != p || d.Done || d.Made == g.turns {
-			continue
+	g.react(p, &Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1}) // a Clerk before the Durations, or after them below
+	ran, started := map[*Dur]bool{}, false
+	for {
+		var ds []*Dur
+		for _, d := range g.durs {
+			if r := g.T.Defs[d.C].Rules; d.P == p && !d.Done && d.Made != g.turns && !ran[d] && r != nil && r.Next != nil {
+				ds = append(ds, d)
+			}
 		}
+		if len(ds) == 0 {
+			break
+		}
+		d := ds[0]
+		if g.NextDur != nil && (len(ds) > 1 || !started) {
+			k := g.NextDur(p, ds)
+			if k < 0 && !started { // the rest of the turn's start first: a Reserve called before an Importer's gain
+				started = true
+				g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+				continue
+			}
+			d = ds[max(k, 0)]
+		}
+		ran[d] = true
 		r := g.T.Defs[d.C].Rules
-		if r == nil || r.Next == nil {
-			continue
-		}
 		g.Log.emit()
 		c := g.ctx(p, d.X, 1)
 		c.Src, c.from = d.C, true
@@ -103,7 +121,9 @@ func (g *Game) startTurn(p int) {
 			d.Done = true
 		}
 	}
-	g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+	if !started {
+		g.fire(&Ev{Kind: EvTurnStart, P: p, X: -1, Level: 1})
+	}
 }
 
 func (g *Game) actionPhase(p int) {
@@ -200,6 +220,10 @@ func (g *Game) buyPhase(p int) {
 			max = min(max, g.T2.HandLimit-g.T2.FromHand)
 		}
 		got := g.ask(&Decision{Player: p, Kind: PlayTreasures, Options: opts, Min: 0, Max: max})
+		if len(got) == 0 && pl.Debt > 0 && pl.Coins > 0 { // the debt first, then more Treasures: "plays a Copper.", "repays 1 debt.", "plays 2 Coppers."
+			g.repay(p)
+			continue
+		}
 		if len(got) == 0 {
 			break
 		}
@@ -213,21 +237,10 @@ func (g *Game) buyPhase(p int) {
 			return
 		}
 	}
-	if pl.Coffers > 0 {
-		var opts []Option
-		for n := 0; n <= pl.Coffers; n++ {
-			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
-		}
-		got := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})
-		if n := got[0].Mode; n > 0 {
-			pl.Coffers -= n
-			g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
-			pl.Coins += n
-			g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
-		}
-	}
 	for {
+		g.useCoffers(p) // before any buy: "buys and gains a Conclave.", "uses 2 Coffers.", maybe again: "uses 1 Coffers."
 		g.repay(p)
+		g.useCoffers(p)                                                        // or after the debt: "repays 1 debt.", "uses 1 Coffers.", "buys Piazza."
 		if pl.Buys == 0 && pl.Actions > 0 && g.CameTrue("Flourishing Trade") { // an Action play used as a Buy, unlogged
 			pl.Actions--
 			pl.Buys++
@@ -400,6 +413,26 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	if over > 0 {
 		d.Rules.Overpay(g.ctx(p, x, 1), over)
 	}
+	g.fire(&Ev{Kind: EvBought, P: p, X: x, C: c, Level: 1})
+}
+
+// useCoffers lets a player spend Coffers in the buy phase, as many times as they like.
+func (g *Game) useCoffers(p int) {
+	pl := &g.P[p]
+	for pl.Coffers > 0 && pl.Buys > 0 {
+		var opts []Option
+		for n := 0; n <= pl.Coffers; n++ {
+			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+		}
+		n := g.ask(&Decision{Player: p, Kind: UseCoffers, Options: opts, Min: 1, Max: 1})[0].Mode
+		if n == 0 {
+			return
+		}
+		pl.Coffers -= n
+		g.Log.add(Entry{Template: plural(n, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), n}})
+		pl.Coins += n
+		g.Log.add(Entry{Template: plural(n, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), n}})
+	}
 }
 
 func (g *Game) takeDebt(p, n, level int) {
@@ -422,6 +455,30 @@ func (g *Game) nightPhase(p int) {
 		}
 		g.play(p, got[0].Inst, 0, playHow{})
 	}
+}
+
+// offerWay lets a player use a Way on an Action another card plays: "plays a
+// Bridge Troll. (Way of the Turtle)", then "uses Way of the Turtle." a level down.
+func (g *Game) offerWay(p int, x Inst, level int, line string) CardID {
+	ms := []Mode{{Label: "no"}}
+	var ways []CardID
+	for _, c := range g.Land {
+		if g.T.Defs[c].Is(TWay) {
+			ms = append(ms, Mode{Label: "use " + g.T.Defs[c].Name, Line: line, Card: c})
+			ways = append(ways, c)
+		}
+	}
+	if len(ways) == 0 {
+		return 0
+	}
+	k := g.ctx(p, x, level).Mode1(p, ms...)
+	if k == 0 {
+		return 0
+	}
+	if line == "USES_WAY" {
+		g.Log.add(Entry{Level: level, Template: "USES_WAY", Args: []any{Seat(p), Name(ways[k-1])}})
+	}
+	return ways[k-1]
 }
 
 // cleanup discards the hand and the cards in play that don't stay, and draws the next hand.
@@ -457,6 +514,15 @@ func (g *Game) cleanup(p int) {
 			}
 			g.move(x, InPlay, Loc{Discard, int16(q)})
 			g.fire(&Ev{Kind: EvDiscard, P: q, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
+		}
+	}
+	// the Travellers not exchanged yet, once more: the player picks the order ("returns a Treasure Hunter." before "returns a Page.")
+	for again := g.T2.Unswapped; len(again) > 0; again = nil {
+		g.T2.Unswapped = nil
+		for _, x := range again {
+			if g.loc[x].Zone == Discard {
+				g.Def(x).Rules.OnDiscard(g.ctx(p, x, 1), &Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Again: true, Level: 1})
+			}
 		}
 	}
 	if !g.T2.KeepPlay {
@@ -508,6 +574,7 @@ type playHow struct {
 	inPlace bool   // played where it is, and left there: Inheritance's set-aside card
 	self    Inst   // with inPlace: the Estate or Overlord that plays it, which stays in play for a Duration
 	merge   bool   // a Treasure played by an Action, on one line with the others it plays (Storyteller)
+	asked   bool   // the Way was offered before the play line
 }
 
 // play puts a card into play from where it is (or plays it where it is, again)
@@ -516,6 +583,9 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	d := g.Def(x)
 	if d.Rules == nil {
 		panic(MissingRules{d.Name})
+	}
+	if how.way == 0 && how.times == 0 && how.by == 0 && !how.blank && how.line == "" && level > 0 && d.Action() && g.loc[x].Zone == Hand {
+		how.way, how.asked = g.offerWay(p, x, level, "PLAY_USING_WAY"), true // one from the hand on its line: Shop's "plays a Ruined Village using Way of the Ox."
 	}
 	if z := g.loc[x].Zone; how.times == 0 && !how.inPlace && z != InPlay && z != Supply { // a Trail played from the trash comes into play
 		g.move(x, z, Loc{InPlay, int16(p)})
@@ -540,19 +610,21 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		if g.T.Defs[how.way].Rules == nil {
 			panic(MissingRules{g.T.Defs[how.way].Name})
 		}
-		g.Log.add(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
+		g.Log.holdWay(Entry{Level: level, Template: "PLAY_USING_WAY", Args: []any{Seat(p), card, Name(how.way)}})
 	case how.by != 0 || how.blank: // each of Mastermind's three plays too
 		g.Log.add(Entry{Level: level, Template: "PLAY_WITH", Args: []any{Seat(p), card, Name(how.by)}})
 	case how.line != "":
 		g.Log.add(Entry{Level: level, Template: how.line, Args: []any{Seat(p), card}})
-	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && !d.Attack() && (level == 0 && how.times == 0 && g.T2.Phase == BuyPhase || how.merge):
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && (level == 0 && how.times == 0 && g.T2.Phase == BuyPhase || how.merge):
 		g.Log.treasure(p, g.cards[x], coins, level, d.Rules.Coins == 0 && d.Rules.Worth == nil && coins == 0) // a Relic has a line of its own
-	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone: // played by another card: "plays a Copper again. (+$1)"
+	case g.isTreasure(x) && !d.Action() && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil || coins != 0): // played by another card: "plays a Copper again. (+$1)"; "plays a Potion."
 		t := [...]string{"PLAY_TREASURES_FOR", "PLAY_TREASURES_AGAIN_FOR", "PLAY_TREASURES_THIRD_FOR"}[min(how.times, 2)]
 		g.Log.add(Entry{Level: level, Template: t, Args: []any{Seat(p), card, coins}})
-	case how.times == 1 || how.times > 2: // a fourth Infirmary is "again" too
+	case g.isTreasure(x) && !d.Action() && level == 0 && how.times == 0 && g.T2.Phase == BuyPhase: // a Treasure with a choice
+		g.Log.playAlone(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), card}})
+	case how.times == 1:
 		g.Log.add(Entry{Level: level, Template: "PLAY_AGAIN", Args: []any{Seat(p), card}})
-	case how.times == 2:
+	case how.times >= 2: // a fourth Infirmary is "a third time" too
 		g.Log.add(Entry{Level: level, Template: "PLAY_THIRD", Args: []any{Seat(p), card}})
 	default:
 		g.Log.add(Entry{Level: level, Template: "PLAY", Args: []any{Seat(p), card}})
@@ -570,8 +642,11 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	}
 	playing := &Ev{Kind: EvPlaying, P: p, X: x, C: g.cards[x], Level: level + 1}
 	g.fire(playing)
+	if !playing.Skip && how.way == 0 && !how.asked && d.Action() && (level > 0 || how.times > 0 || how.by != 0 || how.blank) {
+		how.way = g.offerWay(p, x, level+1, "USES_WAY")
+	}
 	if playing.Skip {
-		// nothing of its own
+		g.Log.releaseWay() // nothing of its own
 	} else if g.T2.Phase == ActionPhase && p == g.Cur && how.times == 0 && how.way == 0 && g.CameTrue("Enlightenment") && g.isTreasure(x) && !d.Action() {
 		// instead of its instructions, two levels down: "Copper plays Enlightenment for +1 Card +1 Action"
 		g.Log.add(Entry{Level: level + 2, Template: "PLAY_ENLIGHTENED", Args: []any{Name(g.cards[x]), Name(g.Prophecy)}})
@@ -579,6 +654,12 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 		e.Draw(1)
 		e.PlusActions(1)
 	} else if how.way != 0 {
+		if d.Attack() { // still an Attack played: "plays an Urchin.", "trashes an Urchin.", then "uses Way of the Owl."
+			g.fire(&Ev{Kind: EvAttack, P: p, X: x, C: g.cards[x], Victim: 1 - p, Level: level + 1})
+		}
+		if g.Log.releaseWay() {
+			g.Log.add(Entry{Level: level + 1, Template: "USES_WAY", Args: []any{Seat(p), Name(how.way)}})
+		}
 		w := g.T.Defs[how.way]
 		c.Src = how.way
 		if w.Rules != nil && w.Rules.Play != nil {
@@ -612,7 +693,16 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 			g.play(p, g.P[p].Inherited, level+1, playHow{inPlace: true, self: x, holders: how.holders})
 		}
 	}
-	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], Level: level + 1})
+	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], By: how.by, Level: level + 1})
+}
+
+// IsAction: x is an Action card, or an Estate of a player with the Estate token (Inheritance).
+func (g *Game) IsAction(x Inst) bool {
+	if g.Def(x).Action() {
+		return true
+	}
+	p := g.Owner(x)
+	return g.cards[x] == g.estate && p >= 0 && g.P[p].Inherited >= 0
 }
 
 // inherits: x is an Estate that plays the card with p's Estate token on p's turn.

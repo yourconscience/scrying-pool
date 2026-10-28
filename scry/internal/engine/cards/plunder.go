@@ -43,7 +43,7 @@ func kindsOf(c *ctx, xs []inst) []engine.CardID {
 
 // playLine is the line a card writes when another card plays it: "plays a Gold. (+$3)" for a Treasure of fixed $.
 func playLine(d *def) string {
-	if d.Treasure() && !d.Action() && d.Rules != nil && !d.Rules.Alone {
+	if d.Treasure() && !d.Action() && d.Rules != nil && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil) { // "plays a Potion." has no $
 		return "PLAY_TREASURES_FOR"
 	}
 	return "PLAY"
@@ -115,7 +115,8 @@ func init() {
 			}
 		},
 		Next: func(c *ctx, d *engine.Dur) bool { // "discards a card and an Estate.", "draws 2 cards. (Grotto)"
-			n := len(c.Here().Discard(c.P, c.In(aside, d.Aside)))
+			xs := c.In(aside, d.Aside) // set aside face down: the replay learns them here
+			n := len(c.Here().Discard(c.P, pickOf(c, c.P, engine.ToDiscard, xs, len(xs), len(xs))))
 			c.Draw(n)
 			return true
 		},
@@ -182,9 +183,7 @@ func init() {
 			c.Stay()
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
-			if n := 8 - len(c.Hand(c.P)); n > 0 {
-				c.Draw(n)
-			}
+			drawTo(c, 8)
 			return true
 		},
 		OnGain: func(c *ctx, e *ev) { // "trashes an Importer."; or the Siren, or "Siren can no longer move Siren (it already moved)."
@@ -227,9 +226,12 @@ func init() {
 	reg("Abundance", rules{Alone: true,
 		Play:  func(c *ctx) { c.Stay() },
 		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "gets +1 Buy. (Abundance)", "gets +$3. (Abundance)"
+		Hear: func(c *ctx, e *ev) { // "gets +1 Buy.", "gets +$3."; "(Abundance)" at the start of a turn
 			if e.P != c.P || !c.G.D(e.C).Action() {
 				return
+			}
+			if c.T2().Phase != engine.StartPhase {
+				c = c.Here()
 			}
 			for _, d := range c.Durs() {
 				d.Done = true
@@ -261,7 +263,7 @@ func init() {
 		Hears: engine.On(engine.EvPlay),
 		Hear: func(c *ctx, e *ev) { // after the next Action's effects, "plays a Sailor. (Flagship)"
 			d := c.G.D(e.C)
-			if e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) { // even a card that trashed itself
+			if e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) || e.By == c.Src { // even a card that trashed itself; a second Flagship replays the first play too, not the replay
 				return
 			}
 			if ds := c.Durs(); len(ds) > 0 {
@@ -296,7 +298,11 @@ func init() {
 	gondola.Alone = true
 	gondola.OnGain = func(c *ctx, _ *ev) {
 		if x := pick1(c, c.P, engine.ToPlay, hand, action, true); x >= 0 {
-			c.PlayNow(x)
+			if c.T2().Phase == engine.StartPhase {
+				c.PlayBlank(x) // at the start of a turn: "plays a Merchant. (|)"
+			} else {
+				c.PlayNow(x)
+			}
 		}
 	}
 	reg("Gondola", gondola)
@@ -379,13 +385,17 @@ func init() {
 		}
 		c.ChooseGain(c.P, func(d *def) bool { return played[d.ID] }, discard)
 	}})
-	reg("Buried Treasure", rules{Alone: true,
+	reg("Buried Treasure", rules{ // "plays 2 Buried Treasures."
 		Play: func(c *ctx) { c.Stay() },
 		Next: func(c *ctx, d *engine.Dur) bool { c.PlusBuys(1); c.PlusCoins(3); return true },
-		OnGain: func(c *ctx, e *ev) { // "gains a Buried Treasure.", "plays a Buried Treasure."
+		OnGain: func(c *ctx, e *ev) { // "gains a Buried Treasure.", "plays a Buried Treasure."; "(|)" at the start of a turn
 			if stillGained(c, e) {
 				e.Done = true
-				c.PlayNow(e.X)
+				if c.T2().Phase == engine.StartPhase {
+					c.PlayBlank(e.X)
+				} else {
+					c.PlayNow(e.X)
+				}
 			}
 		},
 	})
@@ -453,9 +463,7 @@ func init() {
 				c.PlayNow(y)
 			}
 		}
-		if n := 6 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 6)
 	}})
 	reg("Frigate", rules{ // d.N 1: a Reaction protected the other player
 		Play: func(c *ctx) {
@@ -540,7 +548,7 @@ func init() {
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // in Clean-up "sets a Collection aside with Trickster."
 			if e.Kind == engine.EvTurnEnd {
 				if w.N > 0 {
-					c.At(0).ToHand(w.P, c.In(aside, one(inst(w.N-1))), "PUT_IN_HAND_FROM", engine.Name(c.Src))
+					c.At(0).ToHand(w.P, c.In(aside, one(inst(w.N-1))), "PUT_IN_HAND") // "puts a Silver into their hand."
 				}
 				return true
 			}
@@ -640,7 +648,7 @@ func init() {
 		c.Discard(c.P, pickOf(c, c.P, engine.ToDiscard, top, 0, len(top)))
 		topdeckAny(c, c.P, c.In(revealed, top))
 	}})
-	reg("Shield", rules{Alone: true,
+	reg("Shield", rules{ // "plays a Buried Treasure and a Shield.", "gets +1 Buy.", "gets +$3."
 		Play:     buy3,
 		Reacts:   engine.On(engine.EvAttack),
 		CanReact: attacked,
@@ -775,8 +783,8 @@ func init() {
 		},
 	})
 	reg("Prepare", rules{
-		Buy: func(c *ctx) { // "sets 5 cards aside."; next turn it plays the Actions and Treasures, then discards the rest
-			xs := c.SetAside(c.P, append([]inst{}, c.Hand(c.P)...))
+		Buy: func(c *ctx) { // "sets a Copper and a River Shrine aside with Prepare."; next turn it plays the Actions and Treasures, then discards the rest
+			xs := c.SetAsideWith(c.P, append([]inst{}, c.Hand(c.P)...)...)
 			c.Later().Aside = xs
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
@@ -793,7 +801,11 @@ func init() {
 					break
 				}
 				played[x[0]] = true
-				c.PlayWith(x[0])
+				if dd := c.G.Def(x[0]); dd.Treasure() && !dd.Action() { // "plays a Copper. (+$1)"; "plays a River Shrine. (|)"
+					c.PlayNow(x[0])
+				} else {
+					c.PlayBlank(x[0])
+				}
 			}
 			c.Discard(c.P, slices.DeleteFunc(c.In(aside, d.Aside), func(x inst) bool { return played[x] }))
 			return true
@@ -968,9 +980,12 @@ func init() {
 	})
 	reg("Pious", rules{
 		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "trashes an Estate. (Pious)"
+		Hear: func(c *ctx, e *ev) { // "trashes an Estate."; "(Pious)" at the start of a turn
 			if traited(c)(c.G.D(e.C)) {
 				a := c.Away()
+				if c.T2().Phase != engine.StartPhase {
+					a = c.Here()
+				}
 				a.Trash(e.P, pick(a, e.P, engine.ToTrash, hand, nil, 0, 1))
 			}
 		},

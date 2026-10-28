@@ -130,6 +130,7 @@
    "types": [
     "Event"
    ],
+   "cost": "2",
    "set": "Rising Sun",
    "art": "AmassArt.jpg"
   },
@@ -321,6 +322,7 @@
    "types": [
     "Event"
    ],
+   "cost": "2",
    "set": "Rising Sun",
    "art": "AsceticismArt.jpg"
   },
@@ -1440,6 +1442,7 @@
    "types": [
     "Event"
    ],
+   "debt": 8,
    "set": "Rising Sun",
    "art": "ContinueArt.jpg"
   },
@@ -1626,6 +1629,7 @@
    "types": [
     "Event"
    ],
+   "cost": "2",
    "set": "Rising Sun",
    "art": "CreditArt.jpg"
   },
@@ -2733,6 +2737,7 @@
    "types": [
     "Event"
    ],
+   "cost": "2",
    "set": "Rising Sun",
    "art": "ForesightArt.jpg"
   },
@@ -2928,6 +2933,7 @@
    "types": [
     "Event"
    ],
+   "cost": "7",
    "set": "Rising Sun",
    "art": "GatherArt.jpg"
   },
@@ -3962,6 +3968,7 @@
    "types": [
     "Event"
    ],
+   "cost": "3",
    "set": "Rising Sun",
    "art": "KintsugiArt.jpg"
   },
@@ -5488,6 +5495,7 @@
    "types": [
     "Event"
    ],
+   "cost": "3",
    "set": "Rising Sun",
    "art": "PracticeArt.jpg"
   },
@@ -5732,6 +5740,7 @@
    "types": [
     "Event"
    ],
+   "cost": "5",
    "set": "Rising Sun",
    "art": "Receive_TributeArt.jpg"
   },
@@ -6290,6 +6299,7 @@
    "types": [
     "Event"
    ],
+   "cost": "4",
    "set": "Rising Sun",
    "art": "Sea_TradeArt.jpg"
   },

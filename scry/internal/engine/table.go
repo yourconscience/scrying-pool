@@ -152,6 +152,7 @@ type Rules struct {
 	// State or an Artifact, that sees the events in Hears.
 	Hears EvMask
 	Hear  func(c *Ctx, ev *Ev)
+	Late  bool // a landscape that hears after the watches: Trappers' Lodge after Guildmaster's "gets +1 Favor."
 
 	// Watch is an effect a card left for later in the turn, e.g. Merchant's +$1
 	// for the first Silver; it returns true when it is used up.

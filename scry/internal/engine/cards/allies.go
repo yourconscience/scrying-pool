@@ -86,7 +86,13 @@ func gainTop(c *ctx, pile string) { c.GainN(c.P, c.Card(pile), 1, discard, "GAIN
 
 // topdeckFromPlay is a card that may go onto the deck when discarded from play (Merchant Camp, Tent).
 func topdeckFromPlay(c *ctx, e *ev) {
-	if e.From == inPlay && c.G.Where(c.Me) == (engine.Loc{Zone: discard, Owner: int16(c.P)}) && c.Yes(c.P, "put it onto your deck", "TOPDECK") {
+	if e.From != inPlay || c.G.Where(c.Me) != (engine.Loc{Zone: discard, Owner: int16(c.P)}) {
+		return
+	}
+	if e.Cleanup {
+		phaseLine(c) // "begins their Cleanup phase." whether or not it's taken
+	}
+	if c.Yes(c.P, "put it onto your deck", "TOPDECK") {
 		c.Topdeck(c.P, one(c.Me))
 	}
 }
@@ -520,8 +526,7 @@ func init() {
 			if len(ds) == 0 {
 				ds = append(ds, c.Stay())
 			}
-			ds[0].N++
-			c.Log("GARRISON_ADDS_TOKEN", engine.Seat(w.P), ds[0].N)
+			ds[0].N++ // silently: the logs have no "adds a token to Garrison"
 			return false
 		},
 		Next: func(c *ctx, d *engine.Dur) bool { c.Draw(d.N); return true },
@@ -815,10 +820,10 @@ func init() {
 					opts = append(opts, engine.Option{Card: p.Card, Inst: -1})
 				}
 			}
-			if o := c.ChooseOne(c.P, engine.ToPick, opts, true); o != nil {
-				c.G.P[c.P].Favors--
+			if o := c.ChooseOne(c.P, engine.ToPick, opts, true); o != nil { // "spends 1 Favor." below it
 				c.G.Piles[c.G.PileOf(o.Card)].Favors++
-				c.Log("PLAYER_ADDS_FAVOR_TOKEN_TO", engine.Seat(c.P), engine.PileName(o.Card))
+				c.At(0).Log("PLAYER_ADDS_FAVOR_TOKEN_TO", engine.Seat(c.P), engine.PileName(o.Card))
+				c.At(1).SpendFavors(1)
 			}
 		},
 		Reduce: func(g *engine.Game, _ inst, c engine.CardID) int {
@@ -861,7 +866,11 @@ func init() {
 			if c.CostOf(e.C).Coins < 3 || !spend(c, 1, "spend a Favor for +1 Card, Action or Buy") {
 				return
 			}
-			switch c.Mode1(c.P, mode("+1 Card", "DRAW"), mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY")) {
+			from := "" // at the start of a turn the lines name it: "draws a Copper. (Band of Nomads)"
+			if c.T2().Phase == engine.StartPhase {
+				from = "_FROM"
+			}
+			switch c.Mode1(c.P, mode("+1 Card", "DRAW"+from), mode("+1 Action", "GETS_ACTION"+from), mode("+1 Buy", "GETS_BUY"+from)) {
 			case 0:
 				c.Draw(1)
 			case 1:
@@ -954,6 +963,7 @@ func init() {
 	}))
 	reg("Trappers' Lodge", ally(rules{
 		Hears: engine.On(engine.EvGain),
+		Late:  true,
 		Hear: func(c *ctx, e *ev) { // "spends 1 Favor.", "topdecks a Guildmaster with Trappers' Lodge."
 			if stillGained(c, e) && spend(c, 1, "spend a Favor to put it onto your deck") {
 				e.Done = true

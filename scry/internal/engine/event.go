@@ -24,6 +24,7 @@ const (
 	EvShuffle                 // P shuffled
 	EvReveal                  // P reveals X, from their hand or deck
 	EvShuffling               // P is about to shuffle their discard pile into their deck
+	EvBought                  // P bought C and gained X, after what the gain caused (Tax's debt)
 	nEvKinds
 )
 
@@ -53,6 +54,7 @@ type Ev struct {
 	Victim  int    // EvAttack: the player attacked
 	Level   int    // the nesting of lines its responses write
 	Cleanup bool   // EvDiscard in Clean-up
+	Again   bool   // a Traveller in Clean-up asked once more after the others
 
 	Unaffected bool   // EvAttack: a Reaction protects the victim
 	Done       bool   // the card was moved already: a later listener can't move it
@@ -89,6 +91,7 @@ var listenZones = []Zone{InPlay, Aside, Tavern, Exile, Island, NativeVillage}
 // fire runs everything that responds to an event: the card's own "when you
 // ..." rule, Reactions in hand, cards that hear it, landscapes, and watches.
 func (g *Game) fire(ev *Ev) {
+	var own func() // the card's own rule: first, or after the rest when OwnLater says so
 	if ev.X >= 0 {
 		if r := g.Def(ev.X).Rules; r != nil {
 			var h func(*Ctx, *Ev)
@@ -105,42 +108,80 @@ func (g *Game) fire(ev *Ev) {
 				h = r.OnReveal
 			}
 			if h != nil {
-				h(g.ctx(ev.P, ev.X, ev.Level), ev)
+				own = func() { h(g.ctx(ev.P, ev.X, ev.Level), ev) }
 			}
 		}
 	}
+	if own != nil && (ev.Kind != EvGain || g.OwnLater == nil || !g.OwnLater(ev)) {
+		own()
+		own = nil
+	}
 	if !g.hears.has(ev.Kind) {
+		if own != nil {
+			own()
+		}
 		return
+	}
+	watchFirst := g.WatchFirst != nil && g.WatchFirst(ev)
+	if watchFirst {
+		g.watch(ev)
 	}
 	order := [2]int{g.Cur, 1 - g.Cur}
 	for _, q := range order {
 		g.react(q, ev)
 	}
-	for _, q := range order {
-		for _, z := range listenZones {
-			zone := g.P[q].Z[z]
-			for i := 0; i < len(zone); i++ {
-				x := zone[i]
-				r := g.Def(x).Rules
-				if r == nil || r.Hear == nil || !r.Hears.has(ev.Kind) {
-					continue
-				}
-				cx := g.ctx(q, x, ev.Level)
-				cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
-				r.Hear(cx, ev)
-				if zone = g.P[q].Z[z]; i < len(zone) && zone[i] != x {
-					i-- // it left (a called Ratcatcher, an exchanged Hermit): the next card is at i now
-				}
+	hear := func(q int, z Zone) {
+		zone := g.P[q].Z[z]
+		for i := 0; i < len(zone); i++ {
+			x := zone[i]
+			r := g.Def(x).Rules
+			if r == nil || r.Hear == nil || !r.Hears.has(ev.Kind) {
+				continue
+			}
+			cx := g.ctx(q, x, ev.Level)
+			cx.from = true // what a card does away from its play names it: "draws a card. (Monkey)"
+			r.Hear(cx, ev)
+			if zone = g.P[q].Z[z]; i < len(zone) && zone[i] != x {
+				i-- // it left (a called Ratcatcher, an exchanged Hermit): the next card is at i now
 			}
 		}
 	}
-	for _, c := range g.Land {
-		if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
-			cx := g.ctx(ev.P, -1, ev.Level)
-			cx.Src = c
-			r.Hear(cx, ev)
+	land := func(late bool) {
+		for _, c := range g.Land {
+			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
+				cx := g.ctx(ev.P, -1, ev.Level)
+				cx.Src = c
+				r.Hear(cx, ev)
+			}
 		}
 	}
+	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	for i, q := range order {
+		for _, z := range listenZones {
+			if z != Tavern || ev.Kind != EvGain {
+				hear(q, z)
+			}
+		}
+		if i == 0 && early {
+			land(false)
+		}
+	}
+	if !early { // but a buy's after them: Swamp Hag's "gains a Curse.", then Colonnade's "takes 2 VP."
+		land(false)
+	}
+	defer func() {
+		switch ev.Kind {
+		case EvGain: // a gain's Reserves are called after its other effects: "gains a Swashbuckler. (Growth)", "calls a Duplicate."
+			for _, q := range order {
+				hear(q, Tavern)
+			}
+		case EvTurnStart: // a Clerk after Crop Rotation's "draws a Copper and a Tea House."
+			for _, q := range order {
+				g.react(q, ev)
+			}
+		}
+	}()
+	defer land(true)
 	for _, c := range g.Global {
 		if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
 			cx := g.ctx(ev.P, -1, ev.Level)
@@ -155,6 +196,15 @@ func (g *Game) fire(ev *Ev) {
 			r.Hear(cx, ev)
 		}
 	}
+	if !watchFirst {
+		g.watch(ev)
+	}
+	if own != nil {
+		own()
+	}
+}
+
+func (g *Game) watch(ev *Ev) {
 	for i := 0; i < len(g.watches); i++ {
 		w := g.watches[i]
 		if !w.On.has(ev.Kind) {

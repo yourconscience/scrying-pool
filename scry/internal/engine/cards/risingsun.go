@@ -107,6 +107,16 @@ func init() {
 		c.Discard(c.P, one(pick1(c, c.P, engine.ToDiscard, hand, nil, false)))
 	}})
 	reg("Change", rules{Play: func(c *ctx) { // "trashes a Silver.", "gains a Gold.", "takes 3 debt."
+		if pl := c.Pl(c.P); pl.Debt > 0 && pl.Coins > 0 { // the debt is paid first if it can be: "loses 1 Coin.", then the trash
+			n := min(pl.Debt, pl.Coins)
+			pl.Debt -= n
+			pl.Coins -= n
+			if n == 1 {
+				c.Log("LOSES_COIN", engine.Seat(c.P), n)
+			} else {
+				c.Log("LOSES_COINS", engine.Seat(c.P), n)
+			}
+		}
 		if c.Pl(c.P).Debt > 0 {
 			c.PlusCoins(3)
 			return
@@ -146,7 +156,8 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, _ *engine.Watch) bool { // at the start of Clean-up, with no gains in the Buy phase
 			if e.P == c.P && len(c.T2().BuyGained) == 0 {
-				c.Away().ChooseGain(c.P, c.CostsUpTo(4), discard)
+				phaseLine(c) // "begins their Cleanup phase.", "gains a Night Watchman."
+				c.Here().ChooseGain(c.P, c.CostsUpTo(4), discard)
 			}
 			return true
 		},
@@ -204,9 +215,7 @@ func init() {
 		}
 	}})
 	reg("Ronin", rules{Play: func(c *ctx) {
-		if n := 7 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 7)
 	}})
 	reg("Tanuki", rules{Play: func(c *ctx) {
 		x := pick1(c, c.P, engine.ToTrash, hand, nil, false)
@@ -257,8 +266,8 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool { // after the next non-Command Action: "plays a Treasurer. (Daimyo)"
 			d := c.G.Def(e.X)
-			if w.N > 0 || e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) {
-				return false // w.N: the replay's own play is done, not the next one
+			if w.N > 0 || e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) || e.By == c.Src {
+				return false // w.N: the replay's own play is done, not the next one; another Daimyo's replay isn't it either
 			}
 			w.N = 1
 			a := c.At(e.Level)
@@ -285,9 +294,9 @@ func init() {
 	// Prophecies: each acts only once it came true.
 	reg("Approaching Army", rules{
 		Hears: engine.On(engine.EvPlay),
-		Hear: func(c *ctx, e *ev) { // "gets +$1. (Approaching Army)" after an Attack
+		Hear: func(c *ctx, e *ev) { // "gets +$1." after an Attack, unnamed
 			if cameTrue(c) && c.G.D(e.C).Attack() {
-				c.As(e.P).Away().PlusCoins(1)
+				c.As(e.P).Here().PlusCoins(1)
 			}
 		},
 		Setup: func(g *engine.Game) { // an Attack kingdom pile more; a replayed game's kingdom has it already
@@ -342,7 +351,7 @@ func init() {
 			if !cameTrue(c) || !c.G.D(e.C).Treasure() || countPlayed(c, e.C) > 1 {
 				return
 			}
-			a := c.As(e.P).Away()
+			a := c.As(e.P).Here() // "gets +1 Buy.", "gets +$1.", unnamed
 			a.PlusBuys(1)
 			a.PlusCoins(1)
 		},
@@ -404,7 +413,7 @@ func init() {
 	}})
 	reg("Enlightenment", rules{}) // the engine plays Treasures as Actions once it came true
 	reg("Kind Emperor", rules{
-		Play:  func(c *ctx) { c.Away().ChooseGain(c.P, action, hand) }, // also when its last Sun goes
+		Play:  func(c *ctx) { c.ChooseGain(c.P, action, hand) }, // also when its last Sun goes: "comes true.", "gains a Nobles."
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) { // "gains a Golem. (Kind Emperor)" into the hand
 			if cameTrue(c) {
@@ -480,7 +489,7 @@ func init() {
 		}
 	}})
 	reg("Asceticism", rules{Buy: func(c *ctx) { // "loses 1 Coin.", "trashes an Estate."
-		n := c.Amount(c.P, 0, min(c.Pl(c.P).Coins, len(c.Hand(c.P))), "trash a card", "trash cards")
+		n := c.Amount(c.P, 0, min(c.Pl(c.P).Coins, len(c.Hand(c.P))), "LOSES_COIN", "LOSES_COINS")
 		if n > 0 {
 			c.LoseCoins(n)
 			c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, nil, n, n))
@@ -503,7 +512,7 @@ func init() {
 		},
 		Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
 			if e.P == c.P {
-				c.ToHand(c.P, c.In(aside, one(inst(w.N))), "PUT_IN_HAND")
+				c.At(0).ToHand(c.P, c.In(aside, one(inst(w.N))), "PUT_IN_HAND") // after the Clean-up draw, at the top level
 				return true
 			}
 			return false

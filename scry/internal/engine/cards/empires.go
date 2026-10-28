@@ -18,9 +18,9 @@ func downTo(c *ctx, v, n int) {
 }
 
 // fromDiscard lets a player reveal a card from their discard pile and put it into their hand (Settlers).
-func fromDiscard(c *ctx, name string) {
+func fromDiscard(c *ctx, name string) { // "looks at 3 Coppers and an Estate.", "puts a Copper into their hand."
+	c.LookAt(c.P, c.Zone(c.P, discard))
 	if x := pick1(c, c.P, engine.ToPick, discard, named(name), true); x >= 0 {
-		c.Reveal(c.P, one(x))
 		c.ToHand(c.P, one(x), "PUT_IN_HAND")
 	}
 }
@@ -368,7 +368,7 @@ func init() {
 			c.PlusVP(2)
 		}
 	}})
-	reg("Settlers", rules{Play: func(c *ctx) { // "reveals a Copper.", "puts a Copper into their hand."
+	reg("Settlers", rules{Play: func(c *ctx) {
 		c.Draw(1)
 		c.PlusActions(1)
 		fromDiscard(c, "Copper")
@@ -527,8 +527,8 @@ func init() {
 			}
 			p := w.P
 			c.Quietly(func() {
-				all := append(append([]inst{}, c.Zone(p, deck)...), c.Zone(p, discard)...)
-				c.ToHand(p, all, "PUT_IN_HAND")
+				c.ToHand(p, append([]inst{}, c.Zone(p, discard)...), "PUT_IN_HAND") // the discard pile, then the deck on a line of its own
+				c.ToHand(p, append([]inst{}, c.Zone(p, deck)...), "PUT_IN_HAND")
 				c.Trash(p, pick(c, p, engine.ToTrash, hand, nil, 0, len(c.Hand(p))))
 				if len(c.Hand(p)) > 0 {
 					c.ShuffleLine(p)
@@ -579,10 +579,10 @@ func init() {
 				c.Log("TAX_ADD_DEBT", engine.Seat(c.P), "2 Debt", engine.PileName(o.Card))
 			}
 		},
-		Hears: engine.On(engine.EvGain),
-		Hear: func(c *ctx, e *ev) { // "buys and gains a Courtier.", "takes 1 Debt from the Courtier pile."
+		Hears: engine.On(engine.EvBought),
+		Hear: func(c *ctx, e *ev) { // "buys and gains a Courtier.", what the gain causes, "takes 1 Debt from the Courtier pile."
 			i := c.G.PileOf(e.C)
-			if !inBuyPhase(c, e.P) || i < 0 || c.G.Piles[i].Debt == 0 {
+			if i < 0 || c.G.Piles[i].Debt == 0 {
 				return
 			}
 			n := c.G.Piles[i].Debt
@@ -596,7 +596,7 @@ func init() {
 			c.PlusVP(len(c.T2().Gained))
 		}
 	}})
-	reg("Wedding", rules{Buy: func(c *ctx) { c.PlusVP(1); c.Gain(c.P, gold(c), discard) }})
+	reg("Wedding", rules{Buy: func(c *ctx) { c.Gain(c.P, gold(c), discard); c.PlusVP(1) }}) // the log has the Gold first
 	reg("Windfall", rules{Buy: func(c *ctx) {
 		if len(c.Zone(c.P, deck)) == 0 && len(c.Zone(c.P, discard)) == 0 {
 			c.GainN(c.P, gold(c), 3, discard, "GAIN")
@@ -637,16 +637,25 @@ func init() {
 		return -2 * g.Count(p, func(d *def) bool { return d.Name == "Silver" || d.Name == "Gold" })
 	}})
 	landVP("Basilica", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // "buys and gains a Silver.", "takes 2 VP from Basilica."
+		if inBuyPhase(c, e.P) && c.Pl(e.P).Coins < 2 {
+			c.As(e.P).OfferCoffers() // "uses 1 Coffers. (+$1)" first
+		}
 		return inBuyPhase(c, e.P) && c.Pl(e.P).Coins >= 2
 	})
 	landVP("Baths", engine.On(engine.EvTurnEnd), func(c *ctx, e *ev) bool { // after the Clean-up draw
 		return len(c.T2().Gained) == 0
 	})
 	landVP("Battlefield", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return c.G.D(e.C).Victory() })
-	landVP("Colonnade", engine.On(engine.EvGain), func(c *ctx, e *ev) bool {
+	landVP("Colonnade", engine.On(engine.EvBuy), func(c *ctx, e *ev) bool {
 		return inBuyPhase(c, e.P) && c.G.D(e.C).Action() && c.Count(e.P, inPlay, named(c.G.D(e.C).Name)) > 0
 	})
-	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { return e.P == c.G.Cur && len(c.T2().Gained) == 2 })
+	landVP("Labyrinth", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // the second gain, not the first whose own gain came between: Port's
+		if e.P != c.G.Cur || len(c.T2().Gained) != 2 || c.T2().Gained[1] != e.C || c.T2().Used[c.Src] > 0 {
+			return false
+		}
+		c.T2().Used[c.Src]++
+		return true
+	})
 	reg("Defiled Shrine", rules{
 		Setup: func(g *engine.Game) {
 			for i, p := range g.Piles {

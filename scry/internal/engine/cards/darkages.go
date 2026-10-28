@@ -78,7 +78,12 @@ func init() {
 		},
 	})
 	reg("Necropolis", rules{Play: func(c *ctx) { c.PlusActions(2) }})
-	reg("Overgrown Estate", rules{VP: worth(0), OnTrash: func(c *ctx, e *ev) { c.Draw(1) }})
+	reg("Overgrown Estate", rules{VP: worth(0), OnTrash: func(c *ctx, e *ev) { // "draws a Copper."; "(Overgrown Estate)" at the start of a turn
+		if c.T2().Phase == engine.StartPhase {
+			c = c.Away()
+		}
+		c.Draw(1)
+	}})
 	reg("Abandoned Mine", rules{Play: func(c *ctx) { c.PlusCoins(1) }})
 	reg("Ruined Library", rules{Play: func(c *ctx) { c.Draw(1) }})
 	reg("Ruined Market", rules{Play: func(c *ctx) { c.PlusBuys(1) }})
@@ -493,7 +498,7 @@ func init() {
 	})
 	reg("Storeroom", rules{Play: func(c *ctx) {
 		c.PlusBuys(1)
-		got := c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P))))
+		got := c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P)))) // "discards 2 cards.", "draws 2 cards."
 		c.Draw(len(got))
 		if got = c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, 0, len(c.Hand(c.P)))); len(got) > 0 {
 			c.PlusCoins(len(got))
@@ -507,7 +512,8 @@ func init() {
 		},
 		Hears: engine.On(engine.EvAttack),
 		Hear: func(c *ctx, e *ev) { // another Attack played: "trashes an Urchin.", "gains a Mercenary." before its effects
-			if e.P != c.P || e.X == c.Me || c.G.Where(c.Me).Zone != inPlay || !c.Yes(c.P, "trash it for a Mercenary", "TRASH") {
+			if e.P != c.P || e.X == c.Me || c.G.Where(c.Me).Zone != inPlay ||
+				c.Mode1(c.P, mode("no", ""), engine.Mode{Label: "trash it for a Mercenary", Line: "TRASH", Card: c.Src}) == 0 { // not the Attack's own "trashes 2 Estates."
 				return
 			}
 			h := c.Here()

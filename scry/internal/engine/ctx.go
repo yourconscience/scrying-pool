@@ -129,9 +129,11 @@ func (c *Ctx) Draw(n int) []Inst { return c.DrawFor(c.P, n) }
 
 // DrawFor draws cards for any player, e.g. Council Room's other player.
 func (c *Ctx) DrawFor(p, n int) []Inst {
-	if c.swap && p == c.P {
+	if c.swap && p == c.P { // Way of the Chameleon: "would draw 3 cards.", then a level down "gets +$3."
 		d := *c
 		d.swap = false
+		c.Log("WOULD_DRAW", Seat(c.P), slices.Repeat([]CardID{c.G.T.MustCard("Copper")}, n)) // the cards aren't named
+		d.level++
 		d.PlusCoins(n)
 		return nil
 	}
@@ -158,13 +160,16 @@ func (c *Ctx) PlusBuys(n int) {
 }
 
 func (c *Ctx) PlusCoins(n int) {
-	if c.swap {
+	if c.swap { // "would get +$1.", then a level down "draws a card."
 		d := *c
 		d.swap = false
+		c.Log("WOULD_GET_COIN", Seat(c.P), n)
+		d.level++
 		d.Draw(n)
 		return
 	}
 	pl := &c.G.P[c.P]
+	d := *c
 	if n > 0 && pl.MinusCoin != 0 { // "returns -Coin token set by Bridge Troll. (-$1)"
 		c.Log("RETURNS_MINUS_COIN_TOKEN", Seat(c.P), "-Coin token", Name(pl.MinusCoin))
 		pl.MinusCoin = 0
@@ -172,10 +177,13 @@ func (c *Ctx) PlusCoins(n int) {
 		if n == 0 {
 			return
 		}
+		if !c.from {
+			d.level++ // the rest a level down: "gets +$1.", but "gets +$1. (Caravan Guard)" stays
+		}
 	}
 	pl.Coins += n
 	t, a := c.withFrom(plural(n, "GETS_COIN", "GETS_COINS"), []any{Seat(c.P), n})
-	c.Log(t, a...)
+	d.Log(t, a...)
 }
 
 // CoinsFromMerged is CoinsFrom added to the line this card just wrote at this level: two Priests'
@@ -380,6 +388,25 @@ func (c *Ctx) Modes(p, min, max int, ms ...Mode) []int {
 	return out
 }
 
+// OfferCoffers lets the player spend Coffers in the middle of a buy: "uses 1
+// Coffers. (+$1)", "gets +$1.", then "takes 2 VP from Basilica."
+func (c *Ctx) OfferCoffers() {
+	pl := &c.G.P[c.P]
+	if pl.Coffers == 0 {
+		return
+	}
+	var opts []Option
+	for n := 0; n <= pl.Coffers; n++ {
+		opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+	}
+	if n := c.Choose(c.P, UseCoffers, opts, 1, 1)[0].Mode; n > 0 {
+		pl.Coffers -= n
+		c.Log(plural(n, "USES_COFFER", "USES_COFFERS"), Seat(c.P), n)
+		pl.Coins += n
+		c.Log(plural(n, "GETS_COIN", "GETS_COINS"), Seat(c.P), n)
+	}
+}
+
 // Mode1 asks for one mode.
 func (c *Ctx) Mode1(p int, ms ...Mode) int { return c.Modes(p, 1, 1, ms...)[0] }
 
@@ -572,20 +599,31 @@ func (g *Game) gainX(p int, x Inst, to Zone, level int, by CardID, bought bool) 
 			g.T2.BuyGained = append(g.T2.BuyGained, g.cards[x])
 		}
 	}
-	if from.Zone == Supply && g.P[p].Tokens[TokTrash] == int(from.Owner) { // Plan's Trashing token: "buys and gains a Fortress.", "trashes a Copper."
+	exile := func() bool {
+		ex := g.copies(p, Exile, g.cards[x])
+		if len(ex) == 0 {
+			return true
+		}
+		c := g.ctx(p, x, level)
+		if !c.Yes(p, "discard from Exile", "DISCARD_FROM_EXILE") {
+			return false
+		}
+		for _, y := range ex {
+			g.move(y, Exile, Loc{Discard, int16(p)})
+		}
+		c.Log("DISCARD_FROM_EXILE", Seat(p), g.ids(ex))
+		return true
+	}
+	done := exile() // before the card's own "draws 2 cards." (Cavalry), or else after the gain's other effects: Guildhall's "gets +1 Coffers."
+	g.fire(&Ev{Kind: EvGain, P: p, X: x, C: g.cards[x], To: to, By: by, Bought: bought, Level: level})
+	if !done {
+		exile()
+	}
+	if from.Zone == Supply && g.P[p].Tokens[TokTrash] == int(from.Owner) { // Plan's Trashing token on any gain from the pile, after the card's own: "buys and gains a Silk Merchant.", "gets +1 Villager.", "trashes an Estate."
 		cx := g.ctx(p, -1, level)
+		cx.from = g.T2.Phase == StartPhase // "trashes a Copper. (|)" under a gain at the start of a turn
 		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
 	}
-	if ex := g.copies(p, Exile, g.cards[x]); len(ex) > 0 {
-		c := g.ctx(p, x, level)
-		if c.Yes(p, "discard from Exile", "DISCARD_FROM_EXILE") {
-			for _, y := range ex {
-				g.move(y, Exile, Loc{Discard, int16(p)})
-			}
-			c.Log("DISCARD_FROM_EXILE", Seat(p), g.ids(ex))
-		}
-	}
-	g.fire(&Ev{Kind: EvGain, P: p, X: x, C: g.cards[x], To: to, By: by, Bought: bought, Level: level})
 }
 
 func (g *Game) copies(p int, z Zone, c CardID) []Inst {
@@ -623,6 +661,10 @@ func (c *Ctx) moveAll(p int, xs []Inst, to Loc, template string, args ...any) []
 // Trash trashes a player's cards and runs what trashing them causes.
 func (c *Ctx) Trash(p int, xs []Inst) []Inst {
 	t, a := c.with("TRASH")
+	if l := c.G.Log; l != nil {
+		l.handTrash = len(xs) > 0 && !slices.ContainsFunc(xs, func(x Inst) bool { return c.G.loc[x] != Loc{Hand, int16(p)} })
+		defer func() { l.handTrash = false }()
+	}
 	moved := c.moveAll(p, xs, Loc{Trash, 0}, t, a...)
 	from := c.moved
 	if p == c.G.Cur {
@@ -796,6 +838,9 @@ func (c *Ctx) ShuffleInto(p int, xs []Inst) {
 	if len(moved) > 0 {
 		d := c.G.P[p].Z[Deck]
 		c.G.rng.Shuffle(len(d), func(i, j int) { d[i], d[j] = d[j], d[i] })
+		for _, x := range d {
+			c.G.setLoose(x, true)
+		}
 	}
 }
 
@@ -823,11 +868,10 @@ func (c *Ctx) Reveal(p int, xs []Inst) {
 	}
 }
 
-func (c *Ctx) RevealHand(p int) {
-	if xs := c.G.P[p].Z[Hand]; len(xs) > 0 {
-		c.Log("REVEAL_HAND", Seat(p), c.G.ids(xs))
-		c.revealed(p, slices.Clone(xs))
-	}
+func (c *Ctx) RevealHand(p int) { // an empty hand too: "reveals their hand: nothing."
+	xs := c.G.P[p].Z[Hand]
+	c.Log("REVEAL_HAND", Seat(p), c.G.ids(xs))
+	c.revealed(p, slices.Clone(xs))
 }
 
 // revealed runs what revealing the cards causes, below the reveal line: "gets a Coffers from Patron."
@@ -861,7 +905,18 @@ func (c *Ctx) FromTop(p, n int, template string) []Inst {
 // the deck and discard run out; it returns the revealed cards, the found one last (or -1).
 func (c *Ctx) RevealUntil(p int, ok func(*Def) bool, n int) ([]Inst, []Inst) {
 	var all, found []Inst
+	shown := 0
+	show := func() { // a line before each shuffle: "reveals a Copper and a Silver.", "shuffles their deck.", "reveals a Farmhands."
+		if len(all) > shown {
+			c.Log("REVEAL", Seat(p), c.G.ids(all[shown:]))
+			c.revealed(p, all[shown:])
+			shown = len(all)
+		}
+	}
 	for len(found) < n {
+		if len(c.G.P[p].Z[Deck]) == 0 {
+			show()
+		}
 		x := c.G.top(p, Revealed, c.level)
 		if x < 0 {
 			break
@@ -871,10 +926,7 @@ func (c *Ctx) RevealUntil(p int, ok func(*Def) bool, n int) ([]Inst, []Inst) {
 			found = append(found, x)
 		}
 	}
-	if len(all) > 0 {
-		c.Log("REVEAL", Seat(p), c.G.ids(all))
-		c.revealed(p, all)
-	}
+	show()
 	return all, found
 }
 

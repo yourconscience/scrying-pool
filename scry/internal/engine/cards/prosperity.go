@@ -38,13 +38,12 @@ func init() {
 			c.Attack(func(v int) { c.Gain(v, c.Card("Curse"), discard) })
 		},
 	})
-	reg("City", rules{Play: func(c *ctx) {
-		n := 1
-		if c.G.EmptyPiles() >= 1 {
-			n++
-		}
-		c.Draw(n)
+	reg("City", rules{Play: func(c *ctx) { // "draws a Snowy Village.", "gets +2 Actions.", then with an empty pile "draws a Copper."
+		c.Draw(1)
 		c.PlusActions(2)
+		if c.G.EmptyPiles() >= 1 {
+			c.Draw(1)
+		}
 		if c.G.EmptyPiles() >= 2 {
 			c.PlusCoins(1)
 			c.PlusBuys(1)
@@ -92,7 +91,11 @@ func init() {
 		x := xs[0]
 		ms := []engine.Mode{mode("trash it", "TRASH"), mode("discard it", "DISCARD"), mode("put it back", "")}
 		if d := c.G.Def(x); d.Action() || d.Treasure() {
-			ms = append(ms, mode("play it", "PLAY"))
+			line := "PLAY" // "plays a Crystal Ball.", a line of its own
+			if d.Treasure() && !d.Action() && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil) {
+				line = "PLAY_TREASURES_FOR" // "plays a Silver. (+$2)"
+			}
+			ms = append(ms, mode("play it", line))
 		}
 		switch c.Mode1(c.P, ms...) {
 		case 0:
@@ -243,8 +246,8 @@ func init() {
 			c.PlayCard(x, 1)
 		}
 	}, Watch: func(c *ctx, e *ev, w *engine.Watch) bool {
-		if e.P == w.P && stillGained(c, e) && c.Yes(c.P, "put it onto your deck", "TOPDECK") {
-			c.Topdeck(c.P, one(e.X))
+		if e.P == w.P && stillGained(c, e) && c.Yes(w.P, "put it onto your deck", "TOPDECK_WITH") { // "topdecks a Courtyard with Tiara."
+			c.MoveTo(w.P, one(e.X), deck, "TOPDECK_WITH", engine.Name(c.Src))
 			e.Done = true
 		}
 		return false
@@ -274,11 +277,7 @@ func init() {
 		}, discard)
 	}})
 	reg("Watchtower", rules{
-		Play: func(c *ctx) {
-			if n := 6 - len(c.Hand(c.P)); n > 0 {
-				c.Draw(n)
-			}
-		},
+		Play:     func(c *ctx) { drawTo(c, 6) },
 		Reacts:   engine.On(engine.EvGain),
 		CanReact: func(c *ctx, e *ev) bool { return e.P == c.P && stillGained(c, e) },
 		React: func(c *ctx, e *ev) bool {

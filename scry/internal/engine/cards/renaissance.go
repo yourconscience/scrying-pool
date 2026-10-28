@@ -109,6 +109,10 @@ var capitalism = nameSet(
 	// Menagerie, Plunder
 	"Animal Fair", "Barge", "Bounty Hunter", "Camel Train", "Cavalry", "Coven", "Falconer", "Fisherman", "Goatherd", "Hunting Lodge", "Livery", "Paddock", "Sanctuary", "Scrap", "Wayfarer",
 	"Buried Treasure", "Cabin Boy", "Crucible", "Flagship", "Fortune Hunter", "Gondola", "Harbor Village", "King's Cache", "Longship", "Mapmaker", "Maroon", "Mining Road", "Pickaxe", "Pilgrim", "Quartermaster", "Rope", "Sack of Loot", "Silver Mine", "Swamp Shacks", "Tools", "Trickster", "Wealthy Village",
+	// Allies, Rising Sun
+	"Archer", "Barbarian", "Broker", "Capital City", "Courier", "Elder", "Galleria", "Garrison", "Guildmaster", "Merchant Camp", "Skirmisher", "Stronghold",
+	"Sycophant", "Tent", "Town", "Town Crier",
+	"Aristocrat", "Change", "Fishmonger", "Kitsune", "Samurai", "Tea House",
 )
 
 func init() {
@@ -168,7 +172,7 @@ func init() {
 		if len(xs) < n || slices.ContainsFunc(xs, func(x inst) bool { return !c.G.Def(x).Action() }) {
 			return
 		}
-		if lantern || c.Mode1(c.P, mode("take the Horn", "TAKE"), mode("take the Lantern", "TAKE")) == 0 {
+		if lantern || c.Mode1(c.P, engine.Mode{Label: "take the Horn", Line: "TAKE", Card: c.Card("Horn")}, engine.Mode{Label: "take the Lantern", Line: "TAKE", Card: c.Card("Lantern")}) == 0 {
 			take(c, c.P, "Horn")
 		} else {
 			take(c, c.P, "Lantern")
@@ -505,7 +509,11 @@ func init() {
 	reg("Pageant", rules{
 		Hears: engine.On(engine.EvBuyEnd),
 		Hear: func(c *ctx, e *ev) { // "ends their buy phase.", "loses 1 Coin.", "gets +1 Coffers. (Pageant)"
-			if project(c, e.P) && c.Pl(e.P).Coins > 0 && c.Yes(e.P, "pay $1 for +1 Coffers", "LOSES_COIN") {
+			if !project(c, e.P) {
+				return
+			}
+			phaseLine(c) // "ends their buy phase." with $0 too
+			if c.Pl(e.P).Coins > 0 && c.Yes(e.P, "pay $1 for +1 Coffers", "LOSES_COIN") {
 				c.LoseCoins(1)
 				c.Away().PlusCoffers(1)
 			}
@@ -546,7 +554,7 @@ func init() {
 	}))
 	reg("Sinister Plot", atStart(func(c *ctx, p int) { // a token silently; "draws 2 cards. (Sinister Plot)"
 		mat := c.Pl(p).Mat
-		if n := mat[c.Src]; n > 0 && c.Mode1(p, mode("add a token", ""), mode("remove the tokens", "DRAW")) == 1 {
+		if n := mat[c.Src]; n > 0 && c.Mode1(p, mode("add a token", ""), mode("remove the tokens", "DRAW_FROM")) == 1 {
 			mat[c.Src] = 0
 			c.Draw(n)
 			return
@@ -555,9 +563,10 @@ func init() {
 	}))
 	reg("Star Chart", rules{
 		Hears: engine.On(engine.EvShuffling),
-		Hear: func(c *ctx, e *ev) { // silent: the card goes on top of the new deck
+		Hear: func(c *ctx, e *ev) { // "topdecks a Bridge.", then "shuffles their deck."; the card goes on top of the new deck
 			if project(c, e.P) {
-				c.MoveTo(e.P, one(pick1(c, e.P, engine.ToTopdeck, discard, nil, true)), deck, "")
+				d := c.Deeper()
+				d.MoveTo(e.P, one(pick1(d, e.P, engine.ToTopdeck, discard, nil, true)), deck, "TOPDECK")
 			}
 		},
 	})

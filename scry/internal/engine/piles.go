@@ -88,6 +88,8 @@ type Pile struct {
 	Bane    bool   // Young Witch's or Ferryman's pile
 	Favors  int    // Family of Inventors' Favor tokens
 	members []CardID
+	mixed   bool // shuffled at setup, so its order shows only as it goes (Knights, Ruins, Loot)
+	dealt   bool // some of its cards, dealt at random at setup (Ruins)
 }
 
 // AddPile adds a pile of n copies of a card; it returns the pile's index.
@@ -108,7 +110,7 @@ func (g *Game) AddPile(c CardID, n int, supply bool) int {
 // keeps that many of them, after a shuffle.
 func (g *Game) addMixed(c CardID, ms []member, supply, shuffle bool, keep int) int {
 	i := len(g.Piles)
-	g.Piles = append(g.Piles, Pile{Card: c, Supply: supply})
+	g.Piles = append(g.Piles, Pile{Card: c, Supply: supply, mixed: shuffle})
 	g.pileOf[c] = i
 	var xs []CardID
 	for k := len(ms) - 1; k >= 0; k-- {
@@ -124,6 +126,7 @@ func (g *Game) addMixed(c CardID, ms []member, supply, shuffle bool, keep int) i
 	}
 	if keep > 0 {
 		xs = xs[len(xs)-keep:]
+		g.Piles[i].dealt = true
 	}
 	for _, id := range xs {
 		g.newCard(id, Loc{Supply, int16(i)})

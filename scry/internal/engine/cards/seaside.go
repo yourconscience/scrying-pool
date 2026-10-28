@@ -9,9 +9,9 @@ func init() {
 			c.PlusBuys(1)
 			c.Stay()
 		},
-		Next: func(c *ctx, d *engine.Dur) bool {
-			c.PlusCoins(1)
+		Next: func(c *ctx, d *engine.Dur) bool { // "gets +1 Buy. (Astrolabe)", "gets +$1. (Astrolabe)"
 			c.PlusBuys(1)
+			c.PlusCoins(1)
 			return true
 		},
 	})
@@ -47,7 +47,7 @@ func init() {
 			}
 			for _, d := range c.Durs() {
 				if d.N == 0 && len(c.In(aside, d.Aside)) == 1 && c.G.CardOf(d.Aside[0]) == e.C {
-					c.Gain(e.P, c.Card("Curse"), discard)
+					c.Here().Gain(e.P, c.Card("Curse"), discard) // "gains a Curse.", not "with Blockade"
 				}
 			}
 		},
@@ -240,7 +240,11 @@ func init() {
 			if e.P != w.P || !c.G.D(e.C).Is(engine.TDuration) || !stillGained(c, e) {
 				return false
 			}
-			if !c.Yes(c.P, "play it", "PLAY") { // "plays a Sailor.", unnamed
+			line := "PLAY" // "plays a Sailor.", unnamed
+			if c.G.D(e.C).Treasure() {
+				line = "PLAY_TREASURES_FOR" // "plays an Astrolabe. (+$1)"
+			}
+			if !c.Yes(c.P, "play it", line) {
 				return false
 			}
 			e.Done = true
@@ -309,8 +313,8 @@ func init() {
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
 			c.Draw(5)
+			c.PlusActions(1) // "gets +1 Action. (Tactician)", then "gets +1 Buy."
 			c.PlusBuys(1)
-			c.PlusActions(1)
 			return true
 		},
 	})

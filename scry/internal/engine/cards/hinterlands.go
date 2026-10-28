@@ -142,9 +142,12 @@ func init() {
 			c.PlusActions(2)
 			c.Discard(c.P, pick(c, c.P, engine.ToDiscard, hand, nil, min(2, len(c.Hand(c.P))), 2))
 		},
-		OnGain: func(c *ctx, e *ev) {
-			xs := pick(c, c.P, engine.ToPick, discard, action, 0, len(c.Zone(c.P, discard)))
-			c.ShuffleInto(c.P, xs)
+		OnGain: func(c *ctx, e *ev) { // "looks at an Estate and an Inn.", "shuffles their deck.", "shuffles an Inn into their deck."
+			c.LookAt(c.P, c.Zone(c.P, discard))
+			if xs := pick(c, c.P, engine.ToPick, discard, action, 0, len(c.Zone(c.P, discard))); len(xs) > 0 {
+				c.ShuffleLine(c.P)
+				c.ShuffleInto(c.P, xs)
+			}
 		},
 	})
 	reg("Jack of All Trades", rules{Play: func(c *ctx) {
@@ -156,9 +159,7 @@ func init() {
 				c.Topdeck(c.P, xs)
 			}
 		}
-		if n := 5 - len(c.Hand(c.P)); n > 0 {
-			c.Draw(n)
-		}
+		drawTo(c, 5)
 		c.Trash(c.P, pick(c, c.P, engine.ToTrash, hand, not(treasure), 0, 1))
 	}})
 	reg("Margrave", rules{Play: func(c *ctx) {
@@ -237,12 +238,12 @@ func init() {
 	reg("Spice Merchant", rules{Play: func(c *ctx) {
 		if x := pick1(c, c.P, engine.ToTrash, hand, treasure, true); x >= 0 {
 			c.Trash(c.P, one(x))
-			if c.Mode1(c.P, mode("+2 Cards +1 Action", "DRAW"), mode("+$2 +1 Buy", "GETS_COINS")) == 0 {
+			if c.Mode1(c.P, mode("+2 Cards +1 Action", "DRAW"), mode("+1 Buy +$2", "GETS_BUY")) == 0 {
 				c.Draw(2)
 				c.PlusActions(1)
 			} else {
-				c.PlusCoins(2)
 				c.PlusBuys(1)
+				c.PlusCoins(2)
 			}
 		}
 	}})

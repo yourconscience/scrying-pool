@@ -35,7 +35,11 @@ func startCall(play, called func(c *ctx)) rules {
 		Play:  func(c *ctx) { play(c); reserve(c) },
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) {
-			if e.P == c.P && call(c) {
+			if e.P != c.P || c.G.Where(c.Me) != (engine.Loc{Zone: tavern, Owner: int16(c.P)}) {
+				return
+			}
+			phaseLine(c) // "starts their turn." whether or not it's called
+			if call(c) {
 				called(c)
 			}
 		},
@@ -92,9 +96,11 @@ func traveller(next string, r rules) rules {
 		if i := c.G.PileOf(card); !e.Cleanup || i < 0 || c.G.Top(i) != card {
 			return
 		}
-		c.Emit() // "begins their Cleanup phase" comes first, exchanged or not
-		if c.Yes(c.P, "exchange it for a "+next, "EXCHANGE_RETURN") {
+		c.Emit()                                                                                                                                           // "begins their Cleanup phase" comes first, exchanged or not
+		if c.Mode1(c.P, engine.Mode{Label: "no"}, engine.Mode{Label: "exchange it for a " + next, Line: "EXCHANGE_RETURN", Card: c.G.CardOf(c.Me)}) == 1 { // "returns a Treasure Hunter."
 			c.Exchange(c.Me, card)
+		} else if !e.Again {
+			c.T2().Unswapped = append(c.T2().Unswapped, c.Me)
 		}
 	}
 	return r
@@ -199,8 +205,12 @@ func init() {
 	}})
 
 	// Durations
-	amulet := func(c *ctx) {
-		switch c.Mode1(c.P, mode("+$1", "GETS_COIN"), mode("trash a card from your hand", "TRASH"), mode("gain a Silver", "GAIN")) {
+	amulet := func(c *ctx, away bool) {
+		coin, trash, gain := "GETS_COIN", "TRASH", "GAIN"
+		if away { // next turn: "trashes an Estate. (Amulet)"
+			coin, trash, gain = "GETS_COIN_FROM", "TRASH_WITH", "GAIN_WITH"
+		}
+		switch c.Mode1(c.P, mode("+$1", coin), mode("trash a card from your hand", trash), mode("gain a Silver", gain)) {
 		case 0:
 			c.PlusCoins(1)
 		case 1:
@@ -210,8 +220,8 @@ func init() {
 		}
 	}
 	reg("Amulet", rules{
-		Play: func(c *ctx) { amulet(c); c.Stay() },
-		Next: func(c *ctx, _ *engine.Dur) bool { amulet(c); return true },
+		Play: func(c *ctx) { amulet(c, false); c.Stay() },
+		Next: func(c *ctx, _ *engine.Dur) bool { amulet(c, true); return true },
 	})
 	dungeon := func(c *ctx) {
 		c.Draw(2)
@@ -254,9 +264,9 @@ func init() {
 				c.Attack(func(int) { d.N = 1 })
 			},
 			Next:  func(c *ctx, d *engine.Dur) bool { d.N = 0; next(c); return true },
-			Hears: engine.On(engine.EvGain),
-			Hear: func(c *ctx, e *ev) { // when another player gains a card they bought
-				if e.P == c.P || !e.Bought {
+			Hears: engine.On(engine.EvBuy),
+			Hear: func(c *ctx, e *ev) { // when another player buys a card: before Colonnade, and before what its gain causes (Farmhands)
+				if e.P == c.P || e.X < 0 {
 					return
 				}
 				for _, d := range c.Durs() {
@@ -469,8 +479,17 @@ func init() {
 
 	// Events
 	reg("Alms", rules{
-		CanBuy: func(g *engine.Game, p int) bool { return once("Alms")(g, p) && !inPlayOf(g, p, treasure) },
-		Buy:    func(c *ctx) { c.T2().Used[c.Src]++; c.ChooseGain(c.P, c.CostsUpTo(4), discard) },
+		CanBuy: once("Alms"),
+		Buy: func(c *ctx) {
+			c.T2().Used[c.Src]++
+			for _, x := range c.Zone(c.P, inPlay) {
+				if c.G.Def(x).Treasure() { // "buys Alms but has a Copper in play."
+					c.Log("ALMS_FAIL", engine.Seat(c.P), []engine.CardID{c.G.CardOf(x)})
+					return
+				}
+			}
+			c.ChooseGain(c.P, c.CostsUpTo(4), discard)
+		},
 	})
 	reg("Ball", rules{Buy: func(c *ctx) { // the -$1 token is taken silently
 		c.Pl(c.P).MinusCoin = c.Src

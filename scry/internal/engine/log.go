@@ -35,11 +35,18 @@ type Log struct {
 	Hook    func(i int)
 	tr      *Entry  // Treasures being played: consecutive plays make one line
 	after   []Entry // the lines those plays caused, written after it (Merchant's +$)
+	trLine  int     // 1 + the last line of Treasures without $
 	pending *Entry  // a lazy line
-	byNorm  map[string]*cartographer.Card
+	way     *Entry  // a held "plays a Warehouse using Way of the Pig." (holdWay)
+	wayCut  bool
+	// handTrash: the TRASH line being added is of cards from the hand; lastHandTrash
+	// is the entry such a line went to, or -1
+	handTrash     bool
+	lastHandTrash int
+	byNorm        map[string]*cartographer.Card
 }
 
-func NewLog(t *Table) *Log { return &Log{T: t} }
+func NewLog(t *Table) *Log { return &Log{T: t, lastHandTrash: -1} }
 
 // addAside adds a line that doesn't bring out the pending one: the other
 // player's cards leaving play in Clean-up don't begin it.
@@ -57,6 +64,11 @@ func (l *Log) add(e Entry) {
 	if l == nil {
 		return
 	}
+	e.Level = min(e.Level, 3) // the log nests no deeper, mostly: Overlord's Mining Road "gets +1 Action."
+	if w := l.way; w != nil { // something came before the Way's effect
+		l.way, l.wayCut = nil, true
+		l.add(Entry{Level: w.Level, Template: "PLAY", Args: w.Args[:2]})
+	}
 	if l.pending != nil && e.Kind != 'T' {
 		p := *l.pending
 		l.pending = nil
@@ -69,25 +81,74 @@ func (l *Log) add(e Entry) {
 		}
 		l.flush()
 	}
-	// drawing again with nothing between: one line, Blacksmith's two choices under Elder
-	if n := len(l.Entries); n > 0 && e.Template == "DRAW" && len(e.Args) == 2 {
+	// drawing or trashing from the hand again with nothing between: one line, Blacksmith's
+	// two choices under Elder, Remake's "trashes 2 Coppers." when the first gains nothing
+	// (but Monastery's from the hand, then from play, are two)
+	// (but Monastery's from the hand, then from play, are two); two Caravans' "draws a Copper and a Militia. (Caravan)"
+	merge := e.Template == "DRAW" || e.Template == "DRAW_FROM" || e.Template == "TRASH" && l.handTrash && l.lastHandTrash == len(l.Entries)-1 ||
+		e.Template == "PUT_IN_HAND_FROM" || // two Blockades: "puts a Ranger and a Walled Village into their hand. (Blockade)"
+		e.Template == "TOPDECK" // two Schemes: "topdecks 2 cards."
+	if n := len(l.Entries); n > 0 && merge && len(e.Args) >= 2 {
 		last := &l.Entries[n-1]
-		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == 2 && last.Args[0] == e.Args[0] {
+		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == len(e.Args) && last.Args[0] == e.Args[0] && (len(e.Args) == 2 || last.Args[2] == e.Args[2]) {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
 			l.changed(n - 1)
 			return
 		}
 	}
-	// buying the same card again: "buys and gains 2 Silvers"
-	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" {
+	// two Bridge Trolls or Swamp Hags at the start of a turn: "gets +2 Buys. (Bridge Troll)", "gets +$6. (Swamp Hag)";
+	// only lines of the same amount merge, so three Samurais are "gets +$2.", "gets +$1."
+	for _, t := range []string{"GETS_BUY", "GETS_COIN"} {
+		if n := len(l.Entries); n > 0 && (e.Template == t+"_FROM" || e.Template == t+"S_FROM") {
+			last := &l.Entries[n-1]
+			if (last.Template == t+"_FROM" || last.Template == t+"S_FROM") && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[2] == e.Args[2] && last.Args[1] == e.Args[1] {
+				last.Args[1] = last.Args[1].(int) + e.Args[1].(int)
+				last.Template = t + "S_FROM"
+				l.changed(n - 1)
+				return
+			}
+		}
+	}
+	// Champion's +1 Action and the card's own: "plays a Royal Carriage.", "gets +2 Actions."
+	if n := len(l.Entries); n > 0 && (e.Template == "GETS_ACTION" || e.Template == "GETS_ACTIONS") {
+		if last := &l.Entries[n-1]; (last.Template == "GETS_ACTION" || last.Template == "GETS_ACTIONS") && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = last.Args[1].(int) + e.Args[1].(int)
+			last.Template = "GETS_ACTIONS"
+			l.changed(n - 1)
+			return
+		}
+	}
+	// a card bought right after a Project or Event: "buys Capitalism and a Conclave.", "gains a Conclave."
+	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" && len(e.Args) == 2 {
+		if last := &l.Entries[n-1]; last.Template == "BUY" && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			l.add(Entry{Level: e.Level, Template: "GAIN", Args: []any{e.Args[0], e.Args[1]}})
+			return
+		}
+	}
+	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers",
+	// or one of the same pile: "buys and gains a Garrison and a Hill Fort."
+	if n := len(l.Entries); n > 0 && (e.Template == "BUY_AND_GAIN" || e.Template == "GAIN" && len(e.Args) == 2) {
 		last := &l.Entries[n-1]
-		if last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[1].([]CardID)[0] == e.Args[1].([]CardID)[0] {
+		if last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] && l.samePile(last.Args[1].([]CardID)[0], e.Args[1].([]CardID)[0], e.Template) {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			return
+		}
+	}
+	// Boons received one after another: "receives The Sky's Gift and The River's Gift."
+	if n := len(l.Entries); n > 0 && e.Template == "RECEIVES" {
+		if last := &l.Entries[n-1]; last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
 			l.changed(n - 1)
 			return
 		}
 	}
 	l.Entries = append(l.Entries, e)
+	if e.Template == "TRASH" && l.handTrash {
+		l.lastHandTrash = len(l.Entries) - 1
+	}
 	l.changed(len(l.Entries) - 1)
 }
 
@@ -136,6 +197,31 @@ func (l *Log) unGain(i int) {
 	}
 }
 
+// playAlone writes the line of a Treasure with a choice, without its $. It joins
+// Treasures without $ played right before: "plays 2 Gondolas.", "plays an
+// Abundance and an Anvil.", "plays 2 Buried Treasures and a War Chest."
+func (l *Log) playAlone(e Entry) {
+	if l == nil {
+		return
+	}
+	if l.tr != nil && l.tr.Template == "PLAY" && l.tr.Level == e.Level && l.tr.Args[0] == e.Args[0] && len(l.after) == 0 {
+		l.tr.Args[1] = append(l.tr.Args[1].([]CardID), e.Args[1].([]CardID)...)
+		l.flush() // its choice's lines come right after
+		return
+	}
+	l.flush()
+	if n := len(l.Entries); n > 0 && n == l.trLine && l.pending == nil && l.way == nil {
+		last := &l.Entries[n-1]
+		if last.Template == "PLAY" && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
+			l.changed(n - 1)
+			return
+		}
+	}
+	l.add(e)
+	l.trLine = len(l.Entries)
+}
+
 func (l *Log) changed(i int) {
 	if l.Hook != nil {
 		l.Hook(i)
@@ -170,10 +256,12 @@ func (l *Log) flush() {
 	tr, after := *l.tr, l.after
 	l.tr, l.after = nil, nil
 	l.Entries = append(l.Entries, tr)
+	if tr.Template == "PLAY" {
+		l.trLine = len(l.Entries)
+	}
 	l.changed(len(l.Entries) - 1)
-	for _, e := range after {
-		l.Entries = append(l.Entries, e)
-		l.changed(len(l.Entries) - 1)
+	for _, e := range after { // these merge too: two Merchants' "gets +$2. (Merchant)"
+		l.add(e)
 	}
 }
 
@@ -310,12 +398,62 @@ func normName(s string) string {
 	return b.String()
 }
 
+// samePile: the same card, or for a buy two cards of one split pile (Forts, Knights).
+func (l *Log) samePile(a, b CardID, template string) bool {
+	if a == b {
+		return true
+	}
+	if template != "BUY_AND_GAIN" || l.T == nil {
+		return false
+	}
+	pa, ok1 := l.T.KingdomPile(l.T.Defs[a].Name)
+	pb, ok2 := l.T.KingdomPile(l.T.Defs[b].Name)
+	return ok1 && ok2 && pa == pb
+}
+
+// holdWay holds an Action's "plays a Warehouse using Way of the Pig." until
+// the Way's effect: a line written before then (Seaway's "gets +1 Buy") makes
+// it "plays a Warehouse.", and the Way's effect starts "uses Way of the Pig."
+func (l *Log) holdWay(e Entry) {
+	if l != nil {
+		l.emit()
+		l.way, l.wayCut = &e, false
+	}
+}
+
+// releaseWay writes the held line as it is, or reports that it was cut short.
+func (l *Log) releaseWay() (cut bool) {
+	if l == nil {
+		return false
+	}
+	if w := l.way; w != nil {
+		l.way = nil
+		l.add(*w)
+		return false
+	}
+	cut, l.wayCut = l.wayCut, false
+	return cut
+}
+
 // lazy holds a line that is written only if something else is logged before
 // the next lazy call: "starts their turn" when a start-of-turn effect happens.
 func (l *Log) lazy(e *Entry) {
 	if l != nil {
 		l.pending = e
 	}
+}
+
+// Pending is the template of the lazy line not yet written, if any.
+func (l *Log) Pending() string {
+	switch {
+	case l == nil:
+		return ""
+	case l.way != nil: // held, it becomes "plays an Urchin." if a line comes first
+		return "PLAY"
+	case l.pending == nil:
+		return ""
+	}
+	return l.pending.Template
 }
 
 // emit writes the lazy line now, e.g. "starts their turn" for an Outpost that does nothing then.

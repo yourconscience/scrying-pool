@@ -1651,7 +1651,9 @@ func (r *zoneReplay) step(i int, e Event) {
 			want = []string{ZoneHand} // a gained Farmhands sets aside a card from hand, not itself
 		case t == "SET_ASIDE":
 			want = self(want...)
-		case arg2 != "Trickster": // only Trickster takes from play: Haven sets aside from hand, not the Throne Room that played it, nor itself
+		case arg2 == "Trickster": // a Treasure discarded from play
+			want = []string{ZonePlay, ZoneDiscard}
+		default: // only Trickster takes from play: Haven sets aside from hand, not the Throne Room that played it, nor itself
 			want = []string{ZoneHand, ZoneDeck, ZoneDiscard}
 		}
 		r.move(e, p, cards, want, ZoneSetAside)
