@@ -1261,6 +1261,9 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 	if x.Player != "" && x.Player != r.names[ev.P] && x.Template == "DISCARD" { // Skirmisher's "discards a card and a Farrier." before Skulk's Gold, not Lost City's "draws a card."
 		return true
 	}
+	if x.Template == "GAIN" && cardName(x.Args[1]) == "Horse" && slices.ContainsFunc(r.g.P[ev.P].Z[engine.InPlay], func(y engine.Inst) bool { return r.g.Def(y).Name == "Livery" }) {
+		return true // Livery's "gains a Horse." before Cavalry's "draws 2 cards."
+	}
 	by := ""
 	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_WITH") || strings.HasSuffix(x.Template, "_FROM")) {
 		by = cardName(x.Args[n-1])

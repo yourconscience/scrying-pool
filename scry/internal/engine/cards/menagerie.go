@@ -240,7 +240,7 @@ func init() {
 			return
 		}
 		d := c.G.Def(x)
-		if d.Action() {
+		if c.G.IsAction(x) { // an inheriting Estate too: "gains an Estate.", "gains a Horse.", "draws a card."
 			c.Gain(c.P, horse(c), discard)
 		}
 		if d.Treasure() {

@@ -681,6 +681,15 @@ func (g *Game) play(p int, x Inst, level int, how playHow) {
 	g.fire(&Ev{Kind: EvPlay, P: p, X: x, C: g.cards[x], By: how.by, Level: level + 1})
 }
 
+// IsAction: x is an Action card, or an Estate of a player with the Estate token (Inheritance).
+func (g *Game) IsAction(x Inst) bool {
+	if g.Def(x).Action() {
+		return true
+	}
+	p := g.Owner(x)
+	return g.cards[x] == g.estate && p >= 0 && g.P[p].Inherited >= 0
+}
+
 // inherits: x is an Estate that plays the card with p's Estate token on p's turn.
 func (g *Game) inherits(p int, x Inst) bool {
 	return g.cards[x] == g.estate && g.P[p].Inherited >= 0 && g.Cur == p
