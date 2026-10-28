@@ -1051,6 +1051,9 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 			}
 		}
 	}
+	if x, ok := r.peek(); len(out) < d.Min && ok && x.Level < d.Level && d.Min == 1 {
+		out = append(out, 0) // the card wrote nothing: a Graverobber with no card to gain or trash
+	}
 	if len(out) < d.Min {
 		x, _ := r.peek()
 		r.fail(fmt.Sprintf("no mode of %s writes the log's next line %s", r.t.Defs[d.Source].Name, x.Template), "")

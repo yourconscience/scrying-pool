@@ -403,7 +403,7 @@ func init() {
 	}})
 	reg("Enlightenment", rules{}) // the engine plays Treasures as Actions once it came true
 	reg("Kind Emperor", rules{
-		Play:  func(c *ctx) { c.Away().ChooseGain(c.P, action, hand) }, // also when its last Sun goes
+		Play:  func(c *ctx) { c.ChooseGain(c.P, action, hand) }, // also when its last Sun goes: "comes true.", "gains a Nobles."
 		Hears: engine.On(engine.EvTurnStart),
 		Hear: func(c *ctx, e *ev) { // "gains a Golem. (Kind Emperor)" into the hand
 			if cameTrue(c) {
