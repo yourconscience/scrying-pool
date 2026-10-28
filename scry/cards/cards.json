@@ -492,7 +492,8 @@
    "name": "Barbarian",
    "kind": "kingdom",
    "types": [
-    "Action"
+    "Action",
+    "Attack"
    ],
    "cost": "5",
    "set": "Allies",
