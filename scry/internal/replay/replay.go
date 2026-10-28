@@ -1227,6 +1227,9 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	x, ok := r.peek()
+	if ok && x.Template == "SHUFFLES" && r.pos+1 < len(r.real) {
+		x = r.real[r.pos+1] // the draw that shuffled: "shuffles their deck.", "draws a Gold and a Hunting Lodge. (Longship)"
+	}
 	if !ok || x.Player != r.names[p] {
 		return 0
 	}

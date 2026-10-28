@@ -168,7 +168,7 @@ func init() {
 		if len(xs) < n || slices.ContainsFunc(xs, func(x inst) bool { return !c.G.Def(x).Action() }) {
 			return
 		}
-		if lantern || c.Mode1(c.P, mode("take the Horn", "TAKE"), mode("take the Lantern", "TAKE")) == 0 {
+		if lantern || c.Mode1(c.P, engine.Mode{Label: "take the Horn", Line: "TAKE", Card: c.Card("Horn")}, engine.Mode{Label: "take the Lantern", Line: "TAKE", Card: c.Card("Lantern")}) == 0 {
 			take(c, c.P, "Horn")
 		} else {
 			take(c, c.P, "Lantern")
