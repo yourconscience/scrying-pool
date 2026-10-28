@@ -1896,10 +1896,13 @@ func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) in
 	for _, y := range r.g.P[p].Z[engine.Hand] {
 		left[r.g.Def(y).Name]++
 	}
-	y, spare := engine.Inst(-1), 0
-	for _, h := range r.g.P[p].Z[engine.Hand] {
-		if n := r.g.Def(h).Name; r.hidden[h] && n != name && (y < 0 || left[n]-need[n] > spare) {
-			y, spare = h, left[n]-need[n]
+	strict := r.shownUntilDraw(p, next.Line)
+	y, spare, now := engine.Inst(-1), 0, false
+	for _, h := range r.g.P[p].Z[engine.Hand] { // first one the hand can spare before its next draw: Archer's "reveals a Copper, an Investment, a Battle Plan, and a Warlord."
+		if n := r.g.Def(h).Name; r.hidden[h] && n != name {
+			if s, nw := left[n]-need[n], left[n] > strict[n]; y < 0 || nw && !now || nw == now && s > spare {
+				y, spare, now = h, s, nw
+			}
 		}
 	}
 	if y < 0 {
