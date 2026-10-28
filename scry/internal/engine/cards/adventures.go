@@ -96,9 +96,11 @@ func traveller(next string, r rules) rules {
 		if i := c.G.PileOf(card); !e.Cleanup || i < 0 || c.G.Top(i) != card {
 			return
 		}
-		c.Emit() // "begins their Cleanup phase" comes first, exchanged or not
-		if c.Yes(c.P, "exchange it for a "+next, "EXCHANGE_RETURN") {
+		c.Emit()                                                                                                                                           // "begins their Cleanup phase" comes first, exchanged or not
+		if c.Mode1(c.P, engine.Mode{Label: "no"}, engine.Mode{Label: "exchange it for a " + next, Line: "EXCHANGE_RETURN", Card: c.G.CardOf(c.Me)}) == 1 { // "returns a Treasure Hunter."
 			c.Exchange(c.Me, card)
+		} else if !e.Again {
+			c.T2().Unswapped = append(c.T2().Unswapped, c.Me)
 		}
 	}
 	return r

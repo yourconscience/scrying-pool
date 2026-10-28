@@ -205,6 +205,7 @@ type turnState struct {
 	HandLimit int    // Voyage's turn: how many cards the player may play from hand; 0 for any
 	FromHand  int    // cards the player whose turn it is played from hand
 	KeepHand  []Inst // cards that stay in hand in Clean-up (Coastal Haven)
+	Unswapped []Inst // Travellers not exchanged as they were discarded in Clean-up, asked again after the others
 }
 
 type Phase uint8

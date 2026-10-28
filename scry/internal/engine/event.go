@@ -54,6 +54,7 @@ type Ev struct {
 	Victim  int    // EvAttack: the player attacked
 	Level   int    // the nesting of lines its responses write
 	Cleanup bool   // EvDiscard in Clean-up
+	Again   bool   // a Traveller in Clean-up asked once more after the others
 
 	Unaffected bool   // EvAttack: a Reaction protects the victim
 	Done       bool   // the card was moved already: a later listener can't move it

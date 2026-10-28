@@ -507,6 +507,15 @@ func (g *Game) cleanup(p int) {
 			g.fire(&Ev{Kind: EvDiscard, P: q, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Level: 1})
 		}
 	}
+	// the Travellers not exchanged yet, once more: the player picks the order ("returns a Treasure Hunter." before "returns a Page.")
+	for again := g.T2.Unswapped; len(again) > 0; again = nil {
+		g.T2.Unswapped = nil
+		for _, x := range again {
+			if g.loc[x].Zone == Discard {
+				g.Def(x).Rules.OnDiscard(g.ctx(p, x, 1), &Ev{Kind: EvDiscard, P: p, X: x, C: g.cards[x], From: InPlay, Cleanup: true, Again: true, Level: 1})
+			}
+		}
+	}
 	if !g.T2.KeepPlay {
 		pl.Kept = nil
 	}
