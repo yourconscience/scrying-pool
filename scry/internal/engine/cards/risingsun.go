@@ -107,6 +107,16 @@ func init() {
 		c.Discard(c.P, one(pick1(c, c.P, engine.ToDiscard, hand, nil, false)))
 	}})
 	reg("Change", rules{Play: func(c *ctx) { // "trashes a Silver.", "gains a Gold.", "takes 3 debt."
+		if pl := c.Pl(c.P); pl.Debt > 0 && pl.Coins > 0 { // the debt is paid first if it can be: "loses 1 Coin.", then the trash
+			n := min(pl.Debt, pl.Coins)
+			pl.Debt -= n
+			pl.Coins -= n
+			if n == 1 {
+				c.Log("LOSES_COIN", engine.Seat(c.P), n)
+			} else {
+				c.Log("LOSES_COINS", engine.Seat(c.P), n)
+			}
+		}
 		if c.Pl(c.P).Debt > 0 {
 			c.PlusCoins(3)
 			return

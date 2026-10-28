@@ -116,10 +116,11 @@ func (l *Log) add(e Entry) {
 			return
 		}
 	}
-	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers"
+	// buying or gaining the same card again: "buys and gains 2 Silvers", Ball's "gains 2 Poachers",
+	// or one of the same pile: "buys and gains a Garrison and a Hill Fort."
 	if n := len(l.Entries); n > 0 && (e.Template == "BUY_AND_GAIN" || e.Template == "GAIN" && len(e.Args) == 2) {
 		last := &l.Entries[n-1]
-		if last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] && last.Args[1].([]CardID)[0] == e.Args[1].([]CardID)[0] {
+		if last.Template == e.Template && last.Level == e.Level && last.Args[0] == e.Args[0] && l.samePile(last.Args[1].([]CardID)[0], e.Args[1].([]CardID)[0], e.Template) {
 			last.Args[1] = append(last.Args[1].([]CardID), e.Args[1].([]CardID)...)
 			l.changed(n - 1)
 			return
@@ -357,6 +358,19 @@ func normName(s string) string {
 		}
 	}
 	return b.String()
+}
+
+// samePile: the same card, or for a buy two cards of one split pile (Forts, Knights).
+func (l *Log) samePile(a, b CardID, template string) bool {
+	if a == b {
+		return true
+	}
+	if template != "BUY_AND_GAIN" || l.T == nil {
+		return false
+	}
+	pa, ok1 := l.T.KingdomPile(l.T.Defs[a].Name)
+	pb, ok2 := l.T.KingdomPile(l.T.Defs[b].Name)
+	return ok1 && ok2 && pa == pb
 }
 
 // holdWay holds an Action's "plays a Warehouse using Way of the Pig." until

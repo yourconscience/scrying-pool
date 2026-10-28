@@ -309,8 +309,8 @@ func init() {
 		},
 		Next: func(c *ctx, d *engine.Dur) bool {
 			c.Draw(5)
+			c.PlusActions(1) // "gets +1 Action. (Tactician)", then "gets +1 Buy."
 			c.PlusBuys(1)
-			c.PlusActions(1)
 			return true
 		},
 	})

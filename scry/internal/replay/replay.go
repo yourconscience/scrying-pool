@@ -768,8 +768,10 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		if c, ok := r.moreOfLast(d); ok {
 			return r.pick(d, []cartographer.CardN{c})
 		}
-		if cs, ok := r.moreOfLine(d, "BUY"); ok { // the card after the Project: "buys Capitalism and a Conclave."
-			return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}})
+		for _, t := range []string{"BUY", "BUY_AND_GAIN"} { // the card after the Project: "buys Capitalism and a Conclave."; "buys and gains a Garrison and a Hill Fort."
+			if cs, ok := r.moreOfLine(d, t); ok {
+				return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}})
+			}
 		}
 	}
 	if d.Kind == engine.ToGain {
