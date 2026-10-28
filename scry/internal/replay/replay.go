@@ -850,6 +850,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 					return r.wayOption(d, cardName(x.Args[1]), way)
 				}
 			}
+			if i, ok := r.line[x.Line]; ok && x.Template == "PLAY_TREASURES_FOR" && i+1 < len(r.real) && r.real[i+1].Template == "PLAY_ENLIGHTENED" {
+				return r.pick(d, x.Args[1].Cards) // a Treasure as an Action: "plays a Copper. (+$1)", "Copper plays Enlightenment for +1 Card +1 Action"
+			}
 		}
 	}
 	x, ok := r.peek()
