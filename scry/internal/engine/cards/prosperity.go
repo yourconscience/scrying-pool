@@ -91,7 +91,11 @@ func init() {
 		x := xs[0]
 		ms := []engine.Mode{mode("trash it", "TRASH"), mode("discard it", "DISCARD"), mode("put it back", "")}
 		if d := c.G.Def(x); d.Action() || d.Treasure() {
-			ms = append(ms, mode("play it", "PLAY"))
+			line := "PLAY" // "plays a Crystal Ball.", a line of its own
+			if d.Treasure() && !d.Action() && !d.Rules.Alone && (d.Rules.Coins != 0 || d.Rules.Worth != nil) {
+				line = "PLAY_TREASURES_FOR" // "plays a Silver. (+$2)"
+			}
+			ms = append(ms, mode("play it", line))
 		}
 		switch c.Mode1(c.P, ms...) {
 		case 0:
