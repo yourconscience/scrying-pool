@@ -60,6 +60,7 @@ type Ev struct {
 	Done       bool   // the card was moved already: a later listener can't move it
 	Skip       bool   // EvPlaying: its instructions don't happen (Enchantress)
 	Keep       []Inst // EvShuffling: cards that stay in the discard pile (Avoid)
+	next       func() // what follows the card's own rule before the rest: Plan's Trashing token
 }
 
 // Watch is an effect a card leaves for later: Merchant's +$1 for the next
@@ -112,10 +113,19 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
+
 	if own != nil && (ev.Kind != EvGain || g.OwnLater == nil || !g.OwnLater(ev)) {
 		own()
 		own = nil
 	}
+	next := func() { // Plan's: after the cards in play, before this turn's watches
+		if ev.next != nil {
+			f := ev.next
+			ev.next = nil
+			f()
+		}
+	}
+	defer next()
 	if !g.hears.has(ev.Kind) {
 		if own != nil {
 			own()
@@ -155,7 +165,20 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
+	global := func() { // the kingdom cards whose Hear runs all game
+		for _, c := range g.Global {
+			if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
+				cx := g.ctx(ev.P, -1, ev.Level)
+				cx.Src = c
+				r.Hear(cx, ev)
+			}
+		}
+	}
 	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	if early {
+		global()
+		next() // Footpad's "draws a Fortress.", then Plan's "trashes a Copper.", then Cargo Ship's "sets a Fortress aside."
+	}
 	for i, q := range order {
 		for _, z := range listenZones {
 			if z != Tavern || ev.Kind != EvGain {
@@ -186,12 +209,8 @@ func (g *Game) fire(ev *Ev) {
 		}
 	}()
 	defer land(true)
-	for _, c := range g.Global {
-		if r := g.T.Defs[c].Rules; r.Hears.has(ev.Kind) {
-			cx := g.ctx(ev.P, -1, ev.Level)
-			cx.Src = c
-			r.Hear(cx, ev)
-		}
+	if !early {
+		global()
 	}
 	for _, h := range slices.Clone(g.Held) { // a State may return itself
 		if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {

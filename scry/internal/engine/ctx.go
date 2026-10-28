@@ -615,14 +615,19 @@ func (g *Game) gainX(p int, x Inst, to Zone, level int, by CardID, bought bool) 
 		return true
 	}
 	done := exile() // before the card's own "draws 2 cards." (Cavalry), or else after the gain's other effects: Guildhall's "gets +1 Coffers."
-	g.fire(&Ev{Kind: EvGain, P: p, X: x, C: g.cards[x], To: to, By: by, Bought: bought, Level: level})
+	ev := &Ev{Kind: EvGain, P: p, X: x, C: g.cards[x], To: to, By: by, Bought: bought, Level: level}
+	if from.Zone == Supply && g.P[p].Tokens[TokTrash] == int(from.Owner) {
+		// Plan's Trashing token on any gain from the pile, after the card's own, before the rest:
+		// "buys and gains a Silk Merchant.", "gets +1 Villager.", "trashes an Estate."; then Cargo Ship's
+		ev.next = func() {
+			cx := g.ctx(p, -1, level)
+			cx.from = g.T2.Phase == StartPhase // "trashes a Copper. (|)" under a gain at the start of a turn
+			cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
+		}
+	}
+	g.fire(ev)
 	if !done {
 		exile()
-	}
-	if from.Zone == Supply && g.P[p].Tokens[TokTrash] == int(from.Owner) { // Plan's Trashing token on any gain from the pile, after the card's own: "buys and gains a Silk Merchant.", "gets +1 Villager.", "trashes an Estate."
-		cx := g.ctx(p, -1, level)
-		cx.from = g.T2.Phase == StartPhase // "trashes a Copper. (|)" under a gain at the start of a turn
-		cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
 	}
 }
 
