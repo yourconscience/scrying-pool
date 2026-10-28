@@ -1212,6 +1212,9 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 	if !ok || ev.X < 0 {
 		return false
 	}
+	if x.Player != "" && x.Player != r.names[ev.P] && x.Template == "DISCARD" { // Skirmisher's "discards a card and a Farrier." before Skulk's Gold, not Lost City's "draws a card."
+		return true
+	}
 	by := ""
 	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_WITH") || strings.HasSuffix(x.Template, "_FROM")) {
 		by = cardName(x.Args[n-1])

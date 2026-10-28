@@ -637,6 +637,9 @@ func init() {
 		return -2 * g.Count(p, func(d *def) bool { return d.Name == "Silver" || d.Name == "Gold" })
 	}})
 	landVP("Basilica", engine.On(engine.EvGain), func(c *ctx, e *ev) bool { // "buys and gains a Silver.", "takes 2 VP from Basilica."
+		if inBuyPhase(c, e.P) && c.Pl(e.P).Coins < 2 {
+			c.As(e.P).OfferCoffers() // "uses 1 Coffers. (+$1)" first
+		}
 		return inBuyPhase(c, e.P) && c.Pl(e.P).Coins >= 2
 	})
 	landVP("Baths", engine.On(engine.EvTurnEnd), func(c *ctx, e *ev) bool { // after the Clean-up draw

@@ -384,6 +384,25 @@ func (c *Ctx) Modes(p, min, max int, ms ...Mode) []int {
 	return out
 }
 
+// OfferCoffers lets the player spend Coffers in the middle of a buy: "uses 1
+// Coffers. (+$1)", "gets +$1.", then "takes 2 VP from Basilica."
+func (c *Ctx) OfferCoffers() {
+	pl := &c.G.P[c.P]
+	if pl.Coffers == 0 {
+		return
+	}
+	var opts []Option
+	for n := 0; n <= pl.Coffers; n++ {
+		opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+	}
+	if n := c.Choose(c.P, UseCoffers, opts, 1, 1)[0].Mode; n > 0 {
+		pl.Coffers -= n
+		c.Log(plural(n, "USES_COFFER", "USES_COFFERS"), Seat(c.P), n)
+		pl.Coins += n
+		c.Log(plural(n, "GETS_COIN", "GETS_COINS"), Seat(c.P), n)
+	}
+}
+
 // Mode1 asks for one mode.
 func (c *Ctx) Mode1(p int, ms ...Mode) int { return c.Modes(p, 1, 1, ms...)[0] }
 
