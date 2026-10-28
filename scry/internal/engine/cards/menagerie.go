@@ -394,6 +394,9 @@ func init() {
 			for i := len(g.T2.Gained) - 1; i >= 0; i-- {
 				if d := g.D(g.T2.Gained[i]); d.Name != "Wayfarer" {
 					*cost = d.Cost
+					if d.Rules != nil && d.Rules.SelfCost != nil { // as it costs now: a Fisherman's $2 with an empty discard pile
+						d.Rules.SelfCost(g, g.Cur, cost)
+					}
 					return
 				}
 			}
