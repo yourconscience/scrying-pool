@@ -297,7 +297,11 @@ func init() {
 	gondola.Alone = true
 	gondola.OnGain = func(c *ctx, _ *ev) {
 		if x := pick1(c, c.P, engine.ToPlay, hand, action, true); x >= 0 {
-			c.PlayNow(x)
+			if c.T2().Phase == engine.StartPhase {
+				c.PlayBlank(x) // at the start of a turn: "plays a Merchant. (|)"
+			} else {
+				c.PlayNow(x)
+			}
 		}
 	}
 	reg("Gondola", gondola)

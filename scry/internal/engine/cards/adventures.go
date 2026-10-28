@@ -479,8 +479,17 @@ func init() {
 
 	// Events
 	reg("Alms", rules{
-		CanBuy: func(g *engine.Game, p int) bool { return once("Alms")(g, p) && !inPlayOf(g, p, treasure) },
-		Buy:    func(c *ctx) { c.T2().Used[c.Src]++; c.ChooseGain(c.P, c.CostsUpTo(4), discard) },
+		CanBuy: once("Alms"),
+		Buy: func(c *ctx) {
+			c.T2().Used[c.Src]++
+			for _, x := range c.Zone(c.P, inPlay) {
+				if c.G.Def(x).Treasure() { // "buys Alms but has a Copper in play."
+					c.Log("ALMS_FAIL", engine.Seat(c.P), []engine.CardID{c.G.CardOf(x)})
+					return
+				}
+			}
+			c.ChooseGain(c.P, c.CostsUpTo(4), discard)
+		},
 	})
 	reg("Ball", rules{Buy: func(c *ctx) { // the -$1 token is taken silently
 		c.Pl(c.P).MinusCoin = c.Src
