@@ -636,7 +636,7 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 		if x.Extra != "" {
 			text += " [" + x.Extra + "]" // "Turn 1 - gamrevinu [Island Folk]"
 		}
-		if x.Template != "NEW_TURN" || text != e.Text {
+		if x.Template != "NEW_TURN" || !strings.EqualFold(text, e.Text) { // "[Seize The Day]"
 			return "a different turn"
 		}
 		return ""
@@ -1001,7 +1001,7 @@ func (r *replayer) offersNone(d *engine.Decision, cards []cartographer.CardN) bo
 			return false
 		}
 		for _, o := range d.Options {
-			if r.t.Defs[o.Card].Name == cn.Card.Name {
+			if norm(r.t.Defs[o.Card].Name) == norm(cn.Card.Name) {
 				return false
 			}
 		}
@@ -1432,7 +1432,7 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 			if d.Kind == engine.PlayTreasures && x.Template == "PLAY" { // a Treasure with lines of its own: "plays a Stockpile."
 				return !slices.ContainsFunc(x.Args[1].Cards, func(cn cartographer.CardN) bool { // "plays a Buried Treasure and a Shield."
 					return cn.Card == nil || !cn.Card.Is("Treasure") && // Capitalism's Town Crier
-						!slices.ContainsFunc(d.Options, func(o engine.Option) bool { return r.t.Defs[o.Card].Name == cn.Card.Name })
+						!slices.ContainsFunc(d.Options, func(o engine.Option) bool { return norm(r.t.Defs[o.Card].Name) == norm(cn.Card.Name) })
 				})
 			}
 			if d.Kind == engine.PlayAction || d.Kind == engine.PlayNight {
@@ -1541,7 +1541,7 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 			found := false
 			for _, guess := range []bool{false, true} { // a card the log showed before one the replay guessed: the guess may yet be wrong
 				for i, o := range d.Options {
-					if !found && !used[i] && r.t.Defs[o.Card].Name == cn.Card.Name && (o.Inst >= 0 && r.hidden[o.Inst]) == guess {
+					if !found && !used[i] && norm(r.t.Defs[o.Card].Name) == norm(cn.Card.Name) && (o.Inst >= 0 && r.hidden[o.Inst]) == guess {
 						used[i], found = true, true
 						out = append(out, i)
 					}
