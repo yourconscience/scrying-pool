@@ -524,6 +524,14 @@ func (r *replayer) revealedStopLast() {
 			continue
 		}
 		cs := y.Args[1].Cards
+		if k := r.parent(i); k >= 0 && r.real[k].Template == "PLAY" && cardName(r.real[k].Args[1]) == "Scrying Pool" { // all into the hand: the one not an Action stopped it
+			cs = nil
+			for _, cn := range x.Args[1].Cards {
+				if cn.Card != nil && !cn.Card.Is("Action") {
+					cs = []cartographer.CardN{{Card: cn.Card, N: 1}}
+				}
+			}
+		}
 		if len(cs) != 1 || cs[0].N != 1 || cs[0].Card == nil {
 			continue
 		}
