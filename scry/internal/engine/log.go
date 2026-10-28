@@ -108,6 +108,15 @@ func (l *Log) add(e Entry) {
 			}
 		}
 	}
+	// Champion's +1 Action and the card's own: "plays a Royal Carriage.", "gets +2 Actions."
+	if n := len(l.Entries); n > 0 && (e.Template == "GETS_ACTION" || e.Template == "GETS_ACTIONS") {
+		if last := &l.Entries[n-1]; (last.Template == "GETS_ACTION" || last.Template == "GETS_ACTIONS") && last.Level == e.Level && last.Args[0] == e.Args[0] {
+			last.Args[1] = last.Args[1].(int) + e.Args[1].(int)
+			last.Template = "GETS_ACTIONS"
+			l.changed(n - 1)
+			return
+		}
+	}
 	// a card bought right after a Project or Event: "buys Capitalism and a Conclave.", "gains a Conclave."
 	if n := len(l.Entries); n > 0 && e.Template == "BUY_AND_GAIN" && len(e.Args) == 2 {
 		if last := &l.Entries[n-1]; last.Template == "BUY" && last.Level == e.Level && last.Args[0] == e.Args[0] {

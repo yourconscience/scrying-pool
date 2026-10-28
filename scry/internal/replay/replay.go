@@ -633,8 +633,9 @@ func (r *replayer) same(e engine.Entry, x cartographer.Event, cards bool) string
 		}
 		return ""
 	}
-	growing := !cards && (strings.HasPrefix(e.Template, "GETS_COIN") || strings.HasPrefix(e.Template, "GETS_BUY")) && strings.HasSuffix(e.Template, "_FROM") // a second Priest or Bridge Troll adds to it
-	if e.Template != x.Template && r.english[e.Template] != r.english[x.Template] && !(growing && strings.Replace(x.Template, "S_FROM", "_FROM", 1) == e.Template) {
+	growing := !cards && (strings.HasPrefix(e.Template, "GETS_COIN") || strings.HasPrefix(e.Template, "GETS_BUY")) && strings.HasSuffix(e.Template, "_FROM") || // a second Priest or Bridge Troll adds to it
+		!cards && e.Template == "GETS_ACTION" // the card's own after Champion's
+	if e.Template != x.Template && r.english[e.Template] != r.english[x.Template] && !(growing && (strings.Replace(x.Template, "S_FROM", "_FROM", 1) == e.Template || x.Template == e.Template+"S")) {
 		return "a different line"
 	}
 	if e.Level != x.Level && !(r.flat && e.Level == x.Level+1) {
