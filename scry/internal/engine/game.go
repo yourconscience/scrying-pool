@@ -545,18 +545,23 @@ func (g *Game) Raise(c CardID) bool {
 }
 
 // SetMouse makes c Way of the Mouse's card, for a replay whose log shows which it was.
-func (g *Game) SetMouse(c CardID) {
-	i := g.PileOf(g.Mouse)
-	if i < 0 || g.Mouse == c {
+func (g *Game) SetMouse(c CardID) { g.setAside(&g.Mouse, c) }
+
+// SetRiverboat makes c the card set aside for Riverboat, as a replay's log shows it.
+func (g *Game) SetRiverboat(c CardID) { g.setAside(&g.Riverboat, c) }
+
+func (g *Game) setAside(was *CardID, c CardID) {
+	i := g.PileOf(*was)
+	if i < 0 || *was == c {
 		return
 	}
-	delete(g.pileOf, g.Mouse)
+	delete(g.pileOf, *was)
 	g.pileOf[c] = i
 	g.Piles[i].Card = c
 	for _, x := range g.Piles[i].Cards {
 		g.cards[x] = c
 	}
-	g.Mouse = c
+	*was = c
 }
 
 // PrevGained is what a player gained on their last turn.

@@ -150,6 +150,14 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 			break
 		}
 	}
+	for _, x := range r.real { // Riverboat's card: "plays a Stables. (|)" from no pile of the game
+		if x.Template == "PLAY_WITH" && g.Riverboat != 0 && len(x.Args) > 2 && strings.TrimSpace(x.Args[2].Text) == "" {
+			if d, ok := t.Card(cardName(x.Args[1])); ok && g.PileOf(d.ID) < 0 && d.Action() && d.Cost == engine.Upto(5) {
+				g.SetRiverboat(d.ID)
+				break
+			}
+		}
+	}
 	for _, x := range r.real { // "Obelisk chooses the Capital City pile."
 		if x.Template == "OBELISK_CHOOSES_PILE" {
 			name := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(x.Args[0].Text), "the "), " pile")
