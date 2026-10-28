@@ -262,7 +262,7 @@ func init() {
 		Hears: engine.On(engine.EvPlay),
 		Hear: func(c *ctx, e *ev) { // after the next Action's effects, "plays a Sailor. (Flagship)"
 			d := c.G.D(e.C)
-			if e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) { // even a card that trashed itself
+			if e.P != c.P || e.X == c.Me || !d.Action() || d.Is(engine.TCommand) || e.By == c.Src { // even a card that trashed itself; a second Flagship replays the first play too, not the replay
 				return
 			}
 			if ds := c.Durs(); len(ds) > 0 {
