@@ -220,8 +220,7 @@ func (g *Game) buyPhase(p int) {
 			max = min(max, g.T2.HandLimit-g.T2.FromHand)
 		}
 		got := g.ask(&Decision{Player: p, Kind: PlayTreasures, Options: opts, Min: 0, Max: max})
-		if len(got) == 0 && pl.Debt > 0 && pl.Coins > 0 { // the debt first, then more Treasures: "plays a Copper.", "repays 1 debt.", "plays 2 Coppers."
-			g.repay(p)
+		if len(got) == 0 && g.repay(p) { // the debt first, then more Treasures: "plays a Copper.", "repays 1 debt.", "plays 2 Coppers."
 			continue
 		}
 		if len(got) == 0 {
@@ -260,12 +259,20 @@ func (g *Game) buyPhase(p int) {
 	}
 }
 
-// repay pays off debt with $.
-func (g *Game) repay(p int) {
+// repay offers to pay off debt with $ now; what is left at the end of the turn
+// pays it after the Clean-up draw: "draws 5 cards.", "loses 4 Coins."
+func (g *Game) repay(p int) bool {
 	pl := &g.P[p]
 	n := min(pl.Debt, pl.Coins)
 	if n == 0 {
-		return
+		return false
+	}
+	t := "REPAYS_DEBT"
+	if pl.Debt > n {
+		t = "REPAYS_SOME_DEBT"
+	}
+	if g.ctx(p, -1, 0).Mode1(p, Mode{Label: "not now"}, Mode{Label: "repay", Line: t}) != 1 { // bots take the last mode
+		return false
 	}
 	pl.Debt -= n
 	pl.Coins -= n
@@ -274,6 +281,7 @@ func (g *Game) repay(p int) {
 	} else {
 		g.Log.add(Entry{Template: "REPAYS_DEBT", Args: []any{Seat(p), n}})
 	}
+	return true
 }
 
 // CanAfford: a player has the $ and Potions for a cost, and no debt.
@@ -558,8 +566,9 @@ func (g *Game) cleanup(p int) {
 	} else {
 		g.draw(p, n+k, 0, 0)
 	}
-	if left > 0 && pl.Debt > 0 { // the $ Capital's debt kept: "draws 5 cards.", "loses 2 Coins."
-		g.Log.add(Entry{Template: plural(left, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), left}})
+	if n := min(left, pl.Debt); n > 0 { // the $ left pays the debt: "draws 5 cards.", "loses 2 Coins."
+		pl.Debt -= n
+		g.Log.add(Entry{Template: plural(n, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), n}})
 	}
 }
 
