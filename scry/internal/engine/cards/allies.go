@@ -893,8 +893,19 @@ func init() {
 		Hears: engine.On(engine.EvBuyStart),
 		Hear: func(c *ctx, _ *ev) { // "spends 1 Favor.", "plays a Village."
 			phaseLine(c)
-			for c.Count(c.P, hand, action) > 0 && spend(c, 1, "spend a Favor to play an Action") {
-				c.PlayNow(pick1(c, c.P, engine.ToPlay, hand, action, false))
+			opts := func() []engine.Option { // a Shadow from the deck too: "plays a Fishmonger."
+				os := c.Options(c.P, hand, action)
+				for _, o := range c.Options(c.P, deck, func(d *def) bool { return d.Action() && d.Is(engine.TShadow) }) {
+					if !slices.ContainsFunc(os, func(h engine.Option) bool { return h.Card == o.Card }) {
+						os = append(os, o)
+					}
+				}
+				return os
+			}
+			for len(opts()) > 0 && spend(c, 1, "spend a Favor to play an Action") {
+				if o := c.ChooseOne(c.P, engine.ToPlay, opts(), false); o != nil {
+					c.PlayNow(o.Inst)
+				}
 			}
 		},
 	}))
