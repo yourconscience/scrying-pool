@@ -1303,9 +1303,14 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
 		return -1
 	}
-	if n := len(x.Args); n > 2 && strings.HasSuffix(x.Template, "_FROM") {
+	if n := len(x.Args); n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
 		for _, c := range r.g.Land { // a Project before the Durations: "draws a Hovel. (City Gate)"
 			if r.t.Defs[c].Name == cardName(x.Args[n-1]) {
+				return -1
+			}
+		}
+		for _, h := range r.g.Held { // or a State: "discards an Estate. (Lost In The Woods)"
+			if h.P == p && norm(r.t.Defs[h.C].Name) == norm(cardName(x.Args[n-1])) {
 				return -1
 			}
 		}
