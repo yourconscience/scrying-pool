@@ -109,6 +109,10 @@ var capitalism = nameSet(
 	// Menagerie, Plunder
 	"Animal Fair", "Barge", "Bounty Hunter", "Camel Train", "Cavalry", "Coven", "Falconer", "Fisherman", "Goatherd", "Hunting Lodge", "Livery", "Paddock", "Sanctuary", "Scrap", "Wayfarer",
 	"Buried Treasure", "Cabin Boy", "Crucible", "Flagship", "Fortune Hunter", "Gondola", "Harbor Village", "King's Cache", "Longship", "Mapmaker", "Maroon", "Mining Road", "Pickaxe", "Pilgrim", "Quartermaster", "Rope", "Sack of Loot", "Silver Mine", "Swamp Shacks", "Tools", "Trickster", "Wealthy Village",
+	// Allies, Rising Sun
+	"Archer", "Barbarian", "Broker", "Capital City", "Courier", "Elder", "Galleria", "Garrison", "Guildmaster", "Merchant Camp", "Skirmisher", "Stronghold",
+	"Sycophant", "Tent", "Town", "Town Crier",
+	"Aristocrat", "Change", "Fishmonger", "Kitsune", "Samurai", "Tea House",
 )
 
 func init() {

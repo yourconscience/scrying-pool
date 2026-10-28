@@ -1397,7 +1397,8 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 		if x.Template == t || r.english[x.Template] == r.english[t] {
 			if d.Kind == engine.PlayTreasures && x.Template == "PLAY" { // a Treasure with lines of its own: "plays a Stockpile."
 				cs := x.Args[1].Cards
-				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is("Treasure")
+				return len(cs) == 1 && cs[0].Card != nil && (cs[0].Card.Is("Treasure") ||
+					slices.ContainsFunc(d.Options, func(o engine.Option) bool { return r.t.Defs[o.Card].Name == cs[0].Card.Name })) // Capitalism's Town Crier
 			}
 			if d.Kind == engine.PlayAction || d.Kind == engine.PlayNight {
 				cs := x.Args[1].Cards
