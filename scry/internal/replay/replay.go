@@ -959,8 +959,33 @@ func (r *replayer) offersNone(d *engine.Decision, cards []cartographer.CardN) bo
 				return false
 			}
 		}
+		if r.canSwapIn(d, cn.Card.Name) {
+			return false
+		}
 	}
 	return len(cards) > 0
+}
+
+// canSwapIn: swapIn could mend the guesses to offer the card: Herb Gatherer's
+// Silver, drawn into the hand unseen, was in the deck it moved to the discard pile.
+func (r *replayer) canSwapIn(d *engine.Decision, name string) bool {
+	if len(d.Options) == 0 || d.Options[0].Inst < 0 {
+		return false
+	}
+	p := r.whose(d)
+	if r.g.Where(d.Options[0].Inst).Zone == engine.Hand { // a card drawn unseen can trade places with one in the deck
+		if r.t.Defs[d.Source].Name == "Monastery" || !slices.ContainsFunc(r.g.P[p].Z[engine.Hand], func(h engine.Inst) bool { return r.hidden[h] }) { // Monastery's Coppers come from play next
+			return false
+		}
+		return slices.ContainsFunc(r.g.P[p].Z[engine.Deck], func(x engine.Inst) bool { return r.free(x) && r.g.Def(x).Name == name }) ||
+			slices.ContainsFunc(r.g.P[p].Z[engine.Discard], func(x engine.Inst) bool { return r.hidden[x] && r.g.Def(x).Name == name })
+	}
+	for _, h := range r.g.P[p].Z[engine.Hand] {
+		if r.hidden[h] && r.g.Def(h).Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 // chooseModes picks the modes whose first lines are the next real lines, in order.
@@ -1748,6 +1773,9 @@ func (r *replayer) namedBelow(at int) map[string]int {
 // deck. It returns the option now holding the named card, or -1.
 func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) int {
 	p := r.whose(d)
+	if len(d.Options) > 0 && d.Options[0].Inst >= 0 && r.g.Where(d.Options[0].Inst).Zone != engine.Hand {
+		return r.swapFromHand(d, p, name, used)
+	}
 	x := engine.Inst(-1)
 	for _, y := range r.g.P[p].Z[engine.Deck] { // the bottom-most
 		if r.free(y) && r.g.Def(y).Name == name {
@@ -1791,6 +1819,31 @@ func (r *replayer) swapIn(d *engine.Decision, name string, used map[int]bool) in
 	}
 	d.Options = append(d.Options, engine.Option{Card: r.g.CardOf(x), Inst: x})
 	return len(d.Options) - 1
+}
+
+// swapFromHand mends a guess when the log takes a card from elsewhere than the
+// hand, and the replay put it into a hand drawn unseen: Herb Gatherer's "plays a
+// Silver." from the deck it moved to the discard pile.
+func (r *replayer) swapFromHand(d *engine.Decision, p int, name string, used map[int]bool) int {
+	x := engine.Inst(-1)
+	for _, h := range r.g.P[p].Z[engine.Hand] {
+		if x < 0 && r.hidden[h] && r.g.Def(h).Name == name {
+			x = h
+		}
+	}
+	if x < 0 {
+		return -1
+	}
+	for i, o := range d.Options {
+		if y := o.Inst; !used[i] && y >= 0 && r.g.Def(y).Name != name {
+			r.g.Swap(x, y)
+			delete(r.hidden, x)
+			r.hide(y)
+			d.Options[i].Card, d.Options[i].Inst = r.g.CardOf(x), x
+			return i
+		}
+	}
+	return -1
 }
 
 // swapOut mends a guess when the log draws a card the deck doesn't have: a
