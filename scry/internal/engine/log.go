@@ -64,6 +64,7 @@ func (l *Log) add(e Entry) {
 	if l == nil {
 		return
 	}
+	e.Level = min(e.Level, 3) // the log nests no deeper, mostly: Overlord's Mining Road "gets +1 Action."
 	if w := l.way; w != nil { // something came before the Way's effect
 		l.way, l.wayCut = nil, true
 		l.add(Entry{Level: w.Level, Template: "PLAY", Args: w.Args[:2]})
