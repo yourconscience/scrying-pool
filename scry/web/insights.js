@@ -48,11 +48,13 @@ const wiki = (c) => "https://wiki.dominionstrategy.com/index.php/" + encodeURICo
 
 const ROLES = { village: "with a village", draw: "with card draw", plus_buy: "with +Buy", trasher: "with trashing", curser: "with a curser", attack: "with an Attack" };
 const ENDINGS = { provinces: "Provinces ran out", piles: "Three piles ran out", resign: "Someone resigned" };
+// how the 7 starting Coppers fell between turns 1 and 2; "other" is a start with an Heirloom or Baker's Coffers
+const OPENINGS = ["5/2", "4/3", "3/4", "2/5", "other"];
 const SHORT_ENDINGS = { provinces: "Provinces", piles: "three piles", resign: "resigned" };
 
 // ---- the statistics
 
-const Z = 1.2816, PRIOR = 10, MIN_CARD_GAMES = 8, MIN_OPENING_GAMES = 12, TEMPO_TURNS = 15, MAX_TURN = 20, FORM_WINDOW = 30;
+const Z = 1.2816, PRIOR = 10, MIN_CARD_GAMES = 8, TEMPO_TURNS = 15, MAX_TURN = 20, FORM_WINDOW = 30;
 
 // a share of games won, ties counting half, with an 80% Wilson interval
 function rate(results) {
@@ -85,6 +87,7 @@ function count(gs) {
   for (const k of Object.keys(ENDINGS)) s.endings[k] = rate(res(gs.filter((g) => g.ending === k)));
   const byOpen = {};
   for (const g of gs) if (g.opening) (byOpen[g.opening] ||= []).push(g.result);
+  s.openingUnknown = gs.filter((g) => !g.opening).length;
   for (const [k, v] of Object.entries(byOpen)) s.openings[k] = rate(v);
   const withKingdom = gs.filter((g) => g.kingdom && g.kingdom.length);
   for (const name of Object.keys(ROLES)) {
@@ -167,7 +170,7 @@ function toggle(kind, key) {
   else F.picks = [...F.picks.filter((p) => !(EXCLUSIVE[kind] && p.kind === kind)), { kind, key }];
   update(true);
 }
-const pickLabel = (p) => (p.kind === "card" ? `${p.key} in the kingdom` : p.kind === "ending" ? ENDINGS[p.key] : p.kind === "opening" ? `${p.key} opening` : `Kingdoms ${ROLES[p.key]}`);
+const pickLabel = (p) => (p.kind === "card" ? `${p.key} in the kingdom` : p.kind === "ending" ? ENDINGS[p.key] : p.kind === "opening" ? (p.key === "other" ? "Other openings" : `${p.key} opening`) : `Kingdoms ${ROLES[p.key]}`);
 
 function setPeriod(lo, hi) {
   F.lo = Math.max(0, lo);
@@ -523,16 +526,18 @@ function effects(s) {
   }
   const vs = (kind, key, title, r) => add({ kind, key, title, diff: r.rate - base, low: r.low - base, high: r.high - base, rate: r.rate, games: r.games, detail: `won ${pct(r.rate)} of ${r.games} games` });
   if (!F.picks.some((p) => p.kind === "ending")) for (const [k, r] of Object.entries(s.endings)) if (r.games) vs("ending", k, ENDINGS[k], r);
-  if (!F.picks.some((p) => p.kind === "opening")) for (const [k, r] of Object.entries(s.openings)) if (r.games >= MIN_OPENING_GAMES) vs("opening", k, `${k} opening`, r);
+  if (!F.picks.some((p) => p.kind === "opening")) for (const k of OPENINGS) if (s.openings[k]) vs("opening", k, k === "other" ? "Other openings" : `${k} opening`, s.openings[k]);
   return out;
 }
 
 function forest(s) {
   const box = $("forest"), es = effects(s);
+  $("open-note").textContent = s.openingUnknown ? ` ${s.openingUnknown} of these games are left out of the openings: their log comes from the other player's side, which hides your hands, and you didn't play every Copper.` : "";
   const groups = [["seat", "Seat"], ["ending", "Endings"], ["opening", "Openings"], ["role", "Kingdom"]];
   const rows = [];
   for (const [k, name] of groups) {
-    const gr = es.filter((e) => e.kind === k).sort((a, b) => b.diff - a.diff);
+    const gr = es.filter((e) => e.kind === k);
+    if (k !== "opening") gr.sort((a, b) => b.diff - a.diff); // openings keep their order: 5/2 to 2/5, then other
     if (gr.length) rows.push({ head: name }, ...gr);
   }
   if (!rows.length) {
@@ -564,7 +569,9 @@ function forest(s) {
     if (r.head) { g.add("text", { x: 0, y: y + 21, class: "grp", "pointer-events": "none" }, r.head); y += headH; continue; }
     const cy = narrow ? y + 31 : y + rowH / 2, ly = narrow ? y + 13 : cy;
     const color = r.clear ? `var(--${r.clear})` : "var(--none)";
-    if (r.kind === "opening") {
+    if (r.kind === "opening" && r.key === "other") {
+      g.add("text", { x: narrow ? 2 : 0, y: ly + 5, class: "rl", "pointer-events": "none" }, "other");
+    } else if (r.kind === "opening") {
       r.key.split("/").forEach((v, i) => {
         g.add("circle", { cx: 11 + i * 25, cy: ly, r: narrow ? 9 : 11, fill: "url(#coin)", "pointer-events": "none" });
         g.add("text", { x: 11 + i * 25, y: ly + 4, "text-anchor": "middle", class: "coin-t", "pointer-events": "none" }, v);

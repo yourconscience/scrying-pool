@@ -2,6 +2,7 @@ package advisor
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -37,7 +38,7 @@ type Features struct {
 	Roles      map[string]bool `json:"roles"` // the kingdom has a card filling the role
 	Took       map[string]bool `json:"took"`  // kingdom cards Me owned at some point
 
-	Opening       string   `json:"opening"`        // $ of turns 1 and 2, larger first: "4/3"
+	Opening       string   `json:"opening"`        // Coppers in hand on turns 1 and 2, by openingSplit: "4/3", "2/5", "other", "" unknown
 	OpeningBuys   []string `json:"opening_buys"`   // cards bought or gained on turns 1-2
 	FirstGold     int      `json:"first_gold"`     // Me's turn of the first Gold, 0 if none
 	FirstProvince int      `json:"first_province"` // Me's turn of the first Province, 0 if none
@@ -106,6 +107,9 @@ func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Pr
 				continue
 			}
 			f.Turns++
+			if f.Turns == 1 {
+				f.Opening = openingSplit(g, t, me, s.Kingdom)
+			}
 			f.Coins = append(f.Coins, t.Coins)
 			for _, c := range append(append([]cartographer.CardN{}, t.Bought...), t.Gained...) {
 				if c.Card == nil {
@@ -122,12 +126,10 @@ func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Pr
 				}
 			}
 		}
-		if len(f.Coins) >= 2 {
-			a, b := f.Coins[0], f.Coins[1]
-			if b > a {
-				a, b = b, a
-			}
-			f.Opening = fmt.Sprintf("%d/%d", a, b)
+		// a log from the other player's side hides the hand; the $ played tells
+		// the split when both turns played all 7 Coppers
+		if f.Opening == "" && len(f.Coins) >= 2 && f.Coins[0]+f.Coins[1] == 7 {
+			f.Opening = fmt.Sprintf("%d/%d", f.Coins[0], f.Coins[1])
 		}
 		sort.Strings(f.OpeningBuys)
 		out = append(out, f)
@@ -158,4 +160,63 @@ func ending(s cartographer.SupplyState) string {
 		return "piles"
 	}
 	return "resign"
+}
+
+// startEstates are the cards that can fill a starting deck's 3 Estate slots.
+var startEstates = map[string]bool{"Estate": true, "Hovel": true, "Necropolis": true, "Overgrown Estate": true}
+
+// openingSplit is how the 7 starting Coppers fell between the hands of a
+// player's turns 1 and 2, in turn order: "5/2", "4/3", "3/4" or "2/5". It
+// counts the Coppers the player draws at the end of turn 1 (t), which the log
+// names for the player whose log it is, rather than the $ played: a player who
+// plays 3 of 4 Coppers for a Silver would look like 3/3. A start other than 7
+// Coppers and 3 Estates or Shelters (an Heirloom) or with Coffers (Baker) is
+// "other"; a hand the log hides is "" (GameFeatures then tries the $ played).
+func openingSplit(g *cartographer.Game, t cartographer.Turn, me string, kingdom []string) string {
+	start := map[string]int{} // the deck before turn 1: after it, without what it gained and with what it trashed
+	for card, n := range t.Decks[me] {
+		start[card] = n
+	}
+	for _, c := range append(append([]cartographer.CardN{}, t.Bought...), t.Gained...) {
+		if c.Card != nil {
+			start[c.Card.Name] -= c.N
+		}
+	}
+	for _, c := range t.Trashed {
+		if c.Card != nil {
+			start[c.Card.Name] += c.N
+		}
+	}
+	estates := 0
+	for card, n := range start {
+		switch {
+		case n <= 0 || card == "Copper": // events bought on turn 1 go below zero
+		case startEstates[card]:
+			estates += n
+		default:
+			return "other"
+		}
+	}
+	if start["Copper"] != 7 || estates != 3 || slices.Contains(kingdom, "Baker") {
+		return "other"
+	}
+	drawn, coppers := 0, 0
+	for _, e := range g.Events {
+		if e.Template != "DRAW" || e.Player != me || e.TurnOf != me || e.Turn != 1 || e.Level != 0 {
+			continue
+		}
+		for _, c := range e.Args[1].Cards {
+			if c.Card == nil {
+				return ""
+			}
+			drawn += c.N
+			if c.Card.Name == "Copper" {
+				coppers += c.N
+			}
+		}
+	}
+	if drawn != 5 {
+		return ""
+	}
+	return fmt.Sprintf("%d/%d", 7-coppers, coppers)
 }
