@@ -107,6 +107,7 @@ func makeProfiles(dir string, players []string) (int, error) {
 		// the static page links the images where KingdomCreator publishes them
 		// rather than copying them: they belong to Rio Grande Games
 		in.Images = cardImages(in, func(_, rel string) string { return kingdomCreatorImages + rel })
+		in.Ratings = cardRatings(in)
 		file := "data/" + slug(p) + ".json"
 		b, _ := json.Marshal(in)
 		if err := os.WriteFile(filepath.Join(dir, filepath.Base(file)), b, 0o644); err != nil {
@@ -119,7 +120,7 @@ func makeProfiles(dir string, players []string) (int, error) {
 	recent := advisor.LatestGames(players[0], features, recentGames)
 	for i, g := range recent.Games {
 		f := *g.Features
-		f.Kingdom, f.Landscapes, f.Roles, f.Took, f.OpeningBuys = nil, nil, nil, nil, nil
+		f.Kingdom, f.Landscapes, f.Roles, f.Took, f.OpeningBuys, f.Opened = nil, nil, nil, nil, nil, nil
 		f.Coins = f.Coins[:min(len(f.Coins), 10)]
 		recent.Games[i].Features = &f
 	}
@@ -139,7 +140,7 @@ func siteGames(games []*advisor.Features) []*advisor.Features {
 	for i, g := range games {
 		f := *g
 		f.ID, f.Me, f.Opponent, f.Played = "", "", "", ""
-		f.Final, f.Landscapes, f.OpeningBuys = nil, nil, nil
+		f.Final, f.Landscapes = nil, nil
 		f.Coins = f.Coins[:min(len(f.Coins), 15)]
 		out[i] = &f
 	}

@@ -343,6 +343,7 @@ func insights(player string) (*advisor.Insights, error) {
 	}
 	in := advisor.Summarize(player, advisor.Of(player, c.features))
 	in.Images = cardImages(in, func(name, _ string) string { return "/card-image/" + url.PathEscape(name) })
+	in.Ratings = cardRatings(in)
 	c.insights[player] = in
 	return in, nil
 }

@@ -50,6 +50,16 @@ const ROLES = { village: "with a village", draw: "with card draw", plus_buy: "wi
 const ENDINGS = { provinces: "Provinces ran out", piles: "Three piles ran out", resign: "Someone resigned" };
 // how the 7 starting Coppers fell between turns 1 and 2; "other" is a start with an Heirloom or Baker's Coffers
 const OPENINGS = ["5/2", "4/3", "3/4", "2/5", "other"];
+// what a game opened with: the kingdom cards and Silvers gained on turns 1 and 2
+const STARTS = {
+  two: "Two kingdom cards", "card-silver": "A kingdom card and Silver", card: "One kingdom card",
+  silver: "Silver, no kingdom card", none: "Neither", many: "More than two gains",
+};
+// the best kingdom card opened against the top-rated one the larger turn could afford
+const GAPS = {
+  took: "Took the top-rated card", close: "Within 1 point of it", below: "1 to 3 points below",
+  far: "More than 3 points below", nocard: "No kingdom card",
+};
 const SHORT_ENDINGS = { provinces: "Provinces", piles: "three piles", resign: "resigned" };
 
 // ---- the statistics
@@ -148,7 +158,7 @@ function medianTurn(turns, counts) {
 let D = null; // the profile on screen
 let all = []; // its games, oldest first
 const F = { lo: 0, hi: 0, seat: "any", opp: "any", picks: [] }; // lo..hi: the indices of the games the period keeps
-const EXCLUSIVE = { ending: true, opening: true }; // one pick of these at a time; cards and roles add up
+const EXCLUSIVE = { ending: true, opening: true, start: true, gap: true }; // one pick of these at a time; cards and roles add up
 
 function keep(g, i, period = true) {
   if (period && (i < F.lo || i > F.hi)) return false;
@@ -162,6 +172,9 @@ function keep(g, i, period = true) {
     if (p.kind === "ending" && g.ending !== p.key) return false;
     if (p.kind === "opening" && g.opening !== p.key) return false;
     if (p.kind === "role" && !(g.kingdom && g.kingdom.length && g.roles && g.roles[p.key])) return false;
+    if (p.kind === "start" && g._start !== p.key) return false;
+    if (p.kind === "gap" && g._gap !== p.key) return false;
+    if (p.kind === "opened" && (g._start === "many" || (!(g.opened || []).includes(p.key) && !(g.opening_buys || []).includes(p.key)))) return false;
   }
   return true;
 }
@@ -171,7 +184,7 @@ function toggle(kind, key) {
   else F.picks = [...F.picks.filter((p) => !(EXCLUSIVE[kind] && p.kind === kind)), { kind, key }];
   update(true);
 }
-const pickLabel = (p) => (p.kind === "card" ? `${p.key} in the kingdom` : p.kind === "ending" ? ENDINGS[p.key] : p.kind === "opening" ? (p.key === "other" ? "Other openings" : `${p.key} opening`) : `Kingdoms ${ROLES[p.key]}`);
+const pickLabel = (p) => (p.kind === "start" ? `Opened: ${STARTS[p.key].toLowerCase()}` : p.kind === "gap" ? `Opening: ${GAPS[p.key].toLowerCase()}` : p.kind === "opened" ? `Opened ${p.key}` : p.kind === "card" ? `${p.key} in the kingdom` : p.kind === "ending" ? ENDINGS[p.key] : p.kind === "opening" ? (p.key === "other" ? "Other openings" : `${p.key} opening`) : `Kingdoms ${ROLES[p.key]}`);
 
 function setPeriod(lo, hi) {
   F.lo = Math.max(0, lo);
@@ -353,7 +366,7 @@ function timeline() {
       },
     },
     dataZoom: [
-      { type: "slider", xAxisIndex: 0, filterMode: "none", startValue: F.lo, endValue: F.hi, height: 26, bottom: 8, labelFormatter: dateOf, borderColor: c.rule, fillerColor: "rgba(17,148,106,0.14)", dataBackground: { lineStyle: { color: c.axis }, areaStyle: { color: c.neutral } }, textStyle: { color: c.ink2 }, brushSelect: false },
+      { type: "slider", xAxisIndex: 0, filterMode: "none", startValue: F.lo, endValue: F.hi, height: 26, bottom: 8, labelFormatter: dateOf, borderColor: c.rule, fillerColor: c.up + "24", dataBackground: { lineStyle: { color: c.axis }, areaStyle: { color: c.neutral } }, textStyle: { color: c.ink2 }, brushSelect: false },
       { type: "inside", xAxisIndex: 0, filterMode: "none", zoomOnMouseWheel: "ctrl", moveOnMouseWheel: false, moveOnMouseMove: true },
     ],
     series,
@@ -499,7 +512,7 @@ function spectrum(s) {
   g.add("text", { x: bx > Wd - 150 ? bx - 4 : bx + 4, y: 12, class: "avg", "text-anchor": bx > Wd - 150 ? "end" : "start" }, `average ${pct(base)}`);
   groups.forEach((grp, b) => {
     const mid = lo + (b + 0.5) * step, k = Math.max(-1, Math.min(1, (mid - base) / 0.16));
-    const fill = Math.abs(k) < 0.12 ? "var(--field-muted)" : `color-mix(in oklab, ${k > 0 ? "#22b382" : "#ec7746"} ${Math.round(45 + 55 * Math.abs(k))}%, #2b4a3c)`;
+    const fill = Math.abs(k) < 0.12 ? "var(--field-muted)" : `color-mix(in oklab, var(--${k > 0 ? "up" : "down"}) ${Math.round(45 + 55 * Math.abs(k))}%, var(--field-line))`;
     const x0 = L + b * colW + (colW - Math.min(per, Math.max(1, grp.length)) * cell) / 2;
     grp.sort((a, c) => a.shrunk - c.shrunk).forEach((c, i) => {
       g.add("rect", { x: x0 + (i % per) * cell, y: T + plotH - (Math.floor(i / per) + 1) * cell, width: sq, height: sq, rx: 2, fill, "data-tip": cardTip(c), "data-card": c.card, class: picked("card", c.card) ? "on" : null });
@@ -514,9 +527,10 @@ function spectrum(s) {
 
 // ---- every comparison: a dot on its 80% range; openings drawn as coin pairs
 
+const clear = (e) => ({ ...e, clear: e.low > 0 ? "up" : e.high < 0 ? "down" : null });
 function effects(s) {
   const base = s.overall.rate, out = [];
-  const add = (e) => out.push({ ...e, clear: e.low > 0 ? "up" : e.high < 0 ? "down" : null });
+  const add = (e) => out.push(clear(e));
   if (s.seat) {
     add({ kind: "seat", key: "first", title: "Going first", diff: s.seat.diff, low: s.seat.low, high: s.seat.high, games: s.n,
       detail: `${pct(s.first.rate)} going first (${s.first.games} games), ${pct(s.second.rate)} going second (${s.second.games})` });
@@ -541,6 +555,12 @@ function forest(s) {
     if (k !== "opening") gr.sort((a, b) => b.diff - a.diff); // openings keep their order: 5/2 to 2/5, then other
     if (gr.length) rows.push({ head: name }, ...gr);
   }
+  diffRows(box, rows);
+}
+
+// diffRows draws rows of differences in win rate, each a dot on its 80% range,
+// under group heads; clicking a row (but the seat's) shows only its games.
+function diffRows(box, rows) {
   if (!rows.length) {
     box.replaceChildren(el("p", "note", "Not enough games to compare anything."));
     return;
@@ -592,6 +612,123 @@ function forest(s) {
   });
   box.replaceChildren(g);
 }
+
+// ---- openings: what each game opened with, and the top-rated card it could have
+
+// prepare marks each game's opening: what it gained on turns 1 and 2 (_start),
+// the top-rated kingdom card the larger of the two turns could afford (_top),
+// and how far below it the best kingdom card opened was (_gap). Ratings are
+// the community's Dominion Card Glicko, by cost group; a card costing $6 or
+// more or a Potion never counts as affordable.
+function prepare() {
+  const R = D.ratings || {};
+  for (const g of all) {
+    const buys = g.opening_buys || [], opened = g.opened || [], silver = buys.includes("Silver");
+    g._start = buys.length > 2 ? "many" : opened.length >= 2 ? "two" : opened.length ? (silver ? "card-silver" : "card") : silver ? "silver" : "none";
+    g._top = g._gap = null;
+    if (g._start === "many" || !g.opening || g.opening === "other" || !(g.kingdom || []).length) continue;
+    const most = Math.max(...g.opening.split("/").map(Number));
+    for (const k of g.kingdom) {
+      const r = R[k];
+      if (r && /^[2-5]$/.test(r.cost) && Number(r.cost) <= most && (!g._top || r.rating > R[g._top].rating)) g._top = k;
+    }
+    if (!g._top) continue;
+    const best = Math.max(-Infinity, ...opened.filter((k) => R[k]).map((k) => R[k].rating)), gap = R[g._top].rating - best;
+    g._gap = opened.includes(g._top) ? "took" : best === -Infinity ? "nocard" : gap <= 1 ? "close" : gap <= 3 ? "below" : "far";
+  }
+}
+
+function openings(s, gs) {
+  const base = s.overall.rate, R = D.ratings || {};
+  const vs = (kind, key, title, r) => clear({ kind, key, title, diff: r.rate - base, low: r.low - base, high: r.high - base, rate: r.rate, games: r.games, detail: `won ${pct(r.rate)} of ${r.games} games` });
+  const by = (key, keys) => {
+    const m = {};
+    for (const g of gs) if (g[key]) (m[g[key]] ||= []).push(g.result);
+    return keys.filter((k) => m[k]).map((k) => [k, rate(m[k])]);
+  };
+  const rows = [];
+  const group = (kind, head, list) => {
+    if (F.picks.some((p) => p.kind === kind) || !list.length) return;
+    rows.push({ head }, ...list);
+  };
+  group("opening", "Split", OPENINGS.filter((k) => s.openings[k]).map((k) => vs("opening", k, k === "other" ? "Other openings" : `${k} opening`, s.openings[k])));
+  group("start", "What you opened with", by("_start", Object.keys(STARTS)).map(([k, r]) => vs("start", k, STARTS[k], r)));
+  group("gap", "Against the top-rated card you could afford", by("_gap", Object.keys(GAPS)).map(([k, r]) => vs("gap", k, GAPS[k], r)));
+  diffRows($("op-rows"), rows);
+
+  // the latest games that passed on the top-rated card
+  const face = (name, cls) => {
+    const b = el("span", "mini-card" + (cls ? " " + cls : ""));
+    if (img(name)) {
+      const im = el("img");
+      im.alt = "";
+      im.loading = "lazy";
+      im.src = img(name);
+      b.append(im);
+    }
+    b.append(document.createTextNode(name));
+    return b;
+  };
+  const passed = gs.filter((g) => g._top && g._gap !== "took").reverse().slice(0, 10);
+  $("op-passed").replaceChildren(...passed.map((g) => {
+    const item = el("div", "item"), head = el("div", "h"), cards = el("div", "c");
+    head.append(el("span", "", `${shortDate(g.date)} · ${g.opening}`), el("span", g.result === 1 ? "up-t" : g.result === 0 ? "down-t" : "none-t", g.result === 1 ? "won" : g.result === 0 ? "lost" : "tied"));
+    for (const b of g.opening_buys || []) cards.append(face(b));
+    cards.append(el("span", "vs", "instead of"), face(g._top, "top"), el("span", "none-t", R[g._top].rating.toFixed(1)));
+    item.append(head, cards);
+    return item;
+  }));
+  if (!passed.length) $("op-passed").append(el("p", "note", "No game here passed on the top-rated card."));
+
+  // each card you opened with: won when you opened it, and when you could have but didn't
+  const cards = {};
+  const acc = (c) => (cards[c] ||= { card: c, opened: [], not: [] });
+  for (const g of gs) {
+    if (g._start === "many") continue;
+    const opened = new Set([...(g.opened || []), ...(g.opening_buys || []).filter((b) => b === "Silver")]);
+    for (const c of opened) acc(c).opened.push(g.result);
+    if (!g.opening || g.opening === "other") continue;
+    const most = Math.max(...g.opening.split("/").map(Number));
+    const could = [...(g.kingdom || []).filter((k) => R[k] && /^[2-5]$/.test(R[k].cost) && Number(R[k].cost) <= most), "Silver"];
+    for (const c of could) if (!opened.has(c)) acc(c).not.push(g.result);
+  }
+  const q = $("oq").value.trim().toLowerCase();
+  const list = Object.values(cards).filter((c) => c.opened.length && (!q || c.card.toLowerCase().includes(q)))
+    .map((c) => ({ ...c, o: rate(c.opened), n: rate(c.not) }))
+    .sort((a, b) => b.o.games - a.o.games || a.card.localeCompare(b.card));
+  $("op-count").textContent = `${list.length} cards`;
+  const rateTd = (r) => {
+    const td = el("td", "n");
+    if (!r.games) { td.textContent = "-"; td.className += " none-t"; return td; }
+    td.className += " " + side(r.rate, base) + "-t";
+    td.append(document.createTextNode(pct(r.rate) + " "), el("span", "none-t", `(${r.games})`));
+    return td;
+  };
+  const body = list.map((c) => {
+    const tr = el("tr", picked("opened", c.card) ? "on" : ""), name = el("td", "card"), im = el("img");
+    im.alt = "";
+    im.loading = "lazy";
+    if (img(c.card)) im.src = img(c.card);
+    name.append(im, el("span", "", c.card));
+    const d = c.o.games && c.n.games ? c.o.rate - c.n.rate : null;
+    tr.append(name, el("td", "n", String(c.o.games)), rateTd(c.o), rateTd(c.n),
+      el("td", "n " + (d === null ? "none-t" : d > 0.05 ? "up-t" : d < -0.05 ? "down-t" : "none-t"), d === null ? "-" : pp(d)),
+      el("td", "n none-t", R[c.card] ? R[c.card].rating.toFixed(1) : "-"));
+    tr.onclick = () => toggle("opened", c.card);
+    return tr;
+  });
+  const th = el("tr");
+  for (const [t, r] of [["Card", 0], ["Opened", 1], ["Won when opened", 1], ["Could have, didn't", 1], ["pp", 1], ["Rating", 1]]) th.append(el("th", r ? "r" : "", t));
+  $("op-tbl").tHead.replaceChildren(th);
+  if (!body.length) {
+    const tr = el("tr"), td = el("td", "empty", "No opening here.");
+    td.colSpan = 6;
+    tr.append(td);
+    body.push(tr);
+  }
+  $("op-tbl").tBodies[0].replaceChildren(...body);
+}
+$("oq").addEventListener("input", () => current && view === "openings" && draw());
 
 // ---- the card table: sortable, searchable; a row shows only that card's games
 
@@ -665,9 +802,9 @@ $("q").addEventListener("input", () => current && table(current));
 
 // ---- drawing
 
-// ---- views: Overview, Cards and Over time, as tabs; the address keeps the one on screen (#cards, #time)
+// ---- views: Overview, Openings, Cards and Over time, as tabs; the address keeps the one on screen (#openings, #cards, #time)
 
-const VIEWS = ["overview", "cards", "time"];
+const VIEWS = ["overview", "openings", "cards", "time"];
 let view = "overview";
 function showView(v) {
   view = VIEWS.includes(v) ? v : "overview";
@@ -701,6 +838,7 @@ function draw() {
   filterBar();
   $("count").textContent = gs.length ? `${gs.length} of ${all.length} games, won ${pct(s.overall.rate)}` : `0 of ${all.length} games`;
   if (view === "overview") { forest(s); tempo(s); province(s); }
+  if (view === "openings") openings(s, gs);
   if (view === "cards") { spectrum(s); table(s); }
   if (view === "time") kpis(s, gs);
 }
@@ -732,6 +870,7 @@ async function show(name) {
   const p = players.find((x) => x.name === name);
   D = await getJSON(STATIC ? p.file : "/api/insights?player=" + encodeURIComponent(name));
   all = D.games || [];
+  prepare();
   F.lo = 0;
   F.hi = all.length - 1;
   F.seat = "any";

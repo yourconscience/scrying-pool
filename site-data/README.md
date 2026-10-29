@@ -2,7 +2,7 @@
 
 The profiles and the Recent games page on https://yourconscience.github.io/scrying-pool/. Each push to `main` rebuilds the pages from `scry/web/` and these files (`.github/workflows/site.yml`).
 
-- `players.json` and `<player>.json`: the profiles. They hold win rates and, for the page's filters, each game's own record without the opponent's name or the game id: date, seat, result and both players' VP, ending, kingdom and its roles, kingdom cards taken, opening, first Gold and Province, $ on turns 1-15 and both rating levels.
+- `players.json` and `<player>.json`: the profiles. They hold win rates and, for the page's filters, each game's own record without the opponent's name or the game id: date, seat, result and both players' VP, ending, kingdom and its roles, kingdom cards taken, opening split and the cards gained on turns 1 and 2, first Gold and Province, $ on turns 1-15 and both rating levels; and each kingdom card's community rating (Dominion Card Glicko).
 - `engine.json`: for the Engine page, the first player's 20 latest kingdoms played out by the rules engine, with each opponent's name, the scores and what the player bought.
 - `recent.json`: the first player's 25 latest games for the Recent games page, with each opponent's name and level, the scores and a few tempo numbers. dominion.games shows the same on the player's profile.
 

@@ -1,32 +1,35 @@
 /* Profiles page.
    Layout: the views as tabs next to the title, one row of filters for all of them, then the view: Overview
-   (every comparison next to $ per turn and the first Province), Cards (the kingdom cards on a green field
-   and the card table) or Over time (the games over time, whose zoom sets the period, and summary tiles).
-   Palette: a card-table green with Victory green and brick orange; green and orange only mean "clearly better"
+   (every comparison next to $ per turn and the first Province), Openings (splits, what was opened and the
+   top-rated card it could have been, the latest games that passed on it, the cards opened with), Cards (the
+   kingdom cards on the field and the card table) or Over time (the games over time, whose zoom sets the
+   period, and summary tiles).
+   Palette: Reaction-card blue on slate, with Victory green and brick orange; green and orange only mean "clearly better"
    and "clearly worse", grey means "can't tell". The tokens below override style.css's on this page. */
 :root {
-  --bg: #eef2ef; --panel: #f9fbf9; --ink: #102019; --ink-2: #44554c; --muted: #66766d;
-  --rule: #d9e1db; --axis: #b6c3ba; --hover: #e7eee9; --neutral: #dde5df;
-  --up: #11946a; --down: #e0632c; --none: #a9b6ae; --up-ink: #0b7553; --down-ink: #b44a1b;
-  --field: #163a2b; --field-line: #2b4a3c; --field-ink: #e8efe9; --field-muted: #9db3a6; --field-up: #5fd0a6; --field-down: #f39a73;
-  --coin: #e9b230; --coin-ink: #3d2a00; --tip-bg: #102019; --tip-ink: #eef2ef;
+  --bg: #eef1f6; --panel: #f9fafc; --ink: #111a2b; --ink-2: #45506a; --muted: #67728a;
+  --rule: #d9dfea; --axis: #b5bfd0; --hover: #e6ebf3; --neutral: #dce2ec;
+  --up: #11946a; --down: #e0632c; --none: #a9b2c2; --up-ink: #0b7553; --down-ink: #b44a1b;
+  --field: #18304f; --field-line: #2a4468; --field-ink: #e9eef7; --field-muted: #a3b3cc; --field-up: #5fd0a6; --field-down: #f39a73;
+  --tip-bg: #111a2b; --tip-ink: #eef1f6;
+  --coin: #e9b230; --coin-ink: #3d2a00;
   --sans: Outfit, system-ui, -apple-system, "Segoe UI", sans-serif;
   --num: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0c1411; --panel: #121c18; --ink: #e8efe9; --ink-2: #aebdb3; --muted: #8a9a91;
-    --rule: #1f2c26; --axis: #34453c; --hover: #17241f; --neutral: #22302a;
-    --up: #22b382; --down: #ec7746; --none: #4f6158; --up-ink: #5fd0a6; --down-ink: #f39a73;
-    --field: #0f2a1f; --field-line: #24443a; --tip-bg: #e8efe9; --tip-ink: #0c1411;
+    --bg: #0b1019; --panel: #121927; --ink: #e9eef7; --ink-2: #aeb9cc; --muted: #8792a8;
+    --rule: #1e2738; --axis: #33405a; --hover: #182133; --neutral: #222c3f;
+    --up: #22b382; --down: #ec7746; --none: #4d5a70; --up-ink: #5fd0a6; --down-ink: #f39a73;
+    --field: #13284a; --field-line: #26406a; --tip-bg: #e9eef7; --tip-ink: #0b1019;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0c1411; --panel: #121c18; --ink: #e8efe9; --ink-2: #aebdb3; --muted: #8a9a91;
-  --rule: #1f2c26; --axis: #34453c; --hover: #17241f; --neutral: #22302a;
-  --up: #22b382; --down: #ec7746; --none: #4f6158; --up-ink: #5fd0a6; --down-ink: #f39a73;
-  --field: #0f2a1f; --field-line: #24443a; --tip-bg: #e8efe9; --tip-ink: #0c1411;
+  --bg: #0b1019; --panel: #121927; --ink: #e9eef7; --ink-2: #aeb9cc; --muted: #8792a8;
+  --rule: #1e2738; --axis: #33405a; --hover: #182133; --neutral: #222c3f;
+  --up: #22b382; --down: #ec7746; --none: #4d5a70; --up-ink: #5fd0a6; --down-ink: #f39a73;
+  --field: #13284a; --field-line: #26406a; --tip-bg: #e9eef7; --tip-ink: #0b1019;
   color-scheme: dark;
 }
 body.insights { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
@@ -96,7 +99,7 @@ body.insights { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--s
 .end.r .faces { justify-content: flex-end; }
 .face { flex: none; width: 76px; border: 0; padding: 0; background: none; color: inherit; text-align: inherit; border-radius: 8px; }
 .ins button.face { border-radius: 8px; font: inherit; }
-.face img { width: 76px; height: 122px; object-fit: cover; border-radius: 7px; display: block; background: #23392f; }
+.face img { width: 76px; height: 122px; object-fit: cover; border-radius: 7px; display: block; background: var(--field-line); }
 .face .p { font: 600 14px var(--num); margin-top: 5px; }
 .face.down .p { color: var(--field-down); } .face.up .p { color: var(--field-up); }
 .face[aria-pressed="true"] img { outline: 3px solid var(--field-ink); outline-offset: 2px; }
@@ -110,16 +113,16 @@ body.insights { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--s
 /* comparisons and curves */
 .main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; }
 .side { display: grid; gap: 14px; align-content: start; min-width: 0; }
-#forest svg text { fill: var(--muted); font: 11.5px var(--num); }
-#forest svg .rl { fill: var(--ink); font: 14px var(--sans); }
-#forest svg .grp { fill: var(--ink-2); font: 600 12px var(--sans); }
-#forest svg .vv { fill: var(--ink-2); font: 12px var(--num); }
-#forest svg .vv.up { fill: var(--up-ink); } #forest svg .vv.down { fill: var(--down-ink); }
-#forest svg .coin-t { fill: var(--coin-ink); font: 700 11px var(--sans); }
-#forest svg .hit { fill: transparent; cursor: pointer; }
-#forest svg .hit:hover, #forest svg .hit.on { fill: var(--hover); }
-#forest svg .hit.fixed { cursor: default; }
-#forest svg .hit.fixed:hover { fill: transparent; }
+.rows svg text { fill: var(--muted); font: 11.5px var(--num); }
+.rows svg .rl { fill: var(--ink); font: 14px var(--sans); }
+.rows svg .grp { fill: var(--ink-2); font: 600 12px var(--sans); }
+.rows svg .vv { fill: var(--ink-2); font: 12px var(--num); }
+.rows svg .vv.up { fill: var(--up-ink); } .rows svg .vv.down { fill: var(--down-ink); }
+.rows svg .coin-t { fill: var(--coin-ink); font: 700 11px var(--sans); }
+.rows svg .hit { fill: transparent; cursor: pointer; }
+.rows svg .hit:hover, .rows svg .hit.on { fill: var(--hover); }
+.rows svg .hit.fixed { cursor: default; }
+.rows svg .hit.fixed:hover { fill: transparent; }
 .legend { display: flex; gap: 16px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; margin-top: 6px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
 .legend i.up { background: var(--up); } .legend i.down { background: var(--down); } .legend i.none { background: var(--none); }
@@ -151,6 +154,14 @@ body.insights { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--s
 .adj-w .t i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; }
 .adj-w .t b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); }
 .adj-w span { text-align: right; font: 500 13px var(--num); }
+.mini-card { display: inline-flex; align-items: center; gap: 6px; margin: 2px 8px 2px 0; white-space: nowrap; }
+.mini-card img { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; object-position: 50% 20%; background: var(--neutral); }
+.mini-card.top { font-weight: 600; }
+.passed { display: grid; gap: 2px; }
+.passed .item { padding: 8px 6px; border-bottom: 1px solid var(--rule); }
+.passed .h { display: flex; justify-content: space-between; font: 500 13px var(--num); color: var(--ink-2); margin-bottom: 4px; }
+.passed .c { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 0; }
+.passed .vs { color: var(--muted); font-size: 13px; margin-right: 8px; }
 .up-t { color: var(--up-ink); } .down-t { color: var(--down-ink); } .none-t { color: var(--muted); }
 .ins td.empty { color: var(--muted); padding: 18px 10px; cursor: default; }
 

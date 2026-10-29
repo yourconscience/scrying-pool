@@ -96,6 +96,14 @@ type Tempo struct {
 	NLoss  []int     `json:"n_losses"`
 }
 
+// Rating is a card's strength in the community's Dominion Card Glicko ratings,
+// against cards of its cost group there: "2" ($0-2), "3", "4", "5", "6" ($6 or
+// more) or "P" (a Potion).
+type Rating struct {
+	Rating float64 `json:"rating"`
+	Cost   string  `json:"cost"`
+}
+
 // Insights is everything the "My games" page shows.
 type Insights struct {
 	Me       string          `json:"me"`
@@ -115,7 +123,9 @@ type Insights struct {
 	MinGames int             `json:"min_games"` // cards seen in fewer games are left out
 	// card -> image URL, filled by whoever serves the page (the local app or a static site)
 	Images map[string]string `json:"images,omitempty"`
-	Games  []*Features       `json:"games,omitempty"`
+	// card -> its community rating, filled the same way
+	Ratings map[string]Rating `json:"ratings,omitempty"`
+	Games   []*Features       `json:"games,omitempty"`
 }
 
 const (
