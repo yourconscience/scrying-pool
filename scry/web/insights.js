@@ -43,6 +43,7 @@ const pp = (x) => (Math.round(x * 100) > 0 ? "+" : Math.round(x * 100) < 0 ? "âˆ
 const money = (x) => "$" + x.toFixed(1);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const shortDate = (d) => d.replace(/^\d+-(\w+)-0?(\d+)$/, "$1 $2"); // "2026-Oct-08" as "Oct 8"
 const wiki = (c) => "https://wiki.dominionstrategy.com/index.php/" + encodeURIComponent(c.replace(/ /g, "_"));
 
 const ROLES = { village: "with a village", draw: "with card draw", plus_buy: "with +Buy", trasher: "with trashing", curser: "with a curser", attack: "with an Attack" };
@@ -186,7 +187,17 @@ function filterBar() {
   const rated = all.filter((g) => g.my_level > 0 && g.opp_level > 0).length;
   $("f-opp").hidden = rated === 0;
   $("f-opp").title = `rating levels are known for ${rated} of ${N} games`;
-  $("chips").replaceChildren(...F.picks.map((p) => {
+  const chips = [];
+  if (!period) { // a period picked on the games over time: shown here for the other views
+    const b = el("button", "chip");
+    b.type = "button";
+    const label = `${shortDate(all[F.lo].date)} to ${shortDate(all[F.hi].date)}`;
+    b.setAttribute("aria-label", "Remove filter: " + label);
+    b.append(document.createTextNode(label), el("b", "", "Ã—"));
+    b.onclick = () => setPeriod(0, N - 1);
+    chips.push(b);
+  }
+  $("chips").replaceChildren(...chips, ...F.picks.map((p) => {
     const b = el("button", "chip");
     b.type = "button";
     b.setAttribute("aria-label", "Remove filter: " + pickLabel(p));
@@ -309,7 +320,7 @@ function timeline() {
   $("time-note").textContent = pts.length >= 10 ? `the line is the win rate over the last ${W} games; drag the handles, or drag and pinch the plot, to pick a period` : "too few games for a line";
   if (!ch) return;
   const c = chartTheme(), N = all.length;
-  const dateOf = (v) => (all[Math.round(v)] ? all[Math.round(v)].date.replace(/^\d+-(\w+)-0?(\d+)$/, "$1 $2") : ""); // "2026-Oct-08" as "Oct 8"
+  const dateOf = (v) => (all[Math.round(v)] ? shortDate(all[Math.round(v)].date) : "");
   const series = [
     { id: "won", type: "scatter", data: pts.filter((p) => p[1] === 1).map((p) => [p[0], 1.06]), symbolSize: 5, itemStyle: { color: c.up, opacity: 0.8 }, silent: true, clip: false },
     { id: "lost", type: "scatter", data: pts.filter((p) => p[1] === 0).map((p) => [p[0], -0.06]), symbolSize: 5, itemStyle: { color: c.down, opacity: 0.8 }, silent: true, clip: false },
@@ -324,8 +335,8 @@ function timeline() {
   }
   ch.setOption({
     ...baseOption(c),
-    grid: { left: 44, right: 16, top: 22, bottom: 72 },
-    xAxis: { type: "value", min: 0, max: N - 1, axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { formatter: dateOf, hideOverlap: true, margin: 18, showMinLabel: false, showMaxLabel: false } },
+    grid: { left: 44, right: 16, top: 22, bottom: 80 },
+    xAxis: { type: "value", min: 0, max: N - 1, axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { formatter: dateOf, hideOverlap: true, margin: 26, showMinLabel: false, showMaxLabel: false } },
     yAxis: { type: "value", min: 0, max: 1, interval: 0.25, axisLabel: { formatter: (v) => pct(v) }, splitLine: { lineStyle: { color: c.rule } } },
     tooltip: {
       ...baseOption(c).tooltip, trigger: "axis", axisPointer: { type: "line", lineStyle: { color: c.axis } },
@@ -646,12 +657,33 @@ $("q").addEventListener("input", () => current && table(current));
 
 // ---- drawing
 
+// ---- views: Overview, Cards and Over time, as tabs; the address keeps the one on screen (#cards, #time)
+
+const VIEWS = ["overview", "cards", "time"];
+let view = "overview";
+function showView(v) {
+  view = VIEWS.includes(v) ? v : "overview";
+  for (const name of VIEWS) {
+    $("v-" + name).hidden = name !== view;
+    $("t-" + name).setAttribute("aria-selected", String(name === view));
+  }
+  hideTip();
+  if (D) update(true);
+}
+document.querySelector(".views").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-view]");
+  if (b) location.hash = b.dataset.view === "overview" ? "" : b.dataset.view;
+});
+window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+showView(location.hash.slice(1));
+
 let current = null, pending = 0;
-// update redraws everything the filters change, at most every 30 ms while the
-// slider moves; withTime also redraws the games over time, which its own slider
-// doesn't change
+// update redraws what the filters change in the view on screen, at most every
+// 30 ms while the slider moves; withTime also redraws the games over time,
+// which its own slider doesn't change. Charts are drawn only while their view
+// shows, since a hidden one has no size.
 function update(withTime) {
-  if (withTime) timeline();
+  if (withTime && view === "time") timeline();
   if (!pending) pending = setTimeout(() => { pending = 0; draw(); }, 30);
 }
 function draw() {
@@ -659,20 +691,17 @@ function draw() {
   const s = count(gs);
   current = s;
   filterBar();
-  $("count").textContent = `${gs.length} of ${all.length} games`;
-  kpis(s, gs);
-  spectrum(s);
-  forest(s);
-  tempo(s);
-  province(s);
-  table(s);
+  $("count").textContent = gs.length ? `${gs.length} of ${all.length} games, won ${pct(s.overall.rate)}` : `0 of ${all.length} games`;
+  if (view === "overview") { forest(s); tempo(s); province(s); }
+  if (view === "cards") { spectrum(s); table(s); }
+  if (view === "time") kpis(s, gs);
 }
 
 let lastWidth = window.innerWidth, resizeTimer;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (window.innerWidth !== lastWidth && current) { spectrum(current); forest(current); }
+    if (window.innerWidth !== lastWidth && current) draw();
     lastWidth = window.innerWidth;
   }, 150);
 });
