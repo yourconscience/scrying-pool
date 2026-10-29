@@ -1045,8 +1045,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return []int{0}
 	case engine.PlayAction:
 		if x, ok := r.peek(); ok && x.Template == "PLAY" && x.Player == r.names[d.Player] && len(x.Args[1].Cards) == 1 && x.Args[1].Cards[0].Card != nil && x.Args[1].Cards[0].Card.Is("Treasure") {
-			if i, ok := r.line[x.Line]; ok && i+1 < len(r.real) && r.real[i+1].Template == "PLAY_TREASURES_FOR" && r.real[i+1].Level == x.Level+1 {
-				return nil // a Crown played as a Treasure: "plays a Crown.", "plays a Copper. (+$1)", "plays a Copper again."
+			if i, ok := r.line[x.Line]; ok && i+1 < len(r.real) && r.real[i+1].Level == x.Level+1 && (r.real[i+1].Template == "PLAY_TREASURES_FOR" ||
+				r.real[i+1].Template == "PLAY" && len(r.real[i+1].Args[1].Cards) == 1 && r.real[i+1].Args[1].Cards[0].Card != nil && !r.real[i+1].Args[1].Cards[0].Card.Is("Action")) {
+				return nil // a Crown played as a Treasure: "plays a Crown.", "plays a Copper. (+$1)", "plays a Copper again."; "plays a Puzzle Box."
 			}
 		}
 		if x, ok := r.peek(); ok && r.villager(d, x).Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
