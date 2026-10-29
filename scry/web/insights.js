@@ -137,6 +137,7 @@ function count(gs) {
 
 function medianTurn(turns, counts) {
   const total = counts.reduce((p, q) => p + q, 0);
+  if (!total) return null;
   let acc = 0;
   for (let i = 0; i < counts.length; i++) if ((acc += counts[i]) >= total / 2) return turns[i];
   return null;
