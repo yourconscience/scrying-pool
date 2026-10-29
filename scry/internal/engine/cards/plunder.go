@@ -737,7 +737,8 @@ func init() {
 		},
 	})
 	reg("Peril", rules{Buy: func(c *ctx) { // "trashes a Guard Dog.", "reveals a Shield.", "gains a Shield."
-		if len(c.Trash(c.P, one(pick1(c, c.P, engine.ToTrash, hand, action, true)))) == 0 {
+		lit := func(d *def) bool { return d.Action() || c.G.CameTrue("Enlightenment") && d.Treasure() } // "trashes a Copper." once Treasures are Actions
+		if len(c.Trash(c.P, one(pick1(c, c.P, engine.ToTrash, hand, lit, true)))) == 0 {
 			c.Log("PERIL_FAIL")
 			return
 		}

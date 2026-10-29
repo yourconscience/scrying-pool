@@ -256,7 +256,7 @@ func (r *replayer) run() {
 		switch x := x.(type) {
 		case nil:
 			if r.pos < len(r.real) && slices.ContainsFunc(r.real[r.pos:], func(x cartographer.Event) bool {
-				return x.Template != "SHUFFLES" && x.Template != "DRAW" && x.Template != "BEGINS_CLEANUP_PHASE"
+				return x.Template != "SHUFFLES" && x.Template != "DRAW" && x.Template != "BEGINS_CLEANUP_PHASE" && x.Template != "TAKES_DEBT" // a Capital's
 			}) { // some logs go on with the last Clean-up: "shuffles their deck.", "draws 5 cards."
 				defer func() { r.rep.Stop = recover().(stop).why }() // fail panics, and this is past run's recover
 				r.fail("the engine ended the game", "")
