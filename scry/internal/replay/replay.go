@@ -209,6 +209,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		}
 		return named(r.g.Land) || named(r.g.Global)
 	}
+	g.DeckShadow = r.deckShadow
 	g.MoreTreasures = func(p, n int) bool {
 		x := r.real[min(r.pos, len(r.real)-1)]
 		return x.Template == "PLAY_TREASURES_FOR" && x.Player == r.names[p] && cardCount(x.Args[1]) > n
@@ -1398,6 +1399,63 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	return 0
+}
+
+// deckShadow: playing the Shadow card from the hand leaves too many cards in
+// the deck for the log's next shuffle, and from the deck doesn't: "draws a
+// card.", "plays a Fishmonger.", then "shuffles their deck." for "draws 5 cards."
+func (r *replayer) deckShadow(p int, h engine.Inst) bool {
+	c := r.g.CardOf(h)
+	x, ok := r.peek()
+	if !ok || x.Template != "PLAY" || x.Player != r.names[p] || cardName(x.Args[1]) != r.t.Defs[c].Name || !r.sooner(p) {
+		return false
+	}
+	deck := r.g.P[p].Z[engine.Deck]
+	if slices.ContainsFunc(deck, func(y engine.Inst) bool { return r.g.CardOf(y) == c }) {
+		return true
+	}
+	if !r.hidden[h] {
+		return false
+	}
+	for _, y := range deck { // the hand's copy is a guess: it was in the deck
+		if r.hidden[y] && r.g.CardOf(y) != c {
+			r.g.Swap(h, y)
+			return true
+		}
+	}
+	return false
+}
+
+// sooner: the log's next shuffle of player p's comes one card sooner than the deck has.
+func (r *replayer) sooner(p int) bool {
+	drawn := 0
+	for i := r.peekAt() + 1; i+1 < len(r.real); i++ {
+		y := r.real[i]
+		if y.Template == "NEW_TURN" && y.Player != r.names[p] {
+			return false
+		}
+		if y.Player != r.names[p] {
+			continue
+		}
+		switch y.Template {
+		case "SHUFFLES":
+			z := r.real[i+1]
+			if z.Template != "DRAW" || z.Player != y.Player {
+				return false
+			}
+			k, n := len(r.g.P[p].Z[engine.Deck])-drawn, cardCount(z.Args[1])
+			return k >= n && k-1 < n
+		case "DRAW", "DRAW_FROM":
+			drawn += cardCount(y.Args[1])
+		case "BOTTOMDECKS":
+			if r.real[i+1].Template != "SHUFFLES" { // not the Shadow cards a shuffle puts under: "puts a Fishmonger on the bottom of their deck."
+				return false
+			}
+		case "TOPDECK", "PUT_ON_TOP", "PUT_ON_BOTTOM_OF", "LOOK_AT", "REVEAL", "SET_ASIDE", "SET_ASIDE_WITH", "DISCARD_FROM_DECK":
+			return false // other moves of the deck: leave it
+		}
+	}
+	return false
 }
 
 // ownLater: the next line comes from another card than the one gained, named as

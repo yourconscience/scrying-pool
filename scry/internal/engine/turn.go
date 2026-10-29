@@ -174,7 +174,13 @@ func (g *Game) actionOptions(p int) []Option {
 			out = append(out, Option{Card: g.cards[x], Inst: x, Mode: w + 1, Label: g.T.Defs[g.Land[w]].Name})
 		}
 	}
+	deck := map[CardID]bool{} // Shadow cards played from the deck though the hand has one
 	for _, x := range g.handPlays(p) {
+		c := g.cards[x]
+		if deck[c] || g.FromDeck(p, x) {
+			deck[c] = true
+			continue
+		}
 		switch {
 		case g.Def(x).Action() || g.inherits(p, x):
 			add(x)
@@ -183,11 +189,18 @@ func (g *Game) actionOptions(p int) []Option {
 		}
 	}
 	for _, x := range g.P[p].Z[Deck] {
-		if d := g.Def(x); d.Action() && d.Is(TShadow) && !slices.ContainsFunc(g.P[p].Z[Hand], func(y Inst) bool { return g.cards[y] == g.cards[x] }) {
+		if d := g.Def(x); d.Action() && d.Is(TShadow) && (deck[g.cards[x]] || !slices.ContainsFunc(g.P[p].Z[Hand], func(y Inst) bool { return g.cards[y] == g.cards[x] })) {
 			add(x) // not a copy of one in hand: the log can't tell them apart
 		}
 	}
 	return out
+}
+
+// FromDeck: player p plays the Shadow card x's copy in the deck instead, as DeckShadow says.
+func (g *Game) FromDeck(p int, x Inst) bool {
+	c := g.cards[x]
+	return g.Def(x).Is(TShadow) && g.DeckShadow != nil && g.DeckShadow(p, x) && // it may swap x into the deck
+		slices.ContainsFunc(g.P[p].Z[Deck], func(y Inst) bool { return g.cards[y] == c })
 }
 
 // handPlays is the player's hand, or nothing when Voyage's limit on cards played from hand is reached.

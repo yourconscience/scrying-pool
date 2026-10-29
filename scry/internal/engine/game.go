@@ -129,6 +129,10 @@ type Game struct {
 	// of a turn until the landscapes and the kingdom's are done, for a replay
 	// whose log has Barracks' "gets +1 Action." before Lost in the Woods'.
 	HeldLater func(p int) bool
+	// DeckShadow says whether player p plays a Shadow card from the deck
+	// though the hand has x, for a replay whose log shuffles that much sooner;
+	// it may swap x with a card in the deck the log doesn't name.
+	DeckShadow func(p int, x Inst) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst
