@@ -853,7 +853,10 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 	}
 	if d.Kind == engine.ToPick {
 		all := *d
-		all.Max = 99                                              // the whole rest, then the first one this Archive has
+		all.Max = 99                                      // the whole rest, then the first one this Archive has
+		if cs, ok := r.moreOfLine(&all, "RECEIVES"); ok { // Fool's next Boon of "receives The River's Gift and The Wind's Gift."
+			return r.pick(d, cs[:1])
+		}
 		if cs, ok := r.moreOfLine(&all, "PUT_IN_HAND_FROM"); ok { // the second Archive's of "puts a Copper and a Gold in hand (Archive)."
 			for _, cn := range cs { // one this Archive has, or a hidden one
 				if cn.Card == nil {
@@ -1536,7 +1539,7 @@ func (r *replayer) moreOfLine(d *engine.Decision, template string) ([]cartograph
 		return nil, false
 	}
 	e, x := l.Entries[r.entry], r.real[r.matched]
-	if e.Template != template || x.Template != template || x.Player != r.names[d.Player] || x.Level != d.Level {
+	if e.Template != template || x.Template != template && r.english[x.Template] != r.english[template] || x.Player != r.names[d.Player] || x.Level != d.Level {
 		return nil, false
 	}
 	done := map[string]int{}
