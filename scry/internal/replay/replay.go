@@ -932,6 +932,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return r.chooseName(d)
 	case engine.UseCoffers:
 		x, ok := r.peek()
+		if i := r.peekAt(); ok && d.Source != 0 && x.Template == "BUY" && i+1 < len(r.real) && r.real[i+1].Level == 1 {
+			x = r.real[i+1] // to overpay with: "buys a Farrier.", "uses 1 Coffers. (+$1)"
+		}
 		if ok && x.Player == r.names[d.Player] && (x.Template == "USES_COFFER" || x.Template == "USES_COFFERS") && x.Args[1].Number != nil {
 			for i, o := range d.Options {
 				if o.Mode == *x.Args[1].Number {
@@ -1113,6 +1116,9 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 	if x, ok := r.peek(); ok && x.Template == "BUY" && x.Player == r.names[d.Player] && len(x.Args[1].Cards) == 1 && x.Args[1].Cards[0].Card != nil &&
 		x.Args[1].Cards[0].Card.Name == r.t.Defs[d.Source].Name {
 		start++ // the overpay is chosen before "buys a Farrier." is written, then "loses 1 Coin."
+		for start+1 < len(r.real) && r.real[start].Level == 1 && (strings.HasPrefix(r.real[start].Template, "USES_COFFER") || strings.HasPrefix(r.real[start].Template, "GETS_COIN")) {
+			start++ // and the Coffers it used: "uses 1 Coffers. (+$1)", "gets +$1."
+		}
 	}
 	if start < len(r.real) && r.real[start].Template == r.g.Log.Pending() {
 		start++ // the answer's line writes "begins their Cleanup phase." first: Trickster's "sets a Copper aside."

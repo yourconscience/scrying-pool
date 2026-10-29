@@ -380,13 +380,31 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	over := 0
+	over, coffers := 0, 0
+	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coffers > 0 { // to overpay with: "buys a Farrier.", "uses 1 Coffers. (+$1)", "gets +$1.", "loses 2 Coins."
+		var opts []Option
+		for n := 0; n <= pl.Coffers; n++ {
+			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+		}
+		coffers = g.ask(&Decision{Player: p, Kind: UseCoffers, Source: c, Options: opts, Min: 1, Max: 1, Level: 1})[0].Mode
+		pl.Coffers -= coffers
+		pl.Coins += coffers
+	}
 	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
 		over = g.ctx(p, x, 1).Amount(p, 0, pl.Coins, "LOSES_COIN", "LOSES_COINS")
+	}
+	if over == 0 { // no overpay to use them on
+		pl.Coffers += coffers
+		pl.Coins -= coffers
+		coffers = 0
 	}
 	switch {
 	case over > 0: // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+		if coffers > 0 {
+			g.Log.add(Entry{Level: 1, Template: plural(coffers, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), coffers}})
+			g.Log.add(Entry{Level: 1, Template: plural(coffers, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), coffers}})
+		}
 		pl.Coins -= over
 		g.Log.add(Entry{Level: 1, Template: plural(over, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), over}})
 	case instead: // "buys an Animal Fair.", "trashes a Jester.", "gains an Animal Fair."
