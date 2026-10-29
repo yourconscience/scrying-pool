@@ -177,6 +177,18 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
+	held := func() {
+		for _, h := range slices.Clone(g.Held) { // a State may return itself
+			if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
+				cx := g.ctx(h.P, -1, ev.Level)
+				cx.Src = h.C
+				r.Hear(cx, ev)
+			}
+		}
+	}
+	if ev.Kind == EvTurnStart { // an Artifact's first: the Key's "gets +$1.", then Silos' "discards and reveals 3 Coppers."
+		held()
+	}
 	if early {
 		global()
 		next() // Footpad's "draws a Fortress.", then Plan's "trashes a Copper.", then Cargo Ship's "sets a Fortress aside."
@@ -217,12 +229,8 @@ func (g *Game) fire(ev *Ev) {
 	if !early {
 		global()
 	}
-	for _, h := range slices.Clone(g.Held) { // a State may return itself
-		if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
-			cx := g.ctx(h.P, -1, ev.Level)
-			cx.Src = h.C
-			r.Hear(cx, ev)
-		}
+	if ev.Kind != EvTurnStart {
+		held()
 	}
 	if !watchFirst {
 		g.watch(ev)

@@ -552,7 +552,7 @@ func init() {
 		},
 	})
 	reg("Silos", atStart(func(c *ctx, p int) {
-		if got := c.Discard(p, pick(c, p, engine.ToDiscard, hand, named("Copper"), 0, len(c.Hand(p)))); len(got) > 0 {
+		if got := c.DiscardAs(p, pick(c, p, engine.ToDiscard, hand, named("Copper"), 0, len(c.Hand(p))), "DISCARD_REVEALED"); len(got) > 0 { // "discards and reveals 4 Coppers."
 			c.Draw(len(got))
 		}
 	}))
