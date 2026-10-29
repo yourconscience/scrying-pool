@@ -750,7 +750,7 @@ func init() {
 				return false
 			}
 			e.Done = true
-			c.PlayWith(e.X)
+			c.PlayNow(e.X) // "plays a Shaman.", with no "(Rush)"
 			return true
 		},
 	})
