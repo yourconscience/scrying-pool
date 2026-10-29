@@ -986,7 +986,14 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return nil
 	}
 	if cs := x.Args[1].Cards; d.Kind == engine.Buy && (len(cs) == 1 && cs[0].N > 1 || len(cs) > 1) {
-		return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
+		first := cs[0]
+		for _, cn := range cs[1:] { // the Project or Event bought after the card first, on the card's line: "buys an Engineer and Citadel.", "gains an Engineer."
+			if x.Template == "BUY" && first.Card != nil && cn.Card != nil && (cn.Card.Is("Project") || cn.Card.Is("Event")) {
+				first = cn
+				break
+			}
+		}
+		return r.pick(d, []cartographer.CardN{{Card: first.Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
 	}
 	return r.pick(d, x.Args[1].Cards)
 }
