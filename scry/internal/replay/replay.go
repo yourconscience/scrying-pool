@@ -1193,11 +1193,18 @@ func (r *replayer) canSwapIn(d *engine.Decision, name string) bool {
 func (r *replayer) chooseModes(d *engine.Decision) []int {
 	if l := r.g.Log; d.Max == 1 && r.matched >= 0 && r.entry < len(l.Entries) && r.pos > 0 { // the last line has more to come: two Amulets' "trashes an Estate and a Copper. (Amulet)"
 		e, y := l.Entries[r.entry], r.real[r.matched]
-		if cs, ok := cardsOf(e); ok && len(e.Args) == 3 && len(y.Args) > 1 && e.Args[2] == engine.Name(d.Source) && y.Player == r.names[d.Player] && len(cs) < cardCount(y.Args[1]) {
-			for j, o := range d.Options {
-				if o.Line == e.Template {
-					return []int{j}
-				}
+		more := false
+		if len(e.Args) == 3 && len(y.Args) > 1 && e.Args[2] == engine.Name(d.Source) && y.Player == r.names[d.Player] {
+			switch a := e.Args[1].(type) {
+			case []engine.CardID:
+				more = len(a) < cardCount(y.Args[1])
+			case int: // two Cabin Boys' "gets +$4. (Cabin Boy)"
+				more = y.Args[1].Number != nil && a < *y.Args[1].Number
+			}
+		}
+		for j, o := range d.Options {
+			if more && (o.Line == e.Template || r.english[o.Line] == r.english[e.Template]) {
+				return []int{j}
 			}
 		}
 	}
