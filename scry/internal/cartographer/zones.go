@@ -2179,6 +2179,12 @@ func (r *zoneReplay) guessTopdeck(p string) string {
 			return ps[i].name
 		}
 	}
+	has := func(n string) bool { return slices.ContainsFunc(ps, func(x *played) bool { return x.name == n }) }
+	for i := len(ps) - 1; i >= 0 && has("Herbalist") && !has("Scheme"); i-- {
+		if c := ps[i].card; c != nil && c.Is("Treasure") { // Herbalist's is a Treasure
+			return ps[i].name
+		}
+	}
 	for i := len(ps) - 1; i >= 0; i-- {
 		if c := ps[i].card; c != nil && c.Is("Action") && !c.Is("Duration") {
 			return ps[i].name

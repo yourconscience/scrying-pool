@@ -20,6 +20,7 @@ type Ctx struct {
 	InPlace bool
 
 	from       bool    // the effect happens away from the card's play (a Duration's next turn): lines name the card
+	gainsFrom  bool    // only its gains name the card: a Skulk's "gains a Gold. (Skulk)" when gained at the start of a turn
 	name       CardID  // with from, the card +Cards, +Actions, +Buys and +$ lines name instead of Src
 	swap       bool    // Way of the Chameleon: its player's +Cards give +$ instead, and +$ give +Cards
 	holders    []Inst  // the cards that played this one (Throne Room), which stay in play with it
@@ -531,7 +532,7 @@ func (c *Ctx) GainAs(p int, card CardID, to Zone, template string) Inst {
 
 func (c *Ctx) logGain(p int, x Inst, template string) {
 	args := []any{Seat(p), []CardID{c.G.cards[x]}}
-	if c.from && template == "GAIN" {
+	if (c.from || c.gainsFrom) && template == "GAIN" {
 		c.Log("GAIN_WITH", append(args, Name(c.Src))...)
 		return
 	}
@@ -623,6 +624,16 @@ func (g *Game) gainX(p int, x Inst, to Zone, level int, by CardID, bought bool) 
 			cx := g.ctx(p, -1, level)
 			cx.from = g.T2.Phase == StartPhase // "trashes a Copper. (|)" under a gain at the start of a turn
 			cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
+		}
+	}
+	if f := g.overpay; f != nil && g.OverpayFirst != nil && g.OverpayFirst(ev) {
+		g.overpay = nil
+		then := ev.next
+		ev.next = func() {
+			f()
+			if then != nil {
+				then()
+			}
 		}
 	}
 	g.fire(ev)
@@ -1086,6 +1097,9 @@ func (c *Ctx) TrashFromSupply(p int, card CardID) Inst {
 	x := s[len(s)-1]
 	c.G.move(x, Supply, Loc{Trash, 0})
 	c.Log("TRASH", Seat(p), []CardID{card})
+	if p == c.G.Cur { // Goatherd counts it: Lurker's "trashes a Caravan."
+		c.G.T2.Trashed++
+	}
 	c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: card, From: Supply, By: c.Src, Level: c.level + 1})
 	return x
 }

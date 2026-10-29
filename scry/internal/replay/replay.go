@@ -45,13 +45,21 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		if r == nil || rep.Done {
 			break
 		}
-		more := r.hintsFor()
-		if len(more) == 0 {
-			break
+		var rep2 Report
+		var r2 *replayer
+		var h map[takeID]string
+		for _, near := range []bool{false, true} { // the hand's lines to its next draw, else only to the stop
+			more := r.hintsFor(near)
+			if len(more) == 0 {
+				continue
+			}
+			h = maps.Clone(hints)
+			maps.Copy(h, more)
+			rep2, r2 = check(c, t, logText, score, h)
+			if r2 != nil && (r2.matched > r.matched || rep2.Done) {
+				break
+			}
 		}
-		h := maps.Clone(hints)
-		maps.Copy(h, more)
-		rep2, r2 := check(c, t, logText, score, h)
 		if r2 == nil || r2.matched < r.matched && !rep2.Done {
 			break
 		}
@@ -121,6 +129,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		r.takes[p] = takes[n]
 	}
 	r.nameRevealedDraws()
+	r.nameSetAsideLooks()
 	r.revealedStopLast()
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
 	kingdom, pool := divineWind(t, kingdom, lands, r.real)
@@ -158,8 +167,9 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 			}
 		}
 	}
-	for _, x := range r.real { // Young Witch's Bane: "blocks with a Tent."
-		if x.Template != "BLOCKS_WITH" {
+	yw, _ := t.Card("Young Witch")
+	for _, x := range r.real { // Young Witch's Bane: "blocks with a Tent."; Gladiator's are any card
+		if x.Template != "BLOCKS_WITH" || yw == nil || g.PileOf(yw.ID) < 0 {
 			continue
 		}
 		if d, ok := t.Card(cardName(x.Args[1])); ok {
@@ -193,7 +203,44 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	}
 	g.WatchFirst = func(ev *engine.Ev) bool {
 		x, ok := r.peek()
-		return ok && ev.Kind == engine.EvGain && ev.X >= 0 && x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
+		if !ok || ev.Kind != engine.EvGain || ev.X < 0 {
+			return false
+		}
+		if n := len(x.Args); n > 2 && strings.HasSuffix(x.Template, "_FROM") {
+			for _, w := range r.g.Watches() { // the watch's own line: Collection's "gets 1 VP from Collection." before Search's "trashes a Search."
+				if w.P == ev.P && r.t.Defs[w.C].Name == cardName(x.Args[n-1]) {
+					return true
+				}
+			}
+		}
+		return x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
+	}
+	startBy := func(p int) string { // the card the next line at the start of p's turn names
+		x, ok := r.peek()
+		if !ok || x.Player != r.names[p] {
+			return ""
+		}
+		if n := len(x.Args); x.Cause == "" && n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
+			return norm(cardName(x.Args[n-1]))
+		}
+		return norm(x.Cause)
+	}
+	named := func(by string, cs []engine.CardID) bool {
+		return slices.ContainsFunc(cs, func(c engine.CardID) bool { return by != "" && norm(r.t.Defs[c].Name) == by })
+	}
+	g.HeldLater = func(p int) bool { // the next line names a landscape or a kingdom card's: Barracks', Shaman's
+		by := startBy(p)
+		return named(by, r.g.Land) || named(by, r.g.Global)
+	}
+	g.GlobalFirst = func(p int) bool { return named(startBy(p), r.g.Global) }
+	g.NextLand = func(p int, cs []engine.CardID) int {
+		by := startBy(p)
+		return max(0, slices.IndexFunc(cs, func(c engine.CardID) bool { return norm(r.t.Defs[c].Name) == by }))
+	}
+	g.DeckShadow = r.deckShadow
+	g.OverpayFirst = func(ev *engine.Ev) bool { // "plays an Infirmary." next
+		x, ok := r.peek()
+		return ok && x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
 	}
 	g.MoreTreasures = func(p, n int) bool {
 		x := r.real[min(r.pos, len(r.real)-1)]
@@ -209,7 +256,7 @@ func (r *replayer) run() {
 		switch x := x.(type) {
 		case nil:
 			if r.pos < len(r.real) && slices.ContainsFunc(r.real[r.pos:], func(x cartographer.Event) bool {
-				return x.Template != "SHUFFLES" && x.Template != "DRAW" && x.Template != "BEGINS_CLEANUP_PHASE"
+				return x.Template != "SHUFFLES" && x.Template != "DRAW" && x.Template != "BEGINS_CLEANUP_PHASE" && x.Template != "TAKES_DEBT" // a Capital's
 			}) { // some logs go on with the last Clean-up: "shuffles their deck.", "draws 5 cards."
 				defer func() { r.rep.Stop = recover().(stop).why }() // fail panics, and this is past run's recover
 				r.fail("the engine ended the game", "")
@@ -257,6 +304,7 @@ type replayer struct {
 	hidden     map[engine.Inst]bool       // cards the replay chose for draws the log doesn't name, while no line has shown them
 	schemeTurn string                     // the turn Scheme's picks were counted in
 	schemes    int                        // Scheme picks answered in it
+	topDrawn   map[int]int                // by line, the cards on top it drew that its takes don't have
 	flat       bool                       // the log writes the choice the engine nests at the top level
 	hints      map[takeID]string          // names for takes the log doesn't name, from an earlier run
 	assigned   map[takeID]string          // the card each take was
@@ -368,6 +416,49 @@ func (r *replayer) nameRevealedDraws() {
 	}
 }
 
+// nameSetAsideLooks names the cards Library looked at and set aside unseen by
+// its discard of them after: "looks at a card.", "sets a card aside with
+// Library.", ..., "discards a Border Village."
+func (r *replayer) nameSetAsideLooks() {
+	for i, x := range r.real {
+		if x.Template != "PLAY" || len(x.Args[1].Cards) != 1 || x.Args[1].Cards[0].Card == nil || x.Args[1].Cards[0].Card.Name != "Library" {
+			continue
+		}
+		var looks []int // the lines of the looks it set aside
+		var named []string
+		for j := i + 1; j < len(r.real) && r.real[j].Level > x.Level; j++ {
+			y := r.real[j]
+			if y.Player != x.Player || y.Level != x.Level+1 {
+				continue
+			}
+			if y.Template == "SET_ASIDE_WITH" && r.real[j-1].Template == "LOOK_AT" && cardCount(y.Args[1]) == 1 && y.Args[1].Cards[0].Card == nil {
+				looks = append(looks, r.real[j-1].Line)
+			}
+			if y.Template == "DISCARD" {
+				for _, cn := range y.Args[1].Cards {
+					for range cn.N {
+						if cn.Card != nil {
+							named = append(named, cn.Card.Name)
+						}
+					}
+				}
+				break
+			}
+		}
+		if len(looks) == 0 || len(named) != len(looks) {
+			continue
+		}
+		p := r.seat(x.Player)
+		for k, l := range looks {
+			for j := range r.takes[p] {
+				if r.takes[p][j].Line == l && r.takes[p][j].Card == "" {
+					r.takes[p][j].Card = named[k]
+				}
+			}
+		}
+	}
+}
+
 // hintInDeck makes sure the deck has a card named n for a hint: a copy the
 // replay chose for an unnamed draw since the shuffle, now in the discard pile,
 // may as well have stayed in the deck in its place.
@@ -395,7 +486,7 @@ func (r *replayer) hintInDeck(p int, n string) bool {
 // whose draws the log doesn't name: the cards that player shows from the hand
 // it drew at its last Clean-up (and since), which the takes didn't give it, in
 // place of takes whose cards the hand never shows.
-func (r *replayer) hintsFor() map[takeID]string {
+func (r *replayer) hintsFor(near bool) map[takeID]string {
 	if r.pos >= len(r.real) || r.pos < 0 {
 		return nil
 	}
@@ -421,11 +512,20 @@ func (r *replayer) hintsFor() map[takeID]string {
 		}
 	}
 	need, gone := map[string]int{}, map[string]int{} // gone: cards the lines took out of the hand so far
-	for _, y := range r.real[from+1 : to] {
+	if near {
+		to = min(to, r.pos+1)
+	}
+	for j, y := range r.real[from+1 : to] {
 		if y.Player != x.Player || !r.fromHand(y) || y.Template == "REVEAL" {
 			continue
 		}
-		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" // the cards stay in the hand
+		if z := r.real[min(from+2+j, len(r.real)-1)]; y.Template == "DISCARD" && z.Template == "REACTS_PLAYING" && z.Player == y.Player && z.Level == y.Level+1 &&
+			slices.ContainsFunc(y.Args[1].Cards, func(cn cartographer.CardN) bool { return cn.Card == nil }) {
+			n := cardName(z.Args[1]) // the unseen card discarded plays itself: "discards a card and a Copper.", "reacts with a Trail, playing it."
+			need[n] = max(need[n], gone[n]+1)
+			gone[n]++
+		}
+		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" || y.Template == "BLOCKS_WITH" // the cards stay in the hand
 		off := map[string]int{}
 		for _, c := range r.offHand[y.Line] { // Ironmonger's "discards a Copper." it revealed
 			off[c]++
@@ -763,16 +863,25 @@ func (r *replayer) show(e engine.Entry) string {
 
 // peek is the next real event the engine hasn't written.
 func (r *replayer) peek() (cartographer.Event, bool) {
-	if r.pos >= len(r.real) {
+	i := r.peekAt()
+	if i < 0 {
 		return cartographer.Event{}, false
 	}
+	return r.real[i], true
+}
+
+// peekAt is the index of the line peek returns, or -1.
+func (r *replayer) peekAt() int {
+	if r.pos >= len(r.real) {
+		return -1
+	}
 	if x := r.real[r.pos]; x.Template == r.g.Log.Pending() && r.pos+1 < len(r.real) {
-		return r.real[r.pos+1], true // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
+		return r.pos + 1 // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
 	}
 	if x := r.real[r.pos]; x.Template == "SHUFFLES" && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "SHUFFLE_INTO_DECK" && r.real[r.pos+1].Player == x.Player {
-		return r.real[r.pos+1], true // Inn's "shuffles their deck.", "shuffles an Inn into their deck."
+		return r.pos + 1 // Inn's "shuffles their deck.", "shuffles an Inn into their deck."
 	}
-	return r.real[r.pos], true
+	return r.pos
 }
 
 // lines a decision's answer writes, by the decision's kind
@@ -780,13 +889,13 @@ var answers = map[engine.Kind][]string{
 	engine.PlayAction:    {"PLAY"},
 	engine.PlayTreasures: {"PLAY_TREASURES_FOR", "PLAY"},
 	engine.Buy:           {"BUY_AND_GAIN", "BUY"},
-	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE", "GAIN_ON_DRAWPILE"}, // "(The Earth's Gift)" at the start of a turn; Blockade's; Graverobber's
-	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                                         // "(The Flame's Gift)" at the start of a turn
-	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"},                 // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
-	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH", "INSERT_IN_DECK", "BOTTOMDECKS"},    // City Gate's "topdecks a Copper with City Gate."; Secret Passage's
-	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR", "PLAY_USING_WAY"},   // Mastermind: "plays a Smithy with Mastermind."
-	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                   // Island's "puts a Copper on their Island mat."
-	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
+	engine.ToGain:        {"GAIN", "GAIN_WITH", "GAIN_SETTING_ASIDE", "GAIN_ON_DRAWPILE"},             // "(The Earth's Gift)" at the start of a turn; Blockade's; Graverobber's
+	engine.ToTrash:       {"TRASH", "TRASH_WITH"},                                                     // "(The Flame's Gift)" at the start of a turn
+	engine.ToDiscard:     {"DISCARD", "DISCARD_REVEALED", "DISCARD_WITH"},                             // Hostelry: "discards and reveals 2 Coppers."; "(Lost In The Woods)"
+	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH", "INSERT_IN_DECK", "BOTTOMDECKS"},                // City Gate's "topdecks a Copper with City Gate."; Secret Passage's
+	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR", "PLAY_USING_WAY", "PLAY_AGAIN"}, // Mastermind: "plays a Smithy with Mastermind."; Scepter: "plays a Kiln again."
+	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                               // Island's "puts a Copper on their Island mat."
+	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL", "BLOCKS_WITH"},                  // Gladiator's "blocks with a Lackeys."
 	engine.PlayNight:     {"PLAY"},
 	engine.ToExile:       {"EXILE"},
 	engine.ToPass:        {"PASS"},
@@ -833,13 +942,44 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 	}
 	if d.Kind == engine.ToGain {
-		if cs, ok := r.moreOfLine(d, "GAIN"); ok { // the second of Ball's "gains 2 Poachers."
-			return r.pick(d, cs)
+		for _, t := range []string{"GAIN", "GAIN_WITH"} { // the second of Ball's "gains 2 Poachers.", of "gains 2 Cabin Boys. (Quartermaster)"
+			if cs, ok := r.moreOfLine(d, t); ok {
+				return r.pick(d, cs)
+			}
 		}
 	}
 	if d.Kind == engine.ToTrash {
 		if cs, ok := r.moreTrash(d); ok {
 			return r.pick(d, cs)
+		}
+		if cs, ok := r.moreOfLine(d, "TRASH_WITH"); ok { // the second Amulet's of "trashes an Estate and a Copper. (Amulet)"
+			return r.pick(d, cs)
+		}
+		if x, ok := r.peek(); ok && x.Template == "TRASH_WITH" && x.Player == r.names[d.Player] && cardName(x.Args[2]) == r.t.Defs[d.Source].Name && cardCount(x.Args[1]) > d.Max {
+			var cs []cartographer.CardN // the first Amulet's
+			for _, cn := range x.Args[1].Cards {
+				if n := d.Max - cardCount(cartographer.Arg{Cards: cs}); n > 0 {
+					cs = append(cs, cartographer.CardN{Card: cn.Card, N: min(cn.N, n)})
+				}
+			}
+			return r.pick(d, cs)
+		}
+	}
+	if d.Kind == engine.ToPick {
+		all := *d
+		all.Max = 99                                      // the whole rest, then the first one this Archive has
+		if cs, ok := r.moreOfLine(&all, "RECEIVES"); ok { // Fool's next Boon of "receives The River's Gift and The Wind's Gift."
+			return r.pick(d, cs[:1])
+		}
+		if cs, ok := r.moreOfLine(&all, "PUT_IN_HAND_FROM"); ok { // the second Archive's of "puts a Copper and a Gold in hand (Archive)."
+			for _, cn := range cs { // one this Archive has, or a hidden one
+				if cn.Card == nil {
+					return r.pick(d, []cartographer.CardN{{N: 1}})
+				}
+				if slices.ContainsFunc(d.Options, func(o engine.Option) bool { return o.Inst >= 0 && norm(r.g.Def(o.Inst).Name) == norm(cn.Card.Name) }) {
+					return r.pick(d, []cartographer.CardN{{Card: cn.Card, N: 1}})
+				}
+			}
 		}
 	}
 	switch d.Kind {
@@ -892,6 +1032,9 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return r.chooseName(d)
 	case engine.UseCoffers:
 		x, ok := r.peek()
+		if i := r.peekAt(); ok && d.Source != 0 && x.Template == "BUY" && i+1 < len(r.real) && r.real[i+1].Level == 1 {
+			x = r.real[i+1] // to overpay with: "buys a Farrier.", "uses 1 Coffers. (+$1)"
+		}
 		if ok && x.Player == r.names[d.Player] && (x.Template == "USES_COFFER" || x.Template == "USES_COFFERS") && x.Args[1].Number != nil {
 			for i, o := range d.Options {
 				if o.Mode == *x.Args[1].Number {
@@ -901,6 +1044,12 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 		return []int{0}
 	case engine.PlayAction:
+		if x, ok := r.peek(); ok && x.Template == "PLAY" && x.Player == r.names[d.Player] && len(x.Args[1].Cards) == 1 && x.Args[1].Cards[0].Card != nil && x.Args[1].Cards[0].Card.Is("Treasure") {
+			if i, ok := r.line[x.Line]; ok && i+1 < len(r.real) && r.real[i+1].Level == x.Level+1 && (r.real[i+1].Template == "PLAY_TREASURES_FOR" ||
+				r.real[i+1].Template == "PLAY" && len(r.real[i+1].Args[1].Cards) == 1 && r.real[i+1].Args[1].Cards[0].Card != nil && !r.real[i+1].Args[1].Cards[0].Card.Is("Action")) {
+				return nil // a Crown played as a Treasure: "plays a Crown.", "plays a Copper. (+$1)", "plays a Copper again."; "plays a Puzzle Box."
+			}
+		}
 		if x, ok := r.peek(); ok && r.villager(d, x).Template == "PLAY_USING_WAY" && x.Player == r.names[d.Player] {
 			return r.pickWay(d, r.villager(d, x))
 		}
@@ -942,7 +1091,14 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		return nil
 	}
 	if cs := x.Args[1].Cards; d.Kind == engine.Buy && (len(cs) == 1 && cs[0].N > 1 || len(cs) > 1) {
-		return r.pick(d, []cartographer.CardN{{Card: cs[0].Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
+		first := cs[0]
+		for _, cn := range cs[1:] { // the Project or Event bought after the card first, on the card's line: "buys an Engineer and Citadel.", "gains an Engineer."
+			if x.Template == "BUY" && first.Card != nil && cn.Card != nil && (cn.Card.Is("Project") || cn.Card.Is("Event")) {
+				first = cn
+				break
+			}
+		}
+		return r.pick(d, []cartographer.CardN{{Card: first.Card, N: 1}}) // "buys and gains 2 Silvers": one per buy, moreOfLast the rest
 	}
 	return r.pick(d, x.Args[1].Cards)
 }
@@ -1067,15 +1223,39 @@ func (r *replayer) canSwapIn(d *engine.Decision, name string) bool {
 
 // chooseModes picks the modes whose first lines are the next real lines, in order.
 func (r *replayer) chooseModes(d *engine.Decision) []int {
+	if l := r.g.Log; d.Max == 1 && r.matched >= 0 && r.entry < len(l.Entries) && r.pos > 0 { // the last line has more to come: two Amulets' "trashes an Estate and a Copper. (Amulet)"
+		e, y := l.Entries[r.entry], r.real[r.matched]
+		more := false
+		if len(e.Args) == 3 && len(y.Args) > 1 && e.Args[2] == engine.Name(d.Source) && y.Player == r.names[d.Player] {
+			switch a := e.Args[1].(type) {
+			case []engine.CardID:
+				more = len(a) < cardCount(y.Args[1])
+			case int: // two Cabin Boys' "gets +$4. (Cabin Boy)"
+				more = y.Args[1].Number != nil && a < *y.Args[1].Number
+			}
+		}
+		for j, o := range d.Options {
+			if more && (o.Line == e.Template || r.english[o.Line] == r.english[e.Template]) {
+				return []int{j}
+			}
+		}
+	}
 	var out []int
 	used := map[int]bool{}
 	start := r.pos
 	if x, ok := r.peek(); ok && x.Template == "BUY" && x.Player == r.names[d.Player] && len(x.Args[1].Cards) == 1 && x.Args[1].Cards[0].Card != nil &&
 		x.Args[1].Cards[0].Card.Name == r.t.Defs[d.Source].Name {
 		start++ // the overpay is chosen before "buys a Farrier." is written, then "loses 1 Coin."
+		for start+1 < len(r.real) && r.real[start].Level == 1 && (strings.HasPrefix(r.real[start].Template, "USES_COFFER") || strings.HasPrefix(r.real[start].Template, "GETS_COIN")) {
+			start++ // and the Coffers it used: "uses 1 Coffers. (+$1)", "gets +$1."
+		}
 	}
 	if start < len(r.real) && r.real[start].Template == r.g.Log.Pending() {
 		start++ // the answer's line writes "begins their Cleanup phase." first: Trickster's "sets a Copper aside."
+	}
+	if y := r.real[min(start, len(r.real)-1)]; y.Template == "LOOK_AT" && start > 0 && start+1 < len(r.real) && r.real[start-1].Template == "PLAY" && r.real[start-1].Player == y.Player &&
+		!slices.ContainsFunc(d.Options, func(o engine.Option) bool { return o.Line == "LOOK_AT" }) {
+		start++ // the discard pile a card played from it looks through: "plays a Village Green.", "looks at a Village Green and 3 Coppers.", "draws a War Chest."
 	}
 	level := min(d.Level, 3)
 	if start < len(r.real) && start > 0 && r.real[start].Level == 0 && d.Level == 1 && (r.flat || r.real[start-1].Level == 1) &&
@@ -1303,15 +1483,15 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	x, ok := r.peek()
-	if ok && x.Template == "SHUFFLES" && r.pos+1 < len(r.real) {
-		x = r.real[r.pos+1] // the draw that shuffled: "shuffles their deck.", "draws a Gold and a Hunting Lodge. (Longship)"
+	if i := r.peekAt(); ok && x.Template == "SHUFFLES" && i+1 < len(r.real) {
+		x = r.real[i+1] // the draw that shuffled: "shuffles their deck.", "draws a Gold and a Hunting Lodge. (Longship)", also after "starts their turn."
 	}
 	if !ok || x.Player != r.names[p] {
 		return 0
 	}
-	for i, d := range ds { // the card it set aside and plays
+	for i, d := range ds { // the card it set aside and plays, still there
 		for _, a := range d.Aside {
-			if len(x.Args) > 1 && cardName(x.Args[1]) == r.g.Def(a).Name && (x.Cause == r.t.Defs[d.C].Name || len(x.Args) > 2 && cardName(x.Args[2]) == r.t.Defs[d.C].Name) {
+			if len(x.Args) > 1 && cardName(x.Args[1]) == r.g.Def(a).Name && r.g.Where(a).Zone == engine.Aside && (x.Cause == r.t.Defs[d.C].Name || len(x.Args) > 2 && cardName(x.Args[2]) == r.t.Defs[d.C].Name) {
 				return i
 			}
 		}
@@ -1334,7 +1514,7 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
 		return -1
 	}
-	for name, t := range map[string]string{"Gang of Pickpockets": "DISCARD", "Piazza": "REVEAL"} { // a landscape's first line, unnamed
+	for name, t := range map[string]string{"Gang of Pickpockets": "DISCARD", "Piazza": "REVEAL", "Shy": "DISCARD"} { // a landscape's first line, unnamed
 		if x.Template == t && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == name }) {
 			return -1 // Gang of Pickpockets' "discards a Copper." before Gear's "puts an Estate and a Pixie in hand."
 		}
@@ -1352,6 +1532,63 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	return 0
+}
+
+// deckShadow: playing the Shadow card from the hand leaves too many cards in
+// the deck for the log's next shuffle, and from the deck doesn't: "draws a
+// card.", "plays a Fishmonger.", then "shuffles their deck." for "draws 5 cards."
+func (r *replayer) deckShadow(p int, h engine.Inst) bool {
+	c := r.g.CardOf(h)
+	x, ok := r.peek()
+	if !ok || x.Template != "PLAY" || x.Player != r.names[p] || cardName(x.Args[1]) != r.t.Defs[c].Name || !r.sooner(p) {
+		return false
+	}
+	deck := r.g.P[p].Z[engine.Deck]
+	if slices.ContainsFunc(deck, func(y engine.Inst) bool { return r.g.CardOf(y) == c }) {
+		return true
+	}
+	if !r.hidden[h] {
+		return false
+	}
+	for _, y := range deck { // the hand's copy is a guess: it was in the deck
+		if r.hidden[y] && r.g.CardOf(y) != c {
+			r.g.Swap(h, y)
+			return true
+		}
+	}
+	return false
+}
+
+// sooner: the log's next shuffle of player p's comes one card sooner than the deck has.
+func (r *replayer) sooner(p int) bool {
+	drawn := 0
+	for i := r.peekAt() + 1; i+1 < len(r.real); i++ {
+		y := r.real[i]
+		if y.Template == "NEW_TURN" && y.Player != r.names[p] {
+			return false
+		}
+		if y.Player != r.names[p] {
+			continue
+		}
+		switch y.Template {
+		case "SHUFFLES":
+			z := r.real[i+1]
+			if z.Template != "DRAW" || z.Player != y.Player {
+				return false
+			}
+			k, n := len(r.g.P[p].Z[engine.Deck])-drawn, cardCount(z.Args[1])
+			return k >= n && k-1 < n
+		case "DRAW", "DRAW_FROM":
+			drawn += cardCount(y.Args[1])
+		case "BOTTOMDECKS":
+			if r.real[i+1].Template != "SHUFFLES" { // not the Shadow cards a shuffle puts under: "puts a Fishmonger on the bottom of their deck."
+				return false
+			}
+		case "TOPDECK", "PUT_ON_TOP", "PUT_ON_BOTTOM_OF", "LOOK_AT", "REVEAL", "SET_ASIDE", "SET_ASIDE_WITH", "DISCARD_FROM_DECK":
+			return false // other moves of the deck: leave it
+		}
+	}
+	return false
 }
 
 // ownLater: the next line comes from another card than the one gained, named as
@@ -1374,6 +1611,15 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 		return ""
 	}
 	name := r.g.Def(ev.X).Name
+	if strings.HasPrefix(x.Template, "SPENDS_FAVOR") && x.Player == r.names[ev.P] {
+		return true // an Ally's: Architects' Guild's "spends 2 Favors." before Mint's "trashes 4 Coppers."
+	}
+	if (x.Template == "REACTS_PLAYING" || x.Template == "REACTS_WITH") && x.Player == r.names[ev.P] && cardName(x.Args[1]) != name { // not the gained Trail's own
+		return true // Sheepdog's "reacts with a Sheepdog, playing it." before Port's "gains a Port."
+	}
+	if x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == name && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == "Innovation" }) {
+		return true // Innovation's "plays a Skulk." before Skulk's Gold
+	}
 	if b := by(x); b != "" {
 		return b != name
 	}
@@ -1387,6 +1633,15 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 		}
 	}
 	return false
+}
+
+// cardsOf is an engine line's cards, if it names some.
+func cardsOf(e engine.Entry) ([]engine.CardID, bool) {
+	if len(e.Args) < 2 {
+		return nil, false
+	}
+	cs, ok := e.Args[1].([]engine.CardID)
+	return cs, ok
 }
 
 func cardCount(a cartographer.Arg) int {
@@ -1477,7 +1732,8 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 				if d.Kind == engine.PlayNight {
 					want = "Night"
 				}
-				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is(want)
+				return len(cs) == 1 && cs[0].Card != nil && (cs[0].Card.Is(want) ||
+					d.Kind == engine.PlayAction && cs[0].Card.Name == "Estate" && r.g.P[d.Player].Inherited >= 0) // Inheritance's "plays an Estate."
 			}
 			return true
 		}
@@ -1510,7 +1766,7 @@ func (r *replayer) moreOfLine(d *engine.Decision, template string) ([]cartograph
 		return nil, false
 	}
 	e, x := l.Entries[r.entry], r.real[r.matched]
-	if e.Template != template || x.Template != template || x.Player != r.names[d.Player] || x.Level != d.Level {
+	if e.Template != template || x.Template != template && r.english[x.Template] != r.english[template] || x.Player != r.names[d.Player] || x.Level != d.Level {
 		return nil, false
 	}
 	done := map[string]int{}
@@ -1555,7 +1811,7 @@ func (r *replayer) moreOfLast(d *engine.Decision) (cartographer.CardN, bool) {
 // pick turns the cards a real line names into option indexes; cards it
 // doesn't name are filled with options nothing later asks for.
 func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
-	if x, ok := r.peek(); ok && d.Kind == engine.ToGain && x.Template == "GAIN" { // one gain at a time from "gains 2 Poachers."
+	if x, ok := r.peek(); ok && d.Kind == engine.ToGain && (x.Template == "GAIN" || x.Template == "GAIN_WITH") { // one gain at a time from "gains 2 Poachers."
 		var cut []cartographer.CardN
 		for n := 0; len(cut) < len(cards) && n < d.Max; {
 			cn := cards[len(cut)]
@@ -1617,6 +1873,20 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		if o := d.Options[0]; o.Inst >= 0 && r.g.Where(o.Inst).Zone == engine.Revealed { // what the next lines name stays: Miller's discarded Estate
 			need = r.namedBelow(r.pos)
 			strict = need
+		}
+	}
+	if x, _ := r.peek(); unknown > 0 && d.Kind == engine.ToDiscard {
+		if i, ok := r.line[x.Line]; ok && i+1 < len(r.real) {
+			if y := r.real[i+1]; y.Template == "REACTS_PLAYING" && y.Player == x.Player && y.Level == x.Level+1 { // the unseen card discarded plays itself: "discards a card and a Copper.", "reacts with a Trail, playing it."
+				for i, o := range d.Options {
+					if !used[i] && r.t.Defs[o.Card].Name == cardName(y.Args[1]) {
+						used[i] = true
+						out = append(out, i)
+						unknown--
+						break
+					}
+				}
+			}
 		}
 	}
 	if x, _ := r.peek(); unknown > 0 && strings.HasPrefix(x.Template, "PUT_IN_HAND") && d.Options[0].Inst >= 0 && r.g.Where(d.Options[0].Inst).Zone == engine.Aside {
@@ -1688,6 +1958,9 @@ func (r *replayer) beforeTake(p int) {
 			r.took[p]++
 		}
 	}
+	if r.untaken(p) {
+		return
+	}
 	k := r.took[p]
 	could := map[string]bool{}
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 && !r.free(d[len(d)-1]) {
@@ -1709,6 +1982,49 @@ func (r *replayer) beforeTake(p int) {
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 {
 		r.assigned[takeID{p, k}] = r.g.Def(d[len(d)-1]).Name
 	}
+}
+
+// untaken: the card on top, put there unseen, is one the draw's line names but
+// its takes don't: Scheme's "topdecks a card.", "draws a Scheme, a Mercenary, ...".
+// It's drawn as it is.
+func (r *replayer) untaken(p int) bool {
+	d := r.g.P[p].Z[engine.Deck]
+	if len(d) == 0 || r.free(d[len(d)-1]) || r.took[p] >= len(r.takes[p]) {
+		return false
+	}
+	line := r.takes[p][r.took[p]].Line
+	i, ok := r.line[line]
+	if !ok || !strings.HasPrefix(r.real[i].Template, "DRAW") {
+		return false
+	}
+	unseen := false
+	for j := i - 1; j >= 0 && r.real[j].Template != "NEW_TURN" && !unseen; j-- {
+		y := r.real[j]
+		unseen = y.Template == "TOPDECK" && y.Player == r.real[i].Player && slices.ContainsFunc(y.Args[1].Cards, func(cn cartographer.CardN) bool { return cn.Card == nil })
+	}
+	if !unseen {
+		return false
+	}
+	name := r.g.Def(d[len(d)-1]).Name
+	named := 0
+	for _, cn := range r.real[i].Args[1].Cards {
+		if cn.Card != nil && cn.Card.Name == name {
+			named += cn.N
+		}
+	}
+	for _, t := range r.takes[p] {
+		if t.Line == line && t.Card == name {
+			named--
+		}
+	}
+	if r.topDrawn == nil {
+		r.topDrawn = map[int]int{}
+	}
+	if named-r.topDrawn[line] <= 0 {
+		return false
+	}
+	r.topDrawn[line]++
+	return true
 }
 
 func (r *replayer) takeNext(p int) {
@@ -1874,7 +2190,7 @@ func (r *replayer) mendHand(at int) {
 				if came[""] == 0 { // after an unnamed card came, nothing more is sure
 					need[n] = max(need[n], gone[n]+k-c)
 				}
-				if y.Template != "REVEAL_HAND" && y.Template != "REACTS_WITH" { // those stay in the hand
+				if y.Template != "REVEAL_HAND" && y.Template != "REACTS_WITH" && y.Template != "BLOCKS_WITH" { // those stay in the hand
 					gone[n] += k - c
 				}
 			}
@@ -2282,7 +2598,7 @@ func (r *replayer) fromHand(x cartographer.Event) bool {
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "DISCARD_WITH": true, "TRASH": true,
-	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REACTS_PLAYING": true, "REVEAL": true,
+	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REACTS_PLAYING": true, "REVEAL": true, "BLOCKS_WITH": true,
 	"TRASH_WITH": true, // "trashes a Copper. (Sailor)" at the start of a turn
 	"SET_ASIDE":  true} // Patient's "sets a Dungeon aside." in Clean-up
 

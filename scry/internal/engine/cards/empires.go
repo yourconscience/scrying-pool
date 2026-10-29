@@ -258,7 +258,7 @@ func init() {
 		if x >= 0 {
 			c.Reveal(c.P, one(x))
 			if y := pick1(c, c.Other(), engine.ToReveal, hand, named(c.G.Def(x).Name), true); y >= 0 {
-				c.Reveal(c.Other(), one(y))
+				c.Log("BLOCKS_WITH", engine.Seat(c.Other()), []engine.CardID{c.G.CardOf(y)}) // "blocks with a Lackeys."
 				return
 			}
 		}
@@ -454,7 +454,7 @@ func init() {
 		}
 	}})
 	reg("Sprawling Castle", rules{VP: worth(4), OnGain: func(c *ctx, _ *ev) {
-		if c.Mode1(c.P, mode("gain a Duchy", "GAIN"), mode("gain 3 Estates", "GAIN")) == 0 {
+		if c.Mode1(c.P, engine.Mode{Label: "gain a Duchy", Line: "GAIN", Card: c.Card("Duchy")}, engine.Mode{Label: "gain 3 Estates", Line: "GAIN", Card: c.Card("Estate")}) == 0 {
 			c.Gain(c.P, c.Card("Duchy"), discard)
 		} else {
 			c.GainN(c.P, c.Card("Estate"), 3, discard, "GAIN")

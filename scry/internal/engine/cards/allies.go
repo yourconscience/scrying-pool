@@ -894,7 +894,7 @@ func init() {
 		Hear: func(c *ctx, _ *ev) { // "spends 1 Favor.", "plays a Village."
 			phaseLine(c)
 			opts := func() []engine.Option { // a Shadow from the deck too: "plays a Fishmonger."
-				os := c.Options(c.P, hand, action)
+				os := slices.DeleteFunc(c.Options(c.P, hand, action), func(o engine.Option) bool { return c.G.FromDeck(c.P, o.Inst) })
 				for _, o := range c.Options(c.P, deck, func(d *def) bool { return d.Action() && d.Is(engine.TShadow) }) {
 					if !slices.ContainsFunc(os, func(h engine.Option) bool { return h.Card == o.Card }) {
 						os = append(os, o)

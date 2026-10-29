@@ -329,7 +329,7 @@ func init() {
 		n := min(6, c.CostOf(c.G.CardOf(x)).Coins)
 		c.Trash(c.P, one(x))
 		ks := c.Modes(c.P, n, n, mode("+1 Card", "DRAW"), mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY"),
-			mode("+$1", "GETS_COIN"), mode("gain a Silver", "GAIN"), mode("gain a Horse", "GAIN"))
+			mode("+$1", "GETS_COIN"), engine.Mode{Label: "gain a Silver", Line: "GAIN", Card: c.Card("Silver")}, engine.Mode{Label: "gain a Horse", Line: "GAIN", Card: c.Card("Horse")})
 		slices.Sort(ks)
 		for _, k := range ks {
 			switch k {
@@ -509,17 +509,17 @@ func init() {
 		}
 	}})
 	reg("Banish", rules{Buy: func(c *ctx) { // "exiles 4 Coppers."
-		x := pick1(c, c.P, engine.ToExile, hand, nil, true)
-		if x < 0 {
+		xs := pick(c, c.P, engine.ToExile, hand, nil, 0, len(c.Hand(c.P))) // one choice, as the line: "exiles 3 Coppers."
+		if len(xs) == 0 {
 			return
 		}
-		var same []inst
-		for _, y := range c.Hand(c.P) {
-			if y != x && c.G.CardOf(y) == c.G.CardOf(x) {
+		var same []inst // of the first one's name
+		for _, y := range xs {
+			if c.G.CardOf(y) == c.G.CardOf(xs[0]) {
 				same = append(same, y)
 			}
 		}
-		exileCards(c, c.P, append(one(x), pickOf(c, c.P, engine.ToExile, same, 0, len(same))...))
+		exileCards(c, c.P, same)
 	}})
 	reg("Bargain", rules{Buy: func(c *ctx) {
 		c.ChooseGain(c.P, and(not(victory), c.CostsUpTo(5)), discard)

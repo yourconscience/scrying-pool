@@ -22,7 +22,7 @@ import (
 const src = "https://raw.githubusercontent.com/sumpfork/dominiontabs/%s/src/domdiv/card_db/"
 
 // typeFix corrects types dominiontabs gets wrong.
-var typeFix = map[string][]string{"Barbarian": {"Action", "Attack"}}
+var typeFix = map[string][]string{"Barbarian": {"Action", "Attack"}, "Prince": {"Action", "Duration"}}
 
 type rawCard struct {
 	Tag        string   `json:"card_tag"`

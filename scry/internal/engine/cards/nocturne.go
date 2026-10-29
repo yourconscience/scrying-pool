@@ -626,8 +626,19 @@ func init() {
 			i := c.ChooseOne(c.P, engine.ToPick, boonOptions(bs), false).Mode
 			b := bs[i]
 			bs = slices.Delete(bs, i, i+1)
-			receive(c, c.P, b, true)
+			j := slices.IndexFunc(bs, func(x engine.CardID) bool { return c.G.D(x).Name == "The River's Gift" })
+			if j < 0 || c.Mode1(c.P, mode("The River's Gift later", ""), engine.Mode{Label: "The River's Gift with it", Line: "RECEIVES", Card: bs[j]}) == 0 {
+				receive(c, c.P, b, true)
+				boonDone(c, b)
+				continue
+			}
+			river := bs[j] // its line with this one's, before this one's effect: "receives The Sky's Gift and The River's Gift."
+			bs = slices.Delete(bs, j, j+1)
+			c.Log("RECEIVES", engine.Seat(c.P), []engine.CardID{b, river})
+			receive(c, c.P, b, false)
 			boonDone(c, b)
+			receive(c, c.P, river, false)
+			boonDone(c, river)
 		}
 	}})
 	reg("Ghost Town", rules{

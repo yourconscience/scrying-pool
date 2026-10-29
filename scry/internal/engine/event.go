@@ -109,7 +109,11 @@ func (g *Game) fire(ev *Ev) {
 				h = r.OnReveal
 			}
 			if h != nil {
-				own = func() { h(g.ctx(ev.P, ev.X, ev.Level), ev) }
+				own = func() {
+					cx := g.ctx(ev.P, ev.X, ev.Level)
+					cx.gainsFrom = g.T2.Phase == StartPhase // "gains a Gold. (Skulk)" under a gain at the start of a turn
+					h(cx, ev)
+				}
 			}
 		}
 	}
@@ -137,8 +141,11 @@ func (g *Game) fire(ev *Ev) {
 		g.watch(ev)
 	}
 	order := [2]int{g.Cur, 1 - g.Cur}
-	for _, q := range order {
-		g.react(q, ev)
+	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	for i, q := range order {
+		if i == 0 || !early { // a gain's other player reacts after the current one's cards: Innovation's "plays an Archive.", then "reacts with a Stowaway."
+			g.react(q, ev)
+		}
 	}
 	hear := func(q int, z Zone) {
 		zone := g.P[q].Z[z]
@@ -157,12 +164,22 @@ func (g *Game) fire(ev *Ev) {
 		}
 	}
 	land := func(late bool) {
+		var cs []CardID
 		for _, c := range g.Land {
 			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
-				cx := g.ctx(ev.P, -1, ev.Level)
-				cx.Src = c
-				r.Hear(cx, ev)
+				cs = append(cs, c)
 			}
+		}
+		for len(cs) > 0 {
+			k := 0
+			if g.NextLand != nil && ev.Kind == EvTurnStart {
+				k = g.NextLand(ev.P, cs)
+			}
+			c := cs[k]
+			cs = slices.Delete(cs, k, k+1)
+			cx := g.ctx(ev.P, -1, ev.Level)
+			cx.Src = c
+			g.T.Defs[c].Rules.Hear(cx, ev)
 		}
 	}
 	global := func() { // the kingdom cards whose Hear runs all game
@@ -174,12 +191,27 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
-	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	held := func() {
+		for _, h := range slices.Clone(g.Held) { // a State may return itself
+			if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
+				cx := g.ctx(h.P, -1, ev.Level)
+				cx.Src = h.C
+				r.Hear(cx, ev)
+			}
+		}
+	}
+	heldLater := ev.Kind != EvTurnStart || g.HeldLater != nil && g.HeldLater(ev.P)
+	if !heldLater { // an Artifact's first: the Key's "gets +$1.", then Silos' "discards and reveals 3 Coppers."
+		held()
+	}
 	if early {
 		global()
 		next() // Footpad's "draws a Fortress.", then Plan's "trashes a Copper.", then Cargo Ship's "sets a Fortress aside."
 	}
 	for i, q := range order {
+		if i == 1 && early {
+			g.react(q, ev)
+		}
 		for _, z := range listenZones {
 			if z != Tavern || ev.Kind != EvGain {
 				hear(q, z)
@@ -192,6 +224,10 @@ func (g *Game) fire(ev *Ev) {
 			}
 			land(false)
 		}
+	}
+	globalFirst := ev.Kind == EvTurnStart && g.GlobalFirst != nil && g.GlobalFirst(ev.P)
+	if globalFirst { // Shaman's "gains a Copper.", then Sinister Plot's "draws 3 cards."
+		global()
 	}
 	if !early { // but a buy's after them: Swamp Hag's "gains a Curse.", then Colonnade's "takes 2 VP."
 		land(false)
@@ -209,15 +245,11 @@ func (g *Game) fire(ev *Ev) {
 		}
 	}()
 	defer land(true)
-	if !early {
+	if !early && !globalFirst {
 		global()
 	}
-	for _, h := range slices.Clone(g.Held) { // a State may return itself
-		if r := g.T.Defs[h.C].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) {
-			cx := g.ctx(h.P, -1, ev.Level)
-			cx.Src = h.C
-			r.Hear(cx, ev)
-		}
+	if heldLater {
+		held()
 	}
 	if !watchFirst {
 		g.watch(ev)

@@ -125,6 +125,26 @@ type Game struct {
 	// cards and landscapes that do, for a replay whose log has Sailor's "plays
 	// a Sailor." before Progress's "topdecks a Sailor."
 	WatchFirst func(ev *Ev) bool
+	// HeldLater says whether the Artifacts and States held wait at the start
+	// of a turn until the landscapes and the kingdom's are done, for a replay
+	// whose log has Barracks' "gets +1 Action." before Lost in the Woods'.
+	HeldLater func(p int) bool
+	// GlobalFirst says whether the kingdom cards that hear the start of a turn
+	// go before the landscapes, for a replay whose log has Shaman's "gains a
+	// Copper." before Sinister Plot's "draws 3 cards."
+	GlobalFirst func(p int) bool
+	// NextLand picks which of the landscapes that hear the start of p's turn
+	// goes next, for a replay whose log has Kind Emperor's "gains a Litter."
+	// before Sinister Plot's "draws a card."; without it, they go in order.
+	NextLand func(p int, cs []CardID) int
+	// DeckShadow says whether player p plays a Shadow card from the deck
+	// though the hand has x, for a replay whose log shuffles that much sooner;
+	// it may swap x with a card in the deck the log doesn't name.
+	DeckShadow func(p int, x Inst) bool
+	// OverpayFirst says whether a bought card's overpay goes before what else
+	// hears its gain, for a replay whose log has Infirmary's "plays an
+	// Infirmary." before Rich's "gains a Silver."; without it, it goes after.
+	OverpayFirst func(ev *Ev) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst
@@ -176,6 +196,7 @@ type Game struct {
 	TradeRoute    int      // coin tokens on the Trade Route mat
 	prevGained    [2][]CardID
 	prevTrashed   [2]int
+	overpay       func() // the bought card's overpay, run after its own gain rule: Infirmary's plays before Rich's Silver
 
 	copper, silver, gold, estate, duchy, province, curse, platinum, colony, potion CardID
 }

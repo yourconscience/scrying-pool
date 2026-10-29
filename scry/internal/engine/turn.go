@@ -174,7 +174,13 @@ func (g *Game) actionOptions(p int) []Option {
 			out = append(out, Option{Card: g.cards[x], Inst: x, Mode: w + 1, Label: g.T.Defs[g.Land[w]].Name})
 		}
 	}
+	deck := map[CardID]bool{} // Shadow cards played from the deck though the hand has one
 	for _, x := range g.handPlays(p) {
+		c := g.cards[x]
+		if deck[c] || g.FromDeck(p, x) {
+			deck[c] = true
+			continue
+		}
 		switch {
 		case g.Def(x).Action() || g.inherits(p, x):
 			add(x)
@@ -183,11 +189,18 @@ func (g *Game) actionOptions(p int) []Option {
 		}
 	}
 	for _, x := range g.P[p].Z[Deck] {
-		if d := g.Def(x); d.Action() && d.Is(TShadow) && !slices.ContainsFunc(g.P[p].Z[Hand], func(y Inst) bool { return g.cards[y] == g.cards[x] }) {
+		if d := g.Def(x); d.Action() && d.Is(TShadow) && (deck[g.cards[x]] || !slices.ContainsFunc(g.P[p].Z[Hand], func(y Inst) bool { return g.cards[y] == g.cards[x] })) {
 			add(x) // not a copy of one in hand: the log can't tell them apart
 		}
 	}
 	return out
+}
+
+// FromDeck: player p plays the Shadow card x's copy in the deck instead, as DeckShadow says.
+func (g *Game) FromDeck(p int, x Inst) bool {
+	c := g.cards[x]
+	return g.Def(x).Is(TShadow) && g.DeckShadow != nil && g.DeckShadow(p, x) && // it may swap x into the deck
+		slices.ContainsFunc(g.P[p].Z[Deck], func(y Inst) bool { return g.cards[y] == c })
 }
 
 // handPlays is the player's hand, or nothing when Voyage's limit on cards played from hand is reached.
@@ -380,13 +393,31 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	i := g.PileOf(c)
 	pile := g.Piles[i].Cards
 	x := pile[len(pile)-1]
-	over := 0
+	over, coffers := 0, 0
+	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coffers > 0 { // to overpay with: "buys a Farrier.", "uses 1 Coffers. (+$1)", "gets +$1.", "loses 2 Coins."
+		var opts []Option
+		for n := 0; n <= pl.Coffers; n++ {
+			opts = append(opts, Option{Mode: n, Label: fmt.Sprint(n), Inst: -1})
+		}
+		coffers = g.ask(&Decision{Player: p, Kind: UseCoffers, Source: c, Options: opts, Min: 1, Max: 1, Level: 1})[0].Mode
+		pl.Coffers -= coffers
+		pl.Coins += coffers
+	}
 	if d.Rules != nil && d.Rules.Overpay != nil && pl.Coins > 0 {
 		over = g.ctx(p, x, 1).Amount(p, 0, pl.Coins, "LOSES_COIN", "LOSES_COINS")
+	}
+	if over == 0 { // no overpay to use them on
+		pl.Coffers += coffers
+		pl.Coins -= coffers
+		coffers = 0
 	}
 	switch {
 	case over > 0: // "buys an Infirmary.", "loses 2 Coins.", "gains an Infirmary."
 		g.Log.add(Entry{Template: "BUY", Args: []any{Seat(p), []CardID{c}}})
+		if coffers > 0 {
+			g.Log.add(Entry{Level: 1, Template: plural(coffers, "USES_COFFER", "USES_COFFERS"), Args: []any{Seat(p), coffers}})
+			g.Log.add(Entry{Level: 1, Template: plural(coffers, "GETS_COIN", "GETS_COINS"), Args: []any{Seat(p), coffers}})
+		}
 		pl.Coins -= over
 		g.Log.add(Entry{Level: 1, Template: plural(over, "LOSES_COIN", "LOSES_COINS"), Args: []any{Seat(p), over}})
 	case instead: // "buys an Animal Fair.", "trashes a Jester.", "gains an Animal Fair."
@@ -417,9 +448,13 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	if over > 0 || instead || gp != p {
 		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(gp), []CardID{c}}})
 	}
-	g.gainX(gp, x, Discard, 1, 0, true)
 	if over > 0 {
-		d.Rules.Overpay(g.ctx(p, x, 1), over)
+		g.overpay = func() { d.Rules.Overpay(g.ctx(p, x, 1), over) }
+	}
+	g.gainX(gp, x, Discard, 1, 0, true)
+	if f := g.overpay; f != nil { // after the rest of the gain
+		g.overpay = nil
+		f()
 	}
 	g.fire(&Ev{Kind: EvBought, P: p, X: x, C: c, Level: 1})
 }
