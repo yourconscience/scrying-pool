@@ -851,6 +851,11 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 			return r.pick(d, cs)
 		}
 	}
+	if d.Kind == engine.ToPick {
+		if cs, ok := r.moreOfLine(d, "PUT_IN_HAND_FROM"); ok { // the second Archive's of "puts a Copper and a Gold in hand (Archive)."
+			return r.pick(d, cs)
+		}
+	}
 	switch d.Kind {
 	case engine.ToPick:
 		switch r.t.Defs[d.Source].Name {
