@@ -625,6 +625,16 @@ func (g *Game) gainX(p int, x Inst, to Zone, level int, by CardID, bought bool) 
 			cx.Trash(p, Cards(cx.Choose(p, ToTrash, cx.Options(p, Hand, nil), 0, 1)))
 		}
 	}
+	if f := g.overpay; f != nil && g.OverpayFirst != nil && g.OverpayFirst(ev) {
+		g.overpay = nil
+		then := ev.next
+		ev.next = func() {
+			f()
+			if then != nil {
+				then()
+			}
+		}
+	}
 	g.fire(ev)
 	if !done {
 		exile()

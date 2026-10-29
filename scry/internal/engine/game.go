@@ -133,6 +133,10 @@ type Game struct {
 	// though the hand has x, for a replay whose log shuffles that much sooner;
 	// it may swap x with a card in the deck the log doesn't name.
 	DeckShadow func(p int, x Inst) bool
+	// OverpayFirst says whether a bought card's overpay goes before what else
+	// hears its gain, for a replay whose log has Infirmary's "plays an
+	// Infirmary." before Rich's "gains a Silver."; without it, it goes after.
+	OverpayFirst func(ev *Ev) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst
@@ -184,6 +188,7 @@ type Game struct {
 	TradeRoute    int      // coin tokens on the Trade Route mat
 	prevGained    [2][]CardID
 	prevTrashed   [2]int
+	overpay       func() // the bought card's overpay, run after its own gain rule: Infirmary's plays before Rich's Silver
 
 	copper, silver, gold, estate, duchy, province, curse, platinum, colony, potion CardID
 }

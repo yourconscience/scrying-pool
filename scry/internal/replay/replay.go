@@ -220,6 +220,10 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		return named(r.g.Land) || named(r.g.Global)
 	}
 	g.DeckShadow = r.deckShadow
+	g.OverpayFirst = func(ev *engine.Ev) bool { // "plays an Infirmary." next
+		x, ok := r.peek()
+		return ok && x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
+	}
 	g.MoreTreasures = func(p, n int) bool {
 		x := r.real[min(r.pos, len(r.real)-1)]
 		return x.Template == "PLAY_TREASURES_FOR" && x.Player == r.names[p] && cardCount(x.Args[1]) > n

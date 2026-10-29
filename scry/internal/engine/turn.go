@@ -448,9 +448,13 @@ func (g *Game) buy(p int, c CardID, instead bool) {
 	if over > 0 || instead || gp != p {
 		g.Log.add(Entry{Template: "GAIN", Args: []any{Seat(gp), []CardID{c}}})
 	}
-	g.gainX(gp, x, Discard, 1, 0, true)
 	if over > 0 {
-		d.Rules.Overpay(g.ctx(p, x, 1), over)
+		g.overpay = func() { d.Rules.Overpay(g.ctx(p, x, 1), over) }
+	}
+	g.gainX(gp, x, Discard, 1, 0, true)
+	if f := g.overpay; f != nil { // after the rest of the gain
+		g.overpay = nil
+		f()
 	}
 	g.fire(&Ev{Kind: EvBought, P: p, X: x, C: c, Level: 1})
 }
