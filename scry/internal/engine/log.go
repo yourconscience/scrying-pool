@@ -88,7 +88,8 @@ func (l *Log) add(e Entry) {
 	merge := e.Template == "DRAW" || e.Template == "DRAW_FROM" || e.Template == "TRASH" && l.handTrash && l.lastHandTrash == len(l.Entries)-1 ||
 		e.Template == "PUT_IN_HAND_FROM" || // two Blockades: "puts a Ranger and a Walled Village into their hand. (Blockade)"
 		e.Template == "TOPDECK" || // two Schemes: "topdecks 2 cards."
-		e.Template == "TRASH_WITH" // two Amulets: "trashes an Estate and a Copper. (Amulet)"
+		e.Template == "TRASH_WITH" || // two Amulets: "trashes an Estate and a Copper. (Amulet)"
+		e.Template == "GAIN_WITH" // two Quartermasters: "gains 2 Cabin Boys. (Quartermaster)"
 	if n := len(l.Entries); n > 0 && merge && len(e.Args) >= 2 {
 		last := &l.Entries[n-1]
 		if last.Template == e.Template && last.Level == e.Level && len(last.Args) == len(e.Args) && last.Args[0] == e.Args[0] && (len(e.Args) == 2 || last.Args[2] == e.Args[2]) {

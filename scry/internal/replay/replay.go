@@ -872,8 +872,10 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 	}
 	if d.Kind == engine.ToGain {
-		if cs, ok := r.moreOfLine(d, "GAIN"); ok { // the second of Ball's "gains 2 Poachers."
-			return r.pick(d, cs)
+		for _, t := range []string{"GAIN", "GAIN_WITH"} { // the second of Ball's "gains 2 Poachers.", of "gains 2 Cabin Boys. (Quartermaster)"
+			if cs, ok := r.moreOfLine(d, t); ok {
+				return r.pick(d, cs)
+			}
 		}
 	}
 	if d.Kind == engine.ToTrash {
@@ -1404,9 +1406,9 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 	if !ok || x.Player != r.names[p] {
 		return 0
 	}
-	for i, d := range ds { // the card it set aside and plays
+	for i, d := range ds { // the card it set aside and plays, still there
 		for _, a := range d.Aside {
-			if len(x.Args) > 1 && cardName(x.Args[1]) == r.g.Def(a).Name && (x.Cause == r.t.Defs[d.C].Name || len(x.Args) > 2 && cardName(x.Args[2]) == r.t.Defs[d.C].Name) {
+			if len(x.Args) > 1 && cardName(x.Args[1]) == r.g.Def(a).Name && r.g.Where(a).Zone == engine.Aside && (x.Cause == r.t.Defs[d.C].Name || len(x.Args) > 2 && cardName(x.Args[2]) == r.t.Defs[d.C].Name) {
 				return i
 			}
 		}
@@ -1723,7 +1725,7 @@ func (r *replayer) moreOfLast(d *engine.Decision) (cartographer.CardN, bool) {
 // pick turns the cards a real line names into option indexes; cards it
 // doesn't name are filled with options nothing later asks for.
 func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
-	if x, ok := r.peek(); ok && d.Kind == engine.ToGain && x.Template == "GAIN" { // one gain at a time from "gains 2 Poachers."
+	if x, ok := r.peek(); ok && d.Kind == engine.ToGain && (x.Template == "GAIN" || x.Template == "GAIN_WITH") { // one gain at a time from "gains 2 Poachers."
 		var cut []cartographer.CardN
 		for n := 0; len(cut) < len(cards) && n < d.Max; {
 			cn := cards[len(cut)]
