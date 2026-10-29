@@ -1383,6 +1383,9 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 		return ""
 	}
 	name := r.g.Def(ev.X).Name
+	if x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == name && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == "Innovation" }) {
+		return true // Innovation's "plays a Skulk." before Skulk's Gold
+	}
 	if b := by(x); b != "" {
 		return b != name
 	}
