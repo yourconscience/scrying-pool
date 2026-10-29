@@ -38,11 +38,12 @@ type Features struct {
 	Roles      map[string]bool `json:"roles"` // the kingdom has a card filling the role
 	Took       map[string]bool `json:"took"`  // kingdom cards Me owned at some point
 
-	Opening       string   `json:"opening"`        // Coppers in hand on turns 1 and 2, by openingSplit: "4/3", "2/5", "other", "" unknown
-	OpeningBuys   []string `json:"opening_buys"`   // cards bought or gained on turns 1-2
-	FirstGold     int      `json:"first_gold"`     // Me's turn of the first Gold, 0 if none
-	FirstProvince int      `json:"first_province"` // Me's turn of the first Province, 0 if none
-	Coins         []int    `json:"coins"`          // Me's $ on each of their turns
+	Opening       string   `json:"opening"`          // Coppers in hand on turns 1 and 2, by openingSplit: "4/3", "2/5", "other", "" unknown
+	OpeningBuys   []string `json:"opening_buys"`     // cards bought or gained on turns 1-2
+	Opened        []string `json:"opened,omitempty"` // the kingdom cards among them, by their kingdom name ("Augur Pile")
+	FirstGold     int      `json:"first_gold"`       // Me's turn of the first Gold, 0 if none
+	FirstProvince int      `json:"first_province"`   // Me's turn of the first Province, 0 if none
+	Coins         []int    `json:"coins"`            // Me's $ on each of their turns
 }
 
 // GameFeatures computes a saved two-player game's features for both players.
@@ -117,6 +118,9 @@ func GameFeatures(client *cartographer.Client, s *Saved, profiles map[string]*Pr
 				}
 				if f.Turns <= 2 {
 					f.OpeningBuys = append(f.OpeningBuys, c.Card.Name)
+					if kc, ok := kingdomPile[client.PileOf(c.Card.Name)]; ok && !slices.Contains(f.Opened, kc) {
+						f.Opened = append(f.Opened, kc)
+					}
 				}
 				if c.Card.Name == "Gold" && f.FirstGold == 0 {
 					f.FirstGold = f.Turns

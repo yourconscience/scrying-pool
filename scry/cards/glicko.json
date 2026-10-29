@@ -1,0 +1,2490 @@
+{
+ "source": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkdmqYioc1WZb-RlsCH7qNIe75VAWasuhu_8OWiwnhmCj3TKJXczm6j8vxgYiRYdZIE9zlSBnwxWC9/pubhtml",
+ "updated": "20-Jul-2026 06:01:57 UTC",
+ "cards": {
+  "Abundance": {
+   "rating": -0.49,
+   "cost": "4"
+  },
+  "Academy": {
+   "rating": 3.31,
+   "cost": "5"
+  },
+  "Acolyte": {
+   "rating": -3.33,
+   "cost": "4"
+  },
+  "Acting Troupe": {
+   "rating": -1.41,
+   "cost": "3"
+  },
+  "Advance": {
+   "rating": 0.95,
+   "cost": "2"
+  },
+  "Advisor": {
+   "rating": -0.51,
+   "cost": "4"
+  },
+  "Alchemist": {
+   "rating": -1.13,
+   "cost": "P"
+  },
+  "Alley": {
+   "rating": 0.81,
+   "cost": "4"
+  },
+  "Alliance": {
+   "rating": -0.88,
+   "cost": "6"
+  },
+  "Alms": {
+   "rating": 1.94,
+   "cost": "2"
+  },
+  "Altar": {
+   "rating": 1.56,
+   "cost": "6"
+  },
+  "Amass": {
+   "rating": 4.01,
+   "cost": "2"
+  },
+  "Ambassador": {
+   "rating": 3.13,
+   "cost": "3"
+  },
+  "Amulet": {
+   "rating": 1.9,
+   "cost": "3"
+  },
+  "Animal Fair": {
+   "rating": -1.15,
+   "cost": "6"
+  },
+  "Annex": {
+   "rating": -4.92,
+   "cost": "6"
+  },
+  "Anvil": {
+   "rating": -1.22,
+   "cost": "3"
+  },
+  "Apothecary": {
+   "rating": -2.16,
+   "cost": "P"
+  },
+  "Apprentice": {
+   "rating": 1.38,
+   "cost": "5"
+  },
+  "Archer": {
+   "rating": 0.68,
+   "cost": "4"
+  },
+  "Archive": {
+   "rating": 0.96,
+   "cost": "5"
+  },
+  "Aristocrat": {
+   "rating": -1.93,
+   "cost": "3"
+  },
+  "Armory": {
+   "rating": -2.24,
+   "cost": "4"
+  },
+  "Artificer": {
+   "rating": 1.66,
+   "cost": "5"
+  },
+  "Artisan": {
+   "rating": 1.47,
+   "cost": "6"
+  },
+  "Artist": {
+   "rating": 0.8,
+   "cost": "6"
+  },
+  "Asceticism": {
+   "rating": 0.99,
+   "cost": "2"
+  },
+  "Astrolabe": {
+   "rating": -0.47,
+   "cost": "3"
+  },
+  "Augurs": {
+   "rating": -1.77,
+   "cost": "3"
+  },
+  "Avanto": {
+   "rating": 1.04,
+   "cost": "5"
+  },
+  "Avoid": {
+   "rating": 0.66,
+   "cost": "2"
+  },
+  "Baker": {
+   "rating": -1.21,
+   "cost": "5"
+  },
+  "Ball": {
+   "rating": -0.21,
+   "cost": "5"
+  },
+  "Band of Misfits": {
+   "rating": -2.24,
+   "cost": "5"
+  },
+  "Bandit": {
+   "rating": -2.35,
+   "cost": "5"
+  },
+  "Bandit Camp": {
+   "rating": 0.01,
+   "cost": "5"
+  },
+  "Banish": {
+   "rating": 0.97,
+   "cost": "4"
+  },
+  "Bank": {
+   "rating": -1.6,
+   "cost": "6"
+  },
+  "Banquet": {
+   "rating": -3.79,
+   "cost": "3"
+  },
+  "Barbarian": {
+   "rating": -1.19,
+   "cost": "5"
+  },
+  "Bard": {
+   "rating": -3.01,
+   "cost": "4"
+  },
+  "Bargain": {
+   "rating": -1.31,
+   "cost": "4"
+  },
+  "Barge": {
+   "rating": 2.61,
+   "cost": "5"
+  },
+  "Baron": {
+   "rating": -3.07,
+   "cost": "4"
+  },
+  "Barracks": {
+   "rating": -1.62,
+   "cost": "6"
+  },
+  "Battle Plan": {
+   "rating": 3.08,
+   "cost": "3"
+  },
+  "Bauble": {
+   "rating": -0.72,
+   "cost": "2"
+  },
+  "Bazaar": {
+   "rating": 0.71,
+   "cost": "5"
+  },
+  "Beggar": {
+   "rating": -4.15,
+   "cost": "2"
+  },
+  "Berserker": {
+   "rating": 3.01,
+   "cost": "5"
+  },
+  "Bishop": {
+   "rating": -2.08,
+   "cost": "4"
+  },
+  "Black Cat": {
+   "rating": -0.27,
+   "cost": "2"
+  },
+  "Black Market": {
+   "rating": 2.63,
+   "cost": "3"
+  },
+  "Blacksmith": {
+   "rating": 0.44,
+   "cost": "3"
+  },
+  "Blessed Village": {
+   "rating": 2.36,
+   "cost": "4"
+  },
+  "Blockade": {
+   "rating": 2.41,
+   "cost": "4"
+  },
+  "Bonfire": {
+   "rating": 0.58,
+   "cost": "3"
+  },
+  "Border Guard": {
+   "rating": 1.57,
+   "cost": "2"
+  },
+  "Border Village": {
+   "rating": 2.95,
+   "cost": "6"
+  },
+  "Borrow": {
+   "rating": 0.95,
+   "cost": "2"
+  },
+  "Bounty Hunter": {
+   "rating": 3.95,
+   "cost": "4"
+  },
+  "Bridge": {
+   "rating": 4.07,
+   "cost": "4"
+  },
+  "Bridge Troll": {
+   "rating": 6.1,
+   "cost": "5"
+  },
+  "Broker": {
+   "rating": 0.43,
+   "cost": "4"
+  },
+  "Bureaucrat": {
+   "rating": -5.17,
+   "cost": "4"
+  },
+  "Buried Treasure": {
+   "rating": 0.87,
+   "cost": "5"
+  },
+  "Bury": {
+   "rating": -1.1,
+   "cost": "2"
+  },
+  "Bustling Village": {
+   "rating": -0.87,
+   "cost": "5"
+  },
+  "Butcher": {
+   "rating": 3.71,
+   "cost": "5"
+  },
+  "Cabin Boy": {
+   "rating": -0.24,
+   "cost": "4"
+  },
+  "Cache": {
+   "rating": -3.98,
+   "cost": "5"
+  },
+  "Cage": {
+   "rating": 0.09,
+   "cost": "2"
+  },
+  "Camel Train": {
+   "rating": -1.99,
+   "cost": "3"
+  },
+  "Canal": {
+   "rating": -0.15,
+   "cost": "6"
+  },
+  "Candlestick Maker": {
+   "rating": -2.31,
+   "cost": "2"
+  },
+  "Capital": {
+   "rating": -2.47,
+   "cost": "5"
+  },
+  "Capital City": {
+   "rating": 2.86,
+   "cost": "5"
+  },
+  "Capitalism": {
+   "rating": -2.2,
+   "cost": "5"
+  },
+  "Captain": {
+   "rating": 3.76,
+   "cost": "6"
+  },
+  "Caravan": {
+   "rating": -0.7,
+   "cost": "4"
+  },
+  "Caravan Guard": {
+   "rating": -2.42,
+   "cost": "3"
+  },
+  "Cardinal": {
+   "rating": -2.26,
+   "cost": "4"
+  },
+  "Cargo Ship": {
+   "rating": 0.16,
+   "cost": "3"
+  },
+  "Carnival": {
+   "rating": -0.62,
+   "cost": "5"
+  },
+  "Carpenter": {
+   "rating": 0.94,
+   "cost": "4"
+  },
+  "Cartographer": {
+   "rating": -3.36,
+   "cost": "5"
+  },
+  "Castles": {
+   "rating": -0.64,
+   "cost": "6"
+  },
+  "Catacombs": {
+   "rating": -0.38,
+   "cost": "5"
+  },
+  "Catapult": {
+   "rating": 2.64,
+   "cost": "3"
+  },
+  "Catapult/Rocks": {
+   "rating": 2.46,
+   "cost": "3"
+  },
+  "Cathedral": {
+   "rating": 4.3,
+   "cost": "3"
+  },
+  "Cauldron": {
+   "rating": -1.15,
+   "cost": "5"
+  },
+  "Cavalry": {
+   "rating": 4.3,
+   "cost": "4"
+  },
+  "Cellar": {
+   "rating": -2.67,
+   "cost": "2"
+  },
+  "Cemetery": {
+   "rating": 0.17,
+   "cost": "4"
+  },
+  "Change": {
+   "rating": 0.97,
+   "cost": "4"
+  },
+  "Changeling": {
+   "rating": -1.12,
+   "cost": "3"
+  },
+  "Chapel": {
+   "rating": 6.16,
+   "cost": "2"
+  },
+  "Chariot Race": {
+   "rating": -0.02,
+   "cost": "3"
+  },
+  "Charlatan": {
+   "rating": 0.48,
+   "cost": "5"
+  },
+  "Charm": {
+   "rating": -0.49,
+   "cost": "5"
+  },
+  "Church": {
+   "rating": 1.99,
+   "cost": "3"
+  },
+  "Citadel": {
+   "rating": 1.98,
+   "cost": "6"
+  },
+  "City": {
+   "rating": 1.93,
+   "cost": "5"
+  },
+  "City Gate": {
+   "rating": -1.9,
+   "cost": "3"
+  },
+  "City Quarter": {
+   "rating": 3.66,
+   "cost": "6"
+  },
+  "Clashes": {
+   "rating": 4.26,
+   "cost": "3"
+  },
+  "Clerk": {
+   "rating": 0.84,
+   "cost": "4"
+  },
+  "Cobbler": {
+   "rating": -1.06,
+   "cost": "5"
+  },
+  "Coin of the Realm": {
+   "rating": -0.41,
+   "cost": "2"
+  },
+  "Collection": {
+   "rating": 4.67,
+   "cost": "5"
+  },
+  "Commerce": {
+   "rating": -3.35,
+   "cost": "5"
+  },
+  "Conclave": {
+   "rating": -0.58,
+   "cost": "4"
+  },
+  "Conjurer": {
+   "rating": 0.9,
+   "cost": "4"
+  },
+  "Conquest": {
+   "rating": -2.02,
+   "cost": "6"
+  },
+  "Conspirator": {
+   "rating": 0.4,
+   "cost": "4"
+  },
+  "Continue": {
+   "rating": 2.77,
+   "cost": "6"
+  },
+  "Contraband": {
+   "rating": -3.29,
+   "cost": "5"
+  },
+  "Contract": {
+   "rating": -2.17,
+   "cost": "5"
+  },
+  "Corsair": {
+   "rating": -2.75,
+   "cost": "5"
+  },
+  "Council Room": {
+   "rating": -0.94,
+   "cost": "5"
+  },
+  "Count": {
+   "rating": -2.09,
+   "cost": "5"
+  },
+  "Counterfeit": {
+   "rating": 3.22,
+   "cost": "5"
+  },
+  "Counting House": {
+   "rating": -3.14,
+   "cost": "5"
+  },
+  "Courier": {
+   "rating": -0.45,
+   "cost": "4"
+  },
+  "Courtier": {
+   "rating": -0.28,
+   "cost": "5"
+  },
+  "Courtyard": {
+   "rating": -0.77,
+   "cost": "2"
+  },
+  "Coven": {
+   "rating": 0.47,
+   "cost": "5"
+  },
+  "Craftsman": {
+   "rating": -0.94,
+   "cost": "3"
+  },
+  "Credit": {
+   "rating": -0.48,
+   "cost": "2"
+  },
+  "Crew": {
+   "rating": -0.37,
+   "cost": "5"
+  },
+  "Crop Rotation": {
+   "rating": 0.47,
+   "cost": "6"
+  },
+  "Crossroads": {
+   "rating": 0.28,
+   "cost": "2"
+  },
+  "Crown": {
+   "rating": 1.2,
+   "cost": "5"
+  },
+  "Crucible": {
+   "rating": 0.65,
+   "cost": "4"
+  },
+  "Crypt": {
+   "rating": -2.34,
+   "cost": "5"
+  },
+  "Crystal Ball": {
+   "rating": -2.18,
+   "cost": "5"
+  },
+  "Cultist": {
+   "rating": 3.32,
+   "cost": "5"
+  },
+  "Cursed Village": {
+   "rating": 1.38,
+   "cost": "5"
+  },
+  "Cutpurse": {
+   "rating": -3.45,
+   "cost": "4"
+  },
+  "Cutthroat": {
+   "rating": -1.04,
+   "cost": "5"
+  },
+  "Daimyo": {
+   "rating": 6.39,
+   "cost": "6"
+  },
+  "Death Cart": {
+   "rating": -4.22,
+   "cost": "4"
+  },
+  "Delay": {
+   "rating": -0.26,
+   "cost": "2"
+  },
+  "Deliver": {
+   "rating": 4.8,
+   "cost": "2"
+  },
+  "Delve": {
+   "rating": -1.35,
+   "cost": "2"
+  },
+  "Demand": {
+   "rating": -0.17,
+   "cost": "5"
+  },
+  "Den of Sin": {
+   "rating": 1.8,
+   "cost": "5"
+  },
+  "Desperation": {
+   "rating": -0.1,
+   "cost": "2"
+  },
+  "Destrier": {
+   "rating": 2.61,
+   "cost": "6"
+  },
+  "Develop": {
+   "rating": -1.39,
+   "cost": "3"
+  },
+  "Devil's Workshop": {
+   "rating": -1.08,
+   "cost": "4"
+  },
+  "Diplomat": {
+   "rating": -1.04,
+   "cost": "4"
+  },
+  "Dismantle": {
+   "rating": -2.91,
+   "cost": "4"
+  },
+  "Displace": {
+   "rating": 1.04,
+   "cost": "5"
+  },
+  "Distant Lands": {
+   "rating": -1.69,
+   "cost": "5"
+  },
+  "Distant Shore": {
+   "rating": -0.28,
+   "cost": "6"
+  },
+  "Doctor": {
+   "rating": 0.6,
+   "cost": "3"
+  },
+  "Dominate": {
+   "rating": 3,
+   "cost": "6"
+  },
+  "Donate": {
+   "rating": 8.23,
+   "cost": "6"
+  },
+  "Druid": {
+   "rating": -1.6,
+   "cost": "2"
+  },
+  "Ducat": {
+   "rating": -1.31,
+   "cost": "2"
+  },
+  "Duchess": {
+   "rating": -3.57,
+   "cost": "2"
+  },
+  "Duke": {
+   "rating": -4.41,
+   "cost": "5"
+  },
+  "Dungeon": {
+   "rating": 2.09,
+   "cost": "3"
+  },
+  "Duplicate": {
+   "rating": -2.14,
+   "cost": "4"
+  },
+  "Elder": {
+   "rating": -1.8,
+   "cost": "5"
+  },
+  "Embargo": {
+   "rating": -2.71,
+   "cost": "2"
+  },
+  "Embassy": {
+   "rating": -1.59,
+   "cost": "5"
+  },
+  "Emissary": {
+   "rating": 1.25,
+   "cost": "5"
+  },
+  "Emporium": {
+   "rating": -1.27,
+   "cost": "5"
+  },
+  "Encampment": {
+   "rating": 2.81,
+   "cost": "2"
+  },
+  "Encampment/Plunder": {
+   "rating": 3,
+   "cost": "2"
+  },
+  "Enchantress": {
+   "rating": 0.75,
+   "cost": "3"
+  },
+  "Enclave": {
+   "rating": -2.84,
+   "cost": "6"
+  },
+  "Engineer": {
+   "rating": -0.8,
+   "cost": "4"
+  },
+  "Enhance": {
+   "rating": -0.54,
+   "cost": "3"
+  },
+  "Enlarge": {
+   "rating": 1.35,
+   "cost": "5"
+  },
+  "Envoy": {
+   "rating": -0.35,
+   "cost": "4"
+  },
+  "Exorcist": {
+   "rating": 1.77,
+   "cost": "4"
+  },
+  "Expand": {
+   "rating": 0.11,
+   "cost": "6"
+  },
+  "Expedition": {
+   "rating": 0.92,
+   "cost": "3"
+  },
+  "Experiment": {
+   "rating": 1.72,
+   "cost": "3"
+  },
+  "Exploration": {
+   "rating": -1.42,
+   "cost": "4"
+  },
+  "Explorer": {
+   "rating": -2.07,
+   "cost": "5"
+  },
+  "Fair": {
+   "rating": -0.95,
+   "cost": "4"
+  },
+  "Fairgrounds": {
+   "rating": -1.51,
+   "cost": "6"
+  },
+  "Faithful Hound": {
+   "rating": -3.02,
+   "cost": "2"
+  },
+  "Falconer": {
+   "rating": 0.5,
+   "cost": "5"
+  },
+  "Familiar": {
+   "rating": -0.64,
+   "cost": "P"
+  },
+  "Farm": {
+   "rating": -3.77,
+   "cost": "6"
+  },
+  "Farmers' Market": {
+   "rating": -1.65,
+   "cost": "3"
+  },
+  "Farmhands": {
+   "rating": 1.34,
+   "cost": "4"
+  },
+  "Farming Village": {
+   "rating": 0.21,
+   "cost": "4"
+  },
+  "Farmland": {
+   "rating": -2.38,
+   "cost": "6"
+  },
+  "Farrier": {
+   "rating": 4.37,
+   "cost": "2"
+  },
+  "Feodum": {
+   "rating": -4.34,
+   "cost": "4"
+  },
+  "Ferry": {
+   "rating": 4.14,
+   "cost": "3"
+  },
+  "Ferryman": {
+   "rating": -0.43,
+   "cost": "5"
+  },
+  "Festival": {
+   "rating": 0.31,
+   "cost": "5"
+  },
+  "Figurine": {
+   "rating": -2.95,
+   "cost": "5"
+  },
+  "First Mate": {
+   "rating": -0.5,
+   "cost": "5"
+  },
+  "Fisherman": {
+   "rating": 0.71,
+   "cost": "5"
+  },
+  "Fishing Village": {
+   "rating": 2.74,
+   "cost": "3"
+  },
+  "Fishmonger": {
+   "rating": 0.54,
+   "cost": "2"
+  },
+  "Flag Bearer": {
+   "rating": 0.08,
+   "cost": "4"
+  },
+  "Flagship": {
+   "rating": 1.28,
+   "cost": "4"
+  },
+  "Fleet": {
+   "rating": -1.4,
+   "cost": "5"
+  },
+  "Fool": {
+   "rating": -2.26,
+   "cost": "3"
+  },
+  "Fool's Gold": {
+   "rating": -1.57,
+   "cost": "2"
+  },
+  "Footpad": {
+   "rating": -0.42,
+   "cost": "5"
+  },
+  "Forager": {
+   "rating": 2.68,
+   "cost": "3"
+  },
+  "Foray": {
+   "rating": -1.52,
+   "cost": "3"
+  },
+  "Foresight": {
+   "rating": -0.98,
+   "cost": "2"
+  },
+  "Forge": {
+   "rating": -0.81,
+   "cost": "6"
+  },
+  "Fortress": {
+   "rating": 2.06,
+   "cost": "4"
+  },
+  "Forts": {
+   "rating": -0.59,
+   "cost": "3"
+  },
+  "Fortune": {
+   "rating": 0.74,
+   "cost": "6"
+  },
+  "Fortune Hunter": {
+   "rating": -3.61,
+   "cost": "4"
+  },
+  "Fortune Teller": {
+   "rating": -4.85,
+   "cost": "3"
+  },
+  "Forum": {
+   "rating": -0.29,
+   "cost": "5"
+  },
+  "Frigate": {
+   "rating": 3.23,
+   "cost": "5"
+  },
+  "Galleria": {
+   "rating": -1.72,
+   "cost": "5"
+  },
+  "Gamble": {
+   "rating": 0.11,
+   "cost": "2"
+  },
+  "Gardens": {
+   "rating": -1.66,
+   "cost": "4"
+  },
+  "Garrison": {
+   "rating": 0.43,
+   "cost": "4"
+  },
+  "Gatekeeper": {
+   "rating": -3.94,
+   "cost": "5"
+  },
+  "Gather": {
+   "rating": -0.82,
+   "cost": "6"
+  },
+  "Gear": {
+   "rating": 3.05,
+   "cost": "3"
+  },
+  "Ghost Ship": {
+   "rating": 2.8,
+   "cost": "5"
+  },
+  "Ghost Town": {
+   "rating": 1.96,
+   "cost": "3"
+  },
+  "Giant": {
+   "rating": -3.23,
+   "cost": "5"
+  },
+  "Gladiator": {
+   "rating": -2.77,
+   "cost": "3"
+  },
+  "Gladiator/Fortune": {
+   "rating": -2.28,
+   "cost": "3"
+  },
+  "Goatherd": {
+   "rating": -0.51,
+   "cost": "3"
+  },
+  "Gold Mine": {
+   "rating": -0.97,
+   "cost": "5"
+  },
+  "Golem": {
+   "rating": -3.81,
+   "cost": "P"
+  },
+  "Gondola": {
+   "rating": -2.41,
+   "cost": "4"
+  },
+  "Goons": {
+   "rating": 3.69,
+   "cost": "6"
+  },
+  "Governor": {
+   "rating": 5.5,
+   "cost": "5"
+  },
+  "Grand Market": {
+   "rating": 1.92,
+   "cost": "6"
+  },
+  "Graverobber": {
+   "rating": -2.39,
+   "cost": "5"
+  },
+  "Groom": {
+   "rating": 3.19,
+   "cost": "4"
+  },
+  "Grotto": {
+   "rating": 3.41,
+   "cost": "2"
+  },
+  "Groundskeeper": {
+   "rating": 2.52,
+   "cost": "5"
+  },
+  "Guard Dog": {
+   "rating": -1.2,
+   "cost": "3"
+  },
+  "Guardian": {
+   "rating": -1.09,
+   "cost": "2"
+  },
+  "Guide": {
+   "rating": -1.84,
+   "cost": "3"
+  },
+  "Guildhall": {
+   "rating": -0.49,
+   "cost": "5"
+  },
+  "Guildmaster": {
+   "rating": -1.24,
+   "cost": "5"
+  },
+  "Haggler": {
+   "rating": 1.36,
+   "cost": "5"
+  },
+  "Hamlet": {
+   "rating": 0.62,
+   "cost": "2"
+  },
+  "Harbinger": {
+   "rating": -3.91,
+   "cost": "3"
+  },
+  "Harbor Village": {
+   "rating": 0.95,
+   "cost": "4"
+  },
+  "Harvest": {
+   "rating": -6.18,
+   "cost": "5"
+  },
+  "Haunted Woods": {
+   "rating": 1.17,
+   "cost": "5"
+  },
+  "Haven": {
+   "rating": -3.07,
+   "cost": "2"
+  },
+  "Herald": {
+   "rating": 2.16,
+   "cost": "4"
+  },
+  "Herb Gatherer": {
+   "rating": -1.73,
+   "cost": "3"
+  },
+  "Herbalist": {
+   "rating": -4.22,
+   "cost": "2"
+  },
+  "Hermit": {
+   "rating": 3.68,
+   "cost": "3"
+  },
+  "Hideout": {
+   "rating": 0.75,
+   "cost": "4"
+  },
+  "Highway": {
+   "rating": 3.33,
+   "cost": "5"
+  },
+  "Highwayman": {
+   "rating": 2.39,
+   "cost": "5"
+  },
+  "Hill Fort": {
+   "rating": 0.84,
+   "cost": "5"
+  },
+  "Hireling": {
+   "rating": -1.5,
+   "cost": "6"
+  },
+  "Hoard": {
+   "rating": -2.12,
+   "cost": "6"
+  },
+  "Horn of Plenty": {
+   "rating": 3.15,
+   "cost": "5"
+  },
+  "Horse Traders": {
+   "rating": -2.25,
+   "cost": "4"
+  },
+  "Hostelry": {
+   "rating": 2.37,
+   "cost": "4"
+  },
+  "Hunter": {
+   "rating": -0.11,
+   "cost": "5"
+  },
+  "Hunting Grounds": {
+   "rating": 0.6,
+   "cost": "6"
+  },
+  "Hunting Lodge": {
+   "rating": 1.38,
+   "cost": "5"
+  },
+  "Hunting Party": {
+   "rating": 3.66,
+   "cost": "5"
+  },
+  "Idol": {
+   "rating": -2.78,
+   "cost": "5"
+  },
+  "Ill-Gotten Gains": {
+   "rating": -0.91,
+   "cost": "5"
+  },
+  "Imperial Envoy": {
+   "rating": 0.55,
+   "cost": "5"
+  },
+  "Importer": {
+   "rating": 0.71,
+   "cost": "3"
+  },
+  "Improve": {
+   "rating": -0.92,
+   "cost": "3"
+  },
+  "Infirmary": {
+   "rating": 1.67,
+   "cost": "3"
+  },
+  "Inheritance": {
+   "rating": 2.53,
+   "cost": "6"
+  },
+  "Inn": {
+   "rating": -0.7,
+   "cost": "5"
+  },
+  "Innkeeper": {
+   "rating": -1.3,
+   "cost": "4"
+  },
+  "Innovation": {
+   "rating": 1.38,
+   "cost": "6"
+  },
+  "Invasion": {
+   "rating": 0.56,
+   "cost": "6"
+  },
+  "Inventor": {
+   "rating": 3.65,
+   "cost": "4"
+  },
+  "Invest": {
+   "rating": 0.39,
+   "cost": "4"
+  },
+  "Investment": {
+   "rating": 0.64,
+   "cost": "4"
+  },
+  "Ironmonger": {
+   "rating": 3.09,
+   "cost": "4"
+  },
+  "Ironworks": {
+   "rating": 0.45,
+   "cost": "4"
+  },
+  "Island": {
+   "rating": -1.95,
+   "cost": "4"
+  },
+  "Jack of All Trades": {
+   "rating": -1,
+   "cost": "4"
+  },
+  "Jester": {
+   "rating": -1.81,
+   "cost": "5"
+  },
+  "Jewelled Egg": {
+   "rating": -0.02,
+   "cost": "2"
+  },
+  "Journey": {
+   "rating": 5.49,
+   "cost": "4"
+  },
+  "Journeyman": {
+   "rating": -1.62,
+   "cost": "5"
+  },
+  "Joust": {
+   "rating": 5.01,
+   "cost": "5"
+  },
+  "Junk Dealer": {
+   "rating": 1.93,
+   "cost": "5"
+  },
+  "Kiln": {
+   "rating": -2.29,
+   "cost": "5"
+  },
+  "King's Cache": {
+   "rating": -0.78,
+   "cost": "6"
+  },
+  "King's Court": {
+   "rating": 6.68,
+   "cost": "6"
+  },
+  "Kintsugi": {
+   "rating": 2.08,
+   "cost": "3"
+  },
+  "Kitsune": {
+   "rating": 4.48,
+   "cost": "5"
+  },
+  "Knights": {
+   "rating": 0.37,
+   "cost": "5"
+  },
+  "Laboratory": {
+   "rating": 1.55,
+   "cost": "5"
+  },
+  "Lackeys": {
+   "rating": 4.47,
+   "cost": "2"
+  },
+  "Landing Party": {
+   "rating": 0.23,
+   "cost": "4"
+  },
+  "Launch": {
+   "rating": 1.42,
+   "cost": "3"
+  },
+  "Legionary": {
+   "rating": -2.4,
+   "cost": "5"
+  },
+  "Leprechaun": {
+   "rating": -1.37,
+   "cost": "3"
+  },
+  "Library": {
+   "rating": -3.94,
+   "cost": "5"
+  },
+  "Lich": {
+   "rating": -3.87,
+   "cost": "6"
+  },
+  "Lighthouse": {
+   "rating": -0.37,
+   "cost": "2"
+  },
+  "Litter": {
+   "rating": 0.54,
+   "cost": "5"
+  },
+  "Livery": {
+   "rating": 1.34,
+   "cost": "5"
+  },
+  "Loan": {
+   "rating": -1.67,
+   "cost": "3"
+  },
+  "Longship": {
+   "rating": -0.09,
+   "cost": "5"
+  },
+  "Lookout": {
+   "rating": -0.05,
+   "cost": "3"
+  },
+  "Looting": {
+   "rating": -1.35,
+   "cost": "6"
+  },
+  "Lost Arts": {
+   "rating": 2.72,
+   "cost": "6"
+  },
+  "Lost City": {
+   "rating": 2.59,
+   "cost": "5"
+  },
+  "Lurker": {
+   "rating": -0.37,
+   "cost": "2"
+  },
+  "Maelstrom": {
+   "rating": -2.04,
+   "cost": "4"
+  },
+  "Magnate": {
+   "rating": -3.8,
+   "cost": "5"
+  },
+  "Magpie": {
+   "rating": 4.01,
+   "cost": "4"
+  },
+  "Mandarin": {
+   "rating": -3.2,
+   "cost": "5"
+  },
+  "Mapmaker": {
+   "rating": 0.29,
+   "cost": "4"
+  },
+  "Marauder": {
+   "rating": -3.51,
+   "cost": "4"
+  },
+  "March": {
+   "rating": -0.33,
+   "cost": "3"
+  },
+  "Marchland": {
+   "rating": 0.49,
+   "cost": "5"
+  },
+  "Margrave": {
+   "rating": 5.02,
+   "cost": "5"
+  },
+  "Market": {
+   "rating": 0.15,
+   "cost": "5"
+  },
+  "Market Square": {
+   "rating": 1.27,
+   "cost": "3"
+  },
+  "Maroon": {
+   "rating": 1.55,
+   "cost": "4"
+  },
+  "Marquis": {
+   "rating": 1.31,
+   "cost": "6"
+  },
+  "Masquerade": {
+   "rating": 4.79,
+   "cost": "3"
+  },
+  "Mastermind": {
+   "rating": 3.33,
+   "cost": "5"
+  },
+  "Masterpiece": {
+   "rating": -4.3,
+   "cost": "3"
+  },
+  "Menagerie": {
+   "rating": 3.37,
+   "cost": "3"
+  },
+  "Merchant": {
+   "rating": -1.82,
+   "cost": "3"
+  },
+  "Merchant Camp": {
+   "rating": -2.39,
+   "cost": "3"
+  },
+  "Merchant Guild": {
+   "rating": 1.34,
+   "cost": "5"
+  },
+  "Merchant Ship": {
+   "rating": -4.44,
+   "cost": "5"
+  },
+  "Messenger": {
+   "rating": -0.93,
+   "cost": "4"
+  },
+  "Militia": {
+   "rating": 2.55,
+   "cost": "4"
+  },
+  "Mill": {
+   "rating": 0.11,
+   "cost": "4"
+  },
+  "Miller": {
+   "rating": -1.76,
+   "cost": "4"
+  },
+  "Mine": {
+   "rating": -3.48,
+   "cost": "5"
+  },
+  "Mining Road": {
+   "rating": -0.37,
+   "cost": "5"
+  },
+  "Mining Village": {
+   "rating": 0.47,
+   "cost": "4"
+  },
+  "Minion": {
+   "rating": 0.54,
+   "cost": "5"
+  },
+  "Mint": {
+   "rating": -0.31,
+   "cost": "5"
+  },
+  "Mirror": {
+   "rating": 0.13,
+   "cost": "3"
+  },
+  "Miser": {
+   "rating": -4.43,
+   "cost": "4"
+  },
+  "Mission": {
+   "rating": 0.46,
+   "cost": "4"
+  },
+  "Moat": {
+   "rating": -2.52,
+   "cost": "2"
+  },
+  "Modify": {
+   "rating": 1.71,
+   "cost": "5"
+  },
+  "Monastery": {
+   "rating": -0.91,
+   "cost": "2"
+  },
+  "Moneylender": {
+   "rating": 0.37,
+   "cost": "4"
+  },
+  "Monkey": {
+   "rating": 1.93,
+   "cost": "3"
+  },
+  "Monument": {
+   "rating": -2.12,
+   "cost": "4"
+  },
+  "Mountain Shrine": {
+   "rating": 3.91,
+   "cost": "5"
+  },
+  "Mountain Village": {
+   "rating": 0.41,
+   "cost": "4"
+  },
+  "Mountebank": {
+   "rating": 3.53,
+   "cost": "5"
+  },
+  "Mystic": {
+   "rating": -4.01,
+   "cost": "5"
+  },
+  "Native Village": {
+   "rating": -0.89,
+   "cost": "2"
+  },
+  "Navigator": {
+   "rating": -3.65,
+   "cost": "4"
+  },
+  "Necromancer": {
+   "rating": -0.17,
+   "cost": "4"
+  },
+  "Night Watchman": {
+   "rating": -3,
+   "cost": "3"
+  },
+  "Ninja": {
+   "rating": 3.79,
+   "cost": "4"
+  },
+  "Noble Brigand": {
+   "rating": -2.52,
+   "cost": "4"
+  },
+  "Nobles": {
+   "rating": 1.93,
+   "cost": "6"
+  },
+  "Nomad Camp": {
+   "rating": -1.57,
+   "cost": "4"
+  },
+  "Nomads": {
+   "rating": -0.91,
+   "cost": "4"
+  },
+  "Oasis": {
+   "rating": -2.12,
+   "cost": "3"
+  },
+  "Odysseys": {
+   "rating": 1.39,
+   "cost": "3"
+  },
+  "Old Map": {
+   "rating": 0.33,
+   "cost": "3"
+  },
+  "Old Witch": {
+   "rating": 3.38,
+   "cost": "5"
+  },
+  "Oracle": {
+   "rating": -1.74,
+   "cost": "3"
+  },
+  "Outpost": {
+   "rating": 2.88,
+   "cost": "5"
+  },
+  "Overlord": {
+   "rating": 2.76,
+   "cost": "6"
+  },
+  "Paddock": {
+   "rating": 1.77,
+   "cost": "5"
+  },
+  "Page": {
+   "rating": 5.7,
+   "cost": "2"
+  },
+  "Pageant": {
+   "rating": -0.34,
+   "cost": "3"
+  },
+  "Pathfinding": {
+   "rating": 2.2,
+   "cost": "6"
+  },
+  "Patrician": {
+   "rating": -1.83,
+   "cost": "2"
+  },
+  "Patrician/Emporium": {
+   "rating": -1.35,
+   "cost": "2"
+  },
+  "Patrol": {
+   "rating": -0.5,
+   "cost": "5"
+  },
+  "Patron": {
+   "rating": 0.38,
+   "cost": "4"
+  },
+  "Pawn": {
+   "rating": -1.71,
+   "cost": "2"
+  },
+  "Pearl Diver": {
+   "rating": -2.73,
+   "cost": "2"
+  },
+  "Peasant": {
+   "rating": 6.36,
+   "cost": "2"
+  },
+  "Peddler": {
+   "rating": 1.52,
+   "cost": "6"
+  },
+  "Pendant": {
+   "rating": -2.61,
+   "cost": "5"
+  },
+  "Peril": {
+   "rating": 0.06,
+   "cost": "2"
+  },
+  "Philosopher's Stone": {
+   "rating": -7.84,
+   "cost": "P"
+  },
+  "Piazza": {
+   "rating": -0.73,
+   "cost": "5"
+  },
+  "Pickaxe": {
+   "rating": 2.94,
+   "cost": "5"
+  },
+  "Pilgrim": {
+   "rating": -0.27,
+   "cost": "5"
+  },
+  "Pilgrimage": {
+   "rating": -2.14,
+   "cost": "4"
+  },
+  "Pillage": {
+   "rating": -5.3,
+   "cost": "5"
+  },
+  "Pirate": {
+   "rating": -1.03,
+   "cost": "5"
+  },
+  "Pirate Ship": {
+   "rating": -2.8,
+   "cost": "4"
+  },
+  "Pixie": {
+   "rating": 2.75,
+   "cost": "2"
+  },
+  "Plan": {
+   "rating": 1.12,
+   "cost": "3"
+  },
+  "Plaza": {
+   "rating": 0.7,
+   "cost": "4"
+  },
+  "Plunder": {
+   "rating": -0.32,
+   "cost": "5"
+  },
+  "Poacher": {
+   "rating": -2.5,
+   "cost": "4"
+  },
+  "Poet": {
+   "rating": 1.08,
+   "cost": "4"
+  },
+  "Pooka": {
+   "rating": -2.17,
+   "cost": "5"
+  },
+  "Poor House": {
+   "rating": -3.41,
+   "cost": "2"
+  },
+  "Populate": {
+   "rating": 0.96,
+   "cost": "6"
+  },
+  "Port": {
+   "rating": 3.41,
+   "cost": "4"
+  },
+  "Possession": {
+   "rating": 0.91,
+   "cost": "P"
+  },
+  "Practice": {
+   "rating": 0.52,
+   "cost": "3"
+  },
+  "Prepare": {
+   "rating": -1.39,
+   "cost": "3"
+  },
+  "Priest": {
+   "rating": 2.2,
+   "cost": "4"
+  },
+  "Prince": {
+   "rating": -2.17,
+   "cost": "6"
+  },
+  "Procession": {
+   "rating": 1.84,
+   "cost": "4"
+  },
+  "Prosper": {
+   "rating": -1.9,
+   "cost": "6"
+  },
+  "Pursue": {
+   "rating": -2.54,
+   "cost": "2"
+  },
+  "Quarry": {
+   "rating": 0.82,
+   "cost": "4"
+  },
+  "Quartermaster": {
+   "rating": 3.16,
+   "cost": "5"
+  },
+  "Quest": {
+   "rating": -4.43,
+   "cost": "2"
+  },
+  "Rabble": {
+   "rating": -1.19,
+   "cost": "5"
+  },
+  "Raid": {
+   "rating": -5.95,
+   "cost": "5"
+  },
+  "Raider": {
+   "rating": -4.86,
+   "cost": "6"
+  },
+  "Ranger": {
+   "rating": -0.68,
+   "cost": "4"
+  },
+  "Ratcatcher": {
+   "rating": 1.07,
+   "cost": "2"
+  },
+  "Rats": {
+   "rating": -1.36,
+   "cost": "4"
+  },
+  "Raze": {
+   "rating": 2,
+   "cost": "2"
+  },
+  "Reap": {
+   "rating": -4.1,
+   "cost": "6"
+  },
+  "Rebuild": {
+   "rating": -1.51,
+   "cost": "5"
+  },
+  "Receive Tribute": {
+   "rating": -3.8,
+   "cost": "5"
+  },
+  "Recruiter": {
+   "rating": 6.87,
+   "cost": "5"
+  },
+  "Relic": {
+   "rating": 1.04,
+   "cost": "5"
+  },
+  "Remake": {
+   "rating": 2.91,
+   "cost": "4"
+  },
+  "Remodel": {
+   "rating": -0.09,
+   "cost": "4"
+  },
+  "Replace": {
+   "rating": 1.8,
+   "cost": "5"
+  },
+  "Research": {
+   "rating": 0.06,
+   "cost": "4"
+  },
+  "Rice": {
+   "rating": 1.88,
+   "cost": "6"
+  },
+  "Rice Broker": {
+   "rating": 3.12,
+   "cost": "5"
+  },
+  "Ride": {
+   "rating": -2.75,
+   "cost": "2"
+  },
+  "Ritual": {
+   "rating": -4.48,
+   "cost": "4"
+  },
+  "River Shrine": {
+   "rating": 2.13,
+   "cost": "4"
+  },
+  "Riverboat": {
+   "rating": -0.17,
+   "cost": "3"
+  },
+  "Road Network": {
+   "rating": -2.99,
+   "cost": "5"
+  },
+  "Rocks": {
+   "rating": -5.06,
+   "cost": "4"
+  },
+  "Rogue": {
+   "rating": -3.28,
+   "cost": "5"
+  },
+  "Ronin": {
+   "rating": 2.13,
+   "cost": "5"
+  },
+  "Root Cellar": {
+   "rating": -2.86,
+   "cost": "3"
+  },
+  "Rope": {
+   "rating": 3.61,
+   "cost": "4"
+  },
+  "Royal Blacksmith": {
+   "rating": -2.8,
+   "cost": "6"
+  },
+  "Royal Carriage": {
+   "rating": 0.67,
+   "cost": "5"
+  },
+  "Royal Galley": {
+   "rating": 2.42,
+   "cost": "4"
+  },
+  "Royal Seal": {
+   "rating": -3.35,
+   "cost": "5"
+  },
+  "Rush": {
+   "rating": 0.49,
+   "cost": "2"
+  },
+  "Rustic Village": {
+   "rating": 0.84,
+   "cost": "4"
+  },
+  "Sack of Loot": {
+   "rating": 2.58,
+   "cost": "6"
+  },
+  "Sacred Grove": {
+   "rating": -1.24,
+   "cost": "5"
+  },
+  "Sacrifice": {
+   "rating": -0.41,
+   "cost": "4"
+  },
+  "Sage": {
+   "rating": -4,
+   "cost": "3"
+  },
+  "Sailor": {
+   "rating": 1.68,
+   "cost": "4"
+  },
+  "Salt the Earth": {
+   "rating": -1,
+   "cost": "4"
+  },
+  "Salvager": {
+   "rating": 0.28,
+   "cost": "4"
+  },
+  "Samurai": {
+   "rating": -3.2,
+   "cost": "6"
+  },
+  "Sanctuary": {
+   "rating": 2.18,
+   "cost": "5"
+  },
+  "Sauna": {
+   "rating": 0.4,
+   "cost": "4"
+  },
+  "Sauna/Avanto": {
+   "rating": 0.38,
+   "cost": "4"
+  },
+  "Save": {
+   "rating": 2.01,
+   "cost": "2"
+  },
+  "Scavenger": {
+   "rating": -3.46,
+   "cost": "4"
+  },
+  "Scepter": {
+   "rating": -2.44,
+   "cost": "5"
+  },
+  "Scheme": {
+   "rating": -1.26,
+   "cost": "3"
+  },
+  "Scholar": {
+   "rating": -3.22,
+   "cost": "5"
+  },
+  "Scouting Party": {
+   "rating": -2.12,
+   "cost": "2"
+  },
+  "Scrap": {
+   "rating": 2.05,
+   "cost": "3"
+  },
+  "Scrounge": {
+   "rating": -0.98,
+   "cost": "3"
+  },
+  "Scrying Pool": {
+   "rating": 3.05,
+   "cost": "P"
+  },
+  "Sculptor": {
+   "rating": 1.4,
+   "cost": "5"
+  },
+  "Sea Chart": {
+   "rating": -2.35,
+   "cost": "3"
+  },
+  "Sea Hag": {
+   "rating": -0.35,
+   "cost": "4"
+  },
+  "Sea Trade": {
+   "rating": 1.57,
+   "cost": "4"
+  },
+  "Sea Witch": {
+   "rating": 5.2,
+   "cost": "5"
+  },
+  "Search": {
+   "rating": -1.13,
+   "cost": "2"
+  },
+  "Seaway": {
+   "rating": 0.23,
+   "cost": "5"
+  },
+  "Secluded Shrine": {
+   "rating": -1.19,
+   "cost": "3"
+  },
+  "Secret Cave": {
+   "rating": -0.76,
+   "cost": "3"
+  },
+  "Secret Passage": {
+   "rating": -2.29,
+   "cost": "4"
+  },
+  "Seer": {
+   "rating": 3.31,
+   "cost": "5"
+  },
+  "Seize the Day": {
+   "rating": 0.83,
+   "cost": "4"
+  },
+  "Sentinel": {
+   "rating": 4.53,
+   "cost": "3"
+  },
+  "Sentry": {
+   "rating": 4.6,
+   "cost": "5"
+  },
+  "Settlers": {
+   "rating": -2.43,
+   "cost": "2"
+  },
+  "Settlers/Bustling Village": {
+   "rating": -1.44,
+   "cost": "2"
+  },
+  "Sewers": {
+   "rating": 0.69,
+   "cost": "3"
+  },
+  "Shaman": {
+   "rating": 2.61,
+   "cost": "2"
+  },
+  "Shanty Town": {
+   "rating": -2,
+   "cost": "3"
+  },
+  "Sheepdog": {
+   "rating": -0.24,
+   "cost": "3"
+  },
+  "Shepherd": {
+   "rating": 1.73,
+   "cost": "4"
+  },
+  "Shop": {
+   "rating": -1.86,
+   "cost": "3"
+  },
+  "Sibyl": {
+   "rating": -0.16,
+   "cost": "6"
+  },
+  "Silk Merchant": {
+   "rating": 6.84,
+   "cost": "4"
+  },
+  "Silk Road": {
+   "rating": -2.75,
+   "cost": "4"
+  },
+  "Silos": {
+   "rating": 0.45,
+   "cost": "4"
+  },
+  "Silver Mine": {
+   "rating": -2.73,
+   "cost": "5"
+  },
+  "Sinister Plot": {
+   "rating": 2.36,
+   "cost": "4"
+  },
+  "Siren": {
+   "rating": 2.44,
+   "cost": "3"
+  },
+  "Skirmisher": {
+   "rating": 0.64,
+   "cost": "5"
+  },
+  "Skulk": {
+   "rating": -0.8,
+   "cost": "4"
+  },
+  "Sleigh": {
+   "rating": -0.64,
+   "cost": "2"
+  },
+  "Smithy": {
+   "rating": 0,
+   "cost": "4"
+  },
+  "Smugglers": {
+   "rating": -1.32,
+   "cost": "3"
+  },
+  "Snake Witch": {
+   "rating": -3.14,
+   "cost": "2"
+  },
+  "Snowy Village": {
+   "rating": 0.29,
+   "cost": "3"
+  },
+  "Soothsayer": {
+   "rating": -0.49,
+   "cost": "5"
+  },
+  "Sorcerer": {
+   "rating": -2.44,
+   "cost": "5"
+  },
+  "Sorceress": {
+   "rating": -2.5,
+   "cost": "5"
+  },
+  "Souk": {
+   "rating": 4.36,
+   "cost": "5"
+  },
+  "Specialist": {
+   "rating": 2.89,
+   "cost": "5"
+  },
+  "Spice Merchant": {
+   "rating": 2.3,
+   "cost": "4"
+  },
+  "Spices": {
+   "rating": 1.07,
+   "cost": "5"
+  },
+  "Squire": {
+   "rating": 0.53,
+   "cost": "2"
+  },
+  "Stables": {
+   "rating": 1.78,
+   "cost": "5"
+  },
+  "Stampede": {
+   "rating": -0.3,
+   "cost": "5"
+  },
+  "Star Chart": {
+   "rating": 0.77,
+   "cost": "3"
+  },
+  "Stash": {
+   "rating": -6.6,
+   "cost": "5"
+  },
+  "Steward": {
+   "rating": 3.04,
+   "cost": "3"
+  },
+  "Stockpile": {
+   "rating": 5.09,
+   "cost": "3"
+  },
+  "Stonemason": {
+   "rating": 1.7,
+   "cost": "2"
+  },
+  "Storeroom": {
+   "rating": -0.87,
+   "cost": "3"
+  },
+  "Storyteller": {
+   "rating": 0.29,
+   "cost": "5"
+  },
+  "Stowaway": {
+   "rating": -1.39,
+   "cost": "3"
+  },
+  "Stronghold": {
+   "rating": -2.31,
+   "cost": "6"
+  },
+  "Student": {
+   "rating": -0.18,
+   "cost": "3"
+  },
+  "Summon": {
+   "rating": 1.13,
+   "cost": "5"
+  },
+  "Sunken Treasure": {
+   "rating": -1.33,
+   "cost": "5"
+  },
+  "Supplies": {
+   "rating": 2.38,
+   "cost": "2"
+  },
+  "Swamp Hag": {
+   "rating": -0.24,
+   "cost": "5"
+  },
+  "Swamp Shacks": {
+   "rating": 1.48,
+   "cost": "4"
+  },
+  "Swap": {
+   "rating": 1.36,
+   "cost": "5"
+  },
+  "Swashbuckler": {
+   "rating": 0.5,
+   "cost": "5"
+  },
+  "Swindler": {
+   "rating": 0.89,
+   "cost": "3"
+  },
+  "Sycophant": {
+   "rating": -1.85,
+   "cost": "2"
+  },
+  "Tactician": {
+   "rating": -1.88,
+   "cost": "5"
+  },
+  "Talisman": {
+   "rating": -1.5,
+   "cost": "4"
+  },
+  "Tanuki": {
+   "rating": 3.46,
+   "cost": "5"
+  },
+  "Taskmaster": {
+   "rating": 0.29,
+   "cost": "3"
+  },
+  "Tax": {
+   "rating": -2.9,
+   "cost": "2"
+  },
+  "Taxman": {
+   "rating": -4.12,
+   "cost": "4"
+  },
+  "Tea House": {
+   "rating": 0.52,
+   "cost": "5"
+  },
+  "Temple": {
+   "rating": -1.56,
+   "cost": "4"
+  },
+  "Tent": {
+   "rating": -2.17,
+   "cost": "3"
+  },
+  "Territory": {
+   "rating": -4.15,
+   "cost": "6"
+  },
+  "Throne Room": {
+   "rating": 2.73,
+   "cost": "4"
+  },
+  "Tiara": {
+   "rating": 1.44,
+   "cost": "4"
+  },
+  "Tide Pools": {
+   "rating": -3.43,
+   "cost": "4"
+  },
+  "Toil": {
+   "rating": -1.82,
+   "cost": "2"
+  },
+  "Tools": {
+   "rating": 0.47,
+   "cost": "4"
+  },
+  "Tormentor": {
+   "rating": -1.09,
+   "cost": "5"
+  },
+  "Torturer": {
+   "rating": 2.39,
+   "cost": "5"
+  },
+  "Tournament": {
+   "rating": 4.82,
+   "cost": "4"
+  },
+  "Town": {
+   "rating": 1.78,
+   "cost": "4"
+  },
+  "Town Crier": {
+   "rating": -1.86,
+   "cost": "2"
+  },
+  "Townsfolk": {
+   "rating": -0.16,
+   "cost": "3"
+  },
+  "Tracker": {
+   "rating": -2.47,
+   "cost": "2"
+  },
+  "Trade": {
+   "rating": -2.34,
+   "cost": "5"
+  },
+  "Trade Route": {
+   "rating": -2,
+   "cost": "3"
+  },
+  "Trader": {
+   "rating": -3.99,
+   "cost": "4"
+  },
+  "Trading Post": {
+   "rating": -1.77,
+   "cost": "5"
+  },
+  "Tragic Hero": {
+   "rating": 0.92,
+   "cost": "5"
+  },
+  "Trail": {
+   "rating": 2.22,
+   "cost": "4"
+  },
+  "Training": {
+   "rating": -1.14,
+   "cost": "6"
+  },
+  "Transmogrify": {
+   "rating": 2.12,
+   "cost": "4"
+  },
+  "Transmute": {
+   "rating": -6.84,
+   "cost": "P"
+  },
+  "Transport": {
+   "rating": 2.87,
+   "cost": "3"
+  },
+  "Travelling Fair": {
+   "rating": 0.45,
+   "cost": "2"
+  },
+  "Treasure Map": {
+   "rating": -3.95,
+   "cost": "4"
+  },
+  "Treasure Trove": {
+   "rating": -1.82,
+   "cost": "5"
+  },
+  "Treasurer": {
+   "rating": 1.97,
+   "cost": "5"
+  },
+  "Treasury": {
+   "rating": -2.86,
+   "cost": "5"
+  },
+  "Trickster": {
+   "rating": -0.49,
+   "cost": "5"
+  },
+  "Triumph": {
+   "rating": 2.74,
+   "cost": "5"
+  },
+  "Tunnel": {
+   "rating": -1.71,
+   "cost": "3"
+  },
+  "Underling": {
+   "rating": 0.12,
+   "cost": "3"
+  },
+  "University": {
+   "rating": 1.64,
+   "cost": "P"
+  },
+  "Upgrade": {
+   "rating": 3.08,
+   "cost": "5"
+  },
+  "Urchin": {
+   "rating": 3.39,
+   "cost": "3"
+  },
+  "Vagrant": {
+   "rating": -3.25,
+   "cost": "2"
+  },
+  "Vampire": {
+   "rating": 3.78,
+   "cost": "5"
+  },
+  "Vassal": {
+   "rating": -1.44,
+   "cost": "3"
+  },
+  "Vault": {
+   "rating": -2.9,
+   "cost": "5"
+  },
+  "Venture": {
+   "rating": -2.59,
+   "cost": "5"
+  },
+  "Villa": {
+   "rating": 5.77,
+   "cost": "4"
+  },
+  "Village": {
+   "rating": 1.18,
+   "cost": "3"
+  },
+  "Village Green": {
+   "rating": 1.96,
+   "cost": "4"
+  },
+  "Villain": {
+   "rating": -2.4,
+   "cost": "5"
+  },
+  "Vineyard": {
+   "rating": 0.64,
+   "cost": "P"
+  },
+  "Voyage": {
+   "rating": 0.74,
+   "cost": "4"
+  },
+  "Walled Village": {
+   "rating": -1.26,
+   "cost": "4"
+  },
+  "Wandering Minstrel": {
+   "rating": 4.4,
+   "cost": "4"
+  },
+  "War Chest": {
+   "rating": -0.98,
+   "cost": "5"
+  },
+  "Warehouse": {
+   "rating": -1.97,
+   "cost": "3"
+  },
+  "Warlord": {
+   "rating": 4,
+   "cost": "5"
+  },
+  "Watchtower": {
+   "rating": -0.3,
+   "cost": "3"
+  },
+  "Wayfarer": {
+   "rating": 1.93,
+   "cost": "6"
+  },
+  "Wealthy Village": {
+   "rating": 2.52,
+   "cost": "5"
+  },
+  "Weaver": {
+   "rating": 0.59,
+   "cost": "4"
+  },
+  "Wedding": {
+   "rating": -3.23,
+   "cost": "6"
+  },
+  "Werewolf": {
+   "rating": -1.37,
+   "cost": "5"
+  },
+  "Wharf": {
+   "rating": 6.3,
+   "cost": "5"
+  },
+  "Wheelwright": {
+   "rating": 0.62,
+   "cost": "5"
+  },
+  "Wild Hunt": {
+   "rating": 0.23,
+   "cost": "5"
+  },
+  "Windfall": {
+   "rating": -2.41,
+   "cost": "5"
+  },
+  "Wine Merchant": {
+   "rating": -1.53,
+   "cost": "5"
+  },
+  "Wishing Well": {
+   "rating": -1.03,
+   "cost": "3"
+  },
+  "Witch": {
+   "rating": 4.02,
+   "cost": "5"
+  },
+  "Witch's Hut": {
+   "rating": 0.42,
+   "cost": "5"
+  },
+  "Wizards": {
+   "rating": -0.58,
+   "cost": "3"
+  },
+  "Worker's Village": {
+   "rating": 3.23,
+   "cost": "4"
+  },
+  "Workshop": {
+   "rating": -2.71,
+   "cost": "3"
+  },
+  "Young Witch": {
+   "rating": -2.85,
+   "cost": "4"
+  }
+ }
+}

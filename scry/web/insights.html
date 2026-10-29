@@ -28,7 +28,7 @@
     <span id="meta" class="meta">Reading the saved games…</span>
     <label class="pick" for="player" hidden>Player <select id="player"></select></label>
     <div class="views" role="tablist" aria-label="Views">
-      <button type="button" role="tab" id="t-overview" data-view="overview" aria-controls="v-overview">Overview</button><button type="button" role="tab" id="t-cards" data-view="cards" aria-controls="v-cards">Cards</button><button type="button" role="tab" id="t-time" data-view="time" aria-controls="v-time">Over time</button>
+      <button type="button" role="tab" id="t-overview" data-view="overview" aria-controls="v-overview">Overview</button><button type="button" role="tab" id="t-openings" data-view="openings" aria-controls="v-openings">Openings</button><button type="button" role="tab" id="t-cards" data-view="cards" aria-controls="v-cards">Cards</button><button type="button" role="tab" id="t-time" data-view="time" aria-controls="v-time">Over time</button>
     </div>
   </div>
 
@@ -51,7 +51,7 @@
     <div class="main">
       <section class="panel" aria-labelledby="forest-h">
         <h2 id="forest-h">Every comparison</h2>
-        <div id="forest"></div>
+        <div id="forest" class="rows"></div>
         <div class="legend"><span><i class="up"></i>clearly better</span><span><i class="down"></i>clearly worse</span><span><i class="none"></i>could be chance</span></div>
         <p class="note">Each dot is a difference in win rate, in percentage points; its line is the 80% range. Kingdom rows compare games with the role to games without it, endings and openings compare to the win rate of the games shown, the seat compares going first to going second. Openings are how your 7 Coppers fell between turns 1 and 2; other is a start with an Heirloom or Baker's Coffers.<span id="open-note"></span> Click a row to show only its games.</p>
       </section>
@@ -60,6 +60,30 @@
         <section class="panel" aria-labelledby="prov-h"><h2 id="prov-h">Turn of your first Province</h2><div id="prov" class="ec ec-small"></div><p class="note" id="prov-note"></p></section>
       </div>
     </div>
+  </div>
+
+  <div class="view" id="v-openings" role="tabpanel" aria-labelledby="t-openings" hidden>
+    <div class="main">
+      <section class="panel" aria-labelledby="op-h">
+        <h2 id="op-h">Your openings</h2>
+        <div id="op-rows" class="rows"></div>
+        <div class="legend"><span><i class="up"></i>clearly better</span><span><i class="down"></i>clearly worse</span><span><i class="none"></i>could be chance</span></div>
+        <p class="note">Each row is a win rate against the games shown, in percentage points, with its 80% range. Split: how your 7 Coppers fell between turns 1 and 2. What you opened with: the cards gained on turns 1 and 2. The top-rated card is the kingdom card the community's <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTkdmqYioc1WZb-RlsCH7qNIe75VAWasuhu_8OWiwnhmCj3TKJXczm6j8vxgYiRYdZIE9zlSBnwxWC9/pubhtml" target="_blank" rel="noopener">Dominion Card Glicko</a> rates highest among those the larger turn could afford; it rates cards in general, not as openers. Click a row to show only its games.</p>
+      </section>
+      <section class="panel" aria-labelledby="op-passed-h">
+        <h2 id="op-passed-h">Latest games that passed on the top-rated card</h2>
+        <div id="op-passed" class="passed"></div>
+      </section>
+    </div>
+    <section class="panel cards" aria-labelledby="op-cards-h">
+      <div class="bar">
+        <h2 id="op-cards-h">Cards you opened with</h2>
+        <input id="oq" type="search" placeholder="Find a card" aria-label="Find a card you opened with">
+        <span class="count" id="op-count"></span>
+      </div>
+      <div class="tbl"><table id="op-tbl"><thead></thead><tbody></tbody></table></div>
+      <p class="note">Won when opened: games that gained the card on turn 1 or 2. Could have, didn't: games where the larger turn could afford it (by its cost group in the rating) but you opened something else. Games with more than two gains on turns 1 and 2 are left out. Click a row to show only the games that opened with it.</p>
+    </section>
   </div>
 
   <div class="view" id="v-cards" role="tabpanel" aria-labelledby="t-cards" hidden>
