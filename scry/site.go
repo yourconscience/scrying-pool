@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
 )
@@ -98,11 +99,12 @@ func makeProfiles(dir string, players []string) (int, error) {
 	}
 	list := siteList{Default: players[0]}
 	for _, p := range players {
-		mine := advisor.Of(p, features)
+		mine := lastDays(advisor.Of(p, features), siteDays)
 		if len(mine) == 0 {
 			return 0, fmt.Errorf("no saved games of %q", p)
 		}
 		in := advisor.Summarize(p, mine)
+		in.WindowDays = siteDays
 		in.Games = siteGames(mine)
 		// the static page links the images where KingdomCreator publishes them
 		// rather than copying them: they belong to Rio Grande Games
@@ -130,6 +132,21 @@ func makeProfiles(dir string, players []string) (int, error) {
 	}
 	b, _ = json.MarshalIndent(list, "", " ")
 	return len(list.Players), os.WriteFile(filepath.Join(dir, "players.json"), b, 0o644)
+}
+
+// siteDays is how far back the published profiles go.
+const siteDays = 90
+
+// lastDays keeps the games played within days before today.
+func lastDays(games []*advisor.Features, days int) []*advisor.Features {
+	from := time.Now().AddDate(0, 0, -days).Truncate(24 * time.Hour)
+	var out []*advisor.Features
+	for _, g := range games {
+		if d, err := time.Parse("2006-Jan-02", g.Date); err == nil && !d.Before(from) {
+			out = append(out, g)
+		}
+	}
+	return out
 }
 
 // siteGames copies the games for the static page, which filters and counts them

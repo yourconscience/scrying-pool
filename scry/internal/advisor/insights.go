@@ -121,6 +121,8 @@ type Insights struct {
 	First    string          `json:"first_date"`
 	Last     string          `json:"last_date"`
 	MinGames int             `json:"min_games"` // cards seen in fewer games are left out
+	// the games are those of this many days before the profile was made; 0 for all
+	WindowDays int `json:"window_days,omitempty"`
 	// card -> image URL, filled by whoever serves the page (the local app or a static site)
 	Images map[string]string `json:"images,omitempty"`
 	// card -> its community rating, filled the same way

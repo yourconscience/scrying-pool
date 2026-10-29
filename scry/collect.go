@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"time"
 )
@@ -139,7 +140,7 @@ return { me: me.name, ids };`
 // dominion.games tab in Brave on this Mac (opening one if there is none) with the
 // capture script, and imports the games not saved in dir yet. It never logs in:
 // when the tab isn't logged in, or you're at a table, it stops.
-func collect(dir string, minTurns int, budget time.Duration) (err error) {
+func collect(dir string, minTurns int, budget, since time.Duration) (err error) {
 	if runtime.GOOS != "darwin" {
 		return fmt.Errorf("collect drives Brave through AppleScript, which needs macOS")
 	}
@@ -209,8 +210,32 @@ func collect(dir string, minTurns int, budget time.Duration) (err error) {
 		}
 	}
 	fmt.Printf("%s: %d latest games, %d not saved\n", latest.Me, len(latest.IDs), len(todo))
+	// with since, also the games an older list names that were never loaded,
+	// each with its row so it keeps its date and scores
+	rows := map[string]string{}
+	if since > 0 {
+		old, err := neverLoaded(dir, time.Now().Add(-since))
+		if err != nil {
+			return err
+		}
+		for _, g := range old {
+			if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) && !slices.Contains(todo, g.ID) {
+				todo = append(todo, g.ID)
+				rows[g.ID] = g.Date + " | " + g.Result
+			}
+		}
+		fmt.Printf("%d older games never loaded since %s\n", len(rows), time.Now().Add(-since).Format("2006-01-02"))
+	}
 	if len(todo) == 0 {
 		return nil
+	}
+	if len(rows) > 0 {
+		b, _ := json.Marshal(rows)
+		if _, err := t.page(`const C = window.scryCapture;
+for (const [id, row] of Object.entries(`+string(b)+`)) C.meta[id] = Object.assign(C.meta[id] || {}, { row });
+await C.saveState();`, time.Minute); err != nil {
+			return err
+		}
 	}
 
 	// run skips games the tab finished earlier (saved, AFK, or ones the server
@@ -292,10 +317,44 @@ return by;`
 	return nil
 }
 
+// manifestGame is a game a manifest-*.json in the games folder lists: DomBot's
+// !prior for the player, with what became of each game.
+type manifestGame struct {
+	ID     string `json:"id"`
+	Date   string `json:"date"`   // "2026-Sep-30"
+	Result string `json:"result"` // "gamrevinu: 28, Wtrrch: 24"
+	Status string `json:"status"` // saved, not-tried, server-error, afk, capture-error
+}
+
+// neverLoaded lists the manifests' games that were never tried, played on or after from.
+func neverLoaded(dir string, from time.Time) ([]manifestGame, error) {
+	files, _ := filepath.Glob(filepath.Join(dir, "manifest-*.json"))
+	var out []manifestGame
+	for _, f := range files {
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return nil, err
+		}
+		var m struct {
+			Games []manifestGame `json:"games"`
+		}
+		if err := json.Unmarshal(b, &m); err != nil {
+			return nil, fmt.Errorf("%s: %w", f, err)
+		}
+		for _, g := range m.Games {
+			if d, err := time.Parse("2006-Jan-02", g.Date); err == nil && g.Status == "not-tried" && !d.Before(from.Truncate(24*time.Hour)) {
+				out = append(out, g)
+			}
+		}
+	}
+	return out, nil
+}
+
 // publish rebuilds site-data/ in repo, a clean checkout of this repository, from
 // the saved games: on a new branch from origin/main, for the players its
-// players.json lists. When anything changed, it pushes the branch and opens a pull request.
-func publish(repo string) error {
+// players.json lists. When anything changed, it pushes the branch and opens a
+// pull request; with merge, it waits for the pull request's checks and merges it.
+func publish(repo string, merge bool) error {
 	git := func(args ...string) (string, error) {
 		out, err := exec.Command("git", append([]string{"-C", repo}, args...)...).CombinedOutput()
 		if err != nil {
@@ -358,6 +417,34 @@ func publish(repo string) error {
 		return fmt.Errorf("gh pr create: %v: %s", err, out)
 	}
 	fmt.Print(string(out))
+	if !merge {
+		return nil
+	}
+	gh := func(args ...string) (string, error) {
+		c := exec.Command("gh", args...)
+		c.Dir = repo
+		out, err := c.CombinedOutput()
+		return string(out), err
+	}
+	// the checks take a moment to show up on a new pull request
+	for try := 0; ; try++ {
+		out, err := gh("pr", "checks", branch, "--watch", "--fail-fast", "--interval", "30")
+		if err == nil {
+			break
+		}
+		if !strings.Contains(out, "no checks reported") || try == 20 {
+			return fmt.Errorf("the checks of %s didn't pass: %s", branch, out)
+		}
+		time.Sleep(15 * time.Second)
+	}
+	if out, err := gh("pr", "merge", branch, "--squash"); err != nil {
+		return fmt.Errorf("gh pr merge: %v: %s", err, out)
+	}
+	// main is checked out elsewhere, so gh can't delete the branch for us
+	git("switch", "-q", "--detach", "origin/main")
+	git("branch", "-q", "-D", branch)
+	git("push", "-q", "origin", "--delete", branch)
+	fmt.Println("merged", branch)
 	return nil
 }
 
