@@ -45,13 +45,21 @@ func Check(c *cartographer.Client, t *engine.Table, logText, score string) Repor
 		if r == nil || rep.Done {
 			break
 		}
-		more := r.hintsFor()
-		if len(more) == 0 {
-			break
+		var rep2 Report
+		var r2 *replayer
+		var h map[takeID]string
+		for _, near := range []bool{false, true} { // the hand's lines to its next draw, else only to the stop
+			more := r.hintsFor(near)
+			if len(more) == 0 {
+				continue
+			}
+			h = maps.Clone(hints)
+			maps.Copy(h, more)
+			rep2, r2 = check(c, t, logText, score, h)
+			if r2 != nil && (r2.matched > r.matched || rep2.Done) {
+				break
+			}
 		}
-		h := maps.Clone(hints)
-		maps.Copy(h, more)
-		rep2, r2 := check(c, t, logText, score, h)
 		if r2 == nil || r2.matched < r.matched && !rep2.Done {
 			break
 		}
@@ -470,7 +478,7 @@ func (r *replayer) hintInDeck(p int, n string) bool {
 // whose draws the log doesn't name: the cards that player shows from the hand
 // it drew at its last Clean-up (and since), which the takes didn't give it, in
 // place of takes whose cards the hand never shows.
-func (r *replayer) hintsFor() map[takeID]string {
+func (r *replayer) hintsFor(near bool) map[takeID]string {
 	if r.pos >= len(r.real) || r.pos < 0 {
 		return nil
 	}
@@ -496,9 +504,18 @@ func (r *replayer) hintsFor() map[takeID]string {
 		}
 	}
 	need, gone := map[string]int{}, map[string]int{} // gone: cards the lines took out of the hand so far
-	for _, y := range r.real[from+1 : to] {
+	if near {
+		to = min(to, r.pos+1)
+	}
+	for j, y := range r.real[from+1 : to] {
 		if y.Player != x.Player || !r.fromHand(y) || y.Template == "REVEAL" {
 			continue
+		}
+		if z := r.real[min(from+2+j, len(r.real)-1)]; y.Template == "DISCARD" && z.Template == "REACTS_PLAYING" && z.Player == y.Player && z.Level == y.Level+1 &&
+			slices.ContainsFunc(y.Args[1].Cards, func(cn cartographer.CardN) bool { return cn.Card == nil }) {
+			n := cardName(z.Args[1]) // the unseen card discarded plays itself: "discards a card and a Copper.", "reacts with a Trail, playing it."
+			need[n] = max(need[n], gone[n]+1)
+			gone[n]++
 		}
 		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" || y.Template == "BLOCKS_WITH" // the cards stay in the hand
 		off := map[string]int{}
@@ -1839,6 +1856,20 @@ func (r *replayer) pick(d *engine.Decision, cards []cartographer.CardN) []int {
 		if o := d.Options[0]; o.Inst >= 0 && r.g.Where(o.Inst).Zone == engine.Revealed { // what the next lines name stays: Miller's discarded Estate
 			need = r.namedBelow(r.pos)
 			strict = need
+		}
+	}
+	if x, _ := r.peek(); unknown > 0 && d.Kind == engine.ToDiscard {
+		if i, ok := r.line[x.Line]; ok && i+1 < len(r.real) {
+			if y := r.real[i+1]; y.Template == "REACTS_PLAYING" && y.Player == x.Player && y.Level == x.Level+1 { // the unseen card discarded plays itself: "discards a card and a Copper.", "reacts with a Trail, playing it."
+				for i, o := range d.Options {
+					if !used[i] && r.t.Defs[o.Card].Name == cardName(y.Args[1]) {
+						used[i] = true
+						out = append(out, i)
+						unknown--
+						break
+					}
+				}
+			}
 		}
 	}
 	if x, _ := r.peek(); unknown > 0 && strings.HasPrefix(x.Template, "PUT_IN_HAND") && d.Options[0].Inst >= 0 && r.g.Where(d.Options[0].Inst).Zone == engine.Aside {
