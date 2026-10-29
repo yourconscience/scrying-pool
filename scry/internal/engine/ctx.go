@@ -20,6 +20,7 @@ type Ctx struct {
 	InPlace bool
 
 	from       bool    // the effect happens away from the card's play (a Duration's next turn): lines name the card
+	gainsFrom  bool    // only its gains name the card: a Skulk's "gains a Gold. (Skulk)" when gained at the start of a turn
 	name       CardID  // with from, the card +Cards, +Actions, +Buys and +$ lines name instead of Src
 	swap       bool    // Way of the Chameleon: its player's +Cards give +$ instead, and +$ give +Cards
 	holders    []Inst  // the cards that played this one (Throne Room), which stay in play with it
@@ -531,7 +532,7 @@ func (c *Ctx) GainAs(p int, card CardID, to Zone, template string) Inst {
 
 func (c *Ctx) logGain(p int, x Inst, template string) {
 	args := []any{Seat(p), []CardID{c.G.cards[x]}}
-	if c.from && template == "GAIN" {
+	if (c.from || c.gainsFrom) && template == "GAIN" {
 		c.Log("GAIN_WITH", append(args, Name(c.Src))...)
 		return
 	}

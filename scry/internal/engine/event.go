@@ -109,7 +109,11 @@ func (g *Game) fire(ev *Ev) {
 				h = r.OnReveal
 			}
 			if h != nil {
-				own = func() { h(g.ctx(ev.P, ev.X, ev.Level), ev) }
+				own = func() {
+					cx := g.ctx(ev.P, ev.X, ev.Level)
+					cx.gainsFrom = g.T2.Phase == StartPhase // "gains a Gold. (Skulk)" under a gain at the start of a turn
+					h(cx, ev)
+				}
 			}
 		}
 	}
