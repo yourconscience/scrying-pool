@@ -272,6 +272,7 @@ type replayer struct {
 	hidden     map[engine.Inst]bool       // cards the replay chose for draws the log doesn't name, while no line has shown them
 	schemeTurn string                     // the turn Scheme's picks were counted in
 	schemes    int                        // Scheme picks answered in it
+	topDrawn   map[int]int                // by line, the cards on top it drew that its takes don't have
 	flat       bool                       // the log writes the choice the engine nests at the top level
 	hints      map[takeID]string          // names for takes the log doesn't name, from an earlier run
 	assigned   map[takeID]string          // the card each take was
@@ -1807,6 +1808,9 @@ func (r *replayer) beforeTake(p int) {
 			r.took[p]++
 		}
 	}
+	if r.untaken(p) {
+		return
+	}
 	k := r.took[p]
 	could := map[string]bool{}
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 && !r.free(d[len(d)-1]) {
@@ -1828,6 +1832,49 @@ func (r *replayer) beforeTake(p int) {
 	if d := r.g.P[p].Z[engine.Deck]; len(d) > 0 {
 		r.assigned[takeID{p, k}] = r.g.Def(d[len(d)-1]).Name
 	}
+}
+
+// untaken: the card on top, put there unseen, is one the draw's line names but
+// its takes don't: Scheme's "topdecks a card.", "draws a Scheme, a Mercenary, ...".
+// It's drawn as it is.
+func (r *replayer) untaken(p int) bool {
+	d := r.g.P[p].Z[engine.Deck]
+	if len(d) == 0 || r.free(d[len(d)-1]) || r.took[p] >= len(r.takes[p]) {
+		return false
+	}
+	line := r.takes[p][r.took[p]].Line
+	i, ok := r.line[line]
+	if !ok || !strings.HasPrefix(r.real[i].Template, "DRAW") {
+		return false
+	}
+	unseen := false
+	for j := i - 1; j >= 0 && r.real[j].Template != "NEW_TURN" && !unseen; j-- {
+		y := r.real[j]
+		unseen = y.Template == "TOPDECK" && y.Player == r.real[i].Player && slices.ContainsFunc(y.Args[1].Cards, func(cn cartographer.CardN) bool { return cn.Card == nil })
+	}
+	if !unseen {
+		return false
+	}
+	name := r.g.Def(d[len(d)-1]).Name
+	named := 0
+	for _, cn := range r.real[i].Args[1].Cards {
+		if cn.Card != nil && cn.Card.Name == name {
+			named += cn.N
+		}
+	}
+	for _, t := range r.takes[p] {
+		if t.Line == line && t.Card == name {
+			named--
+		}
+	}
+	if r.topDrawn == nil {
+		r.topDrawn = map[int]int{}
+	}
+	if named-r.topDrawn[line] <= 0 {
+		return false
+	}
+	r.topDrawn[line]++
+	return true
 }
 
 func (r *replayer) takeNext(p int) {
