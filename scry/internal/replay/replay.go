@@ -193,7 +193,17 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 	}
 	g.WatchFirst = func(ev *engine.Ev) bool {
 		x, ok := r.peek()
-		return ok && ev.Kind == engine.EvGain && ev.X >= 0 && x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
+		if !ok || ev.Kind != engine.EvGain || ev.X < 0 {
+			return false
+		}
+		if n := len(x.Args); n > 2 && strings.HasSuffix(x.Template, "_FROM") {
+			for _, w := range r.g.Watches() { // the watch's own line: Collection's "gets 1 VP from Collection." before Search's "trashes a Search."
+				if w.P == ev.P && r.t.Defs[w.C].Name == cardName(x.Args[n-1]) {
+					return true
+				}
+			}
+		}
+		return x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
 	}
 	g.HeldLater = func(p int) bool { // the next line names a landscape or a kingdom card's: Barracks', Shaman's
 		x, ok := r.peek()
