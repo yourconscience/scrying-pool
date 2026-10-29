@@ -1086,6 +1086,9 @@ func (c *Ctx) TrashFromSupply(p int, card CardID) Inst {
 	x := s[len(s)-1]
 	c.G.move(x, Supply, Loc{Trash, 0})
 	c.Log("TRASH", Seat(p), []CardID{card})
+	if p == c.G.Cur { // Goatherd counts it: Lurker's "trashes a Caravan."
+		c.G.T2.Trashed++
+	}
 	c.G.fire(&Ev{Kind: EvTrash, P: p, X: x, C: card, From: Supply, By: c.Src, Level: c.level + 1})
 	return x
 }
