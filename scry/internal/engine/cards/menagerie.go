@@ -329,7 +329,7 @@ func init() {
 		n := min(6, c.CostOf(c.G.CardOf(x)).Coins)
 		c.Trash(c.P, one(x))
 		ks := c.Modes(c.P, n, n, mode("+1 Card", "DRAW"), mode("+1 Action", "GETS_ACTION"), mode("+1 Buy", "GETS_BUY"),
-			mode("+$1", "GETS_COIN"), mode("gain a Silver", "GAIN"), mode("gain a Horse", "GAIN"))
+			mode("+$1", "GETS_COIN"), engine.Mode{Label: "gain a Silver", Line: "GAIN", Card: c.Card("Silver")}, engine.Mode{Label: "gain a Horse", Line: "GAIN", Card: c.Card("Horse")})
 		slices.Sort(ks)
 		for _, k := range ks {
 			switch k {
