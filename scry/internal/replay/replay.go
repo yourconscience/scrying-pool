@@ -1131,6 +1131,10 @@ func (r *replayer) chooseModes(d *engine.Decision) []int {
 	if start < len(r.real) && r.real[start].Template == r.g.Log.Pending() {
 		start++ // the answer's line writes "begins their Cleanup phase." first: Trickster's "sets a Copper aside."
 	}
+	if y := r.real[min(start, len(r.real)-1)]; y.Template == "LOOK_AT" && start > 0 && start+1 < len(r.real) && r.real[start-1].Template == "PLAY" && r.real[start-1].Player == y.Player &&
+		!slices.ContainsFunc(d.Options, func(o engine.Option) bool { return o.Line == "LOOK_AT" }) {
+		start++ // the discard pile a card played from it looks through: "plays a Village Green.", "looks at a Village Green and 3 Coppers.", "draws a War Chest."
+	}
 	level := min(d.Level, 3)
 	if start < len(r.real) && start > 0 && r.real[start].Level == 0 && d.Level == 1 && (r.flat || r.real[start-1].Level == 1) &&
 		r.real[start].Template != "NEW_TURN" && r.real[start].Player == r.names[d.Player] {
