@@ -1508,7 +1508,7 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 	if x.Template == "CALL" || x.Template == "SPENDS_FAVOR" { // a Reserve or an Ally before the Durations
 		return -1
 	}
-	for name, t := range map[string]string{"Gang of Pickpockets": "DISCARD", "Piazza": "REVEAL"} { // a landscape's first line, unnamed
+	for name, t := range map[string]string{"Gang of Pickpockets": "DISCARD", "Piazza": "REVEAL", "Shy": "DISCARD"} { // a landscape's first line, unnamed
 		if x.Template == t && slices.ContainsFunc(r.g.Land, func(c engine.CardID) bool { return r.t.Defs[c].Name == name }) {
 			return -1 // Gang of Pickpockets' "discards a Copper." before Gear's "puts an Estate and a Pixie in hand."
 		}
@@ -1605,6 +1605,9 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 		return ""
 	}
 	name := r.g.Def(ev.X).Name
+	if strings.HasPrefix(x.Template, "SPENDS_FAVOR") && x.Player == r.names[ev.P] {
+		return true // an Ally's: Architects' Guild's "spends 2 Favors." before Mint's "trashes 4 Coppers."
+	}
 	if (x.Template == "REACTS_PLAYING" || x.Template == "REACTS_WITH") && x.Player == r.names[ev.P] && cardName(x.Args[1]) != name { // not the gained Trail's own
 		return true // Sheepdog's "reacts with a Sheepdog, playing it." before Port's "gains a Port."
 	}
