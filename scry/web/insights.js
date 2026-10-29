@@ -298,9 +298,9 @@ function chartTheme() {
 function baseOption(c) {
   return {
     animationDuration: 300,
-    textStyle: { fontFamily: c.num, color: c.muted, fontSize: 11.5 },
+    textStyle: { fontFamily: c.num, color: c.muted, fontSize: 12.5 },
     tooltip: {
-      backgroundColor: c.tipBg, borderWidth: 0, padding: [8, 10], textStyle: { color: c.tipInk, fontFamily: c.sans, fontSize: 13 },
+      backgroundColor: c.tipBg, borderWidth: 0, padding: [8, 10], textStyle: { color: c.tipInk, fontFamily: c.sans, fontSize: 14.5 },
       extraCssText: "border-radius:10px;box-shadow:none;", confine: true,
     },
   };
@@ -388,7 +388,7 @@ function tempo(s) {
   ch.setOption({
     ...baseOption(c),
     grid: { left: 40, right: 12, top: 34, bottom: 26 },
-    legend: { top: 0, right: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: c.ink2, fontFamily: c.sans, fontSize: 13 } },
+    legend: { top: 0, right: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: c.ink2, fontFamily: c.sans, fontSize: 14.5 } },
     xAxis: { type: "category", data: t.turn, boundaryGap: false, axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, axisLabel: { formatter: (v) => (v === "1" || v === 1 ? "turn 1" : v) } },
     yAxis: { type: "value", min: 0, axisLabel: { formatter: (v) => "$" + v }, splitLine: { lineStyle: { color: c.rule } } },
     tooltip: {
@@ -415,7 +415,7 @@ function province(s) {
   ch.setOption({
     ...baseOption(c),
     grid: { left: 40, right: 12, top: 34, bottom: 26 },
-    legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 12, textStyle: { color: c.ink2, fontFamily: c.sans, fontSize: 13 } },
+    legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 12, textStyle: { color: c.ink2, fontFamily: c.sans, fontSize: 14.5 } },
     xAxis: { type: "category", data: h.turn.map((t) => (t === MAX_TURN ? MAX_TURN + "+" : t)), axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, axisLabel: { interval: (i, v) => v === "1" || v === 1 || Number(v) % 5 === 0 || v === MAX_TURN + "+", formatter: (v) => (v === "1" || v === 1 ? "turn 1" : v) } },
     yAxis: { type: "value", axisLabel: { formatter: (v) => Math.abs(v) }, splitLine: { lineStyle: { color: c.rule } } },
     tooltip: {
@@ -496,7 +496,7 @@ function spectrum(s) {
   const Wd = Math.max(300, box.clientWidth), narrow = Wd < 600;
   // a phone gets 6-point bins of smaller squares, so the columns stay short
   const lo = 0.24, hi = 0.72, step = narrow ? 0.06 : 0.02, bins = Math.round((hi - lo) / step);
-  const sq = narrow ? 6 : 9, gap = narrow ? 1.5 : 2, cell = sq + gap, L = 6, colW = (Wd - 2 * L) / bins, per = Math.max(1, Math.floor((colW - 4) / cell));
+  const sq = narrow ? 6 : 10, gap = narrow ? 1.5 : 2, cell = sq + gap, L = 6, colW = (Wd - 2 * L) / bins, per = Math.max(1, Math.floor((colW - 4) / cell));
   const groups = Array.from({ length: bins }, () => []);
   for (const c of cards) groups[Math.max(0, Math.min(bins - 1, Math.floor((c.shrunk - lo) / step)))].push(c);
   const tall = Math.max(...groups.map((g) => Math.ceil(g.length / per)));
@@ -567,12 +567,13 @@ function diffRows(box, rows) {
   }
   const W = Math.max(300, box.clientWidth), narrow = W < 560;
   // wide: label | chart | numbers; narrow: the label above its line
-  const rowH = narrow ? 44 : 28, headH = 30, L = narrow ? 0 : 168, R = narrow ? 70 : 118, T = 22;
+  const rowH = narrow ? 46 : 31, headH = 32, L = narrow ? 0 : 190, R = narrow ? 76 : 132, T = 24;
   const H = T + rows.reduce((h, r) => h + (r.head ? headH : rowH), 0) + 6;
   const lim = 0.4, x0 = L + (narrow ? 18 : 6), x1 = W - R - 16, x = (v) => x0 + ((Math.max(-lim, Math.min(lim, v)) + lim) / (2 * lim)) * (x1 - x0);
   const g = svg(W, H, "Win rate differences with 80% ranges");
   const defs = g.add("defs");
-  defs.innerHTML = `<radialGradient id="coin" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#d79b12"/></radialGradient>`;
+  const coin = "coin-" + box.id; // ids are page-wide: a hidden view's gradient wouldn't paint
+  defs.innerHTML = `<radialGradient id="${coin}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#d79b12"/></radialGradient>`;
   let y = T;
   for (const r of rows) {
     if (r.head) { y += headH; continue; }
@@ -594,7 +595,7 @@ function diffRows(box, rows) {
       g.add("text", { x: narrow ? 2 : 0, y: ly + 5, class: "rl", "pointer-events": "none" }, "other");
     } else if (r.kind === "opening") {
       r.key.split("/").forEach((v, i) => {
-        g.add("circle", { cx: 11 + i * 25, cy: ly, r: narrow ? 9 : 11, fill: "url(#coin)", "pointer-events": "none" });
+        g.add("circle", { cx: 11 + i * 25, cy: ly, r: narrow ? 9 : 11, fill: `url(#${coin})`, "pointer-events": "none" });
         g.add("text", { x: 11 + i * 25, y: ly + 4, "text-anchor": "middle", class: "coin-t", "pointer-events": "none" }, v);
       });
     } else {
