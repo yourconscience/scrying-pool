@@ -121,6 +121,7 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		r.takes[p] = takes[n]
 	}
 	r.nameRevealedDraws()
+	r.nameSetAsideLooks()
 	r.revealedStopLast()
 	colony := strings.Contains(logText, "Platinum") || strings.Contains(logText, "Colon")
 	kingdom, pool := divineWind(t, kingdom, lands, r.real)
@@ -393,6 +394,49 @@ func (r *replayer) nameRevealedDraws() {
 		for j := range r.takes[p] {
 			if r.takes[p][j].Line == x.Line && r.takes[p][j].Card == "" {
 				r.takes[p][j].Card = y.Args[1].Cards[0].Card.Name
+			}
+		}
+	}
+}
+
+// nameSetAsideLooks names the cards Library looked at and set aside unseen by
+// its discard of them after: "looks at a card.", "sets a card aside with
+// Library.", ..., "discards a Border Village."
+func (r *replayer) nameSetAsideLooks() {
+	for i, x := range r.real {
+		if x.Template != "PLAY" || len(x.Args[1].Cards) != 1 || x.Args[1].Cards[0].Card == nil || x.Args[1].Cards[0].Card.Name != "Library" {
+			continue
+		}
+		var looks []int // the lines of the looks it set aside
+		var named []string
+		for j := i + 1; j < len(r.real) && r.real[j].Level > x.Level; j++ {
+			y := r.real[j]
+			if y.Player != x.Player || y.Level != x.Level+1 {
+				continue
+			}
+			if y.Template == "SET_ASIDE_WITH" && r.real[j-1].Template == "LOOK_AT" && cardCount(y.Args[1]) == 1 && y.Args[1].Cards[0].Card == nil {
+				looks = append(looks, r.real[j-1].Line)
+			}
+			if y.Template == "DISCARD" {
+				for _, cn := range y.Args[1].Cards {
+					for range cn.N {
+						if cn.Card != nil {
+							named = append(named, cn.Card.Name)
+						}
+					}
+				}
+				break
+			}
+		}
+		if len(looks) == 0 || len(named) != len(looks) {
+			continue
+		}
+		p := r.seat(x.Player)
+		for k, l := range looks {
+			for j := range r.takes[p] {
+				if r.takes[p][j].Line == l && r.takes[p][j].Card == "" {
+					r.takes[p][j].Card = named[k]
+				}
 			}
 		}
 	}
