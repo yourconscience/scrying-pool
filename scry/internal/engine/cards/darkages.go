@@ -324,7 +324,7 @@ func init() {
 	reg("Hunting Grounds", rules{
 		Play: func(c *ctx) { c.Draw(4) },
 		OnTrash: func(c *ctx, e *ev) {
-			if c.Mode1(c.P, mode("gain a Duchy", "GAIN"), mode("gain 3 Estates", "GAIN")) == 0 {
+			if c.Mode1(c.P, engine.Mode{Label: "gain a Duchy", Line: "GAIN", Card: c.Card("Duchy")}, engine.Mode{Label: "gain 3 Estates", Line: "GAIN", Card: c.Card("Estate")}) == 0 {
 				c.Gain(c.P, c.Card("Duchy"), discard)
 				return
 			}
