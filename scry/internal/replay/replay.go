@@ -159,8 +159,9 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 			}
 		}
 	}
-	for _, x := range r.real { // Young Witch's Bane: "blocks with a Tent."
-		if x.Template != "BLOCKS_WITH" {
+	yw, _ := t.Card("Young Witch")
+	for _, x := range r.real { // Young Witch's Bane: "blocks with a Tent."; Gladiator's are any card
+		if x.Template != "BLOCKS_WITH" || yw == nil || g.PileOf(yw.ID) < 0 {
 			continue
 		}
 		if d, ok := t.Card(cardName(x.Args[1])); ok {
@@ -499,7 +500,7 @@ func (r *replayer) hintsFor() map[takeID]string {
 		if y.Player != x.Player || !r.fromHand(y) || y.Template == "REVEAL" {
 			continue
 		}
-		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" // the cards stay in the hand
+		shows := y.Template == "REVEAL_HAND" || y.Template == "REACTS_WITH" || y.Template == "BLOCKS_WITH" // the cards stay in the hand
 		off := map[string]int{}
 		for _, c := range r.offHand[y.Line] { // Ironmonger's "discards a Copper." it revealed
 			off[c]++
@@ -869,7 +870,7 @@ var answers = map[engine.Kind][]string{
 	engine.ToTopdeck:     {"TOPDECK", "TOPDECK_WITH", "INSERT_IN_DECK", "BOTTOMDECKS"},                // City Gate's "topdecks a Copper with City Gate."; Secret Passage's
 	engine.ToPlay:        {"PLAY", "PLAY_WITH", "PLAY_TREASURES_FOR", "PLAY_USING_WAY", "PLAY_AGAIN"}, // Mastermind: "plays a Smithy with Mastermind."; Scepter: "plays a Kiln again."
 	engine.ToSetAside:    {"SET_ASIDE_WITH", "SET_ASIDE", "PUT_ON_MAT"},                               // Island's "puts a Copper on their Island mat."
-	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL"},
+	engine.ToReveal:      {"REACTS_WITH", "REACTS_PLAYING", "REVEAL", "BLOCKS_WITH"},                  // Gladiator's "blocks with a Lackeys."
 	engine.PlayNight:     {"PLAY"},
 	engine.ToExile:       {"EXILE"},
 	engine.ToPass:        {"PASS"},
@@ -2141,7 +2142,7 @@ func (r *replayer) mendHand(at int) {
 				if came[""] == 0 { // after an unnamed card came, nothing more is sure
 					need[n] = max(need[n], gone[n]+k-c)
 				}
-				if y.Template != "REVEAL_HAND" && y.Template != "REACTS_WITH" { // those stay in the hand
+				if y.Template != "REVEAL_HAND" && y.Template != "REACTS_WITH" && y.Template != "BLOCKS_WITH" { // those stay in the hand
 					gone[n] += k - c
 				}
 			}
@@ -2549,7 +2550,7 @@ func (r *replayer) fromHand(x cartographer.Event) bool {
 }
 
 var fromHand = map[string]bool{"PLAY": true, "PLAY_TREASURES_FOR": true, "PLAY_USING_WAY": true, "DISCARD": true, "DISCARD_WITH": true, "TRASH": true,
-	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REACTS_PLAYING": true, "REVEAL": true,
+	"TOPDECK": true, "REVEAL_HAND": true, "REACTS_WITH": true, "REACTS_PLAYING": true, "REVEAL": true, "BLOCKS_WITH": true,
 	"TRASH_WITH": true, // "trashes a Copper. (Sailor)" at the start of a turn
 	"SET_ASIDE":  true} // Patient's "sets a Dungeon aside." in Clean-up
 

@@ -258,7 +258,7 @@ func init() {
 		if x >= 0 {
 			c.Reveal(c.P, one(x))
 			if y := pick1(c, c.Other(), engine.ToReveal, hand, named(c.G.Def(x).Name), true); y >= 0 {
-				c.Reveal(c.Other(), one(y))
+				c.Log("BLOCKS_WITH", engine.Seat(c.Other()), []engine.CardID{c.G.CardOf(y)}) // "blocks with a Lackeys."
 				return
 			}
 		}
