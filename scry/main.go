@@ -174,10 +174,11 @@ func main() {
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
 		budget := fs.Duration("budget", 3*time.Hour, "stop loading games after this long")
 		repo := fs.String("publish", "", "then rebuild site-data/ in this checkout and open a pull request")
+		merge := fs.Bool("merge", false, "with -publish: wait for the pull request's tests, then merge it, which redeploys the site")
 		notifyFlag := fs.Bool("notify", false, "show a macOS notification when it fails (for scheduled runs)")
 		fs.Parse(args)
 		if err = collect(*dir, *minTurns, *budget); err == nil && *repo != "" {
-			err = publish(*repo)
+			err = publish(*repo, *merge)
 		}
 		if err != nil && *notifyFlag {
 			notify(err.Error())

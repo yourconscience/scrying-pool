@@ -294,8 +294,9 @@ return by;`
 
 // publish rebuilds site-data/ in repo, a clean checkout of this repository, from
 // the saved games: on a new branch from origin/main, for the players its
-// players.json lists. When anything changed, it pushes the branch and opens a pull request.
-func publish(repo string) error {
+// players.json lists. When anything changed, it pushes the branch and opens a
+// pull request; with merge, it waits for the pull request's checks and merges it.
+func publish(repo string, merge bool) error {
 	git := func(args ...string) (string, error) {
 		out, err := exec.Command("git", append([]string{"-C", repo}, args...)...).CombinedOutput()
 		if err != nil {
@@ -358,6 +359,34 @@ func publish(repo string) error {
 		return fmt.Errorf("gh pr create: %v: %s", err, out)
 	}
 	fmt.Print(string(out))
+	if !merge {
+		return nil
+	}
+	gh := func(args ...string) (string, error) {
+		c := exec.Command("gh", args...)
+		c.Dir = repo
+		out, err := c.CombinedOutput()
+		return string(out), err
+	}
+	// the checks take a moment to show up on a new pull request
+	for try := 0; ; try++ {
+		out, err := gh("pr", "checks", branch, "--watch", "--fail-fast", "--interval", "30")
+		if err == nil {
+			break
+		}
+		if !strings.Contains(out, "no checks reported") || try == 20 {
+			return fmt.Errorf("the checks of %s didn't pass: %s", branch, out)
+		}
+		time.Sleep(15 * time.Second)
+	}
+	if out, err := gh("pr", "merge", branch, "--squash"); err != nil {
+		return fmt.Errorf("gh pr merge: %v: %s", err, out)
+	}
+	// main is checked out elsewhere, so gh can't delete the branch for us
+	git("switch", "-q", "--detach", "origin/main")
+	git("branch", "-q", "-D", branch)
+	git("push", "-q", "origin", "--delete", branch)
+	fmt.Println("merged", branch)
 	return nil
 }
 
