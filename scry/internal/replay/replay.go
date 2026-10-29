@@ -1584,7 +1584,8 @@ func (r *replayer) answers(d *engine.Decision, x cartographer.Event) bool {
 				if d.Kind == engine.PlayNight {
 					want = "Night"
 				}
-				return len(cs) == 1 && cs[0].Card != nil && cs[0].Card.Is(want)
+				return len(cs) == 1 && cs[0].Card != nil && (cs[0].Card.Is(want) ||
+					d.Kind == engine.PlayAction && cs[0].Card.Name == "Estate" && r.g.P[d.Player].Inherited >= 0) // Inheritance's "plays an Estate."
 			}
 			return true
 		}
