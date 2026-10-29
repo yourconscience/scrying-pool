@@ -350,14 +350,24 @@ func insights(player string) (*advisor.Insights, error) {
 // cardImages maps the profile's kingdom cards that have an image in
 // card-images/ to a URL; the function gets the card and the image's path there.
 func cardImages(in *advisor.Insights, link func(name, rel string) string) map[string]string {
-	out := map[string]string{}
+	// the page's filters list cards from fewer games than in.Cards does
+	names := map[string]bool{}
 	for _, c := range in.Cards {
-		if p, ok := cardImage(c.Card); ok {
+		names[c.Card] = true
+	}
+	for _, g := range in.Games {
+		for _, k := range g.Kingdom {
+			names[k] = true
+		}
+	}
+	out := map[string]string{}
+	for name := range names {
+		if p, ok := cardImage(name); ok {
 			rel, err := filepath.Rel(cardImageDir(), p)
 			if err != nil {
 				continue
 			}
-			out[c.Card] = link(c.Card, filepath.ToSlash(rel))
+			out[name] = link(name, filepath.ToSlash(rel))
 		}
 	}
 	return out

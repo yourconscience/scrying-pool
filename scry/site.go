@@ -14,8 +14,8 @@ import (
 )
 
 // buildSite writes the "My games" page as a static site that any host can serve,
-// with one JSON file per player profile. Profiles carry win rates only: no game
-// list and no opponents' names.
+// with one JSON file per player profile. Profiles carry win rates and each game's
+// own record for the page's filters, but no opponents' names and no game ids.
 //
 //	out/index.html     the page
 //	out/recent.html    the first player's latest games (Recent games)
@@ -103,7 +103,7 @@ func makeProfiles(dir string, players []string) (int, error) {
 			return 0, fmt.Errorf("no saved games of %q", p)
 		}
 		in := advisor.Summarize(p, mine)
-		in.Games = nil
+		in.Games = siteGames(mine)
 		// the static page links the images where KingdomCreator publishes them
 		// rather than copying them: they belong to Rio Grande Games
 		in.Images = cardImages(in, func(_, rel string) string { return kingdomCreatorImages + rel })
@@ -129,6 +129,21 @@ func makeProfiles(dir string, players []string) (int, error) {
 	}
 	b, _ = json.MarshalIndent(list, "", " ")
 	return len(list.Players), os.WriteFile(filepath.Join(dir, "players.json"), b, 0o644)
+}
+
+// siteGames copies the games for the static page, which filters and counts them
+// itself: without the opponent, the game's id, when exactly it was played and
+// what the page doesn't use; $ per turn only for the turns it shows.
+func siteGames(games []*advisor.Features) []*advisor.Features {
+	out := make([]*advisor.Features, len(games))
+	for i, g := range games {
+		f := *g
+		f.ID, f.Me, f.Opponent, f.Played = "", "", "", ""
+		f.Final, f.Landscapes, f.OpeningBuys = nil, nil, nil
+		f.Coins = f.Coins[:min(len(f.Coins), 15)]
+		out[i] = &f
+	}
+	return out
 }
 
 // copyProfiles copies players.json and the profiles it lists from src to dir.

@@ -6,9 +6,10 @@
 <meta name="scry-data" content="api">
 <title>Dominion Profiles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="insights.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js" integrity="sha384-C2iskrW/uPW46KzOjrvJIQo4YkV8lkD+QS0CrDN18IIPIpT/g2USu8bTP3nvmIAD" crossorigin="anonymous"></script>
 </head>
 <body class="insights">
 <nav class="top">
@@ -23,68 +24,74 @@
 
 <main class="ins">
   <div class="ins-head">
-    <div class="ins-title">
-      <p class="eyebrow">Dominion Online profile</p>
-      <h1 id="title">Loading…</h1>
-      <p id="meta" class="hint">Reading the saved games…</p>
-    </div>
-    <div class="pickers">
-      <label for="player"><span><span class="swatch a"></span>Player</span> <select id="player"></select></label>
-      <label for="compare"><span><span class="swatch b"></span>Compare with</span> <select id="compare"><option value="">nobody</option></select></label>
+    <h1 id="title">Loading…</h1>
+    <span id="meta" class="meta">Reading the saved games…</span>
+    <label class="pick" for="player" hidden>Player <select id="player"></select></label>
+    <div class="views" role="tablist" aria-label="Views">
+      <button type="button" role="tab" id="t-overview" data-view="overview" aria-controls="v-overview">Overview</button><button type="button" role="tab" id="t-cards" data-view="cards" aria-controls="v-cards">Cards</button><button type="button" role="tab" id="t-time" data-view="time" aria-controls="v-time">Over time</button>
     </div>
   </div>
 
-  <section class="kpis" id="kpis" aria-label="Summary"></section>
-
-  <section class="card takeaways" aria-labelledby="takeaways-h">
-    <h2 id="takeaways-h">What stands out</h2>
-    <ul id="takeaways"></ul>
-  </section>
-
-  <section class="card" aria-labelledby="effects-h">
-    <div class="card-head">
-      <h2 id="effects-h">What moves the win rate</h2>
-      <div class="key" id="effects-key"></div>
+  <section class="filters" aria-label="Filters">
+    <div class="seg" role="group" aria-label="Period" id="f-period">
+      <button type="button" data-v="all">All</button><button type="button" data-v="100">Last 100</button><button type="button" data-v="30">Last 30</button>
     </div>
-    <p class="hint">Win rate in games with each feature minus games without it, in percentage points. The bar is the 80% range: when it crosses the zero line, the difference may be chance, and about 1 in 5 chance differences still clears it.</p>
-    <div id="effects" class="chart"></div>
+    <div class="seg" role="group" aria-label="Seat" id="f-seat">
+      <button type="button" data-v="any">Any seat</button><button type="button" data-v="first">First</button><button type="button" data-v="second">Second</button>
+    </div>
+    <div class="seg" role="group" aria-label="Opponent" id="f-opp">
+      <button type="button" data-v="any">Any opponent</button><button type="button" data-v="stronger">Stronger</button><button type="button" data-v="weaker">Weaker</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <span class="count" id="count" aria-live="polite"></span>
+    <button type="button" class="reset" id="reset" hidden>Reset</button>
   </section>
 
-  <div class="grid">
-    <section class="card" aria-labelledby="form-h">
-      <h2 id="form-h">Form</h2>
-      <p class="hint">Win rate over the last 30 games, oldest games on the left.</p>
-      <div id="form" class="chart"></div>
+  <div class="view" id="v-overview" role="tabpanel" aria-labelledby="t-overview">
+    <div class="main">
+      <section class="panel" aria-labelledby="forest-h">
+        <h2 id="forest-h">Every comparison</h2>
+        <div id="forest"></div>
+        <div class="legend"><span><i class="up"></i>clearly better</span><span><i class="down"></i>clearly worse</span><span><i class="none"></i>could be chance</span></div>
+        <p class="note">Each dot is a difference in win rate, in percentage points; its line is the 80% range. Kingdom rows compare games with the role to games without it, endings and openings compare to the win rate of the games shown, the seat compares going first to going second. Openings are how your 7 Coppers fell between turns 1 and 2; other is a start with an Heirloom or Baker's Coffers.<span id="open-note"></span> Click a row to show only its games.</p>
+      </section>
+      <div class="side">
+        <section class="panel" aria-labelledby="tempo-h"><h2 id="tempo-h">$ per turn</h2><div id="tempo" class="ec ec-small"></div></section>
+        <section class="panel" aria-labelledby="prov-h"><h2 id="prov-h">Turn of your first Province</h2><div id="prov" class="ec ec-small"></div><p class="note" id="prov-note"></p></section>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="v-cards" role="tabpanel" aria-labelledby="t-cards" hidden>
+    <section class="field" aria-labelledby="spec-h">
+      <h2 id="spec-h">Kingdom cards, worst to best</h2>
+      <p class="sub" id="spec-sub"></p>
+      <div class="ends">
+        <div class="end"><div class="h">You lose most with</div><div class="faces" id="worst"></div></div>
+        <div class="end r"><div class="h">You win most with</div><div class="faces" id="best"></div></div>
+      </div>
+      <div id="waffle"></div>
     </section>
-    <section class="card" aria-labelledby="tempo-h">
-      <h2 id="tempo-h">$ per turn</h2>
-      <p class="hint" id="tempo-note"></p>
-      <div id="tempo" class="chart"></div>
-    </section>
-    <section class="card" aria-labelledby="province-h">
-      <h2 id="province-h">First Province</h2>
-      <p class="hint" id="province-note"></p>
-      <div id="province" class="chart"></div>
-    </section>
-    <section class="card" aria-labelledby="endings-h">
-      <h2 id="endings-h">Endings and openings</h2>
-      <p class="hint">Win rate by how the game ended (at most one Province left, or one card from three empty piles) and by the $ of turns 1 and 2. The dashed line is the overall win rate.</p>
-      <div id="endings" class="chart"></div>
-      <div id="openings" class="chart"></div>
+    <section class="panel cards" aria-labelledby="cards-h">
+      <div class="bar">
+        <h2 id="cards-h">All kingdom cards</h2>
+        <input id="q" type="search" placeholder="Find a card" aria-label="Find a card">
+        <span class="count" id="cards-count"></span>
+      </div>
+      <div class="tbl"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+      <p class="note" id="cards-note"></p>
     </section>
   </div>
 
-  <section class="card" aria-labelledby="cards-h">
-    <h2 id="cards-h">Kingdom cards</h2>
-    <p class="hint" id="cards-note"></p>
-    <h3>Hardest</h3>
-    <div class="tiles" id="worst"></div>
-    <h3>Best</h3>
-    <div class="tiles" id="best"></div>
-  </section>
+  <div class="view" id="v-time" role="tabpanel" aria-labelledby="t-time" hidden>
+    <section class="panel" aria-labelledby="time-h">
+      <div class="head"><h2 id="time-h">Your games over time</h2><span class="hint" id="time-note"></span></div>
+      <div id="timeline" class="ec ec-time"></div>
+    </section>
+    <section class="kpis" id="kpis" aria-label="Summary"></section>
+  </div>
 
-  <p class="hint footnote">Rates count ties as half a win. Opponents' ratings aren't taken into account. Card images come from the KingdomCreator project.</p>
-
+  <p class="note">Rates count ties as half a win. Stronger and weaker compare the rating levels of the games whose levels are known. Card images come from the KingdomCreator project.</p>
   <p class="local-only"><a id="csv" href="/api/features.csv">Download the player's games as CSV</a></p>
   <p id="error" role="alert" hidden></p>
 </main>
