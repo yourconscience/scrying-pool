@@ -215,19 +215,27 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		}
 		return x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
 	}
-	g.HeldLater = func(p int) bool { // the next line names a landscape or a kingdom card's: Barracks', Shaman's
+	startBy := func(p int) string { // the card the next line at the start of p's turn names
 		x, ok := r.peek()
 		if !ok || x.Player != r.names[p] {
-			return false
+			return ""
 		}
-		by := x.Cause
-		if n := len(x.Args); by == "" && n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
-			by = cardName(x.Args[n-1])
+		if n := len(x.Args); x.Cause == "" && n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
+			return norm(cardName(x.Args[n-1]))
 		}
-		named := func(cs []engine.CardID) bool {
-			return slices.ContainsFunc(cs, func(c engine.CardID) bool { return by != "" && norm(r.t.Defs[c].Name) == norm(by) })
-		}
-		return named(r.g.Land) || named(r.g.Global)
+		return norm(x.Cause)
+	}
+	named := func(by string, cs []engine.CardID) bool {
+		return slices.ContainsFunc(cs, func(c engine.CardID) bool { return by != "" && norm(r.t.Defs[c].Name) == by })
+	}
+	g.HeldLater = func(p int) bool { // the next line names a landscape or a kingdom card's: Barracks', Shaman's
+		by := startBy(p)
+		return named(by, r.g.Land) || named(by, r.g.Global)
+	}
+	g.GlobalFirst = func(p int) bool { return named(startBy(p), r.g.Global) }
+	g.NextLand = func(p int, cs []engine.CardID) int {
+		by := startBy(p)
+		return max(0, slices.IndexFunc(cs, func(c engine.CardID) bool { return norm(r.t.Defs[c].Name) == by }))
 	}
 	g.DeckShadow = r.deckShadow
 	g.OverpayFirst = func(ev *engine.Ev) bool { // "plays an Infirmary." next

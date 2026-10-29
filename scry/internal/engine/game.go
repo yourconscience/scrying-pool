@@ -129,6 +129,14 @@ type Game struct {
 	// of a turn until the landscapes and the kingdom's are done, for a replay
 	// whose log has Barracks' "gets +1 Action." before Lost in the Woods'.
 	HeldLater func(p int) bool
+	// GlobalFirst says whether the kingdom cards that hear the start of a turn
+	// go before the landscapes, for a replay whose log has Shaman's "gains a
+	// Copper." before Sinister Plot's "draws 3 cards."
+	GlobalFirst func(p int) bool
+	// NextLand picks which of the landscapes that hear the start of p's turn
+	// goes next, for a replay whose log has Kind Emperor's "gains a Litter."
+	// before Sinister Plot's "draws a card."; without it, they go in order.
+	NextLand func(p int, cs []CardID) int
 	// DeckShadow says whether player p plays a Shadow card from the deck
 	// though the hand has x, for a replay whose log shuffles that much sooner;
 	// it may swap x with a card in the deck the log doesn't name.

@@ -160,12 +160,22 @@ func (g *Game) fire(ev *Ev) {
 		}
 	}
 	land := func(late bool) {
+		var cs []CardID
 		for _, c := range g.Land {
 			if r := g.T.Defs[c].Rules; r != nil && r.Hear != nil && r.Hears.has(ev.Kind) && r.Late == late {
-				cx := g.ctx(ev.P, -1, ev.Level)
-				cx.Src = c
-				r.Hear(cx, ev)
+				cs = append(cs, c)
 			}
+		}
+		for len(cs) > 0 {
+			k := 0
+			if g.NextLand != nil && ev.Kind == EvTurnStart {
+				k = g.NextLand(ev.P, cs)
+			}
+			c := cs[k]
+			cs = slices.Delete(cs, k, k+1)
+			cx := g.ctx(ev.P, -1, ev.Level)
+			cx.Src = c
+			g.T.Defs[c].Rules.Hear(cx, ev)
 		}
 	}
 	global := func() { // the kingdom cards whose Hear runs all game
@@ -211,6 +221,10 @@ func (g *Game) fire(ev *Ev) {
 			land(false)
 		}
 	}
+	globalFirst := ev.Kind == EvTurnStart && g.GlobalFirst != nil && g.GlobalFirst(ev.P)
+	if globalFirst { // Shaman's "gains a Copper.", then Sinister Plot's "draws 3 cards."
+		global()
+	}
 	if !early { // but a buy's after them: Swamp Hag's "gains a Curse.", then Colonnade's "takes 2 VP."
 		land(false)
 	}
@@ -227,7 +241,7 @@ func (g *Game) fire(ev *Ev) {
 		}
 	}()
 	defer land(true)
-	if !early {
+	if !early && !globalFirst {
 		global()
 	}
 	if heldLater {
