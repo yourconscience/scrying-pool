@@ -186,7 +186,8 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
-	if ev.Kind == EvTurnStart { // an Artifact's first: the Key's "gets +$1.", then Silos' "discards and reveals 3 Coppers."
+	heldLater := ev.Kind != EvTurnStart || g.HeldLater != nil && g.HeldLater(ev.P)
+	if !heldLater { // an Artifact's first: the Key's "gets +$1.", then Silos' "discards and reveals 3 Coppers."
 		held()
 	}
 	if early {
@@ -229,7 +230,7 @@ func (g *Game) fire(ev *Ev) {
 	if !early {
 		global()
 	}
-	if ev.Kind != EvTurnStart {
+	if heldLater {
 		held()
 	}
 	if !watchFirst {

@@ -125,6 +125,10 @@ type Game struct {
 	// cards and landscapes that do, for a replay whose log has Sailor's "plays
 	// a Sailor." before Progress's "topdecks a Sailor."
 	WatchFirst func(ev *Ev) bool
+	// HeldLater says whether the Artifacts and States held wait at the start
+	// of a turn until the landscapes and the kingdom's are done, for a replay
+	// whose log has Barracks' "gets +1 Action." before Lost in the Woods'.
+	HeldLater func(p int) bool
 
 	cards  []CardID      // by Inst
 	loc    []Loc         // by Inst

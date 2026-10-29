@@ -195,6 +195,20 @@ func check(c *cartographer.Client, t *engine.Table, logText, score string, hints
 		x, ok := r.peek()
 		return ok && ev.Kind == engine.EvGain && ev.X >= 0 && x.Template == "PLAY" && x.Player == r.names[ev.P] && cardName(x.Args[1]) == r.g.Def(ev.X).Name
 	}
+	g.HeldLater = func(p int) bool { // the next line names a landscape or a kingdom card's: Barracks', Shaman's
+		x, ok := r.peek()
+		if !ok || x.Player != r.names[p] {
+			return false
+		}
+		by := x.Cause
+		if n := len(x.Args); by == "" && n > 2 && (strings.HasSuffix(x.Template, "_FROM") || strings.HasSuffix(x.Template, "_WITH")) {
+			by = cardName(x.Args[n-1])
+		}
+		named := func(cs []engine.CardID) bool {
+			return slices.ContainsFunc(cs, func(c engine.CardID) bool { return by != "" && norm(r.t.Defs[c].Name) == norm(by) })
+		}
+		return named(r.g.Land) || named(r.g.Global)
+	}
 	g.MoreTreasures = func(p, n int) bool {
 		x := r.real[min(r.pos, len(r.real)-1)]
 		return x.Template == "PLAY_TREASURES_FOR" && x.Player == r.names[p] && cardCount(x.Args[1]) > n
