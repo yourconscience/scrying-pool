@@ -852,8 +852,17 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		}
 	}
 	if d.Kind == engine.ToPick {
-		if cs, ok := r.moreOfLine(d, "PUT_IN_HAND_FROM"); ok { // the second Archive's of "puts a Copper and a Gold in hand (Archive)."
-			return r.pick(d, cs)
+		all := *d
+		all.Max = 99                                              // the whole rest, then the first one this Archive has
+		if cs, ok := r.moreOfLine(&all, "PUT_IN_HAND_FROM"); ok { // the second Archive's of "puts a Copper and a Gold in hand (Archive)."
+			for _, cn := range cs { // one this Archive has, or a hidden one
+				if cn.Card == nil {
+					return r.pick(d, []cartographer.CardN{{N: 1}})
+				}
+				if slices.ContainsFunc(d.Options, func(o engine.Option) bool { return o.Inst >= 0 && norm(r.g.Def(o.Inst).Name) == norm(cn.Card.Name) }) {
+					return r.pick(d, []cartographer.CardN{{Card: cn.Card, N: 1}})
+				}
+			}
 		}
 	}
 	switch d.Kind {

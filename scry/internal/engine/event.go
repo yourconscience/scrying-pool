@@ -137,8 +137,11 @@ func (g *Game) fire(ev *Ev) {
 		g.watch(ev)
 	}
 	order := [2]int{g.Cur, 1 - g.Cur}
-	for _, q := range order {
-		g.react(q, ev)
+	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
+	for i, q := range order {
+		if i == 0 || !early { // a gain's other player reacts after the current one's cards: Innovation's "plays an Archive.", then "reacts with a Stowaway."
+			g.react(q, ev)
+		}
 	}
 	hear := func(q int, z Zone) {
 		zone := g.P[q].Z[z]
@@ -174,12 +177,14 @@ func (g *Game) fire(ev *Ev) {
 			}
 		}
 	}
-	early := ev.Kind == EvGain // a gain's landscapes before the other player's cards: Harsh Winter's "takes 2 debt.", then Monkey's "draws a Poet."
 	if early {
 		global()
 		next() // Footpad's "draws a Fortress.", then Plan's "trashes a Copper.", then Cargo Ship's "sets a Fortress aside."
 	}
 	for i, q := range order {
+		if i == 1 && early {
+			g.react(q, ev)
+		}
 		for _, z := range listenZones {
 			if z != Tavern || ev.Kind != EvGain {
 				hear(q, z)
