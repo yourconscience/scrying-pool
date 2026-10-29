@@ -325,7 +325,7 @@ function timeline() {
   ch.setOption({
     ...baseOption(c),
     grid: { left: 44, right: 16, top: 22, bottom: 72 },
-    xAxis: { type: "value", min: 0, max: N - 1, axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { formatter: dateOf, hideOverlap: true, margin: 18 } },
+    xAxis: { type: "value", min: 0, max: N - 1, axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { formatter: dateOf, hideOverlap: true, margin: 18, showMinLabel: false, showMaxLabel: false } },
     yAxis: { type: "value", min: 0, max: 1, interval: 0.25, axisLabel: { formatter: (v) => pct(v) }, splitLine: { lineStyle: { color: c.rule } } },
     tooltip: {
       ...baseOption(c).tooltip, trigger: "axis", axisPointer: { type: "line", lineStyle: { color: c.axis } },
