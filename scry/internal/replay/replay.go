@@ -876,6 +876,18 @@ func (r *replayer) Decide(v *engine.View, d *engine.Decision) []int {
 		if cs, ok := r.moreTrash(d); ok {
 			return r.pick(d, cs)
 		}
+		if cs, ok := r.moreOfLine(d, "TRASH_WITH"); ok { // the second Amulet's of "trashes an Estate and a Copper. (Amulet)"
+			return r.pick(d, cs)
+		}
+		if x, ok := r.peek(); ok && x.Template == "TRASH_WITH" && x.Player == r.names[d.Player] && cardName(x.Args[2]) == r.t.Defs[d.Source].Name && cardCount(x.Args[1]) > d.Max {
+			var cs []cartographer.CardN // the first Amulet's
+			for _, cn := range x.Args[1].Cards {
+				if n := d.Max - cardCount(cartographer.Arg{Cards: cs}); n > 0 {
+					cs = append(cs, cartographer.CardN{Card: cn.Card, N: min(cn.N, n)})
+				}
+			}
+			return r.pick(d, cs)
+		}
 	}
 	if d.Kind == engine.ToPick {
 		all := *d
@@ -1129,6 +1141,16 @@ func (r *replayer) canSwapIn(d *engine.Decision, name string) bool {
 
 // chooseModes picks the modes whose first lines are the next real lines, in order.
 func (r *replayer) chooseModes(d *engine.Decision) []int {
+	if l := r.g.Log; d.Max == 1 && r.matched >= 0 && r.entry < len(l.Entries) && r.pos > 0 { // the last line has more to come: two Amulets' "trashes an Estate and a Copper. (Amulet)"
+		e, y := l.Entries[r.entry], r.real[r.matched]
+		if cs, ok := cardsOf(e); ok && len(e.Args) == 3 && len(y.Args) > 1 && e.Args[2] == engine.Name(d.Source) && y.Player == r.names[d.Player] && len(cs) < cardCount(y.Args[1]) {
+			for j, o := range d.Options {
+				if o.Line == e.Template {
+					return []int{j}
+				}
+			}
+		}
+	}
 	var out []int
 	used := map[int]bool{}
 	start := r.pos
@@ -1519,6 +1541,15 @@ func (r *replayer) ownLater(ev *engine.Ev) bool {
 		}
 	}
 	return false
+}
+
+// cardsOf is an engine line's cards, if it names some.
+func cardsOf(e engine.Entry) ([]engine.CardID, bool) {
+	if len(e.Args) < 2 {
+		return nil, false
+	}
+	cs, ok := e.Args[1].([]engine.CardID)
+	return cs, ok
 }
 
 func cardCount(a cartographer.Arg) int {
