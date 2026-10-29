@@ -763,16 +763,25 @@ func (r *replayer) show(e engine.Entry) string {
 
 // peek is the next real event the engine hasn't written.
 func (r *replayer) peek() (cartographer.Event, bool) {
-	if r.pos >= len(r.real) {
+	i := r.peekAt()
+	if i < 0 {
 		return cartographer.Event{}, false
 	}
+	return r.real[i], true
+}
+
+// peekAt is the index of the line peek returns, or -1.
+func (r *replayer) peekAt() int {
+	if r.pos >= len(r.real) {
+		return -1
+	}
 	if x := r.real[r.pos]; x.Template == r.g.Log.Pending() && r.pos+1 < len(r.real) {
-		return r.real[r.pos+1], true // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
+		return r.pos + 1 // the answer's line writes "begins their Cleanup phase." first: Patient's "sets a Dungeon aside."
 	}
 	if x := r.real[r.pos]; x.Template == "SHUFFLES" && r.pos+1 < len(r.real) && r.real[r.pos+1].Template == "SHUFFLE_INTO_DECK" && r.real[r.pos+1].Player == x.Player {
-		return r.real[r.pos+1], true // Inn's "shuffles their deck.", "shuffles an Inn into their deck."
+		return r.pos + 1 // Inn's "shuffles their deck.", "shuffles an Inn into their deck."
 	}
-	return r.real[r.pos], true
+	return r.pos
 }
 
 // lines a decision's answer writes, by the decision's kind
@@ -1303,8 +1312,8 @@ func (r *replayer) nextDur(p int, ds []*engine.Dur) int {
 		}
 	}
 	x, ok := r.peek()
-	if ok && x.Template == "SHUFFLES" && r.pos+1 < len(r.real) {
-		x = r.real[r.pos+1] // the draw that shuffled: "shuffles their deck.", "draws a Gold and a Hunting Lodge. (Longship)"
+	if i := r.peekAt(); ok && x.Template == "SHUFFLES" && i+1 < len(r.real) {
+		x = r.real[i+1] // the draw that shuffled: "shuffles their deck.", "draws a Gold and a Hunting Lodge. (Longship)", also after "starts their turn."
 	}
 	if !ok || x.Player != r.names[p] {
 		return 0
