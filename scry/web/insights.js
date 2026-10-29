@@ -878,7 +878,7 @@ async function show(name) {
   F.opp = "any";
   F.picks = [];
   $("title").textContent = D.me;
-  $("meta").textContent = `${all.length} saved games`;
+  $("meta").textContent = D.window_days ? `${all.length} games in the last ${D.window_days} days` : `${all.length} saved games`;
   $("csv").href = "/api/features.csv?player=" + encodeURIComponent(name);
   if (charts.timeline) { charts.timeline.dispose(); delete charts.timeline; }
   update(true);

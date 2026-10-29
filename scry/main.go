@@ -173,11 +173,12 @@ func main() {
 		dir := fs.String("dir", "", "where to save the games (default: <user config>/scrying-pool/games)")
 		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
 		budget := fs.Duration("budget", 3*time.Hour, "stop loading games after this long")
+		since := fs.Duration("since", 0, "also load the games a manifest-*.json in the games folder lists as never loaded, played within this long (2160h is 90 days)")
 		repo := fs.String("publish", "", "then rebuild site-data/ in this checkout and open a pull request")
 		merge := fs.Bool("merge", false, "with -publish: wait for the pull request's tests, then merge it, which redeploys the site")
 		notifyFlag := fs.Bool("notify", false, "show a macOS notification when it fails (for scheduled runs)")
 		fs.Parse(args)
-		if err = collect(*dir, *minTurns, *budget); err == nil && *repo != "" {
+		if err = collect(*dir, *minTurns, *budget, *since); err == nil && *repo != "" {
 			err = publish(*repo, *merge)
 		}
 		if err != nil && *notifyFlag {
