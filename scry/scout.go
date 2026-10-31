@@ -195,7 +195,8 @@ func startScout(player, dir string, n int) error {
 		return err
 	}
 	md := strings.TrimSuffix(scoutFile(dir, player), ".json") + ".md"
-	cmd := exec.Command(exe, "scout", "-dir", dir, "-n", strconv.Itoa(n), "-o", md, "--", player)
+	// scry's own binary, without a shell; the name can't be read as a flag after "--"
+	cmd := exec.Command(exe, "scout", "-dir", dir, "-n", strconv.Itoa(n), "-o", md, "--", player) // nosemgrep: go.lang.security.audit.dangerous-exec-command
 	r, w, err := os.Pipe()
 	if err != nil {
 		return err
