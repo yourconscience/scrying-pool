@@ -240,11 +240,6 @@
       await this.sleep(800);
       return +v;
     },
-    // The client's socket to the server: a new one means the connection dropped and the
-    // client went back to the lobby.
-    socket() {
-      try { return angular.element(document.body).injector().get("serverConnection").webSocket || null; } catch (e) { return null; }
-    },
     async startGame() {
       await this.seatBot();
       this.watchLog();
@@ -284,8 +279,9 @@
       const resultRe = /You (Resigned|Lose|Win|Won|Tie)/;
       const decision = await this.loadOld(id);
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
-      const ws = this.socket(), dropped = () => this.socket() !== ws;
       await this.startGame();
+      // the lobby offers New Table only when you have none: the connection dropped and took the table
+      const dropped = () => !!this.byText("New Table");
       const lines = () => document.querySelectorAll(".log-scroll-container .log-line").length;
       try {
         await this.waitFor(() => {
