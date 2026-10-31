@@ -62,9 +62,15 @@ type scoutGame struct {
 
 func scoutFile(dir, player string) string { return filepath.Join(dir, "scout-"+slug(player)+".json") }
 
-// scoutFetch saves a player's n latest two-player games against people from
-// dominion.games in Brave, with their profile's summary, yours and your
-// head-to-head record, and loads the games not saved in dir yet.
+// scoutList is how many of a player's latest two-player games scout asks the
+// server for: the most it lists.
+const scoutList = 100
+
+// scoutFetch saves what dominion.games in Brave lists about a player: their
+// latest two-player games against people, their profile's summary, yours and
+// your head-to-head record. Then it loads their games, newest first, until n
+// are saved in dir: some games don't load (the server can't, or a player was
+// AFK), and older ones take their place.
 func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error {
 	t, done, err := captureTab("scout")
 	if err != nil {
@@ -72,7 +78,7 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 	}
 	defer done()
 	name, _ := json.Marshal(player)
-	out, err := t.page(fmt.Sprintf("return await window.scryCapture.scout(%s, %d);", name, n), 2*time.Minute)
+	out, err := t.page(fmt.Sprintf("return await window.scryCapture.scout(%s, %d);", name, scoutList), 2*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -96,17 +102,34 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 	if err := os.WriteFile(scoutFile(dir, d.Player), b, 0o644); err != nil {
 		return err
 	}
-	var todo []string
-	for _, g := range d.Games {
-		if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) {
-			todo = append(todo, g.ID)
+	saved := func(id string) bool {
+		_, err := os.Stat(filepath.Join(dir, id+".log"))
+		return err == nil
+	}
+	tried := map[string]bool{}
+	for start := time.Now(); ; {
+		have := 0
+		for _, g := range d.Games {
+			if saved(g.ID) {
+				have++
+			}
+		}
+		var todo []string
+		for _, g := range d.Games {
+			if len(todo) < n-have && !saved(g.ID) && !tried[g.ID] {
+				todo = append(todo, g.ID)
+				tried[g.ID] = true
+			}
+		}
+		fmt.Fprintf(os.Stderr, "%s: %d latest games against people listed, %d saved, loading %d more\n", d.Player, len(d.Games), have, len(todo))
+		left := budget - time.Since(start)
+		if len(todo) == 0 || left <= 0 {
+			return nil
+		}
+		if err := captureGames(t, todo, dir, minTurns, left); err != nil {
+			return err
 		}
 	}
-	fmt.Fprintf(os.Stderr, "%s: %d latest games against people, %d not saved\n", d.Player, len(d.Games), len(todo))
-	if len(todo) == 0 {
-		return nil
-	}
-	return captureGames(t, todo, dir, minTurns, budget)
 }
 
 // scoutReport is what scout writes as JSON.
@@ -142,7 +165,7 @@ func scout(player, me, dir string, n int, asJSON bool) (string, error) {
 	if me == "" {
 		me = account
 	}
-	// theirs: the games the profile listed, else their latest saved games
+	// theirs: their n latest saved games among those the server listed (or among all, without a fetch)
 	theirs := advisor.Of(player, features)
 	if data != nil {
 		ids := map[string]bool{}
@@ -150,7 +173,8 @@ func scout(player, me, dir string, n int, asJSON bool) (string, error) {
 			ids[g.ID] = true
 		}
 		theirs = slices.DeleteFunc(theirs, func(f *advisor.Features) bool { return !ids[f.ID] })
-	} else if len(theirs) > n {
+	}
+	if len(theirs) > n {
 		theirs = theirs[len(theirs)-n:] // saved in game-number order
 	}
 	if len(theirs) == 0 {
@@ -254,7 +278,7 @@ func (r *scoutReport) markdown() string {
 			}
 			expected += g.Expected
 		}
-		p("\nIn the %d latest games the profile lists, %s scored %.1f against %.1f their ratings predicted.", len(d.Games), d.Player, won, expected)
+		p("\nIn the %d latest two-player games against people the server lists, %s scored %.1f against %.1f their ratings predicted.", len(d.Games), d.Player, won, expected)
 		if h := d.HeadToHead; h != nil {
 			p("Head-to-head on dominion.games: %s is %d-%d-%d against %s; their ratings give %s an expected score of %s.", them.Name, h.Wins, h.Losses, h.Ties, me.Name, them.Name, pct(h.Expected))
 		}

@@ -187,7 +187,7 @@ func main() {
 		}
 	case "scout":
 		dir := fs.String("dir", "", "saved games (default: <user config>/scrying-pool/games)")
-		n := fs.Int("n", 25, "how many of the player's latest games against people")
+		n := fs.Int("n", 25, "how many of the player's games against people to save and compare: the latest that load, going back as far as the server lists (100)")
 		me := fs.String("me", "", "whose games to compare with (default: the logged-in account, else the account that loaded most games)")
 		offline := fs.Bool("offline", false, "don't open dominion.games: use the saved games and the last fetch")
 		asJSON := fs.Bool("json", false, "write JSON instead of Markdown")

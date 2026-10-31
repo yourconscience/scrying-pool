@@ -544,7 +544,7 @@
     // Scouts a player: their n latest two-player games against people (a bot's
     // player id is 2^30 or more, as the client tells them), noted as metas for run,
     // their profile's summary and their record against you.
-    async scout(name, n = 25) {
+    async scout(name, n = 100) {
       await this.load();
       this.watchProfiles();
       this.watchSummaries();
