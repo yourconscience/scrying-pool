@@ -3,14 +3,18 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"math"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
@@ -102,21 +106,17 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 	if err := os.WriteFile(scoutFile(dir, d.Player), b, 0o644); err != nil {
 		return err
 	}
-	saved := func(id string) bool {
-		_, err := os.Stat(filepath.Join(dir, id+".log"))
-		return err == nil
-	}
 	tried := map[string]bool{}
 	for start := time.Now(); ; {
 		have := 0
 		for _, g := range d.Games {
-			if saved(g.ID) {
+			if isSaved(dir, g.ID) {
 				have++
 			}
 		}
 		var todo []string
 		for _, g := range d.Games {
-			if len(todo) < n-have && !saved(g.ID) && !tried[g.ID] {
+			if len(todo) < n-have && !isSaved(dir, g.ID) && !tried[g.ID] {
 				todo = append(todo, g.ID)
 				tried[g.ID] = true
 			}
@@ -130,6 +130,112 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 			return err
 		}
 	}
+}
+
+// isSaved reports whether the game is saved in dir.
+func isSaved(dir, id string) bool {
+	_, err := os.Stat(filepath.Join(dir, id+".log"))
+	return err == nil
+}
+
+// scoutedPlayer is a player scouted before, for the Scout page.
+type scoutedPlayer struct {
+	Player  string `json:"player"`
+	Fetched string `json:"fetched"`
+	Listed  int    `json:"listed"` // their games against people the server listed
+	Saved   int    `json:"saved"`  // those saved
+}
+
+// scouted lists the players fetched into dir, the latest fetch first.
+func scouted(dir string) []scoutedPlayer {
+	files, _ := filepath.Glob(filepath.Join(dir, "scout-*.json"))
+	out := []scoutedPlayer{}
+	for _, f := range files {
+		var d scoutData
+		if b, err := os.ReadFile(f); err != nil || json.Unmarshal(b, &d) != nil {
+			continue
+		}
+		p := scoutedPlayer{Player: d.Player, Fetched: d.Fetched, Listed: len(d.Games)}
+		for _, g := range d.Games {
+			if isSaved(dir, g.ID) {
+				p.Saved++
+			}
+		}
+		out = append(out, p)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Fetched > out[j].Fetched })
+	return out
+}
+
+// scoutRun is the Scout page's run of `scry scout`. There's one at a time, as
+// it drives the one dominion.games tab.
+type scoutRun struct {
+	Player  string   `json:"player"`
+	Started string   `json:"started"`
+	Running bool     `json:"running"`
+	Log     []string `json:"log"`
+	Error   string   `json:"error,omitempty"`
+}
+
+var (
+	scoutMu  sync.Mutex
+	scoutNow = scoutRun{Log: []string{}}
+)
+
+// startScout runs `scry scout` in a process of its own for the Scout page and
+// keeps its output. The report goes next to the fetch, as scout-<player>.md.
+func startScout(player, dir string, n int) error {
+	scoutMu.Lock()
+	defer scoutMu.Unlock()
+	if scoutNow.Running {
+		return fmt.Errorf("already scouting %s", scoutNow.Player)
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	md := strings.TrimSuffix(scoutFile(dir, player), ".json") + ".md"
+	cmd := exec.Command(exe, "scout", "-dir", dir, "-n", strconv.Itoa(n), "-o", md, "--", player)
+	r, w, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	cmd.Stdout, cmd.Stderr = w, w
+	err = cmd.Start()
+	w.Close()
+	if err != nil {
+		r.Close()
+		return err
+	}
+	scoutNow = scoutRun{Player: player, Started: time.Now().Format(time.RFC3339), Running: true, Log: []string{}}
+	go func() {
+		defer r.Close()
+		for sc := bufio.NewScanner(r); sc.Scan(); {
+			scoutMu.Lock()
+			scoutNow.Log = append(scoutNow.Log, sc.Text())
+			scoutMu.Unlock()
+		}
+		err := cmd.Wait()
+		scoutMu.Lock()
+		defer scoutMu.Unlock()
+		scoutNow.Running = false
+		if err != nil {
+			scoutNow.Error = err.Error()
+			if k := len(scoutNow.Log); k > 0 && strings.HasPrefix(scoutNow.Log[k-1], "scry: ") {
+				scoutNow.Error = strings.TrimPrefix(scoutNow.Log[k-1], "scry: ")
+			}
+		}
+	}()
+	return nil
+}
+
+// scoutStatus is the Scout page's latest run.
+func scoutStatus() scoutRun {
+	scoutMu.Lock()
+	defer scoutMu.Unlock()
+	s := scoutNow
+	s.Log = slices.Clone(s.Log)
+	return s
 }
 
 // scoutReport is what scout writes as JSON.

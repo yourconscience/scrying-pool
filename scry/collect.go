@@ -62,6 +62,9 @@ func brave(args ...string) (string, error) {
 		if strings.Contains(s, "Allow JavaScript from Apple Events") || strings.Contains(s, "JavaScript through AppleScript is turned off") {
 			return "", fmt.Errorf("turn on View > Developer > Allow JavaScript from Apple Events in Brave")
 		}
+		if ctx.Err() != nil {
+			return "", fmt.Errorf("Brave didn't answer in 2 min: macOS may be asking whether the program that started scry may control Brave (System Settings > Privacy & Security > Automation)")
+		}
 		return "", fmt.Errorf("osascript: %v: %s", err, s)
 	}
 	return s, nil

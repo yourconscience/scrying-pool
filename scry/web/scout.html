@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dominion Scout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="insights.css">
+<link rel="stylesheet" href="scout.css">
+</head>
+<body class="insights">
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a href="analyze.html">Analyze a game</a>
+  <a href="insights.html">Profiles</a>
+  <a href="recent.html">Recent games</a>
+  <a href="scout.html" aria-current="page">Scout</a>
+  <a href="engine.html">Engine</a>
+  <a href="notes.html">Match notes</a>
+  <a href="https://github.com/yourconscience/scrying-pool">GitHub</a>
+</nav>
+
+<main class="ins">
+  <div class="ins-head">
+    <div class="ins-title">
+      <p class="eyebrow">Dominion Online</p>
+      <h1>Scout an opponent</h1>
+      <p class="hint">Their latest games against people and their dominion.games profile, set beside yours.</p>
+    </div>
+  </div>
+
+  <section class="panel" aria-labelledby="run-h">
+    <h2 id="run-h">Load their games</h2>
+    <form id="form" class="row">
+      <input id="player" name="player" autocomplete="off" spellcheck="false" placeholder="Player name" aria-label="Player name" required>
+      <label class="n">Games <input id="n" name="n" type="number" min="1" max="100" value="25"></label>
+      <button type="submit" id="go">Scout</button>
+    </form>
+    <p class="hint">Runs in your logged-in dominion.games tab in Brave, between your games: it won't start while you're at a table. It asks the server for their latest two-player games against people (100 at most) and loads them newest first, about 20 seconds each, until this many are saved. A game the server can't replay is replaced by an older one. It stops after an hour.</p>
+    <div id="run" class="run" hidden>
+      <p class="live"><span class="dot" id="dot" aria-hidden="true"></span> <span id="run-text"></span></p>
+      <details id="log-box">
+        <summary>Log</summary>
+        <pre id="log"></pre>
+      </details>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="list-h">
+    <h2 id="list-h">Scouted</h2>
+    <p class="hint" id="list-note">Reading the games folder…</p>
+    <div class="picks" id="list"></div>
+  </section>
+
+  <section class="panel" id="report-box" aria-labelledby="report-h" hidden>
+    <h2 id="report-h">Report</h2>
+    <p class="hint" id="report-note"></p>
+    <div class="rep" id="report"></div>
+  </section>
+
+  <p id="error" role="alert" hidden></p>
+</main>
+<footer class="site-foot">
+  Use it on finished games only: the dominion.games Terms of Service ban tools that help in games in progress. Not affiliated with Shuffle iT, Rio Grande Games, DomBot or the Dominion League.
+</footer>
+<script src="scout.js"></script>
+</body>
+</html>
