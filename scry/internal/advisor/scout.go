@@ -33,13 +33,15 @@ type Side struct {
 	Endings  map[string]Rate `json:"endings"`  // provinces, piles, resign
 	Length   []Row           `json:"length"`   // by the player's turns
 
-	Splits   map[string]Rate `json:"splits"`   // how the Coppers fell: "5/2", "4/3"
-	Openings []Row           `json:"openings"` // the cards bought on turns 1-2
-	Opened   []Row           `json:"opened"`   // the kingdom cards among them
-	Styles   []Split         `json:"styles"`   // what the player built: games with and without
-	Kingdoms []Split         `json:"kingdoms"` // what the kingdom offered: games with and without
-	Took     []CardTake      `json:"took"`     // kingdom cards, most often taken first
-	Skipped  []CardTake      `json:"skipped"`  // kingdom cards left alone most often
+	Splits   map[string]Rate `json:"splits"`    // how the Coppers fell: "5/2", "4/3"
+	Openings []Row           `json:"openings"`  // the cards bought on turns 1-2
+	Shapes   []Row           `json:"shapes"`    // the same, by how many kingdom cards and Silvers
+	Opened   []Row           `json:"opened"`    // the kingdom cards among them
+	OpenedAs []Split         `json:"opened_as"` // games where they opened with a card of a role
+	Styles   []Split         `json:"styles"`    // what the player built: games with and without
+	Kingdoms []Split         `json:"kingdoms"`  // what the kingdom offered: games with and without
+	Took     []CardTake      `json:"took"`      // kingdom cards, most often taken first
+	Skipped  []CardTake      `json:"skipped"`   // kingdom cards left alone most often
 }
 
 // Row is a share of games won among games with one thing in common.
@@ -82,13 +84,14 @@ func Scout(name string, games []*Features, roles func(card string) []string) *Si
 		return s
 	}
 	var all, first, second, stronger, weaker []float64
-	byEnd, bySplit, byOpen, byOpened := map[string][]float64{}, map[string][]float64{}, map[string][]float64{}, map[string][]float64{}
+	byEnd, bySplit, byOpen, byOpened, byShape := map[string][]float64{}, map[string][]float64{}, map[string][]float64{}, map[string][]float64{}, map[string][]float64{}
 	lengths := []struct {
 		name string
 		max  int
 	}{{"up to 14 turns", 14}, {"15-19 turns", 19}, {"20 turns or more", 1 << 30}}
 	byLen := make([][]float64, len(lengths))
-	took := make([]map[string]bool, len(games)) // each game's roles the player took
+	took := make([]map[string]bool, len(games))   // each game's roles the player took
+	opened := make([]map[string]bool, len(games)) // and opened with
 	var gold, prov, oppLevels []float64
 	latest := ""
 	for i, f := range games {
@@ -136,12 +139,42 @@ func Scout(name string, games []*Features, roles func(card string) []string) *Si
 		if f.Opening != "" && f.Opening != "other" {
 			bySplit[f.Opening] = append(bySplit[f.Opening], f.Result)
 		}
-		if len(f.OpeningBuys) > 0 {
-			k := strings.Join(f.OpeningBuys, " + ")
+		var buys []string // without the Curses an attack gave
+		silvers := 0
+		for _, c := range f.OpeningBuys {
+			if c != "Curse" {
+				buys = append(buys, c)
+			}
+			if c == "Silver" {
+				silvers++
+			}
+		}
+		if len(buys) > 0 {
+			k := strings.Join(buys, " + ")
 			byOpen[k] = append(byOpen[k], f.Result)
 		}
+		if f.Opening != "" { // the turns 1-2 are in the log
+			shape := "no kingdom card, no Silver"
+			switch k := len(f.Opened); {
+			case k >= 2:
+				shape = "two kingdom cards"
+			case k == 1 && silvers > 0:
+				shape = "a kingdom card and Silver"
+			case k == 1:
+				shape = "a kingdom card, no Silver"
+			case silvers >= 2:
+				shape = "Silver and Silver"
+			case silvers == 1:
+				shape = "one Silver, no kingdom card"
+			}
+			byShape[shape] = append(byShape[shape], f.Result)
+		}
+		opened[i] = map[string]bool{}
 		for _, c := range f.Opened {
 			byOpened[c] = append(byOpened[c], f.Result)
+			for _, r := range roles(c) {
+				opened[i][r] = true
+			}
 		}
 		took[i] = map[string]bool{}
 		for c := range f.Took {
@@ -168,7 +201,22 @@ func Scout(name string, games []*Features, roles func(card string) []string) *Si
 			s.Length = append(s.Length, Row{l.name, rate(byLen[k])})
 		}
 	}
-	s.Openings, s.Opened = rows(byOpen), rows(byOpened)
+	s.Openings, s.Opened, s.Shapes = rows(byOpen), rows(byOpened), rows(byShape)
+	s.OpenedAs = []Split{}
+	for _, role := range RoleNames() {
+		var with, without []float64
+		for i, f := range games {
+			if f.Opening == "" {
+				continue
+			}
+			if opened[i][role] {
+				with = append(with, f.Result)
+			} else {
+				without = append(without, f.Result)
+			}
+		}
+		s.OpenedAs = append(s.OpenedAs, split("opened with "+article(role), "", with, without))
+	}
 
 	for _, st := range styles {
 		var with, without []float64
@@ -194,7 +242,7 @@ func Scout(name string, games []*Features, roles func(card string) []string) *Si
 				without = append(without, f.Result)
 			}
 		}
-		s.Kingdoms = append(s.Kingdoms, split("a "+strings.ReplaceAll(role, "_", " ")+" in the kingdom", descs[role], with, without))
+		s.Kingdoms = append(s.Kingdoms, split(article(role)+" in the kingdom", descs[role], with, without))
 	}
 
 	type acc struct{ took, skipped []float64 }
@@ -235,6 +283,15 @@ func Scout(name string, games []*Features, roles func(card string) []string) *Si
 	sort.SliceStable(s.Skipped, func(i, j int) bool { return s.Skipped[i].Skipped.Games > s.Skipped[j].Skipped.Games })
 	s.First, s.Last = games[0].Date, games[len(games)-1].Date
 	return s
+}
+
+// article names a role with "a" or "an": "a plus buy", "an attack".
+func article(role string) string {
+	role = strings.ReplaceAll(role, "_", " ")
+	if strings.ContainsRune("aeiou", rune(role[0])) {
+		return "an " + role
+	}
+	return "a " + role
 }
 
 // rows turns grouped results into rows, most games first.

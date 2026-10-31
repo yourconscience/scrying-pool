@@ -202,6 +202,13 @@ func (r *scoutReport) markdown() string {
 		row(cells...)
 		row(slices.Repeat([]string{"---"}, len(cells))...)
 	}
+	byName := func(rs []advisor.Row) map[string]advisor.Rate {
+		m := map[string]advisor.Rate{}
+		for _, r := range rs {
+			m[r.Name] = r.Rate
+		}
+		return m
+	}
 	p("# %s, scouted for %s", them.Name, me.Name)
 	p("")
 	p("%s: %d games against people, %s to %s. %s: %d games of the last %d days, %s to %s.", them.Name, them.Games, them.First, them.Last, me.Name, me.Games, siteDays, me.First, me.Last)
@@ -264,13 +271,6 @@ func (r *scoutReport) markdown() string {
 	for _, e := range []string{"provinces", "piles", "resign"} {
 		row("Ended on "+e, rateText(them.Endings[e]), rateText(me.Endings[e]))
 	}
-	byName := func(rs []advisor.Row) map[string]advisor.Rate {
-		m := map[string]advisor.Rate{}
-		for _, r := range rs {
-			m[r.Name] = r.Rate
-		}
-		return m
-	}
 	tl, ml := byName(them.Length), byName(me.Length)
 	for _, l := range []string{"up to 14 turns", "15-19 turns", "20 turns or more"} {
 		row("Games of "+l, rateText(tl[l]), rateText(ml[l]))
@@ -283,10 +283,29 @@ func (r *scoutReport) markdown() string {
 			row(s, rateText(them.Splits[s]), rateText(me.Splits[s]))
 		}
 	}
-	p("\n%s's opening buys (turns 1-2):\n", them.Name)
-	head("Opening", "Win rate")
-	for _, o := range them.Openings[:min(12, len(them.Openings))] {
-		row(o.Name, rateText(o.Rate))
+	p("\nWhat they opened with (turns 1-2):\n")
+	ts, mshape := byName(them.Shapes), byName(me.Shapes)
+	head("Opening", them.Name, me.Name)
+	for _, s := range []string{"two kingdom cards", "a kingdom card and Silver", "a kingdom card, no Silver", "Silver and Silver", "one Silver, no kingdom card", "no kingdom card, no Silver"} {
+		if ts[s].Games+mshape[s].Games > 0 {
+			row(s, rateText(ts[s]), rateText(mshape[s]))
+		}
+	}
+	for i, s := range them.OpenedAs {
+		if s.With.Games+me.OpenedAs[i].With.Games > 0 {
+			row(s.Name, rateText(s.With), rateText(me.OpenedAs[i].With))
+		}
+	}
+	var again []string
+	for _, o := range them.Openings {
+		if o.Rate.Games >= 2 {
+			again = append(again, fmt.Sprintf("%s (%s)", o.Name, rateText(o.Rate)))
+		}
+	}
+	if len(again) > 0 {
+		p("\nOpenings %s repeated: %s.", them.Name, strings.Join(again, "; "))
+	} else {
+		p("\n%s opened differently in every game.", them.Name)
 	}
 	p("\nKingdom cards %s opened with, against yours:\n", them.Name)
 	mo := byName(me.Opened)
@@ -369,6 +388,9 @@ func (r *scoutReport) notes() []string {
 	them := r.Them
 	add("as first player", them.Seat)
 	add("against a higher-rated player", them.Stronger)
+	for _, s := range them.OpenedAs {
+		add(s.Name, s)
+	}
 	for _, s := range them.Styles {
 		add(s.Name+" ("+s.Desc+")", s)
 	}
