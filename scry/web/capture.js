@@ -29,7 +29,10 @@
     version: 2, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
-    gameTimeoutMs: 6 * 60 * 1000, // a game that takes longer is abandoned and the page reset
+    gameTimeoutMs: 10 * 60 * 1000, // a game that takes longer is abandoned and the page reset
+    // A loaded game starts about a second after Ready. For some older games the server's
+    // replay of the original decisions stalls, and it sends nothing for minutes or for good.
+    startTimeoutMs: 2 * 60 * 1000,
     offlineWaitMs: 15 * 60 * 1000, // how long to wait for the client to come back after a logout or disconnect
     server: null, // e.g. "http://127.0.0.1:8765": post each captured game to scry web
     target: null, // a Scrying Pool tab, from attach(): it gets each captured game instead
@@ -277,20 +280,32 @@
       const decision = await this.loadOld(id);
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
       await this.startGame();
-      // done when the log stops growing: the bot has played up to your seat's next
-      // decision, or the loaded decision is yours, or the bot ended the game
-      let n = 0, same = 0;
+      const lines = () => document.querySelectorAll(".log-scroll-container .log-line").length;
+      try {
+        await this.waitFor(() => lines() > 0, this.startTimeoutMs, "the game to start");
+      } catch (e) {
+        if (e.message === "abandoned") throw e;
+        const err = new Error(`the server didn't start the game in ${Math.round(this.startTimeoutMs / 60000)} min (its replay stalls)`);
+        err.server = true;
+        throw err;
+      }
+      // done when the log has reached the loaded decision and stops growing: the bot has
+      // played up to your seat's next decision, or the loaded decision is yours, or the bot
+      // ended the game. A slow replay streams in for minutes; 90 s without a new line ends it.
+      let n = 0, same = 0, grew = Date.now();
       try {
         await this.waitFor(() => {
-          const m = document.querySelectorAll(".log-scroll-container .log-line").length;
-          if (m > 3 && m === n) same++; else same = 0;
-          n = m;
-          return same >= 8 || (m > 3 && resultRe.test(document.body.innerText) && same >= 2);
-        }, 90000, "the log to finish loading");
+          const m = lines();
+          if (!m) throw new Error("the game closed while its log loaded (the connection dropped)");
+          if (m === n) same++; else { same = 0; n = m; grew = Date.now(); }
+          if (Date.now() - grew > 90000) throw new Error("timed out waiting for the log to finish loading");
+          const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision - 1);
+          return (reached && same >= 8) || (resultRe.test(document.body.innerText) && same >= 2);
+        }, this.gameTimeoutMs, "the log to finish loading");
       } catch (e) {
         // the bot can get stuck ("Waiting for Lord Rattington"); past its first move the
         // game's own log is complete anyway
-        if (e.message === "abandoned" || !this.entries().some((x) => x.decisionIndex === decision)) throw e;
+        if (e.message === "abandoned" || !lines() || !this.entries().some((x) => x.decisionIndex === decision)) throw e;
       }
       const { log, bot } = this.extractLog(this.lastOriginalLine(decision));
       const markers = !!(this.game && this.game.logModel);
