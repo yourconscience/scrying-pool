@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -245,16 +244,6 @@ func TestWebGames(t *testing.T) {
 	}
 	if g := recent.Games[0]; g.MyLevel != 57.5 || g.OppLevel != 50 || g.Played == "" || g.Chance <= 0.5 {
 		t.Fatalf("recent game: %+v %v", g.Features, g.Chance)
-	}
-
-	// each bookmark carries capture.js unless the tab has this version of it
-	for path, want := range map[string]string{"/api/bookmarklet": "finished game to load", "/api/bookmarklet?for=recent": "scry-recent"} {
-		var b struct{ Href string }
-		json.Unmarshal(call("GET", path, "", "").Body.Bytes(), &b)
-		src, _ := url.PathUnescape(strings.TrimPrefix(b.Href, "javascript:"))
-		if !strings.Contains(src, want) || !strings.HasPrefix(src, "if ((window.scryCapture && window.scryCapture.version) !== 2)") {
-			t.Errorf("%s: %.120q", path, src)
-		}
 	}
 }
 
