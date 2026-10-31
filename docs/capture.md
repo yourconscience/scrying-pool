@@ -100,4 +100,6 @@ scry scout -o scout.md PLAYER
 - The report (Markdown, or `-json`) sets the player's games beside yours of the last 90 days: results against the levels' prediction, seat, rating gap, endings and game length; Copper splits and opening buys; what they built (engine, draw without a village, trashing, attacking, cursing, +Buy, judged from the roles of the cards they took) and what the kingdom offered; the kingdom cards they take and skip; the splits where they differ most; and your saved games against them.
 - 25 games are few: a split with 4 games on a side swings 25 points on one result, so the report shows each rate with its 80% range and counts.
 
+In the local app (`scry web`), the Scout page does the same from the browser: type the player's name and press Scout. It runs `scry scout` in the background (one run at a time, since it drives the one dominion.games tab), shows its progress and log, and keeps the report next to the fetch as `scout-<player>.md`. The page lists every player scouted before and shows their report, made again from the saved games. The page is local only: the published site can't drive your browser.
+
 The games are finished ones, as for `collect`.

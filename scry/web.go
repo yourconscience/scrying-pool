@@ -8,11 +8,13 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -217,6 +219,64 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		writeJSON(w, 200, map[string]string{"href": bookmarklet(bookmarkSource(name, "http://"+r.Host))})
 	})
+	// The Scout page: the players scouted before and the latest run, a player's
+	// report from the saved games, and a run of `scry scout` that loads their
+	// games in the dominion.games tab.
+	mux.HandleFunc("GET /api/scouts", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, map[string]any{"players": scouted(dir), "run": scoutStatus()})
+	}))
+	mux.HandleFunc("GET /api/scout", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		player := r.URL.Query().Get("player")
+		md, err := scout(player, "", dir, scoutGames(r.URL.Query().Get("n")), false)
+		if err != nil {
+			writeJSON(w, 422, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, map[string]string{"player": player, "markdown": md})
+	}))
+	mux.HandleFunc("POST /api/scout", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		// Only our own page may start a run: it drives the dominion.games tab.
+		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
+			writeJSON(w, 403, map[string]string{"error": "cross-origin request refused"})
+			return
+		}
+		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+			writeJSON(w, 415, map[string]string{"error": "expected JSON"})
+			return
+		}
+		var req struct {
+			Player string `json:"player"`
+			N      string `json:"n"`
+		}
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<10)).Decode(&req); err != nil {
+			writeJSON(w, 400, map[string]string{"error": "bad request: " + err.Error()})
+			return
+		}
+		if req.Player = strings.TrimSpace(req.Player); req.Player == "" || len(req.Player) > 64 {
+			writeJSON(w, 400, map[string]string{"error": "type the player's name as dominion.games shows it"})
+			return
+		}
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		if err := startScout(req.Player, dir, scoutGames(req.N)); err != nil {
+			writeJSON(w, 409, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 202, scoutStatus())
+	}))
 	mux.HandleFunc("POST /api/format", func(w http.ResponseWriter, r *http.Request) {
 		// Only our own page may trigger this: it can send a DM from the user's account.
 		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
@@ -244,6 +304,24 @@ func newHandler(timeout time.Duration) http.Handler {
 		writeJSON(w, 200, res)
 	})
 	return mux
+}
+
+// localOnly serves the Scout API only to requests addressed to this machine by
+// name (localhost) or by IP. A site could otherwise point a hostname of its own
+// at 127.0.0.1 (DNS rebinding): its pages would then be same-origin with the app,
+// pass the Origin check and read the reports.
+func localOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		host, _, err := net.SplitHostPort(r.Host)
+		if err != nil {
+			host = r.Host
+		}
+		if host != "localhost" && net.ParseIP(strings.Trim(host, "[]")) == nil {
+			writeJSON(w, 403, map[string]string{"error": "open the app at localhost or 127.0.0.1"})
+			return
+		}
+		h(w, r)
+	}
 }
 
 // allowGamePost lets our own pages and the dominion.games tab post games.
@@ -289,6 +367,16 @@ func bookmarkSource(name, origin string) string {
 	version := reCaptureVersion.FindStringSubmatch(string(capture))[1]
 	return "if ((window.scryCapture && window.scryCapture.version) !== " + version + ") " + stripComments(string(capture)) + "\n" +
 		strings.ReplaceAll(string(one), "SCRY_ORIGIN", origin)
+}
+
+// scoutGames reads how many of a player's games the Scout page asks for: 25
+// unless it says, and no more than the server lists.
+func scoutGames(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil || n < 1 {
+		return 25
+	}
+	return min(n, scoutList)
 }
 
 // recentGames is how many latest games the Recent games page shows: as many as
