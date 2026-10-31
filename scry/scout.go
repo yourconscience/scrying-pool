@@ -226,9 +226,18 @@ func (r *scoutReport) markdown() string {
 		head("", them.Name, me.Name)
 		row("Level", fmt.Sprintf("%.2f", s.CurrentLevel), fmt.Sprintf("%.2f", m.CurrentLevel))
 		row("μ / φ", fmt.Sprintf("%.2f / %.3f", s.CurrentSkill, s.CurrentDeviation), fmt.Sprintf("%.2f / %.3f", m.CurrentSkill, m.CurrentDeviation))
-		row("Rank", fmt.Sprintf("#%d", s.CurrentRank), fmt.Sprintf("#%d", m.CurrentRank))
+		rank := func(n int) string {
+			if n == 0 {
+				return "unranked" // the leaderboard leaves out players with a high φ
+			}
+			return fmt.Sprintf("#%d", n)
+		}
+		row("Rank", rank(s.CurrentRank), rank(m.CurrentRank))
 		row("Wins-losses-ties", fmt.Sprintf("%d-%d-%d", s.Wins, s.Losses, s.Ties), fmt.Sprintf("%d-%d-%d", m.Wins, m.Losses, m.Ties))
 		row("Longest win / loss streak", fmt.Sprintf("%d / %d", s.BestWinStreak, s.BestLossStreak), fmt.Sprintf("%d / %d", m.BestWinStreak, m.BestLossStreak))
+		if s.CurrentDeviation >= 0.3 { // about twice an active player's
+			p("\nTheir φ is high, as after months without rated games. The level is 50 + 7.5 × (μ − 2φ), so it understates them: μ, the skill estimate, is %.2f against your %.2f.", s.CurrentSkill, m.CurrentSkill)
+		}
 		var won, expected float64
 		for _, g := range d.Games {
 			a, b := g.Scores[d.Player], 0
