@@ -26,7 +26,7 @@
 (() => {
   if (window.scryCapture && window.scryCapture.running) return "a capture is running; call scryCapture.stop() first";
   const C = {
-    version: 2, // the bookmarks load this script again over an older copy
+    version: 3, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
     gameTimeoutMs: 10 * 60 * 1000, // a game that takes longer is abandoned and the page reset
@@ -240,6 +240,11 @@
       await this.sleep(800);
       return +v;
     },
+    // The client's socket to the server: a new one means the connection dropped and the
+    // client went back to the lobby.
+    socket() {
+      try { return angular.element(document.body).injector().get("serverConnection").webSocket || null; } catch (e) { return null; }
+    },
     async startGame() {
       await this.seatBot();
       this.watchLog();
@@ -279,17 +284,21 @@
       const resultRe = /You (Resigned|Lose|Win|Won|Tie)/;
       const decision = await this.loadOld(id);
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
+      const ws = this.socket(), dropped = () => this.socket() !== ws;
       await this.startGame();
       const lines = () => document.querySelectorAll(".log-scroll-container .log-line").length;
       try {
-        await this.waitFor(() => lines() > 0, this.startTimeoutMs, "the game to start");
+        await this.waitFor(() => {
+          if (dropped()) throw new Error("the connection dropped before the game started");
+          return lines() > 0;
+        }, this.startTimeoutMs, "the game to start");
       } catch (e) {
-        if (e.message === "abandoned") throw e;
+        if (e.message === "abandoned" || dropped()) throw e;
         const err = new Error(`the server didn't start the game in ${Math.round(this.startTimeoutMs / 60000)} min (its replay stalls)`);
         err.server = true;
         throw err;
       }
-      // done when the log has reached the loaded decision and stops growing: the bot has
+      // done when the log has reached the loaded decision's marker and stops growing: the bot has
       // played up to your seat's next decision, or the loaded decision is yours, or the bot
       // ended the game. A slow replay streams in for minutes; 90 s without a new line ends it.
       let n = 0, same = 0, grew = Date.now();
@@ -299,7 +308,7 @@
           if (!m) throw new Error("the game closed while its log loaded (the connection dropped)");
           if (m === n) same++; else { same = 0; n = m; grew = Date.now(); }
           if (Date.now() - grew > 90000) throw new Error("timed out waiting for the log to finish loading");
-          const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision - 1);
+          const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision);
           return (reached && same >= 8) || (resultRe.test(document.body.innerText) && same >= 2);
         }, this.gameTimeoutMs, "the log to finish loading");
       } catch (e) {
