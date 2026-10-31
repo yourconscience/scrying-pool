@@ -484,7 +484,7 @@
       if (!input()) page().click(); // the player search opens from the magnifier
       const search = await this.waitFor(input, 8000, "the player search");
       const mark = (this.seen || []).length, lower = name.toLowerCase();
-      const theirs = () => this.seen.slice(mark).filter((r) => (r.players || []).some((p) => p.name.toLowerCase() === lower));
+      const theirs = () => (this.seen || []).slice(mark).filter((r) => (r.players || []).some((p) => p.name.toLowerCase() === lower));
       this.setInput(search, name);
       await this.sleep(300);
       const button = [...search.parentElement.querySelectorAll("*")].find((e) => e.textContent.trim() === "Search");
@@ -526,6 +526,49 @@
         scores, row: `${day} | ${names.map((n) => `${n}: ${scores[n]}`).join(", ")}`,
       };
       return id;
+    },
+    // A profile's summary (level, μ, φ, rank, wins, streaks) and a head-to-head
+    // record arrive as PlayerSummary and HeadToHead objects; keeps each one made.
+    watchSummaries() {
+      for (const [cls, last, list] of [["PlayerSummary", "currentDeviation", "summaries"], ["HeadToHead", "expectedScore", "headToHeads"]]) {
+        const P = window[cls] && window[cls].prototype;
+        if (!P || P.scryWatched) continue;
+        // the constructor sets this field last
+        Object.defineProperty(P, last, {
+          configurable: true,
+          set(v) { Object.defineProperty(this, last, { value: v, writable: true, enumerable: true, configurable: true }); (window.scryCapture[list] = window.scryCapture[list] || []).push(this); },
+        });
+        P.scryWatched = true;
+      }
+    },
+    // Scouts a player: their n latest two-player games against people (a bot's
+    // player id is 2^30 or more, as the client tells them), noted as metas for run,
+    // their profile's summary and their record against you.
+    async scout(name, n = 100) {
+      await this.load();
+      this.watchProfiles();
+      this.watchSummaries();
+      try { await this.leave(); } catch (e) { /* not at a table */ }
+      const ms = (this.summaries || []).length, mh = (this.headToHeads || []).length;
+      const lower = name.toLowerCase();
+      const who = (await this.profile(name)).flatMap((r) => r.players || []).find((p) => p.name.toLowerCase() === lower);
+      if (!who) throw new Error("no profile games of " + name);
+      const inj = angular.element(document.body).injector(), server = inj.get("serverMessenger"), me = inj.get("meta").model.me;
+      const mark = this.seen.length;
+      server.requestPlayerResults(who.id, RatingTypes.RATINGS_2P, 100); // the most the server lists
+      await this.waitFor(() => this.seen.length > mark, 20000, name + "'s latest games");
+      for (let k = -1; k !== this.seen.length; ) { k = this.seen.length; await this.sleep(1000); }
+      const people = (r) => (r.players || []).length === 2 && r.players.every((p) => p.id < 1073741824);
+      const latest = this.seen.slice(mark).filter(people).sort((a, b) => b.timeMillis - a.timeMillis).slice(0, n);
+      const games = latest.map((r) => Object.assign({ id: this.noteGame(r, who.name), expected: r.expectedScore }, this.meta[String(r.gameId)]));
+      await this.saveState();
+      if (who.name !== me.name) server.requestHeadToHead(who.id, me.name, RatingTypes.RATINGS_2P);
+      for (let t = 0; t < 20 && (this.headToHeads || []).length === mh && who.name !== me.name; t++) await this.sleep(500);
+      const pick = (o, keys) => o && Object.fromEntries(keys.map((k) => [k, o[k]]));
+      // the server leaves the best level and rank empty
+      const summary = pick((this.summaries || []).slice(ms).pop(), ["wins", "losses", "ties", "currentRank", "currentLevel", "bestWinStreak", "bestLossStreak", "currentSkill", "currentDeviation"]);
+      const h = (this.headToHeads || []).slice(mh).pop();
+      return { player: who.name, id: who.id, me: me.name, summary, headToHead: h && { wins: h.wins, losses: h.losses, ties: h.ties, expected: h.expectedScore }, games };
     },
     // Visits the profiles of strong players and queues their rated two-player games
     // where a player's level is above minLevel. It starts from your own profile's

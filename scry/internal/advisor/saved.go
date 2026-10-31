@@ -90,8 +90,8 @@ func Load(client *cartographer.Client, dir string) ([]*Saved, error) {
 	sort.Strings(files)
 	// the kingdom viewer can name cards by the client's key ("Coin Of The Realm")
 	names := map[string]string{}
-	for name := range client.Cards {
-		names[strings.ToLower(name)] = name
+	for key, c := range client.Cards { // the card's own name: the score screen's "Sack Of Loot" is the log's "Sack of Loot"
+		names[strings.ToLower(key)] = c.Name
 	}
 	canon := func(cards []string) []string {
 		for i, c := range cards {

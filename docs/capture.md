@@ -84,3 +84,20 @@ For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`
 - Card images go into the published profiles only when `card-images/` is in the working directory or `$SCRY_CARD_IMAGES` names it; a launchd agent runs from `/`, so set `SCRY_CARD_IMAGES` in its `EnvironmentVariables`.
 
 To run it every morning and publish on Sundays, put two launchd agents in `~/Library/LaunchAgents` (`scry collect -notify` daily, `scry collect -notify -publish REPO -merge` weekly, with `StartCalendarInterval`) and load them with `launchctl bootstrap gui/$(id -u) FILE`. A Mac that was asleep at that time runs the job when it wakes. The agents run the installed binary: rebuild it (`go build -o ~/.local/bin/scry ./scry`) after changes to what the site reads, or the weekly run publishes data in the old shape.
+
+## Scouting an opponent
+
+Before a league match, `scry scout PLAYER` loads the player's latest games and compares their play with yours:
+
+```bash
+scry scout -o scout.md PLAYER
+```
+
+- It drives the dominion.games tab in Brave the way `collect` does (same setup, same checks: logged in, not at a table). It opens the player's profile and asks the server for their latest two-player games: it lists up to 100. Games against bots are left out (the client gives bots player ids from 2^30).
+- It then loads those games with the capture script, newest first, until 25 are saved (`-n`): a game the server can't load, an AFK game or one whose log times out makes room for an older one. They're saved with yours. A recent game takes about 20 seconds, so a player who plays a lot needs about 10 minutes the first time and little after; for a player whose games are months old, many fail and the run goes further back (`-budget`, an hour by default).
+- What their profile says is kept in `scout-<player>.json` in the games folder: level, μ and φ, rank, wins, losses and ties, the longest streaks, your head-to-head record and the expected score of each of their games. Your own profile's summary goes next to theirs.
+- `-offline` makes the report from the saved games and the last fetch, without the browser. Without a fetch it takes the player's latest saved games, which are usually only the ones against you.
+- The report (Markdown, or `-json`) sets the player's games beside yours of the last 90 days: results against the levels' prediction, seat, rating gap, endings and game length; Copper splits and opening buys; what they built (engine, draw without a village, trashing, attacking, cursing, +Buy, judged from the roles of the cards they took) and what the kingdom offered; the kingdom cards they take and skip; the splits where they differ most; and your saved games against them.
+- 25 games are few: a split with 4 games on a side swings 25 points on one result, so the report shows each rate with its 80% range and counts.
+
+The games are finished ones, as for `collect`.
