@@ -141,59 +141,16 @@ return { me: me.name, ids };`
 // capture script, and imports the games not saved in dir yet. It never logs in:
 // when the tab isn't logged in, or you're at a table, it stops.
 func collect(dir string, minTurns int, budget, since time.Duration) (err error) {
-	if runtime.GOOS != "darwin" {
-		return fmt.Errorf("collect drives Brave through AppleScript, which needs macOS")
-	}
 	if dir, err = gamesDir(dir); err != nil {
 		return err
 	}
-	// the tab that's logged in; only one is, the others offer to kick it
-	found, err := brave("find", "https://dominion.games")
+	t, done, err := captureTab("collect")
 	if err != nil {
 		return err
 	}
-	var t tab
-	var st lobby
-	for _, id := range strings.Split(found, ",") {
-		if id == "" {
-			continue
-		}
-		if st, err = (tab{id}).lobby(); err != nil {
-			return err
-		}
-		if t = (tab{id}); st.In || st.Game || st.Table {
-			break
-		}
-	}
-	if t.id == "" {
-		id, err := brave("open", "https://dominion.games/")
-		if err != nil {
-			return err
-		}
-		defer brave("close", id)
-		t = tab{id}
-		for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 90*time.Second; time.Sleep(3 * time.Second) {
-			if st, err = t.lobby(); err != nil {
-				return err
-			}
-		}
-	}
-	switch {
-	case st.Game || st.Table:
-		return fmt.Errorf("you're at a table on dominion.games; leave it and run collect again")
-	case !st.In:
-		return fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run collect again")
-	}
-
-	capture, _ := webFiles.ReadFile("web/capture.js")
-	out, err := t.page(string(capture)+"\nreturn window.scryCapture.running ? \"running\" : \"ready\";", time.Minute)
+	defer done()
+	out, err := t.page(latestGames, time.Minute)
 	if err != nil {
-		return err
-	}
-	if string(out) == `"running"` {
-		return fmt.Errorf("a capture is already running in the dominion.games tab")
-	}
-	if out, err = t.page(latestGames, time.Minute); err != nil {
 		return err
 	}
 	var latest struct {
@@ -238,6 +195,69 @@ await C.saveState();`, time.Minute); err != nil {
 		}
 	}
 
+	return captureGames(t, todo, dir, minTurns, budget)
+}
+
+// captureTab finds the dominion.games tab in Brave that's logged in (opening
+// one if there is none) and readies the capture script in it. It never logs in:
+// when the tab isn't logged in, or you're at a table, it fails. done closes a
+// tab it opened. cmd names the command to run again.
+func captureTab(cmd string) (t tab, done func(), err error) {
+	done = func() {}
+	if runtime.GOOS != "darwin" {
+		return t, done, fmt.Errorf("%s drives Brave through AppleScript, which needs macOS", cmd)
+	}
+	// the tab that's logged in; only one is, the others offer to kick it
+	found, err := brave("find", "https://dominion.games")
+	if err != nil {
+		return t, done, err
+	}
+	var st lobby
+	for _, id := range strings.Split(found, ",") {
+		if id == "" {
+			continue
+		}
+		if st, err = (tab{id}).lobby(); err != nil {
+			return t, done, err
+		}
+		if t = (tab{id}); st.In || st.Game || st.Table {
+			break
+		}
+	}
+	if t.id == "" {
+		id, err := brave("open", "https://dominion.games/")
+		if err != nil {
+			return t, done, err
+		}
+		done = func() { brave("close", id) }
+		t = tab{id}
+		for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 90*time.Second; time.Sleep(3 * time.Second) {
+			if st, err = t.lobby(); err != nil {
+				return t, done, err
+			}
+		}
+	}
+	switch {
+	case st.Game || st.Table:
+		return t, done, fmt.Errorf("you're at a table on dominion.games; leave it and run %s again", cmd)
+	case !st.In:
+		return t, done, fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run %s again", cmd)
+	}
+	capture, _ := webFiles.ReadFile("web/capture.js")
+	out, err := t.page(string(capture)+"\nreturn window.scryCapture.running ? \"running\" : \"ready\";", time.Minute)
+	if err != nil {
+		return t, done, err
+	}
+	if string(out) == `"running"` {
+		return t, done, fmt.Errorf("a capture is already running in the dominion.games tab")
+	}
+	return t, done, nil
+}
+
+// captureGames loads games in the tab with the capture script and imports the
+// ones it saved into dir. Their metas (date, scores, levels) should be noted in
+// the tab already.
+func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Duration) error {
 	// run skips games the tab finished earlier (saved, AFK, or ones the server
 	// can't load) and sets aside a queue left from an earlier run
 	ids, _ := json.Marshal(todo)
@@ -272,7 +292,8 @@ await C.saveState();`, time.Minute); err != nil {
 	byStatus := `const C = window.scryCapture, by = {};
 for (const id of ` + string(ids) + `) { const s = (C.results[id] || { status: "not tried" }).status; (by[s] = by[s] || []).push(id); }
 return by;`
-	if out, err = t.page(byStatus, time.Minute); err != nil {
+	out, err := t.page(byStatus, time.Minute)
+	if err != nil {
 		return err
 	}
 	var by map[string][]string

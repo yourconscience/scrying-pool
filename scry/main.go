@@ -29,6 +29,7 @@ const usageText = `usage:
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
   scry collect [-publish REPO] [-notify]           save your latest games from dominion.games in Brave (macOS)
+  scry scout [-n 25] [-offline] [-json] PLAYER     load a player's latest games and compare their play with yours
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
@@ -183,6 +184,31 @@ func main() {
 		}
 		if err != nil && *notifyFlag {
 			notify(err.Error())
+		}
+	case "scout":
+		dir := fs.String("dir", "", "saved games (default: <user config>/scrying-pool/games)")
+		n := fs.Int("n", 25, "how many of the player's latest games against people")
+		me := fs.String("me", "", "whose games to compare with (default: the logged-in account, else the account that loaded most games)")
+		offline := fs.Bool("offline", false, "don't open dominion.games: use the saved games and the last fetch")
+		asJSON := fs.Bool("json", false, "write JSON instead of Markdown")
+		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
+		budget := fs.Duration("budget", time.Hour, "stop loading games after this long")
+		fs.Parse(args)
+		if fs.NArg() != 1 {
+			fail(fmt.Errorf("usage: scry scout [-n 25] [-offline] [-json] [-o FILE] PLAYER"))
+		}
+		d, derr := gamesDir(*dir)
+		if derr != nil {
+			fail(derr)
+		}
+		if !*offline {
+			err = scoutFetch(fs.Arg(0), d, *n, *minTurns, *budget)
+		}
+		if err == nil {
+			var text string
+			if text, err = scout(fs.Arg(0), *me, d, *n, *asJSON); err == nil {
+				err = emit(*out, text)
+			}
 		}
 	case "features":
 		me := fs.String("me", "", "the player whose games to describe (default: the account that loaded most games)")
