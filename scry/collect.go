@@ -57,7 +57,17 @@ end run`
 func brave(args ...string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, "osascript", append([]string{"-e", braveScript}, args...)...).CombinedOutput()
+	// the script and its arguments go in through stdin: arguments show in ps,
+	// and the login's carry the password
+	quoted := make([]string, len(args))
+	for i, a := range args {
+		quoted[i] = `"` + strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(a) + `"`
+	}
+	script := strings.Replace(strings.Replace(braveScript, "on run argv", "on main(argv)", 1), "end run", "end main", 1) +
+		"\nmain({" + strings.Join(quoted, ", ") + "})"
+	cmd := exec.CommandContext(ctx, "osascript")
+	cmd.Stdin = strings.NewReader(script)
+	out, err := cmd.CombinedOutput()
 	s := strings.TrimSuffix(string(out), "\n")
 	if err != nil {
 		if strings.Contains(s, "Allow JavaScript from Apple Events") || strings.Contains(s, "JavaScript through AppleScript is turned off") {
@@ -244,6 +254,12 @@ set(u, ` + string(user) + `); set(p, ` + string(pass) + `); b.click(); return "s
 // the command to run again.
 func captureTab(cmd string) (t tab, done func(), err error) {
 	done = func() {}
+	defer func() {
+		if err != nil { // close a tab it opened, or the next run finds it logged out and skips the login
+			done()
+			done = func() {}
+		}
+	}()
 	if runtime.GOOS != "darwin" {
 		return t, done, fmt.Errorf("%s drives Brave through AppleScript, which needs macOS", cmd)
 	}
