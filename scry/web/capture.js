@@ -26,7 +26,7 @@
 (() => {
   if (window.scryCapture && window.scryCapture.running) return "a capture is running; call scryCapture.stop() first";
   const C = {
-    version: 3, // the bookmarks load this script again over an older copy
+    version: 4, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
     gameTimeoutMs: 10 * 60 * 1000, // a game that takes longer is abandoned and the page reset
@@ -295,8 +295,12 @@
         throw err;
       }
       // done when the log has reached the loaded decision's marker and stops growing: the bot has
-      // played up to your seat's next decision, or the loaded decision is yours, or the bot
-      // ended the game. A slow replay streams in for minutes; 90 s without a new line ends it.
+      // played up to your seat's next decision, or the bot ended the game. A marker comes once its
+      // decision is made, so when the loaded decision is your seat's (a game that ended on the
+      // first player's last turn) it never comes: the marker before it and the client's open
+      // question to you say the replay is over. A slow replay streams in for minutes; 90 s
+      // without a new line ends it.
+      const asked = () => this.game && this.game.questionModel && this.game.questionModel.openQuestions.length > 0 && this.entries().some((x) => x.decisionIndex >= decision - 1);
       let n = 0, same = 0, grew = Date.now(), stopped = false;
       try {
         await this.waitFor(() => {
@@ -304,7 +308,7 @@
           if (!m) throw new Error("the game closed while its log loaded (the connection dropped)");
           if (m === n) same++; else { same = 0; n = m; grew = Date.now(); }
           if (Date.now() - grew > 90000) { stopped = true; throw new Error("timed out waiting for the log to finish loading"); }
-          const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision);
+          const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision) || asked();
           return (reached && same >= 8) || (resultRe.test(document.body.innerText) && same >= 2);
         }, this.gameTimeoutMs, "the log to finish loading");
       } catch (e) {
@@ -427,6 +431,7 @@
           }
           const { id, mode } = this.queue[0];
           this.current = id;
+          this.say(`Scrying Pool is saving game ${id}, ${this.queue.length} left. It leaves the game by itself.`, 0);
           const prev = this.results[id] || {};
           const entry = { id, at: Date.now(), tries: (prev.tries || 0) + 1 };
           try {
@@ -452,6 +457,7 @@
           await this.sleep(this.pauseMs);
         }
         if (this.later) { this.queue = [...this.queue, ...this.later.filter((q) => !this.queue.some((x) => x.id === q.id))]; this.later = null; await this.saveState(); }
+        if (this.note) this.note.remove();
         this.current = null;
         this.running = false;
       })();
