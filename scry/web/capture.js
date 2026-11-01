@@ -253,7 +253,18 @@
       table.changeRule(new TableRule(TableRuleIds.PLAYER_ORDER, swapped));
       await this.sleep(1000);
     },
+    // While a new version rolls out, the server turns down new games. That says nothing
+    // about the game: the run stops with the game still queued (hold).
+    watchRefusals() {
+      if (this.watchingRefusals) return;
+      this.watchingRefusals = true;
+      angular.element(document.body).injector().get("$rootScope").$on(Events.COMMAND_FAILED, (_, f) => {
+        if (f.failureReason === FailureReasons.SERVER_DOESNT_ALLOW_NEW_GAMES) this.refused = true;
+      });
+    },
     async startGame(second = false) {
+      this.watchRefusals();
+      this.refused = false;
       await this.seatBot();
       if (second) await this.takeSecondSeat();
       this.watchLog();
@@ -301,10 +312,11 @@
       try {
         await this.waitFor(() => {
           if (dropped()) throw new Error("the connection dropped before the game started");
+          if (this.refused) { const e = new Error("the server takes no new games now, as during a release: reload the page and run again"); e.hold = true; throw e; }
           return lines() > 0;
         }, this.startTimeoutMs, "the game to start");
       } catch (e) {
-        if (e.message === "abandoned" || dropped()) throw e;
+        if (e.message === "abandoned" || e.hold || dropped()) throw e;
         const err = new Error(`the server didn't start the game in ${Math.round(this.startTimeoutMs / 60000)} min (its replay stalls)`);
         err.server = true;
         throw err;
@@ -472,6 +484,7 @@
               }
             }
           } catch (e) {
+            if (e.hold) { this.lastError = e.message; await this.recover(); break; }
             Object.assign(entry, { status: e.server ? "server" : "error", error: String(e.message || e) });
             await this.recover();
             if (!e.server && entry.tries < 2) this.queue.push({ id, mode }); // once more, after the rest
