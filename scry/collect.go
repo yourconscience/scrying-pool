@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"slices"
 	"strings"
@@ -198,10 +199,49 @@ await C.saveState();`, time.Minute); err != nil {
 	return captureGames(t, todo, dir, minTurns, budget)
 }
 
+// login fills the dominion.games login form in the tab with the account and
+// password the macOS keychain keeps for "dominion.games", which you add once:
+//
+//	security add-generic-password -s dominion.games -a NAME -w
+//
+// It doesn't kick another session: when the server offers to, the tab stays
+// logged out and the caller stops.
+func (t tab) login() error {
+	attrs, err := exec.Command("security", "find-generic-password", "-s", "dominion.games").CombinedOutput()
+	m := regexp.MustCompile(`"acct"<blob>="([^"]*)"`).FindSubmatch(attrs)
+	if err != nil || m == nil {
+		return fmt.Errorf("dominion.games isn't logged in in Brave, and the keychain has no dominion.games password to log in with")
+	}
+	pw, err := exec.Command("security", "find-generic-password", "-s", "dominion.games", "-w").Output()
+	if err != nil {
+		return fmt.Errorf("reading the dominion.games password from the keychain: %v", err)
+	}
+	user, _ := json.Marshal(string(m[1]))
+	pass, _ := json.Marshal(strings.TrimSuffix(string(pw), "\n"))
+	code := `(() => { const u = document.querySelector("input[name=username]"), p = document.querySelector("input[name=password][type=password]"), b = document.querySelector("input[type=submit]");
+if (!u || !p || !b) return "no form";
+const set = (e, v) => { e.value = v; e.dispatchEvent(new Event("input", { bubbles: true })); e.dispatchEvent(new Event("change", { bubbles: true })); };
+set(u, ` + string(user) + `); set(p, ` + string(pass) + `); b.click(); return "sent"; })()`
+	// the form shows once the client has loaded
+	for t0 := time.Now(); ; time.Sleep(3 * time.Second) {
+		out, err := t.js(code)
+		if err != nil {
+			return err
+		}
+		if out == "sent" {
+			return nil
+		}
+		if time.Since(t0) > 30*time.Second {
+			return fmt.Errorf("dominion.games isn't logged in in Brave, and its login form didn't show")
+		}
+	}
+}
+
 // captureTab finds the dominion.games tab in Brave that's logged in (opening
-// one if there is none) and readies the capture script in it. It never logs in:
-// when the tab isn't logged in, or you're at a table, it fails. done closes a
-// tab it opened. cmd names the command to run again.
+// one if there is none) and readies the capture script in it. A tab it opens
+// that isn't logged in logs in with the keychain's password (login); when that
+// fails, or you're at a table, it fails. done closes a tab it opened. cmd names
+// the command to run again.
 func captureTab(cmd string) (t tab, done func(), err error) {
 	done = func() {}
 	if runtime.GOOS != "darwin" {
@@ -234,6 +274,16 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 		for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 90*time.Second; time.Sleep(3 * time.Second) {
 			if st, err = t.lobby(); err != nil {
 				return t, done, err
+			}
+		}
+		if !st.In && !st.Game && !st.Table {
+			if err := t.login(); err != nil {
+				return t, done, err
+			}
+			for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 60*time.Second; time.Sleep(3 * time.Second) {
+				if st, err = t.lobby(); err != nil {
+					return t, done, err
+				}
 			}
 		}
 	}
