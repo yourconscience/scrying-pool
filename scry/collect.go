@@ -151,7 +151,7 @@ return { me: me.name, ids };`
 // dominion.games tab in Brave on this Mac (opening one if there is none) with the
 // capture script, and imports the games not saved in dir yet. It never logs in:
 // when the tab isn't logged in, or you're at a table, it stops.
-func collect(dir string, minTurns int, budget, since time.Duration) (err error) {
+func collect(dir string, minTurns int, budget, since time.Duration, ids []string) (err error) {
 	if dir, err = gamesDir(dir); err != nil {
 		return err
 	}
@@ -160,39 +160,59 @@ func collect(dir string, minTurns int, budget, since time.Duration) (err error) 
 		return err
 	}
 	defer done()
-	out, err := t.page(latestGames, time.Minute)
-	if err != nil {
-		return err
-	}
-	var latest struct {
-		Me  string   `json:"me"`
-		IDs []string `json:"ids"`
-	}
-	if err := json.Unmarshal(out, &latest); err != nil {
-		return err
-	}
 	var todo []string
-	for _, g := range latest.IDs {
-		if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
-			todo = append(todo, g)
-		}
-	}
-	fmt.Printf("%s: %d latest games, %d not saved\n", latest.Me, len(latest.IDs), len(todo))
-	// with since, also the games an older list names that were never loaded,
-	// each with its row so it keeps its date and scores
 	rows := map[string]string{}
-	if since > 0 {
-		old, err := neverLoaded(dir, time.Now().Add(-since))
+	if len(ids) > 0 {
+		// just these games: unrated ones, such as league matches, are on no list
+		// the server gives; a manifest that names one gives its row
+		named, err := neverLoaded(dir, time.Time{})
 		if err != nil {
 			return err
 		}
-		for _, g := range old {
-			if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) && !slices.Contains(todo, g.ID) {
-				todo = append(todo, g.ID)
+		for _, g := range ids {
+			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
+				todo = append(todo, g)
+			}
+		}
+		for _, g := range named {
+			if slices.Contains(todo, g.ID) {
 				rows[g.ID] = g.Date + " | " + g.Result
 			}
 		}
-		fmt.Printf("%d older games never loaded since %s\n", len(rows), time.Now().Add(-since).Format("2006-01-02"))
+		fmt.Printf("%d of %d games not saved\n", len(todo), len(ids))
+	} else {
+		out, err := t.page(latestGames, time.Minute)
+		if err != nil {
+			return err
+		}
+		var latest struct {
+			Me  string   `json:"me"`
+			IDs []string `json:"ids"`
+		}
+		if err := json.Unmarshal(out, &latest); err != nil {
+			return err
+		}
+		for _, g := range latest.IDs {
+			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
+				todo = append(todo, g)
+			}
+		}
+		fmt.Printf("%s: %d latest games, %d not saved\n", latest.Me, len(latest.IDs), len(todo))
+		// with since, also the games an older list names that were never loaded,
+		// each with its row so it keeps its date and scores
+		if since > 0 {
+			old, err := neverLoaded(dir, time.Now().Add(-since))
+			if err != nil {
+				return err
+			}
+			for _, g := range old {
+				if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) && !slices.Contains(todo, g.ID) {
+					todo = append(todo, g.ID)
+					rows[g.ID] = g.Date + " | " + g.Result
+				}
+			}
+			fmt.Printf("%d older games never loaded since %s\n", len(rows), time.Now().Add(-since).Format("2006-01-02"))
+		}
 	}
 	if len(todo) == 0 {
 		return nil
@@ -304,8 +324,10 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 		}
 	}
 	switch {
-	case st.Game || st.Table:
-		return t, done, fmt.Errorf("you're at a table on dominion.games; leave it and run %s again", cmd)
+	case st.Game:
+		return t, done, fmt.Errorf("you're in a game on dominion.games; finish it and run %s again", cmd)
+	case st.Table:
+		return t, done, fmt.Errorf("you're at a table on dominion.games (it shows Leave Table); leave it and run %s again", cmd)
 	case !st.In:
 		return t, done, fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run %s again", cmd)
 	}
@@ -356,7 +378,7 @@ func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Du
 
 	// the captured games, a few at a time, into one file for importGames
 	byStatus := `const C = window.scryCapture, by = {};
-for (const id of ` + string(ids) + `) { const s = (C.results[id] || { status: "not tried" }).status; (by[s] = by[s] || []).push(id); }
+for (const id of ` + string(ids) + `) { const r = C.results[id] || { status: "not tried" }; (by[r.status] = by[r.status] || []).push(r.status !== "ok" && r.error ? id + " (" + r.error + ")" : id); }
 return by;`
 	out, err := t.page(byStatus, time.Minute)
 	if err != nil {
@@ -368,7 +390,7 @@ return by;`
 	}
 	for s, gs := range by {
 		if s != "ok" {
-			fmt.Printf("%d %s: %s\n", len(gs), s, strings.Join(gs, " "))
+			fmt.Printf("%d %s: %s\n", len(gs), s, strings.Join(gs, ", "))
 		}
 	}
 	f, err := os.CreateTemp("", "scry-collect-*.jsonl")

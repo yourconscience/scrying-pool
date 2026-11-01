@@ -297,20 +297,23 @@
       // done when the log has reached the loaded decision's marker and stops growing: the bot has
       // played up to your seat's next decision, or the loaded decision is yours, or the bot
       // ended the game. A slow replay streams in for minutes; 90 s without a new line ends it.
-      let n = 0, same = 0, grew = Date.now();
+      let n = 0, same = 0, grew = Date.now(), stopped = false;
       try {
         await this.waitFor(() => {
           const m = lines();
           if (!m) throw new Error("the game closed while its log loaded (the connection dropped)");
           if (m === n) same++; else { same = 0; n = m; grew = Date.now(); }
-          if (Date.now() - grew > 90000) throw new Error("timed out waiting for the log to finish loading");
+          if (Date.now() - grew > 90000) { stopped = true; throw new Error("timed out waiting for the log to finish loading"); }
           const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision);
           return (reached && same >= 8) || (resultRe.test(document.body.innerText) && same >= 2);
         }, this.gameTimeoutMs, "the log to finish loading");
       } catch (e) {
         // the bot can get stuck ("Waiting for Lord Rattington"); past its first move the
-        // game's own log is complete anyway
-        if (e.message === "abandoned" || !lines() || !this.entries().some((x) => x.decisionIndex === decision)) throw e;
+        // game's own log is complete anyway. A game that ended on your seat's decision
+        // (the first player's, as the last turn of 13.5) has no one to make it: its log
+        // stops at the loaded decision, and the import's check against the score screen
+        // tells a whole log from a cut one
+        if (e.message === "abandoned" || !lines() || !(stopped || this.entries().some((x) => x.decisionIndex === decision))) throw e;
       }
       const { log, bot } = this.extractLog(this.lastOriginalLine(decision));
       const markers = !!(this.game && this.game.logModel);
@@ -335,11 +338,9 @@
     async recover() {
       this.gen++;
       try {
-        if (document.querySelector(".log-scroll-container") && !/You (Resigned|Lose|Win|Won|Tie)/.test(document.body.innerText)) {
-          (this.byLabel("Resign") || this.byText("Resign"))?.click();
-          (await this.waitFor(() => this.byText("Yes"), 5000))?.click();
-          (await this.waitFor(() => this.byText("Ok"), 5000))?.click();
-        }
+        // finish's resign, which gets past the game's own Yes/No question; a plain
+        // Resign and Yes could answer that question instead and leave the game open
+        if (document.querySelector(".log-scroll-container") && !/You (Resigned|Lose|Win|Won|Tie)/.test(document.body.innerText)) await this.finish();
       } catch (e) { /* not in a game */ }
       try { await this.leave(); } catch (e) { /* no table */ }
       await this.sleep(1500);
