@@ -77,7 +77,8 @@ For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`
 `scry collect` does the above for your own latest games without the console. It drives the dominion.games tab in Brave through AppleScript (it opens one if none is open), asks the server for your 100 latest two-player games, loads the ones not saved yet with the capture script and imports them.
 
 - Once: in Brave, turn on View > Developer > Allow JavaScript from Apple Events. The first run asks whether the program may control Brave: allow it.
-- It never logs in or kicks another session. When the tab isn't logged in, or you're at a table, it stops and says so (`-notify` shows it as a notification).
+- A new tab that isn't logged in logs in with the password the macOS keychain keeps for `dominion.games` (add it once: `security add-generic-password -s dominion.games -a NAME -w`; the first run asks to use it, answer Always Allow). It never kicks another session. When there's no such password, the login fails, or you're at a table, it stops and says so (`-notify` shows it as a notification).
+- While it loads games the tab looks frozen: it's replaying them. Closing it then can leave the account at that game's table; leave the table before the next run.
 - The server lists only the 100 latest games, so a weekly run misses games once you play more than about 14 a day. Run it daily.
 - `-since 2160h` also loads the games a `manifest-*.json` in the games folder (DomBot's `!prior` list, with what became of each game) marks `not-tried`, played within the last 90 days. Each keeps its row from the manifest, so it has its date and scores. Games already saved are skipped, so the flag can stay on a daily run.
 - `-publish REPO` then rebuilds `site-data/` in a clean checkout of this repository on a new branch from `origin/main`, pushes it and opens a pull request with `gh`. With `-merge` it waits for the pull request's checks and merges it, so the site redeploys on its own.
