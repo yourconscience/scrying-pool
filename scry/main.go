@@ -29,6 +29,7 @@ const usageText = `usage:
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
   scry collect [-publish REPO] [-notify] [GAME ...] save your latest games from dominion.games in Brave (macOS), or just these
+  scry collect -other N [GAME ...]                 load saved games from the second seat too, so they name both players' cards
   scry scout [-n 25] [-offline] [-json] PLAYER     load a player's latest games and compare their play with yours
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
@@ -178,8 +179,14 @@ func main() {
 		repo := fs.String("publish", "", "then rebuild site-data/ in this checkout and open a pull request")
 		merge := fs.Bool("merge", false, "with -publish: wait for the pull request's tests, then merge it, which redeploys the site")
 		notifyFlag := fs.Bool("notify", false, "show a macOS notification when it fails (for scheduled runs)")
+		other := fs.Int("other", 0, "instead of new games, load up to this many of your saved games from the second seat, latest first")
 		fs.Parse(args)
-		if err = collect(*dir, *minTurns, *budget, *since, fs.Args()); err == nil && *repo != "" {
+		if *other > 0 {
+			err = collectOther(*dir, *budget, *other, fs.Args())
+		} else {
+			err = collect(*dir, *minTurns, *budget, *since, fs.Args())
+		}
+		if err == nil && *repo != "" {
 			err = publish(*repo, *merge)
 		}
 		if err != nil && *notifyFlag {

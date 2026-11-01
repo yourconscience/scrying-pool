@@ -11,6 +11,10 @@
 // off and exported separately as "bot": they are not part of the game, but the score
 // screen counts them.
 //
+// A log names only the hidden cards of the seat you're in, and a loaded game puts you in the
+// first seat. Mode "both" plays the game again from the second seat, and mode "other" does only
+// that, for a game saved earlier. `scry import` merges the two logs.
+//
 // Built to run unattended overnight: every result is kept in the page's IndexedDB, so a
 // reload loses nothing (inject the script again and call resume()); each game has a time
 // limit and is tried once more after an error; a logout or a lost connection is waited
@@ -26,7 +30,7 @@
 (() => {
   if (window.scryCapture && window.scryCapture.running) return "a capture is running; call scryCapture.stop() first";
   const C = {
-    version: 4, // the bookmarks load this script again over an older copy
+    version: 5, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
     gameTimeoutMs: 10 * 60 * 1000, // a game that takes longer is abandoned and the page reset
@@ -40,7 +44,7 @@
     replies: {}, // request number -> its resolver, for the target tab's answers
     seq: 0,
     onResult: null, // called with each game's result
-    results: {}, // id -> {id, status: "ok"|"short"|"kingdom"|"server"|"error", record?, kingdom?, error?, at, exported?, delivered?}
+    results: {}, // id, or id+other for mode "other" -> {id, status: "ok"|"short"|"kingdom"|"server"|"error", record?, kingdom?, error?, at, exported?, delivered?}
     meta: {}, // id -> what a profile said about the game: {time, rated, players, levels, scores, row}
     queue: [], // [{id, mode: "full"|"kingdom"}]
     running: false,
@@ -240,8 +244,18 @@
       await this.sleep(800);
       return +v;
     },
-    async startGame() {
+    // Takes the second seat: the table's player order is what dragging a name changes.
+    async takeSecondSeat() {
+      const table = window.publicTableService, order = () => table.getRuleValue(TableRuleIds.PLAYER_ORDER);
+      await this.waitFor(() => order().players.length === 2, 8000, "the bot in the player order");
+      const swapped = order();
+      swapped.moveDown(0);
+      table.changeRule(new TableRule(TableRuleIds.PLAYER_ORDER, swapped));
+      await this.sleep(1000);
+    },
+    async startGame(second = false) {
       await this.seatBot();
+      if (second) await this.takeSecondSeat();
       this.watchLog();
       this.game = null;
       (await this.waitFor(() => this.byText("Ready"), 8000, "Ready")).click();
@@ -275,11 +289,12 @@
       return { score, kingdom };
     },
 
-    async captureId(id) {
+    // Plays a loaded game to its end from the first seat, or the second, and reads it.
+    async captureId(id, second = false) {
       const resultRe = /You (Resigned|Lose|Win|Won|Tie)/;
       const decision = await this.loadOld(id);
       const original = (document.body.innerText.match(/Original Player: [^\n]+/g) || []).map((s) => s.slice(17));
-      await this.startGame();
+      await this.startGame(second);
       // the lobby offers New Table only when you have none: the connection dropped and took the table
       const dropped = () => !!this.byText("New Table");
       const lines = () => document.querySelectorAll(".log-scroll-container .log-line").length;
@@ -300,24 +315,22 @@
       // first player's last turn) it never comes: the marker before it and the client's open
       // question to you say the replay is over. A slow replay streams in for minutes; 90 s
       // without a new line ends it.
-      const asked = () => this.game && this.game.questionModel && this.game.questionModel.openQuestions.length > 0 && this.entries().some((x) => x.decisionIndex >= decision - 1);
-      let n = 0, same = 0, grew = Date.now(), stopped = false;
+      const atEnd = () => this.entries().some((x) => x.decisionIndex >= decision - 1);
+      const asked = () => this.game && this.game.questionModel && this.game.questionModel.openQuestions.length > 0 && atEnd();
+      let n = 0, same = 0, grew = Date.now();
       try {
         await this.waitFor(() => {
           const m = lines();
           if (!m) throw new Error("the game closed while its log loaded (the connection dropped)");
           if (m === n) same++; else { same = 0; n = m; grew = Date.now(); }
-          if (Date.now() - grew > 90000) { stopped = true; throw new Error("timed out waiting for the log to finish loading"); }
+          if (Date.now() - grew > 90000) throw new Error("timed out waiting for the log to finish loading");
           const reached = !this.game || this.entries().some((x) => x.decisionIndex >= decision) || asked();
           return (reached && same >= 8) || (resultRe.test(document.body.innerText) && same >= 2);
         }, this.gameTimeoutMs, "the log to finish loading");
       } catch (e) {
-        // the bot can get stuck ("Waiting for Lord Rattington"); past its first move the
-        // game's own log is complete anyway. A game that ended on your seat's decision
-        // (the first player's, as the last turn of 13.5) has no one to make it: its log
-        // stops at the loaded decision, and the import's check against the score screen
-        // tells a whole log from a cut one
-        if (e.message === "abandoned" || !lines() || !(stopped || this.entries().some((x) => x.decisionIndex === decision))) throw e;
+        // the bot can get stuck ("Waiting for Lord Rattington"); with the replay at the
+        // loaded decision, the game's own log is complete anyway
+        if (e.message === "abandoned" || !lines() || !atEnd()) throw e;
       }
       const { log, bot } = this.extractLog(this.lastOriginalLine(decision));
       const markers = !!(this.game && this.game.logModel);
@@ -344,7 +357,7 @@
       try {
         // finish's resign, which gets past the game's own Yes/No question; a plain
         // Resign and Yes could answer that question instead and leave the game open
-        if (document.querySelector(".log-scroll-container") && !/You (Resigned|Lose|Win|Won|Tie)/.test(document.body.innerText)) await this.finish();
+        if (document.querySelector(".log-scroll-container") && !/You (Resigned|Lose|Win|Won|Tie)/.test(document.body.innerText)) { await this.finish(); return; }
       } catch (e) { /* not in a game */ }
       try { await this.leave(); } catch (e) { /* no table */ }
       await this.sleep(1500);
@@ -409,10 +422,11 @@
     async run(ids, { mode = "full", retry = false, alone = false } = {}) {
       if (!this.running) await this.load();
       if (alone && !this.running) { this.later = [...(this.later || []), ...this.queue]; this.queue = []; }
-      const queued = new Set(this.queue.map((q) => q.id));
-      const done = (id) => { const r = this.results[id]; return r && r.status !== "error" && (mode === "full" ? r.status !== "kingdom" : true); };
+      const key = (id, m) => (m === "other" ? id + "+other" : id);
+      const queued = new Set(this.queue.map((q) => key(q.id, q.mode)));
+      const done = (id) => { const r = this.results[key(id, mode)]; return r && r.status !== "error" && (mode === "kingdom" || r.status !== "kingdom"); };
       let added = 0;
-      for (const id of ids.map(String)) if (!queued.has(id) && (retry || !done(id))) { this.queue.push({ id, mode }); added++; }
+      for (const id of ids.map(String)) if (!queued.has(key(id, mode)) && (retry || !done(id))) { queued.add(key(id, mode)); this.queue.push({ id, mode }); added++; }
       await this.saveState();
       return this.running ? `queued ${added} more; ${this.queue.length} in the queue` : this.resume();
     },
@@ -432,17 +446,30 @@
           const { id, mode } = this.queue[0];
           this.current = id;
           this.say(`Scrying Pool is saving game ${id}, ${this.queue.length} left. It leaves the game by itself.`, 0);
-          const prev = this.results[id] || {};
-          const entry = { id, at: Date.now(), tries: (prev.tries || 0) + 1 };
+          const key = mode === "other" ? id + "+other" : id;
+          const prev = this.results[key] || {};
+          const entry = { id: key, at: Date.now(), tries: (prev.tries || 0) + 1 };
           try {
             if (mode === "kingdom") {
               entry.kingdom = await this.limit(this.kingdomOnly(id), this.gameTimeoutMs);
               entry.status = "kingdom";
+            } else if (mode === "other") {
+              const { log } = await this.limit(this.captureId(id, true), this.gameTimeoutMs);
+              Object.assign(entry, { status: "ok", record: { id, other: log } });
             } else {
               const rec = await this.limit(this.captureId(id), this.gameTimeoutMs);
               rec.row = rec.row || (this.meta[id] && this.meta[id].row) || "";
               const turns = this.minTurnsIn(rec.log);
               Object.assign(entry, turns < this.minTurns ? { status: "short", turns } : { status: "ok", record: rec });
+              if (mode === "both" && entry.status === "ok") {
+                // a game the server won't replay from the second seat is still saved from the first
+                try {
+                  rec.other = (await this.limit(this.captureId(id, true), this.gameTimeoutMs)).log;
+                } catch (e) {
+                  rec.otherError = String(e.message || e);
+                  await this.recover();
+                }
+              }
             }
           } catch (e) {
             Object.assign(entry, { status: e.server ? "server" : "error", error: String(e.message || e) });
