@@ -82,7 +82,7 @@ The question after a loss is often "bad hands or bad deck?". The report answers 
 - The same numbers for the opponent, so the comparison is fair.
 - Verdict: *draw* when my luck is clearly below the opponent's and below zero; *deck* when it isn't, meaning the hands matched what the deck could give. The cut-offs need measuring: compute luck over the saved games and set the thresholds from that spread, not from a guess.
 
-Limits, said in the report itself: it counts treasure only, so a deck that pays with Caravan, coin tokens or action $ looks unlucky when it isn't, and draw cards change the hand size. It needs the starting hand per turn: `Features.Opening` already reads it for turns 1 and 2, and building this starts by checking that `g.Turns()` gives it for every turn.
+Limits, said in the report itself: it counts treasure only, so a deck that pays with Caravan, coin tokens or action $ looks unlucky when it isn't, and draw cards change the hand size. The starting hand is the `hand` zone at the end of the player's previous turn in `g.Turns()`, but only for the first player's seat: the loader sits there, and the other seat's hands are hidden. So when the opponent went first, my hands are unknown and the report compares $ per turn instead, saying so. Checked on the heth match: game 1 (heth first) shows heth's hands and none of mine.
 
 ## Not in this change
 
