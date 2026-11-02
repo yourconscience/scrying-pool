@@ -363,15 +363,14 @@ set(u, ` + string(user) + `); set(p, ` + string(pass) + `); b.click(); return "s
 	}
 }
 
-// captureTab finds the dominion.games tab in Brave that's logged in (opening
-// one if there is none) and readies the capture script in it. A tab it opens
-// that isn't logged in logs in with the keychain's password (login); when that
-// fails, or you're at a table, it fails. done closes a tab it opened. cmd names
-// the command to run again.
+// captureTab finds the dominion.games tab in Brave that's logged in and readies
+// the capture script in it. With no such tab, whatever else is open, it opens one
+// and logs in with the keychain's password (login); when that fails, or you're at
+// a table, it fails. done closes a tab it opened. cmd names the command to run again.
 func captureTab(cmd string) (t tab, done func(), err error) {
 	done = func() {}
 	defer func() {
-		if err != nil { // close a tab it opened, or the next run finds it logged out and skips the login
+		if err != nil { // close a tab it opened, or they pile up run after run
 			done()
 			done = func() {}
 		}
@@ -392,7 +391,8 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 		if st, err = (tab{id}).lobby(); err != nil {
 			return t, done, err
 		}
-		if t = (tab{id}); st.In || st.Game || st.Table {
+		if st.In || st.Game || st.Table {
+			t = tab{id}
 			break
 		}
 	}
