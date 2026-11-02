@@ -84,6 +84,8 @@ For a single game without the app, the **Copy log** bookmark (`scry bookmarklet`
 - `-publish REPO` then rebuilds `site-data/` in a clean checkout of this repository on a new branch from `origin/main`, pushes it and opens a pull request with `gh`. With `-merge` it waits for the pull request's checks and merges it, so the site redeploys on its own.
 - Card images go into the published profiles only when `card-images/` is in the working directory or `$SCRY_CARD_IMAGES` names it; a launchd agent runs from `/`, so set `SCRY_CARD_IMAGES` in its `EnvironmentVariables`.
 
+To run it by hand, use `tools/collect.sh` (`SCRY_HOST=HOST tools/collect.sh` from another machine), not plain `scry collect` over ssh: there the browser and the keychain refuse it. The script runs one launchd job, shows its output and exits with its code; its header says why, and what stops a run.
+
 To run it every morning and publish on Sundays, put two launchd agents in `~/Library/LaunchAgents` (`scry collect -notify` daily, `scry collect -notify -publish REPO -merge` weekly, with `StartCalendarInterval`) and load them with `launchctl bootstrap gui/$(id -u) FILE`. A Mac that was asleep at that time runs the job when it wakes. The agents run the installed binary: rebuild it (`go build -o ~/.local/bin/scry ./scry`) after changes to what the site reads, or the weekly run publishes data in the old shape.
 
 ## Scouting an opponent
