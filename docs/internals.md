@@ -23,6 +23,7 @@ Everything the app needs lives in `scry/`; `go install github.com/yourconscience
 | **Analysis page** | `scry/web/analyze.*`, `scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
 | **Advisor** | `scry/internal/advisor/`, `scry/web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (kingdom roles, openings, endings; going first is in the summary), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 80% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
 | **Recent games** | `scry/web/recent.*`, `scry/internal/advisor/recent.go` | `scry web`'s **Recent games** page: a player's 25 latest saved games summed up like DomBot's `!results` (score against the levels' prediction, opponents' levels, your level), wins against losses (first Province, $ per turn, length) and each game. The Recent games bookmark fills it from your profile. |
+| **Last games** | `scry/games.go`, `scry/web/games.*` | `scry games` and `scry web`'s **Last games** page: a report on your N latest games, a player's or the games you name, against what the levels predicted and your usual play, game by game. See [Match reports](match-report.md). |
 | **Match notes** | `scry/web/notes.html`, `scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Cartographer: how logs are read
@@ -93,7 +94,7 @@ On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59
 ## CLI
 
 ```bash
-scry web                                              # start page, analysis, Profiles, Recent games, match notes
+scry web                                              # start page, analysis, Profiles, Recent games, Last games, match notes
 scry client save [FILE]                               # store client tables from the Copy client tables bookmark
 scry bookmarklet [-client]                            # print the Copy log (or Copy client tables) bookmark
 scry import [-dir DIR] [-min-turns 3] batch.jsonl     # save captured games and check each one

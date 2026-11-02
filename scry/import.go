@@ -27,10 +27,10 @@ type exportedGame struct {
 	// the log from the second seat, which names that seat's cards, and why there's none
 	Other      string `json:"other"`
 	OtherError string `json:"otherError"`
-	Bot      string   `json:"bot"`      // lines the bot played after the load; the score screen counts them
-	Decision int      `json:"decision"` // the decision the game was loaded at
-	Markers  bool     `json:"markers"`  // whether the client's decision markers were read
-	Score    string   `json:"score"`
+	Bot        string `json:"bot"`      // lines the bot played after the load; the score screen counts them
+	Decision   int    `json:"decision"` // the decision the game was loaded at
+	Markers    bool   `json:"markers"`  // whether the client's decision markers were read
+	Score      string `json:"score"`
 	// the client's kingdom viewer, e.g. {"Cards in Supply": ["Craftsman", ...], "Loot": [...]}
 	Kingdom map[string][]string `json:"kingdom"`
 	Profile *gameProfile        `json:"profile"` // what a player's profile said about the game

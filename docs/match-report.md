@@ -2,7 +2,7 @@
 
 Back to the [README](../README.md).
 
-Status: design, not built. Feedback welcome on the commands, the template and the draw-luck rule.
+Status: `scry games` and the Last games page in `scry web` are built; `scry match OPPONENT` and `-scout N` are not. Feedback welcome on the commands, the template and the draw-luck rule.
 
 After a league match you want one command that loads the match's games and says, compactly: who was favoured, what each kingdom offered, what happened in each game, and whether a loss came from the draw or from the deck. Today that takes `scry match`, copying ids by hand, `scry collect ID...`, then `scry review` per game and reading three reports.
 
@@ -11,12 +11,15 @@ After a league match you want one command that loads the match's games and says,
 ```
 scry match OPPONENT                     # ask DomBot for the match, load its games, print the report
 scry games OPPONENT --ids ID[,ID...]    # the same report for games you name; no Discord
+scry games --last N                     # your N latest games, whoever they were against (10 by default)
+scry games OPPONENT --last N            # your N latest games against this player
 scry match P1 P2                        # unchanged: prints DomBot's !match reply
 ```
 
 - **Me** is chosen as `scry scout` chooses it: `-me`, else the logged-in account, else the account that loaded most games.
 - `scry match OPPONENT` sends `!match ME, OPPONENT` (the existing `askDomBot`), parses the reply with `parseSummary`, and takes the game ids from its detail lines (`185400051 (12m) — Cards...`). DomBot covers only the last day or two; outside that, use `scry games`.
 - Both commands then run `collect ID...` (this branch) for the ids not saved yet, which needs the dominion.games tab, and build the report from the saved games. `-offline` skips loading and reports on what is saved.
+- `--last N` asks the server for your latest games, loads the unsaved ones among the N newest (against OPPONENT, if named) and reports on your N latest saved games. The server's list holds rated games only, so an unrated league match needs `--ids`. A game that won't load is left out, and the next older saved game takes its place: the report says how new your newest saved game is.
 - Flags shared with `scout`: `-dir`, `-me`, `-json`, `-o FILE`, `-min-turns`, `-budget`. One new one: `-scout N` adds the opponent's N latest games (the `scout` fetch and its Side section), off by default.
 - Go's `flag` stops at the first positional argument, so `games` parses flags, takes OPPONENT, then parses the rest again. `--ids` takes a comma list; ids after it are added too, so `--ids 1 2 3` and `--ids 1,2,3` both work.
 
@@ -80,19 +83,28 @@ The question after a loss is often "bad hands or bad deck?". The report answers 
 - For each of my turns from t3 to t12, **expected $** is 5 × (treasure $ in the deck ÷ cards in the deck) at the start of the turn, and **actual $** is the treasure $ in the starting hand. Draw luck is the mean of actual − expected.
 - A **bad hand** is one at least $2 below expected.
 - The same numbers for the opponent, so the comparison is fair.
-- Verdict: *draw* when my luck is clearly below the opponent's and below zero; *deck* when it isn't, meaning the hands matched what the deck could give. The cut-offs need measuring: compute luck over the saved games and set the thresholds from that spread, not from a guess.
+- Verdict, for a loss: *draw* when my luck is at most −0.5 and at least 0.5 below the opponent's; *unclear* when it isn't and both are below zero; *deck* otherwise, meaning the hands matched what the deck's treasure could give. When the opponent's hands are hidden: *draw* at −0.5 or less, *deck* at zero or more, *unclear* between.
+- The cut-offs are measured: over 416 saved games, 205 with my hands visible, luck has mean +0.05 and standard deviation 0.40, and −0.5 is about the worst 10%.
+- It's a hint, not a cause. Over those 205 games, games with luck at −0.5 or less scored 58% and the others 60%, so treasure-only luck barely predicts the result. The report words the verdict accordingly.
 
-Limits, said in the report itself: it counts treasure only, so a deck that pays with Caravan, coin tokens or action $ looks unlucky when it isn't, and draw cards change the hand size. The starting hand is the `hand` zone at the end of the player's previous turn in `g.Turns()`, but only for the first player's seat: the loader sits there, and the other seat's hands are hidden. So when the opponent went first, my hands are unknown and the report compares $ per turn instead, saying so. Checked on the heth match: game 1 (heth first) shows heth's hands and none of mine.
+Limits, said in the report itself: it counts treasure only, so a deck that pays with Caravan, coin tokens or action $ looks unlucky when it isn't, and draw cards change the hand size. The starting hand is the `hand` zone at the end of the player's previous turn in `g.Turns()`, but only for the first player's seat: the loader sits there, and the other seat's hands are hidden. So when the opponent went first, my hands are unknown and the report compares $ per turn instead, saying so. A log merged from both seats (`docs/capture.md`) names both players' hands. Checked on the heth match: game 1 (heth first) shows heth's hands and none of mine.
+
+## The Last games page
+
+`scry web` has a local-only page, `games.html`, for the same report: a number of games, an optional player, or game numbers.
+
+- **Show** calls `GET /api/report?last=&opponent=&ids=`, which builds the report from the saved games and returns it as JSON. It never opens dominion.games.
+- **Load the missing ones** calls `POST /api/report/load`, which runs `scry games` in a process of its own, one run at a time, and `GET /api/report/load` follows it. It stops by itself when you're at a table or in a game; in the lobby it takes the tab over until it's done.
+- The page and its assets stay out of `scry site`, so the live site doesn't have it. The API answers only requests addressed to localhost or an IP, and a run only from the page's own origin.
 
 ## Not in this change
 
-- A web page for the report. Later, the same JSON can feed a page in `scry/web` (HTML and JS kept out of Go source).
 - Free-text commentary from a model.
 - Matches with more than two players.
 
 ## Build order
 
-1. `matchReport` with the Markdown and JSON output, and `scry games OPPONENT --ids`. Check it on the three heth games.
-2. `scry match OPPONENT` through DomBot.
-3. Draw luck, with thresholds measured on the saved games.
-4. `-scout N`.
+Done: the report with Markdown and JSON output, `scry games` with `--ids` and `--last`, draw luck, and the Last games page. Left:
+
+1. `scry match OPPONENT` through DomBot.
+2. `-scout N`.

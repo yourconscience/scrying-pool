@@ -146,15 +146,35 @@ const mark = (C.seen || []).length;
 inj.get("serverMessenger").requestPlayerResults(me.id, RatingTypes.RATINGS_2P, 100);
 await C.waitFor(() => (C.seen || []).length > mark, 20000, "your latest games");
 for (let n = -1; n !== C.seen.length; ) { n = C.seen.length; await C.sleep(1000); }
-const ids = C.seen.slice(mark).filter((r) => (r.players || []).length === 2).map((r) => C.noteGame(r, me.name));
+const rows = C.seen.slice(mark).filter((r) => (r.players || []).length === 2);
+const ids = rows.map((r) => C.noteGame(r, me.name));
 await C.saveState();
-return { me: me.name, ids };`
+return { me: me.name, ids, players: Object.fromEntries(rows.map((r) => [String(r.gameId), r.players.map((p) => p.name)])) };`
+
+// lastGames narrows collect to the N latest games, against one player if Against says.
+type lastGames struct {
+	N       int
+	Against string
+}
+
+func (l lastGames) pick(ids []string, players map[string][]string) []string {
+	ids = slices.Clone(ids)
+	slices.SortFunc(ids, func(a, b string) int { return cmp.Or(cmp.Compare(len(b), len(a)), cmp.Compare(b, a)) }) // same-length ids sort as numbers
+	var out []string
+	for _, id := range ids {
+		if len(out) < l.N && (l.Against == "" || slices.ContainsFunc(players[id], func(p string) bool { return strings.EqualFold(p, l.Against) })) {
+			out = append(out, id)
+		}
+	}
+	return out
+}
 
 // collect saves your latest finished games from dominion.games, or just the games
-// in ids, from both seats. It drives the dominion.games tab in Brave on this Mac
-// (opening one if there is none) with the capture script, and imports the games
-// not saved in dir yet. When the tab isn't logged in, or you're at a table, it stops.
-func collect(dir string, minTurns int, budget, since time.Duration, ids []string) (err error) {
+// in ids, or just the latest that last names, from both seats. It drives the
+// dominion.games tab in Brave on this Mac (opening one if there is none) with the
+// capture script, and imports the games not saved in dir yet. When the tab isn't
+// logged in, or you're at a table, it stops.
+func collect(dir string, minTurns int, budget, since time.Duration, ids []string, last lastGames) (err error) {
 	if dir, err = gamesDir(dir); err != nil {
 		return err
 	}
@@ -189,11 +209,15 @@ func collect(dir string, minTurns int, budget, since time.Duration, ids []string
 			return err
 		}
 		var latest struct {
-			Me  string   `json:"me"`
-			IDs []string `json:"ids"`
+			Me      string              `json:"me"`
+			IDs     []string            `json:"ids"`
+			Players map[string][]string `json:"players"`
 		}
 		if err := json.Unmarshal(out, &latest); err != nil {
 			return err
+		}
+		if last.N > 0 {
+			latest.IDs = last.pick(latest.IDs, latest.Players)
 		}
 		for _, g := range latest.IDs {
 			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
