@@ -52,7 +52,7 @@ Profiles are built from games saved on your computer, so this part runs locally.
 2. Save your finished games: one with the **Scry game** bookmark on the Analyze page, your 25 latest with the **Recent games** bookmark, many with the capture script. [Loading games](docs/capture.md) walks you through them.
 3. Your profile appears on the app's Profiles page. To put it on the live page, follow [site-data/README.md](site-data/README.md).
 4. After a bad run, the app's **Last games** page or `scry games --last 10` reports on your latest games: score against expected, against your usual, and game by game ([Match reports](docs/match-report.md)).
-5. Before a match, `scry scout PLAYER` loads your opponent's latest games and sets their openings, cards and styles beside yours ([Scouting an opponent](docs/capture.md#scouting-an-opponent)).
+5. Before a match, `scry scout PLAYER`, or the Scout page in `scry web`, loads your opponent's latest games and sets their openings, cards and styles beside yours ([Scouting an opponent](docs/capture.md#scouting-an-opponent)).
 
 ## Good to know
 
