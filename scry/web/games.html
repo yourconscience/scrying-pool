@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dominion Last Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="insights.css">
+<link rel="stylesheet" href="recent.css">
+<link rel="stylesheet" href="games.css">
+</head>
+<body class="insights">
+<nav class="top">
+  <a class="brand" href="/">Scrying Pool</a>
+  <a href="analyze.html">Analyze a game</a>
+  <a href="insights.html">Profiles</a>
+  <a href="recent.html">Recent games</a>
+  <a href="games.html" aria-current="page">Last games</a>
+  <a href="scout.html">Scout</a>
+  <a href="engine.html">Engine</a>
+  <a href="notes.html">Match notes</a>
+  <a href="https://github.com/yourconscience/scrying-pool">GitHub</a>
+</nav>
+
+<main class="ins">
+  <div class="ins-head">
+    <div class="ins-title">
+      <p class="eyebrow">Dominion Online</p>
+      <h1 id="title">Last games</h1>
+      <p id="meta" class="hint">Reading the saved games…</p>
+    </div>
+  </div>
+
+  <section class="panel" aria-label="Which games">
+    <form id="form" class="ask">
+      <label>Last <input id="last" type="number" min="1" max="100" value="10"> games</label>
+      <label>Against <input id="opponent" autocomplete="off" spellcheck="false" placeholder="any player"></label>
+      <label>Or these game numbers <input id="ids" autocomplete="off" spellcheck="false" placeholder="185400051 185400329"></label>
+      <button type="submit">Show</button>
+      <button type="button" id="load" class="second">Load the missing ones</button>
+    </form>
+    <p class="hint">Show reads the games already saved. Load uses your dominion.games tab in Brave and logs in if it has to. It leaves a finished game or an empty table by itself, then takes the tab over until it's done, so don't press it between the games of a match. It won't touch a game in progress against a person.</p>
+    <div id="run" class="run" hidden>
+      <p class="live"><span class="dot" id="dot" aria-hidden="true"></span> <span id="run-text"></span></p>
+      <details><summary>Log</summary><pre id="log"></pre></details>
+    </div>
+  </section>
+
+  <p id="error" role="alert" hidden></p>
+
+  <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+  <section class="panel" id="vs-box" aria-labelledby="vs-h" hidden>
+    <h2 id="vs-h">Side by side</h2>
+    <div class="scroll"><table class="sides" id="vs"></table></div>
+  </section>
+
+  <section class="panel" id="sides-box" aria-labelledby="sides-h" hidden>
+    <h2 id="sides-h">These games and your usual</h2>
+    <p class="hint">Usual is your other saved games of the last 90 days. Turns and $ are yours; $ is per turn over turns 1-10.</p>
+    <div class="scroll"><table class="sides" id="sides"></table></div>
+  </section>
+
+  <section class="panel" id="notes-box" aria-labelledby="notes-h" hidden>
+    <h2 id="notes-h">What stands out</h2>
+    <ul id="notes"></ul>
+  </section>
+
+  <div id="games"></div>
+  <p class="hint" id="luck-note" hidden>Draw luck compares the treasure in your hands on turns 3-12 with what the deck's treasure gives on average. It counts treasure only, so a deck that pays with actions looks unlucky: read it as a hint. A log names only the first seat's hands, unless it merges both seats.</p>
+</main>
+<footer class="site-foot">
+  Use it on finished games only: the dominion.games Terms of Service ban tools that help in games in progress. Not affiliated with Shuffle iT, Rio Grande Games, DomBot or the Dominion League.
+</footer>
+<script src="games.js"></script>
+</body>
+</html>

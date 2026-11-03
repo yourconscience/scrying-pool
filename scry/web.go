@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -12,8 +13,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -219,6 +222,70 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		writeJSON(w, 200, map[string]string{"href": bookmarklet(bookmarkSource(name, "http://"+r.Host))})
 	})
+	// The Last games page: a report from the saved games, and a run of `scry games`
+	// that loads the missing ones in the dominion.games tab.
+	mux.HandleFunc("GET /api/report", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		c, err := loadCorpus()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		client, err := webClient()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		ask := gamesAsk{Me: q.Get("me"), Opponent: strings.TrimSpace(q.Get("opponent")), Last: reportLast(q.Get("last")), IDs: reNumber.FindAllString(q.Get("ids"), -1)}
+		rep, err := buildGames(client, dir, c.account, c.profiles, c.features, ask)
+		if err != nil {
+			writeJSON(w, 422, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, rep)
+	}))
+	mux.HandleFunc("GET /api/report/load", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, loadStatus())
+	}))
+	mux.HandleFunc("POST /api/report/load", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		// Only our own page may start a run: it drives the dominion.games tab.
+		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
+			writeJSON(w, 403, map[string]string{"error": "cross-origin request refused"})
+			return
+		}
+		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+			writeJSON(w, 415, map[string]string{"error": "expected JSON"})
+			return
+		}
+		var req struct {
+			Last     string `json:"last"`
+			Opponent string `json:"opponent"`
+			IDs      string `json:"ids"`
+		}
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<12)).Decode(&req); err != nil {
+			writeJSON(w, 400, map[string]string{"error": "bad request: " + err.Error()})
+			return
+		}
+		if req.Opponent = strings.TrimSpace(req.Opponent); len(req.Opponent) > 64 {
+			writeJSON(w, 400, map[string]string{"error": "that's too long for a player's name"})
+			return
+		}
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		if err := startLoad(dir, reportLast(req.Last), req.Opponent, reNumber.FindAllString(req.IDs, -1)); err != nil {
+			writeJSON(w, 409, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 202, loadStatus())
+	}))
 	// The Scout page: the players scouted before and the latest run, a player's
 	// report from the saved games, and a run of `scry scout` that loads their
 	// games in the dominion.games tab.
@@ -306,10 +373,10 @@ func newHandler(timeout time.Duration) http.Handler {
 	return mux
 }
 
-// localOnly serves the Scout API only to requests addressed to this machine by
-// name (localhost) or by IP. A site could otherwise point a hostname of its own
-// at 127.0.0.1 (DNS rebinding): its pages would then be same-origin with the app,
-// pass the Origin check and read the reports.
+// localOnly serves an API only to requests addressed to this machine by name
+// (localhost) or by IP. A site could otherwise point a hostname of its own at
+// 127.0.0.1 (DNS rebinding): its pages would then be same-origin with the app and
+// pass the Origin check.
 func localOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		host, _, err := net.SplitHostPort(r.Host)
@@ -322,6 +389,105 @@ func localOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 		h(w, r)
 	}
+}
+
+var reNumber = regexp.MustCompile(`\d+`)
+
+// reportLast reads how many latest games the Last games page asks for: 10 unless
+// it says, and no more than the server lists.
+func reportLast(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil || n < 1 {
+		return 10
+	}
+	return min(n, 100)
+}
+
+// loadRun is the Last games page's run of `scry games`. There's one at a time, as
+// it drives the one dominion.games tab.
+type loadRun struct {
+	Started string   `json:"started,omitempty"`
+	Running bool     `json:"running"`
+	Log     []string `json:"log"`
+	Error   string   `json:"error,omitempty"`
+}
+
+var (
+	loadMu  sync.Mutex
+	loadNow = loadRun{Log: []string{}}
+)
+
+// startLoad runs `scry games` in a process of its own and keeps its output. The
+// page reads the report from the saved games afterwards, so the report goes nowhere.
+func startLoad(dir string, last int, opponent string, ids []string) error {
+	loadMu.Lock()
+	defer loadMu.Unlock()
+	if loadNow.Running {
+		return errors.New("already loading games")
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	args := []string{"games", "-dir", dir, "-o", os.DevNull, "-last", strconv.Itoa(last)}
+	if len(ids) > 0 {
+		args = append(args, "-ids", strings.Join(ids, ","))
+	}
+	args = append(args, "--")
+	if opponent != "" {
+		args = append(args, opponent)
+	}
+	// scry's own binary, without a shell; the name can't be read as a flag after "--"
+	cmd := exec.Command(exe, args...) // nosemgrep: go.lang.security.audit.dangerous-exec-command
+	r, w, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	cmd.Stdout, cmd.Stderr = w, w
+	err = cmd.Start()
+	w.Close()
+	if err != nil {
+		r.Close()
+		return err
+	}
+	loadNow = loadRun{Started: time.Now().Format(time.RFC3339), Running: true, Log: []string{}}
+	go func() {
+		defer r.Close()
+		for sc := bufio.NewScanner(r); sc.Scan(); {
+			loadMu.Lock()
+			loadNow.Log = append(loadNow.Log, sc.Text())
+			loadMu.Unlock()
+		}
+		err := cmd.Wait()
+		loadMu.Lock()
+		defer loadMu.Unlock()
+		loadNow.Running = false
+		if err != nil {
+			loadNow.Error = err.Error()
+			if k := len(loadNow.Log); k > 0 && strings.HasPrefix(loadNow.Log[k-1], "scry: ") {
+				loadNow.Error = strings.TrimPrefix(loadNow.Log[k-1], "scry: ")
+			}
+		}
+	}()
+	return nil
+}
+
+func loadStatus() loadRun {
+	loadMu.Lock()
+	defer loadMu.Unlock()
+	s := loadNow
+	s.Log = slices.Clone(s.Log)
+	return s
+}
+
+// scoutGames reads how many of a player's games the Scout page asks for: 25
+// unless it says, and no more than the server lists.
+func scoutGames(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil || n < 1 {
+		return 25
+	}
+	return min(n, scoutList)
 }
 
 // allowGamePost lets our own pages and the dominion.games tab post games.
@@ -349,6 +515,7 @@ var (
 type corpus struct {
 	stamp    time.Time // the newest score file when it was read
 	account  string
+	profiles map[string]*advisor.Profile
 	features []*advisor.Features
 	insights map[string]*advisor.Insights
 }
@@ -367,16 +534,6 @@ func bookmarkSource(name, origin string) string {
 	version := reCaptureVersion.FindStringSubmatch(string(capture))[1]
 	return "if ((window.scryCapture && window.scryCapture.version) !== " + version + ") " + stripComments(string(capture)) + "\n" +
 		strings.ReplaceAll(string(one), "SCRY_ORIGIN", origin)
-}
-
-// scoutGames reads how many of a player's games the Scout page asks for: 25
-// unless it says, and no more than the server lists.
-func scoutGames(s string) int {
-	n, err := strconv.Atoi(s)
-	if err != nil || n < 1 {
-		return 25
-	}
-	return min(n, scoutList)
 }
 
 // recentGames is how many latest games the Recent games page shows: as many as
@@ -406,11 +563,11 @@ func loadCorpus() (*corpus, error) {
 	if c := corpusCache; c != nil && c.stamp.Equal(newest) {
 		return c, nil
 	}
-	account, _, features, err := advisor.Corpus(client, dir)
+	account, profiles, features, err := advisor.Corpus(client, dir)
 	if err != nil {
 		return nil, err
 	}
-	corpusCache = &corpus{stamp: newest, account: account, features: features, insights: map[string]*advisor.Insights{}}
+	corpusCache = &corpus{stamp: newest, account: account, profiles: profiles, features: features, insights: map[string]*advisor.Insights{}}
 	return corpusCache, nil
 }
 

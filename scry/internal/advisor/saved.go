@@ -88,6 +88,19 @@ func Load(client *cartographer.Client, dir string) ([]*Saved, error) {
 		return nil, err
 	}
 	sort.Strings(files)
+	return loadFiles(client, files)
+}
+
+// LoadGames parses just the saved games with these ids.
+func LoadGames(client *cartographer.Client, dir string, ids []string) ([]*Saved, error) {
+	files := make([]string, len(ids))
+	for i, id := range ids {
+		files[i] = filepath.Join(dir, id+".log")
+	}
+	return loadFiles(client, files)
+}
+
+func loadFiles(client *cartographer.Client, files []string) ([]*Saved, error) {
 	// the kingdom viewer can name cards by the client's key ("Coin Of The Realm")
 	names := map[string]string{}
 	for key, c := range client.Cards { // the card's own name: the score screen's "Sack Of Loot" is the log's "Sack of Loot"

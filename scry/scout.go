@@ -126,7 +126,7 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 		if len(todo) == 0 || left <= 0 {
 			return nil
 		}
-		if err := captureGames(t, todo, dir, minTurns, left); err != nil {
+		if err := captureGames(t, todo, dir, minTurns, left, captureOpts{Alone: true}); err != nil {
 			return err
 		}
 	}

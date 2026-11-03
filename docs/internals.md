@@ -23,6 +23,7 @@ Everything the app needs lives in `scry/`; `go install github.com/yourconscience
 | **Analysis page** | `scry/web/analyze.*`, `scry/analyze.go` | `scry web` shows a saved game: VP, $ and deck-size charts, a turn slider, each turn's log with cards marked by type, every player's zones after the turn, the Supply and the final decks. |
 | **Advisor** | `scry/internal/advisor/`, `scry/web/insights.*` | `scry web`'s **Profiles** page: for any player with 20+ saved games, what moves their win rate (kingdom roles, openings, endings; going first is in the summary), form over the last 30 games, $ per turn, first Province, endings, openings and kingdom cards (with their art), with 80% ranges and a few plain-language takeaways; a second player can be shown next to them. `scry features` writes the per-game table as CSV, `scry db` an SQLite database, `scry site` a static copy of the page. |
 | **Recent games** | `scry/web/recent.*`, `scry/internal/advisor/recent.go` | `scry web`'s **Recent games** page: a player's 25 latest saved games summed up like DomBot's `!results` (score against the levels' prediction, opponents' levels, your level), wins against losses (first Province, $ per turn, length) and each game. The Recent games bookmark fills it from your profile. |
+| **Last games** | `scry/games.go`, `scry/web/games.*` | `scry games` and `scry web`'s **Last games** page: a report on your N latest games, a player's or the games you name, against what the levels predicted and your usual play, game by game. See [Match reports](match-report.md). |
 | **Match notes** | `scry/web/notes.html`, `scry/notes.go` | Turns a match's spectator chat into readable notes split by game, with each game's kingdom and result from [DomBot](http://dominionleague.org/player-guide). |
 
 ## Cartographer: how logs are read
@@ -47,7 +48,7 @@ Not covered yet: cards played from other players' decks. Possession turns follow
 ### What the saved games showed
 
 - **The corpus.** DomBot's `!prior` lists 462 rated games of gamrevinu in 2026. On 2026-10-11, 242 are saved, the server can't load 18, 6 are AFK games, 3 failed during capture and 193 (2026-03-01 to 2026-09-30) were never tried. `manifest-2026.json` in the games folder lists every game with its status.
-- **Seats.** In 119 of the 242 saved games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there and your own draws are hidden. `SeatNames` maps the names back.
+- **Seats.** In 119 of the 242 saved games the first seat was the opponent's, so the log's "gamrevinu" is the opponent there and your own draws are hidden unless the game was also loaded from the second seat ([capture](capture.md)). `SeatNames` maps the names back.
 - **Checks.** `scry check` compares saved logs with their score screens. Every line must be read, and each player's last turn and final deck must match. On 2026-10-14 all 265 saved games and all test logs passed, after two fixes: a Lich discarding itself from the trash with its name after the line (`DISCARD_WITH`) stayed in the deck, and a line with an empty argument ("g fails to take a Turn (from ).", after a Lich) couldn't be read.
 - **Final scores.** On 2026-10-14 computed VP equal the final scores in 216 of 265 games. (DomBot's minus sign arrives as "?": "R4D4: ?5" is -5.) Allies such as Plateau Shepherds are now scored from the score file's `# landscapes:` line, since the score screen shows them without a count; that fixed 184162961 and one player of 184149206, which earlier looked as if the game went on past the decisions the server keeps. The other 49:
   - **The game's last decision is missing (48 games).** A loaded game stops before it, so no replay can contain it. Usually it was the buy that ended the game: 6 VP short for a final Province, 3 for a Duchy, 1 for an Estate, more when Groundskeeper or Marchland add to it. In the 15 games whose score file says whose decision it was, the player who's short is always that one (184163893 included: the bot's seat, which bought a Gold instead). The 32 older games don't say, but each has one player short by such an amount. In 184685959 the last decision took VP from the other player (Wall, and probably an attack).
@@ -93,7 +94,7 @@ On 2026-10-12, over 243 games of gamrevinu, the page showed 52% wins overall, 59
 ## CLI
 
 ```bash
-scry web                                              # start page, analysis, Profiles, Recent games, match notes
+scry web                                              # start page, analysis, Profiles, Recent games, Last games, match notes
 scry client save [FILE]                               # store client tables from the Copy client tables bookmark
 scry bookmarklet [-client]                            # print the Copy log (or Copy client tables) bookmark
 scry import [-dir DIR] [-min-turns 3] batch.jsonl     # save captured games and check each one
