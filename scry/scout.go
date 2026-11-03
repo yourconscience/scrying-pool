@@ -5,6 +5,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -132,9 +133,9 @@ func scoutFetch(player, dir string, n, minTurns int, budget time.Duration) error
 	}
 }
 
-// isSaved reports whether the game is saved in dir.
+// isSaved reports whether the game is saved in dir. saveGame writes the score last.
 func isSaved(dir, id string) bool {
-	_, err := os.Stat(filepath.Join(dir, id+".log"))
+	_, err := os.Stat(filepath.Join(dir, id+".score.txt"))
 	return err == nil
 }
 
@@ -180,11 +181,19 @@ type scoutRun struct {
 var (
 	scoutMu  sync.Mutex
 	scoutNow = scoutRun{Log: []string{}}
+	// startMu lets one page start a run at a time, so that a Scout run and a
+	// Last games run can't both take the tab.
+	startMu sync.Mutex
 )
 
 // startScout runs `scry scout` in a process of its own for the Scout page and
 // keeps its output. The report goes next to the fetch, as scout-<player>.md.
 func startScout(player, dir string, n int) error {
+	startMu.Lock()
+	defer startMu.Unlock()
+	if loadStatus().Running {
+		return errors.New("the Last games page is loading games")
+	}
 	scoutMu.Lock()
 	defer scoutMu.Unlock()
 	if scoutNow.Running {

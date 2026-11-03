@@ -6,6 +6,7 @@
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 let shown = ""; // the player whose report is on the page
+let reportSeq = 0; // the latest report asked for; an older answer is dropped
 let polling = null;
 
 function el(tag, cls, text) {
@@ -92,6 +93,7 @@ function render(md) {
 
 async function showReport(player) {
   shown = player;
+  const seq = ++reportSeq;
   $("report-box").hidden = false;
   $("report-h").textContent = player;
   $("report-note").textContent = "Counting their games against yours…";
@@ -100,11 +102,11 @@ async function showReport(player) {
   for (const b of $("list").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.player === player));
   try {
     const d = await api("/api/scout?player=" + encodeURIComponent(player) + "&n=" + encodeURIComponent($("n").value));
-    if (shown !== player) return;
+    if (seq !== reportSeq) return;
     $("report-note").textContent = "";
     render(d.markdown);
   } catch (e) {
-    if (shown === player) $("report-note").textContent = e.message;
+    if (seq === reportSeq) $("report-note").textContent = e.message;
   }
 }
 
@@ -149,6 +151,7 @@ function poll() {
   polling = setInterval(async () => {
     try {
       const d = await refresh();
+      showError("");
       if (d.run.running) return;
       clearInterval(polling);
       polling = null;

@@ -420,6 +420,11 @@ var (
 // startLoad runs `scry games` in a process of its own and keeps its output. The
 // page reads the report from the saved games afterwards, so the report goes nowhere.
 func startLoad(dir string, last int, opponent string, ids []string) error {
+	startMu.Lock()
+	defer startMu.Unlock()
+	if s := scoutStatus(); s.Running {
+		return fmt.Errorf("the Scout page is scouting %s", s.Player)
+	}
 	loadMu.Lock()
 	defer loadMu.Unlock()
 	if loadNow.Running {
