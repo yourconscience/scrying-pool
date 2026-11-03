@@ -132,7 +132,7 @@ function render(r) {
   const u = r.usual, s = r.these, box = $("kpis");
   const against = (text, ok) => (ok ? text : "no other games to compare");
   box.replaceChildren(
-    kpi("Score", `${points(r.score)}/${s.games}`, r.leveled ? `expected ${one(r.expected)}${r.leveled < s.games ? ` over ${games_(r.leveled)}` : ""}` : "no levels to predict from"),
+    kpi("Score", `${points(r.score)}/${s.games}`, r.leveled ? (r.leveled < s.games ? `${points(r.leveled_score)}/${r.leveled} with levels, expected ${one(r.expected)}` : `expected ${one(r.expected)}`) : "no levels to predict from"),
     kpi("Won, lost, tied", `${r.wins}-${r.losses}-${r.ties}`, against(`your usual: ${pct(u.score)} of the points`, u.games)),
     kpi("$ per turn, t1-10", "$" + one(s.coins), against(`your usual: $${one(u.coins)}`, u.games)),
     kpi("First Province", s.first_province ? "turn " + one(s.first_province) : "none", against(`your usual: turn ${one(u.first_province)}`, u.first_province)),

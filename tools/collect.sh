@@ -21,9 +21,12 @@
 # - With no logged-in dominion.games tab it opens a new one and logs in with the
 #   keychain's password, then closes that tab when it's done. A logged-out or
 #   disconnected tab left open doesn't get in the way.
-# - It never kicks a session. When you're logged in elsewhere, at a table or in a
-#   game, or the server takes no new games, it stops and says so: games stay
-#   unsaved and the next run picks them up.
+# - It goes back to the lobby by itself from a finished game, its own game against
+#   the bot, or a table with no other player.
+# - It never kicks a session and never resigns a game against a person. When you're
+#   logged in elsewhere, in such a game, a person is at your table, or the server
+#   takes no new games, it stops and says so: games stay unsaved and the next run
+#   picks them up.
 set -eu
 
 if [ -n "${SCRY_HOST:-}" ]; then

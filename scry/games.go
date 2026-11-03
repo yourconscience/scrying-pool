@@ -28,25 +28,26 @@ type gamesAsk struct {
 // gamesReport is `scry games` and the Last games page: what happened in some of
 // your games, against what your rating levels predicted and your usual play.
 type gamesReport struct {
-	Me        string       `json:"me"`
-	Opponent  string       `json:"opponent,omitempty"`
-	Named     bool         `json:"named"`             // the games were asked for by number
-	Asked     int          `json:"asked"`             // how many games were asked for
-	Missing   []string     `json:"missing,omitempty"` // named games that aren't saved
-	Newest    string       `json:"newest"`            // the date of your newest saved game
-	Wins      int          `json:"wins"`
-	Losses    int          `json:"losses"`
-	Ties      int          `json:"ties"`
-	Score     float64      `json:"score"`
-	Expected  float64      `json:"expected"` // over the games with both levels
-	Leveled   int          `json:"leveled"`
-	These     gameStats    `json:"these"`
-	WinStats  gameStats    `json:"win_stats"`
-	LossStats gameStats    `json:"loss_stats"`
-	Usual     gameStats    `json:"usual"` // your other games of the last 90 days
-	Compare   *gamesVs     `json:"compare,omitempty"`
-	Takeaways []string     `json:"takeaways"`
-	Games     []reportGame `json:"games"`
+	Me           string       `json:"me"`
+	Opponent     string       `json:"opponent,omitempty"`
+	Named        bool         `json:"named"`             // the games were asked for by number
+	Asked        int          `json:"asked"`             // how many games were asked for
+	Missing      []string     `json:"missing,omitempty"` // named games that aren't saved
+	Newest       string       `json:"newest"`            // the date of your newest saved game
+	Wins         int          `json:"wins"`
+	Losses       int          `json:"losses"`
+	Ties         int          `json:"ties"`
+	Score        float64      `json:"score"`
+	Expected     float64      `json:"expected"` // over the games with both levels
+	Leveled      int          `json:"leveled"`
+	LeveledScore float64      `json:"leveled_score"` // your score in those games
+	These        gameStats    `json:"these"`
+	WinStats     gameStats    `json:"win_stats"`
+	LossStats    gameStats    `json:"loss_stats"`
+	Usual        gameStats    `json:"usual"` // your other games of the last 90 days
+	Compare      *gamesVs     `json:"compare,omitempty"`
+	Takeaways    []string     `json:"takeaways"`
+	Games        []reportGame `json:"games"`
 }
 
 // gameStats averages some of a player's games.
@@ -411,6 +412,7 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 		if g.Chance > 0 {
 			r.Expected += g.Chance
 			r.Leveled++
+			r.LeveledScore += f.Result
 		}
 		rg := reportGame{Features: f, Chance: g.Chance, CoinsMid: coinsMid(f.Coins), Records: recordsOf(f, mine)}
 		if t := theirs[f.ID]; t != nil {
@@ -590,7 +592,7 @@ func (r *gamesReport) markdown() string {
 	fmt.Fprintf(&b, "# %s\n\n", r.title())
 	fmt.Fprintf(&b, "%d-%d-%d. Score %s", r.Wins, r.Losses, r.Ties, trimScore(r.Score))
 	if r.Leveled > 0 {
-		fmt.Fprintf(&b, ", expected %.1f over %d games with both levels", r.Expected, r.Leveled)
+		fmt.Fprintf(&b, "; %s of %d games with both levels, expected %.1f", trimScore(r.LeveledScore), r.Leveled, r.Expected)
 	}
 	fmt.Fprintf(&b, ". Your newest saved game is from %s.\n\n", r.Newest)
 	if len(r.Missing) > 0 {

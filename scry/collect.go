@@ -172,8 +172,8 @@ func (l lastGames) pick(ids []string, players map[string][]string) []string {
 // collect saves your latest finished games from dominion.games, or just the games
 // in ids, or just the latest that last names, from both seats. It drives the
 // dominion.games tab in Brave on this Mac (opening one if there is none) with the
-// capture script, and imports the games not saved in dir yet. When the tab isn't
-// logged in, or you're at a table, it stops.
+// capture script, and imports the games not saved in dir yet. It logs in and goes
+// back to the lobby by itself; see captureTab for what stops it.
 func collect(dir string, minTurns int, budget, since time.Duration, ids []string, last lastGames) (err error) {
 	if dir, err = gamesDir(dir); err != nil {
 		return err
@@ -389,8 +389,9 @@ set(u, ` + string(user) + `); set(p, ` + string(pass) + `); b.click(); return "s
 
 // captureTab finds the dominion.games tab in Brave that's logged in and readies
 // the capture script in it. With no such tab, whatever else is open, it opens one
-// and logs in with the keychain's password (login); when that fails, or you're at
-// a table, it fails. done closes a tab it opened. cmd names the command to run again.
+// and logs in with the keychain's password (login). It goes back to the lobby from
+// a table or a game (the script's toLobby), and fails when the login fails or another
+// player is there. done closes a tab it opened. cmd names the command to run again.
 func captureTab(cmd string) (t tab, done func(), err error) {
 	done = func() {}
 	defer func() {
@@ -436,6 +437,7 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 			if err := t.login(); err != nil {
 				return t, done, err
 			}
+			fmt.Println("logging in to dominion.games with the keychain's password")
 			for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 60*time.Second; time.Sleep(3 * time.Second) {
 				if st, err = t.lobby(); err != nil {
 					return t, done, err
@@ -443,21 +445,27 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 			}
 		}
 	}
-	switch {
-	case st.Game:
-		return t, done, fmt.Errorf("you're in a game on dominion.games; finish it and run %s again", cmd)
-	case st.Table:
-		return t, done, fmt.Errorf("you're at a table on dominion.games (it shows Leave Table); leave it and run %s again", cmd)
-	case !st.In:
+	if !st.In && !st.Game && !st.Table {
 		return t, done, fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run %s again", cmd)
 	}
 	capture, _ := webFiles.ReadFile("web/capture.js")
-	out, err := t.page(string(capture)+"\nreturn window.scryCapture.running ? \"running\" : \"ready\";", time.Minute)
+	out, err := t.page(string(capture)+"\nconst C = window.scryCapture;\nreturn C.running ? \"running\" : await C.toLobby();", 2*time.Minute)
 	if err != nil {
 		return t, done, err
 	}
-	if string(out) == `"running"` {
+	switch string(out) {
+	case `"running"`:
 		return t, done, fmt.Errorf("a capture is already running in the dominion.games tab")
+	case `"game"`:
+		return t, done, fmt.Errorf("you're in a game against another player on dominion.games; finish it and run %s again", cmd)
+	case `"table"`:
+		return t, done, fmt.Errorf("another player is at your table on dominion.games; leave it and run %s again", cmd)
+	}
+	if st, err = t.lobby(); err != nil {
+		return t, done, err
+	}
+	if st.Game || st.Table {
+		return t, done, fmt.Errorf("couldn't leave the table on dominion.games; leave it and run %s again", cmd)
 	}
 	return t, done, nil
 }

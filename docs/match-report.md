@@ -94,7 +94,7 @@ Limits, said in the report itself: it counts treasure only, so a deck that pays 
 `scry web` has a local-only page, `games.html`, for the same report: a number of games, an optional player, or game numbers.
 
 - **Show** calls `GET /api/report?last=&opponent=&ids=`, which builds the report from the saved games and returns it as JSON. It never opens dominion.games.
-- **Load the missing ones** calls `POST /api/report/load`, which runs `scry games` in a process of its own, one run at a time, and `GET /api/report/load` follows it. It stops by itself when you're at a table or in a game; in the lobby it takes the tab over until it's done.
+- **Load the missing ones** calls `POST /api/report/load`, which runs `scry games` in a process of its own, one run at a time, and `GET /api/report/load` follows it. It logs in and goes back to the lobby as `collect` does, then takes the tab over until it's done.
 - The page and its assets stay out of `scry site`, so the live site doesn't have it. The API answers only requests addressed to localhost or an IP, and a run only from the page's own origin.
 
 ## Not in this change

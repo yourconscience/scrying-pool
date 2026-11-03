@@ -30,7 +30,7 @@
 (() => {
   if (window.scryCapture && window.scryCapture.running) return "a capture is running; call scryCapture.stop() first";
   const C = {
-    version: 5, // the bookmarks load this script again over an older copy
+    version: 6, // the bookmarks load this script again over an older copy
     minTurns: 3,
     pauseMs: 4000,
     gameTimeoutMs: 10 * 60 * 1000, // a game that takes longer is abandoned and the page reset
@@ -373,6 +373,18 @@
       } catch (e) { /* not in a game */ }
       try { await this.leave(); } catch (e) { /* no table */ }
       await this.sleep(1500);
+    },
+    // Back to the lobby when that costs nobody anything: a finished game, your own game
+    // against the bot, a table with no other player. It never resigns a game against a
+    // person: then it returns "game", or "table" when a person is at your table.
+    async toLobby() {
+      const inGame = !!document.querySelector(".log-scroll-container");
+      if (!inGame && !this.byText("Leave Table")) return null;
+      const text = document.body.innerText, bot = text.includes("Lord Rattington");
+      if (inGame && !bot && !/You (Resigned|Lose|Win|Won|Tie)/.test(text)) return "game";
+      if (!inGame && !bot && !this.byText("Empty Slot")) return "table";
+      await this.recover();
+      return null;
     },
     // Rejects when p takes longer than ms; the abandoned work stops at its next wait.
     limit(p, ms) {
