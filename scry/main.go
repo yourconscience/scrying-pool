@@ -28,8 +28,10 @@ const usageText = `usage:
   scry bookmarklet [-client]                       print the "Copy log" (or "Copy client tables") bookmark
   scry client save [FILE]                          store client tables copied by the bookmark (stdin if no FILE)
   scry import [-dir DIR] [-min-turns 3] [FILE]     save games exported by the capture script and check each one
-  scry collect [-publish REPO] [-notify]           save your latest games from dominion.games in Brave (macOS)
+  scry collect [-publish REPO] [-notify] [GAME ...] save your latest games from dominion.games in Brave (macOS), or just these
+  scry collect -other N [GAME ...]                 load saved games from the second seat too, so they name both players' cards
   scry scout [-n 25] [-offline] [-json] PLAYER     load a player's latest games and compare their play with yours
+  scry games [PLAYER] [--last 10 | --ids ID ...]   report on your latest games or the games you name (-offline, -json)
   scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
@@ -178,8 +180,14 @@ func main() {
 		repo := fs.String("publish", "", "then rebuild site-data/ in this checkout and open a pull request")
 		merge := fs.Bool("merge", false, "with -publish: wait for the pull request's tests, then merge it, which redeploys the site")
 		notifyFlag := fs.Bool("notify", false, "show a macOS notification when it fails (for scheduled runs)")
+		other := fs.Int("other", 0, "instead of new games, load up to this many of your saved games from the second seat, latest first")
 		fs.Parse(args)
-		if err = collect(*dir, *minTurns, *budget, *since); err == nil && *repo != "" {
+		if *other > 0 {
+			err = collectOther(*dir, *budget, *other, fs.Args())
+		} else {
+			err = collect(*dir, *minTurns, *budget, *since, fs.Args(), lastGames{})
+		}
+		if err == nil && *repo != "" {
 			err = publish(*repo, *merge)
 		}
 		if err != nil && *notifyFlag {
@@ -209,6 +217,49 @@ func main() {
 			if text, err = scout(fs.Arg(0), *me, d, *n, *asJSON); err == nil {
 				err = emit(*out, text)
 			}
+		}
+	case "games":
+		dir := fs.String("dir", "", "saved games (default: <user config>/scrying-pool/games)")
+		me := fs.String("me", "", "whose games (default: the account that loaded most of them)")
+		last := fs.Int("last", 10, "how many of your latest games, when you don't name them")
+		idList := fs.String("ids", "", "these games, comma-separated; ids after it count too")
+		offline := fs.Bool("offline", false, "don't open dominion.games: report on what's saved")
+		asJSON := fs.Bool("json", false, "write JSON instead of Markdown")
+		minTurns := fs.Int("min-turns", 3, "skip games where a player had fewer turns (AFK opponents)")
+		budget := fs.Duration("budget", time.Hour, "stop loading games after this long")
+		fs.Parse(args)
+		// flag stops at the first argument, so PLAYER can come before the flags
+		rest, opponent := fs.Args(), ""
+		if len(rest) > 0 && !reDigits.MatchString(rest[0]) {
+			opponent = rest[0]
+			fs.Parse(rest[1:])
+			rest = fs.Args()
+		}
+		ids := rest
+		if *idList != "" {
+			ids = append(strings.Split(*idList, ","), rest...)
+		}
+		for _, id := range ids {
+			if !reDigits.MatchString(id) {
+				fail(fmt.Errorf("usage: scry games [PLAYER] [--last 10 | --ids ID ...]: %q isn't a game number", id))
+			}
+		}
+		d, derr := gamesDir(*dir)
+		if derr != nil {
+			fail(derr)
+		}
+		if !*offline {
+			pick := lastGames{N: *last, Against: opponent}
+			if len(ids) > 0 {
+				pick = lastGames{}
+			}
+			if err = collect(d, *minTurns, *budget, 0, ids, pick); err != nil {
+				fail(err)
+			}
+		}
+		var text string
+		if text, err = gamesText(d, gamesAsk{Me: *me, Opponent: opponent, Last: *last, IDs: ids}, *asJSON); err == nil {
+			err = emit(*out, text)
 		}
 	case "features":
 		me := fs.String("me", "", "the player whose games to describe (default: the account that loaded most games)")

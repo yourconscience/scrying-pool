@@ -3,6 +3,7 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -14,6 +15,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
 )
 
 // braveScript opens, finds and closes Brave tabs and runs JavaScript in them:
@@ -143,15 +146,35 @@ const mark = (C.seen || []).length;
 inj.get("serverMessenger").requestPlayerResults(me.id, RatingTypes.RATINGS_2P, 100);
 await C.waitFor(() => (C.seen || []).length > mark, 20000, "your latest games");
 for (let n = -1; n !== C.seen.length; ) { n = C.seen.length; await C.sleep(1000); }
-const ids = C.seen.slice(mark).filter((r) => (r.players || []).length === 2).map((r) => C.noteGame(r, me.name));
+const rows = C.seen.slice(mark).filter((r) => (r.players || []).length === 2);
+const ids = rows.map((r) => C.noteGame(r, me.name));
 await C.saveState();
-return { me: me.name, ids };`
+return { me: me.name, ids, players: Object.fromEntries(rows.map((r) => [String(r.gameId), r.players.map((p) => p.name)])) };`
 
-// collect saves your latest finished games from dominion.games. It drives the
+// lastGames narrows collect to the N latest games, against one player if Against says.
+type lastGames struct {
+	N       int
+	Against string
+}
+
+func (l lastGames) pick(ids []string, players map[string][]string) []string {
+	ids = slices.Clone(ids)
+	slices.SortFunc(ids, func(a, b string) int { return cmp.Or(cmp.Compare(len(b), len(a)), cmp.Compare(b, a)) }) // same-length ids sort as numbers
+	var out []string
+	for _, id := range ids {
+		if len(out) < l.N && (l.Against == "" || slices.ContainsFunc(players[id], func(p string) bool { return strings.EqualFold(p, l.Against) })) {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+// collect saves your latest finished games from dominion.games, or just the games
+// in ids, or just the latest that last names, from both seats. It drives the
 // dominion.games tab in Brave on this Mac (opening one if there is none) with the
-// capture script, and imports the games not saved in dir yet. It never logs in:
-// when the tab isn't logged in, or you're at a table, it stops.
-func collect(dir string, minTurns int, budget, since time.Duration) (err error) {
+// capture script, and imports the games not saved in dir yet. It logs in and goes
+// back to the lobby by itself; see captureTab for what stops it.
+func collect(dir string, minTurns int, budget, since time.Duration, ids []string, last lastGames) (err error) {
 	if dir, err = gamesDir(dir); err != nil {
 		return err
 	}
@@ -160,39 +183,63 @@ func collect(dir string, minTurns int, budget, since time.Duration) (err error) 
 		return err
 	}
 	defer done()
-	out, err := t.page(latestGames, time.Minute)
-	if err != nil {
-		return err
-	}
-	var latest struct {
-		Me  string   `json:"me"`
-		IDs []string `json:"ids"`
-	}
-	if err := json.Unmarshal(out, &latest); err != nil {
-		return err
-	}
 	var todo []string
-	for _, g := range latest.IDs {
-		if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
-			todo = append(todo, g)
-		}
-	}
-	fmt.Printf("%s: %d latest games, %d not saved\n", latest.Me, len(latest.IDs), len(todo))
-	// with since, also the games an older list names that were never loaded,
-	// each with its row so it keeps its date and scores
 	rows := map[string]string{}
-	if since > 0 {
-		old, err := neverLoaded(dir, time.Now().Add(-since))
+	if len(ids) > 0 {
+		// just these games: unrated ones, such as league matches, are on no list
+		// the server gives; a manifest that names one gives its row
+		named, err := manifestGames(dir)
 		if err != nil {
 			return err
 		}
-		for _, g := range old {
-			if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) && !slices.Contains(todo, g.ID) {
-				todo = append(todo, g.ID)
+		for _, g := range ids {
+			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) && !slices.Contains(todo, g) {
+				todo = append(todo, g)
+			}
+		}
+		for _, g := range named {
+			if slices.Contains(todo, g.ID) {
 				rows[g.ID] = g.Date + " | " + g.Result
 			}
 		}
-		fmt.Printf("%d older games never loaded since %s\n", len(rows), time.Now().Add(-since).Format("2006-01-02"))
+		fmt.Printf("%d of %d games not saved\n", len(todo), len(ids))
+	} else {
+		out, err := t.page(latestGames, time.Minute)
+		if err != nil {
+			return err
+		}
+		var latest struct {
+			Me      string              `json:"me"`
+			IDs     []string            `json:"ids"`
+			Players map[string][]string `json:"players"`
+		}
+		if err := json.Unmarshal(out, &latest); err != nil {
+			return err
+		}
+		if last.N > 0 {
+			latest.IDs = last.pick(latest.IDs, latest.Players)
+		}
+		for _, g := range latest.IDs {
+			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
+				todo = append(todo, g)
+			}
+		}
+		fmt.Printf("%s: %d latest games, %d not saved\n", latest.Me, len(latest.IDs), len(todo))
+		// with since, also the games an older list names that were never loaded,
+		// each with its row so it keeps its date and scores
+		if since > 0 {
+			old, err := neverLoaded(dir, time.Now().Add(-since))
+			if err != nil {
+				return err
+			}
+			for _, g := range old {
+				if _, err := os.Stat(filepath.Join(dir, g.ID+".log")); os.IsNotExist(err) && !slices.Contains(todo, g.ID) {
+					todo = append(todo, g.ID)
+					rows[g.ID] = g.Date + " | " + g.Result
+				}
+			}
+			fmt.Printf("%d older games never loaded since %s\n", len(rows), time.Now().Add(-since).Format("2006-01-02"))
+		}
 	}
 	if len(todo) == 0 {
 		return nil
@@ -206,7 +253,100 @@ await C.saveState();`, time.Minute); err != nil {
 		}
 	}
 
-	return captureGames(t, todo, dir, minTurns, budget)
+	opts := captureOpts{Mode: "both", Alone: true, Retry: len(ids) > 0} // a game you name is tried again
+	if err := captureGames(t, todo, dir, minTurns, budget, opts); err != nil {
+		return err
+	}
+	if len(ids) > 0 {
+		var missing []string
+		for _, g := range todo {
+			if _, err := os.Stat(filepath.Join(dir, g+".log")); os.IsNotExist(err) {
+				missing = append(missing, g)
+			}
+		}
+		if len(missing) > 0 {
+			return fmt.Errorf("%d of %d games not saved: %s", len(missing), len(todo), strings.Join(missing, ", "))
+		}
+	}
+	return nil
+}
+
+// collectOther loads saved games again from the second seat and merges the logs,
+// so they name both players' cards: the games in ids, or your n latest saved games
+// that lack it. A game the server can't replay from there is marked and left alone.
+func collectOther(dir string, budget time.Duration, n int, ids []string) (err error) {
+	if dir, err = gamesDir(dir); err != nil {
+		return err
+	}
+	t, done, err := captureTab("collect")
+	if err != nil {
+		return err
+	}
+	defer done()
+	todo := slices.Clone(ids)
+	if len(todo) == 0 {
+		out, err := t.page(`return angular.element(document.body).injector().get("meta").model.me.name;`, time.Minute)
+		if err != nil {
+			return err
+		}
+		var me string
+		if err := json.Unmarshal(out, &me); err != nil {
+			return err
+		}
+		if todo, err = lackOtherSeat(dir, me, n); err != nil {
+			return err
+		}
+		fmt.Printf("%s: %d saved games to load from the second seat\n", me, len(todo))
+	}
+	if len(todo) == 0 {
+		return nil
+	}
+	if err := captureGames(t, todo, dir, 1, budget, captureOpts{Mode: "other", Alone: true, Retry: len(ids) > 0}); err != nil {
+		return err
+	}
+	b, _ := json.Marshal(todo)
+	out, err := t.page("return "+string(b)+`.filter((id) => (window.scryCapture.results[id + "+other"] || {}).status === "server");`, time.Minute)
+	if err != nil {
+		return err
+	}
+	var refused []string
+	if err := json.Unmarshal(out, &refused); err != nil {
+		return err
+	}
+	for _, g := range refused {
+		if err := replaceHeaders(dir, g, []string{"both seats"}, "# both seats: the server can't replay it from the second seat\n"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// lackOtherSeat lists up to n of me's saved games, latest first, whose score files
+// don't say the second seat was tried.
+func lackOtherSeat(dir, me string, n int) ([]string, error) {
+	files, err := filepath.Glob(filepath.Join(dir, "*.score.txt"))
+	if err != nil {
+		return nil, err
+	}
+	id := func(f string) string { return strings.TrimSuffix(filepath.Base(f), ".score.txt") }
+	slices.SortFunc(files, func(a, b string) int {
+		return cmp.Or(cmp.Compare(len(id(b)), len(id(a))), cmp.Compare(id(b), id(a))) // same-length ids sort as numbers
+	})
+	var out []string
+	for _, f := range files {
+		if len(out) == n {
+			break
+		}
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return nil, err
+		}
+		score := string(b)
+		if advisor.Header(score, "both seats") == "" && slices.Contains(strings.Split(advisor.Header(score, "original players"), " / "), me) {
+			out = append(out, id(f))
+		}
+	}
+	return out, nil
 }
 
 // login fills the dominion.games login form in the tab with the account and
@@ -247,15 +387,15 @@ set(u, ` + string(user) + `); set(p, ` + string(pass) + `); b.click(); return "s
 	}
 }
 
-// captureTab finds the dominion.games tab in Brave that's logged in (opening
-// one if there is none) and readies the capture script in it. A tab it opens
-// that isn't logged in logs in with the keychain's password (login); when that
-// fails, or you're at a table, it fails. done closes a tab it opened. cmd names
-// the command to run again.
+// captureTab finds the dominion.games tab in Brave that's logged in and readies
+// the capture script in it. With no such tab, whatever else is open, it opens one
+// and logs in with the keychain's password (login). It goes back to the lobby from
+// a table or a game (the script's toLobby), and fails when the login fails or another
+// player is there. done closes a tab it opened. cmd names the command to run again.
 func captureTab(cmd string) (t tab, done func(), err error) {
 	done = func() {}
 	defer func() {
-		if err != nil { // close a tab it opened, or the next run finds it logged out and skips the login
+		if err != nil { // close a tab it opened, or they pile up run after run
 			done()
 			done = func() {}
 		}
@@ -276,7 +416,8 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 		if st, err = (tab{id}).lobby(); err != nil {
 			return t, done, err
 		}
-		if t = (tab{id}); st.In || st.Game || st.Table {
+		if st.In || st.Game || st.Table {
+			t = tab{id}
 			break
 		}
 	}
@@ -296,6 +437,7 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 			if err := t.login(); err != nil {
 				return t, done, err
 			}
+			fmt.Println("logging in to dominion.games with the keychain's password")
 			for t0 := time.Now(); !st.In && !st.Game && time.Since(t0) < 60*time.Second; time.Sleep(3 * time.Second) {
 				if st, err = t.lobby(); err != nil {
 					return t, done, err
@@ -303,33 +445,56 @@ func captureTab(cmd string) (t tab, done func(), err error) {
 			}
 		}
 	}
-	switch {
-	case st.Game || st.Table:
-		return t, done, fmt.Errorf("you're at a table on dominion.games; leave it and run %s again", cmd)
-	case !st.In:
+	if !st.In && !st.Game && !st.Table {
 		return t, done, fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run %s again", cmd)
 	}
 	capture, _ := webFiles.ReadFile("web/capture.js")
-	out, err := t.page(string(capture)+"\nreturn window.scryCapture.running ? \"running\" : \"ready\";", time.Minute)
+	out, err := t.page(string(capture)+"\nconst C = window.scryCapture;\nreturn C.running ? \"running\" : await C.toLobby();", 2*time.Minute)
 	if err != nil {
 		return t, done, err
 	}
-	if string(out) == `"running"` {
+	switch string(out) {
+	case `"running"`:
 		return t, done, fmt.Errorf("a capture is already running in the dominion.games tab")
+	case `"game"`:
+		return t, done, fmt.Errorf("you're in a game against another player on dominion.games; finish it and run %s again", cmd)
+	case `"table"`:
+		return t, done, fmt.Errorf("another player is at your table on dominion.games; leave it and run %s again", cmd)
+	}
+	if st, err = t.lobby(); err != nil {
+		return t, done, err
+	}
+	if st.Game || st.Table {
+		return t, done, fmt.Errorf("couldn't leave the table on dominion.games; leave it and run %s again", cmd)
 	}
 	return t, done, nil
+}
+
+// captureOpts are the options of the capture script's run.
+type captureOpts struct {
+	Mode  string `json:"mode,omitempty"` // "both" seats, or the "other" seat of a saved game
+	Retry bool   `json:"retry,omitempty"`
+	Alone bool   `json:"alone"`
 }
 
 // captureGames loads games in the tab with the capture script and imports the
 // ones it saved into dir. Their metas (date, scores, levels) should be noted in
 // the tab already.
-func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Duration) error {
+func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Duration, opts captureOpts) error {
 	// run skips games the tab finished earlier (saved, AFK, or ones the server
 	// can't load) and sets aside a queue left from an earlier run
-	ids, _ := json.Marshal(todo)
-	if _, err := t.page("return await window.scryCapture.run("+string(ids)+", { alone: true });", time.Minute); err != nil {
+	queue, _ := json.Marshal(todo)
+	o, _ := json.Marshal(opts)
+	if _, err := t.page("return await window.scryCapture.run("+string(queue)+", "+string(o)+");", time.Minute); err != nil {
 		return err
 	}
+	keys := slices.Clone(todo) // what the tab keeps each game's result under
+	if opts.Mode == "other" {
+		for i := range keys {
+			keys[i] += "+other"
+		}
+	}
+	ids, _ := json.Marshal(keys)
 	var status struct {
 		Running bool   `json:"running"`
 		Error   string `json:"lastError"`
@@ -356,7 +521,7 @@ func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Du
 
 	// the captured games, a few at a time, into one file for importGames
 	byStatus := `const C = window.scryCapture, by = {};
-for (const id of ` + string(ids) + `) { const s = (C.results[id] || { status: "not tried" }).status; (by[s] = by[s] || []).push(id); }
+for (const id of ` + string(ids) + `) { const r = C.results[id] || { status: "not tried" }; (by[r.status] = by[r.status] || []).push(r.status !== "ok" && r.error ? id + " (" + r.error + ")" : id); }
 return by;`
 	out, err := t.page(byStatus, time.Minute)
 	if err != nil {
@@ -368,7 +533,7 @@ return by;`
 	}
 	for s, gs := range by {
 		if s != "ok" {
-			fmt.Printf("%d %s: %s\n", len(gs), s, strings.Join(gs, " "))
+			fmt.Printf("%d %s: %s\n", len(gs), s, strings.Join(gs, ", "))
 		}
 	}
 	f, err := os.CreateTemp("", "scry-collect-*.jsonl")
@@ -415,6 +580,21 @@ type manifestGame struct {
 
 // neverLoaded lists the manifests' games that were never tried, played on or after from.
 func neverLoaded(dir string, from time.Time) ([]manifestGame, error) {
+	all, err := manifestGames(dir)
+	if err != nil {
+		return nil, err
+	}
+	var out []manifestGame
+	for _, g := range all {
+		if d, err := time.Parse("2006-Jan-02", g.Date); err == nil && g.Status == "not-tried" && !d.Before(from.Truncate(24*time.Hour)) {
+			out = append(out, g)
+		}
+	}
+	return out, nil
+}
+
+// manifestGames lists the games of the games folder's manifests.
+func manifestGames(dir string) ([]manifestGame, error) {
 	files, _ := filepath.Glob(filepath.Join(dir, "manifest-*.json"))
 	var out []manifestGame
 	for _, f := range files {
@@ -428,11 +608,7 @@ func neverLoaded(dir string, from time.Time) ([]manifestGame, error) {
 		if err := json.Unmarshal(b, &m); err != nil {
 			return nil, fmt.Errorf("%s: %w", f, err)
 		}
-		for _, g := range m.Games {
-			if d, err := time.Parse("2006-Jan-02", g.Date); err == nil && g.Status == "not-tried" && !d.Before(from.Truncate(24*time.Hour)) {
-				out = append(out, g)
-			}
-		}
+		out = append(out, m.Games...)
 	}
 	return out, nil
 }

@@ -24,10 +24,13 @@ type exportedGame struct {
 	Row      string   `json:"row"`      // e.g. "2026-10-09 | Nikhec: 23, gamrevinu: 32" from DomBot or the profile
 	Original []string `json:"original"` // the seats' original players
 	Log      string   `json:"log"`
-	Bot      string   `json:"bot"`      // lines the bot played after the load; the score screen counts them
-	Decision int      `json:"decision"` // the decision the game was loaded at
-	Markers  bool     `json:"markers"`  // whether the client's decision markers were read
-	Score    string   `json:"score"`
+	// the log from the second seat, which names that seat's cards, and why there's none
+	Other      string `json:"other"`
+	OtherError string `json:"otherError"`
+	Bot        string `json:"bot"`      // lines the bot played after the load; the score screen counts them
+	Decision   int    `json:"decision"` // the decision the game was loaded at
+	Markers    bool   `json:"markers"`  // whether the client's decision markers were read
+	Score      string `json:"score"`
 	// the client's kingdom viewer, e.g. {"Cards in Supply": ["Craftsman", ...], "Loot": [...]}
 	Kingdom map[string][]string `json:"kingdom"`
 	Profile *gameProfile        `json:"profile"` // what a player's profile said about the game
@@ -63,7 +66,7 @@ func importGames(file, dir string, minTurns int) error {
 	}
 	sc := bufio.NewScanner(in)
 	sc.Buffer(make([]byte, 0, 1<<20), 64<<20)
-	var pass, fail, short, kingdoms int
+	var pass, fail, short, kingdoms, others int
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" {
@@ -80,6 +83,16 @@ func importGames(file, dir string, minTurns int) error {
 			}
 			kingdoms++
 			fmt.Printf("KINGDOM %s\n", g.ID)
+			continue
+		}
+		if g.Log == "" && g.Other != "" { // only the second seat, for a game saved from the first
+			named, err := addOther(client, dir, g.ID, g.Other)
+			if err != nil {
+				fmt.Printf("SKIP  %s: second seat: %v\n", g.ID, err)
+				continue
+			}
+			others++
+			fmt.Printf("OTHER %s: %d lines now name their cards\n", g.ID, named)
 			continue
 		}
 		r, saved, err := saveGame(client, dir, g, minTurns)
@@ -102,7 +115,7 @@ func importGames(file, dir string, minTurns int) error {
 	if err := sc.Err(); err != nil {
 		return err
 	}
-	fmt.Printf("%d passed, %d failed, %d short games skipped, %d kingdoms added; files in %s\n", pass, fail, short, kingdoms, dir)
+	fmt.Printf("%d passed, %d failed, %d short games skipped, %d kingdoms added, %d second seats merged; files in %s\n", pass, fail, short, kingdoms, others, dir)
 	return nil
 }
 
@@ -146,6 +159,39 @@ func replaceHeaders(dir, id string, keys []string, lines string) error {
 	return os.WriteFile(path, []byte(out), 0o644)
 }
 
+// bothSeatsLine is the score file's line for a log merged from both seats.
+func bothSeatsLine(named int) string {
+	return fmt.Sprintf("# both seats: %d lines named from the second seat\n", named)
+}
+
+// addOther merges a saved game's log with its log from the second seat.
+func addOther(client *cartographer.Client, dir, id, other string) (int, error) {
+	if !reGameID.MatchString(id) {
+		return 0, fmt.Errorf("bad game id %q", id)
+	}
+	base := filepath.Join(dir, id)
+	log, err := os.ReadFile(base + ".log")
+	if err != nil {
+		return 0, fmt.Errorf("game not saved: %w", err)
+	}
+	score, err := os.ReadFile(base + ".score.txt")
+	if err != nil {
+		return 0, fmt.Errorf("game not saved: %w", err)
+	}
+	bot, _ := os.ReadFile(base + ".bot.log")
+	merged, named, err := mergeSeats(string(log), other)
+	if err != nil {
+		return 0, err
+	}
+	if m := client.Check(merged+string(bot), string(score)); !m.OK() && client.Check(string(log)+string(bot), string(score)).OK() {
+		return 0, fmt.Errorf("the merged log fails the check: %s", strings.Join(m.Problems, "; "))
+	}
+	if err := os.WriteFile(base+".log", []byte(merged), 0o644); err != nil {
+		return 0, err
+	}
+	return named, replaceHeaders(dir, id, []string{"both seats"}, bothSeatsLine(named))
+}
+
 // profileLines are the score file's lines for what a profile said about the game.
 func profileLines(p *gameProfile) string {
 	if p == nil || p.Time == "" {
@@ -161,8 +207,9 @@ func profileLines(p *gameProfile) string {
 var reGameID = regexp.MustCompile(`^\d{1,12}$`)
 
 // saveGame checks one exported game against its score screen and writes
-// <id>.log, <id>.score.txt and, when the bot played on, <id>.bot.log. Games
-// where a player had fewer than minTurns turns aren't saved.
+// <id>.log, <id>.score.txt and, when the bot played on, <id>.bot.log. A log from
+// the second seat is merged into <id>.log when the result passes the same check.
+// Games where a player had fewer than minTurns turns aren't saved.
 func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns int) (r cartographer.CheckResult, saved bool, err error) {
 	if !reGameID.MatchString(g.ID) {
 		return r, false, fmt.Errorf("bad game id %q", g.ID)
@@ -173,12 +220,31 @@ func saveGame(client *cartographer.Client, dir string, g exportedGame, minTurns 
 	}
 	score += profileLines(g.Profile)
 	score += kingdomLines(g.Kingdom)
-	score += g.Score
-	r = client.Check(g.Log+g.Bot, score)
+	body := g.Score
+	r = client.Check(g.Log+g.Bot, score+body)
 	if r.MinTurns < minTurns {
 		return r, false, nil
 	}
-	if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(g.Log), 0o644); err != nil {
+	log := g.Log
+	if g.OtherError != "" {
+		fmt.Printf("NOTE  %s: not loaded from the second seat: %s\n", g.ID, g.OtherError)
+	}
+	if g.Other != "" {
+		merged, named, err := mergeSeats(g.Log, g.Other)
+		if err == nil {
+			if m := client.Check(merged+g.Bot, score+body); m.OK() || !r.OK() {
+				log, r = merged, m
+				score += bothSeatsLine(named)
+			} else {
+				err = fmt.Errorf("the merged log fails the check: %s", strings.Join(m.Problems, "; "))
+			}
+		}
+		if err != nil {
+			fmt.Printf("NOTE  %s: second seat not merged: %v\n", g.ID, err)
+		}
+	}
+	score += body
+	if err := os.WriteFile(filepath.Join(dir, g.ID+".log"), []byte(log), 0o644); err != nil {
 		return r, false, err
 	}
 	if g.Bot != "" {
