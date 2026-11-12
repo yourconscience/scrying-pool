@@ -210,6 +210,7 @@ const MIN_SIDE = 8; // a finding needs this many games on each side, or it says 
 const part = (r) => `${Math.round(r.wins * 2) / 2} of ${r.games}`;
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const pc = (x) => Math.round(100 * x) + "%";
+const esc = (x) => String(x).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 // The charts take their look from the stylesheet, as on the Profiles page.
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -253,7 +254,7 @@ function pairChart(id, rows, names) {
           { type: "line", shape: { x1: lo, y1: cy, x2: hi, y2: cy }, style: { stroke: c.ink, lineWidth: 1.5, opacity: op } },
           { type: "line", shape: { x1: lo, y1: cy - 4, x2: lo, y2: cy + 4 }, style: { stroke: c.ink, lineWidth: 1.5, opacity: op } },
           { type: "line", shape: { x1: hi, y1: cy - 4, x2: hi, y2: cy + 4 }, style: { stroke: c.ink, lineWidth: 1.5, opacity: op } },
-          { type: "text", style: { x: end, y: cy, text: `${pc(x.rate)}  ${Math.round(x.wins)}/${x.games}`, fill: c.ink2, font: `500 ${FONT}px ${c.num}`, textVerticalAlign: "middle", opacity: op } },
+          { type: "text", style: { x: end, y: cy, text: `${pc(x.rate)}  ${Math.round(x.wins * 2) / 2}/${x.games}`, fill: c.ink2, font: `500 ${FONT}px ${c.num}`, textVerticalAlign: "middle", opacity: op } },
         ],
       };
     },
@@ -261,7 +262,7 @@ function pairChart(id, rows, names) {
       formatter: (p) => {
         const x = rows[p.value[1]][key(k)];
         if (!x || !x.games) return "";
-        return `<b>${names[k]}: ${rows[p.value[1]].label}</b><br>won ${part(x)} games (${pc(x.rate)}), 80% range ${pc(x.low)} to ${pc(x.high)}${thin(x) ? "<br>few games" : ""}`;
+        return `<b>${esc(names[k])}: ${esc(rows[p.value[1]].label)}</b><br>won ${part(x)} games (${pc(x.rate)}), 80% range ${pc(x.low)} to ${pc(x.high)}${thin(x) ? "<br>few games" : ""}`;
       },
     },
   });
@@ -409,8 +410,8 @@ function setDash(r, images) {
   mid.append(chartPanel("What they build", "c-build"));
 
   // endings and length
-  const ml = Object.fromEntries(me.length.map((x) => [x.name, x.rate]));
-  const endRows = [...END.map(([k, l]) => ({ label: l, a: t.endings[k], b: me.endings[k] })), ...t.length.map((x) => ({ label: LENGTH[x.name] || x.name, a: x.rate, b: ml[x.name] }))];
+  const ml = Object.fromEntries(me.length.map((x) => [x.name, x.rate])), tl = Object.fromEntries(t.length.map((x) => [x.name, x.rate]));
+  const endRows = [...END.map(([k, l]) => ({ label: l, a: t.endings[k], b: me.endings[k] })), ...Object.keys(LENGTH).filter((k) => tl[k] || ml[k]).map((k) => ({ label: LENGTH[k], a: tl[k], b: ml[k] }))];
   mid.append(chartPanel("How games end and run", "c-end"));
   box.append(mid);
   pairChart("c-open", openRows, names);
