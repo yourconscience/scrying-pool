@@ -5,6 +5,7 @@
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
+let vs = params.get("vs") || ""; // the opponent filter a link names
 let shown = ""; // the player whose report is on the page
 let reportSeq = 0; // the latest report asked for; an older answer is dropped
 let polling = null;
@@ -91,6 +92,103 @@ function render(md) {
   }
 }
 
+// ---- Battles: the player's listed games, with what the saved logs add
+
+const RESULT = { 1: ["W", "win", "won"], 0.5: ["T", "tie", "tied"], 0: ["L", "loss", "lost"] };
+const ENDINGS = { provinces: "Provinces", colonies: "Colonies", piles: "Three piles", resign: "Resignation, by whom isn't saved" };
+const KINDS = { victory: "Victory", treasure: "Treasure", action: "Action", curse: "Curse" };
+let battles = null; // the player's {me, games, images}
+
+function deck(cards) {
+  const box = el("div", "deck");
+  const size = cards.reduce((n, c) => n + c.n, 0);
+  box.append(el("span", "size", `${size} cards`));
+  for (const kind of Object.keys(KINDS)) {
+    const of = cards.filter((c) => c.kind === kind);
+    if (!of.length) continue;
+    const g = el("p", "grp " + kind);
+    g.append(el("b", "", KINDS[kind] + " "), of.map((c) => `${c.n} ${c.card}`).join(", "));
+    box.append(g);
+  }
+  return box;
+}
+
+function kingdom(g, images) {
+  const box = el("div", "kc-row");
+  for (const name of [...g.log.kingdom, ...g.log.landscapes]) {
+    if (images[name]) {
+      const im = el("img", "kc");
+      im.src = images[name];
+      im.alt = im.title = name;
+      im.loading = "lazy";
+      box.append(im);
+    } else {
+      box.append(el("span", "kc", name));
+    }
+  }
+  return box;
+}
+
+function battle(g, player, images) {
+  const [mark, word, said] = RESULT[g.result];
+  const box = el("article", "battle");
+  const top = el("div", "b-top");
+  const title = el("h3");
+  title.append(`${g.score}–${g.opp_score} ${said} against ${g.opponent}`);
+  top.append(el("span", "res " + word, mark), title);
+  const facts = [day(g.time)];
+  if (g.level && g.opp_level) facts.push(`levels ${g.level.toFixed(1)} and ${g.opp_level.toFixed(1)}`);
+  const l = g.log;
+  if (l) facts.push(ENDINGS[l.ending] || l.ending, `${l.turns} turns`, `${l.first ? player : g.opponent} went first`);
+  else facts.push("log not loaded");
+  box.append(top, el("p", "facts", facts.join(" · ")));
+  if (!l) return box;
+  const a = el("a", "open", "Open the game");
+  a.href = "analyze.html#" + g.id;
+  box.append(kingdom(g, images));
+  const decks = el("div", "decks");
+  for (const [who, cards] of [[player, l.deck], [g.opponent, l.opp_deck]]) {
+    const d = el("div", "who");
+    d.append(el("h4", "", who), deck(cards));
+    decks.append(d);
+  }
+  box.append(decks);
+  if (!l.complete) box.append(el("p", "warn", "The log's VP differ from the score: a deck may be a card short."));
+  box.append(a);
+  return box;
+}
+
+function showBattles() {
+  const box = $("battles");
+  if (!battles) return;
+  const q = $("opp").value.trim().toLowerCase();
+  const rows = battles.games.filter((g) => g.opponent.toLowerCase().includes(q));
+  const withLog = rows.filter((g) => g.log).length;
+  $("battles-note").textContent = `${rows.length} of ${battles.games.length} listed games${q ? ` against "${$("opp").value.trim()}"` : ""}; ${withLog} with a saved log. Newest first.`;
+  box.replaceChildren(...rows.map((g) => battle(g, battles.player, battles.images)));
+  const url = new URL(location.href);
+  if (q) url.searchParams.set("vs", $("opp").value.trim());
+  else url.searchParams.delete("vs");
+  history.replaceState(null, "", url);
+}
+
+function setBattles(b) {
+  battles = b;
+  $("battles-box").hidden = !b;
+  if (!b) return;
+  const n = {};
+  for (const g of b.games) n[g.opponent] = (n[g.opponent] || 0) + 1;
+  $("opps").replaceChildren(...Object.keys(n).sort().map((o) => {
+    const x = el("option");
+    x.value = o;
+    x.label = `${o} (${n[o]})`;
+    return x;
+  }));
+  $("vs-me").textContent = `Against ${b.me}`;
+  $("vs-me").hidden = b.me.toLowerCase() === b.player.toLowerCase();
+  showBattles();
+}
+
 async function showReport(player) {
   shown = player;
   const seq = ++reportSeq;
@@ -98,6 +196,10 @@ async function showReport(player) {
   $("report-h").textContent = player;
   $("report-note").textContent = "Counting their games against yours…";
   $("report").replaceChildren();
+  $("battles-box").hidden = true;
+  battles = null;
+  $("opp").value = vs;
+  vs = ""; // the link's filter is for the first report only
   history.replaceState(null, "", "?player=" + encodeURIComponent(player));
   for (const b of $("list").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.player === player));
   try {
@@ -105,6 +207,7 @@ async function showReport(player) {
     if (seq !== reportSeq) return;
     $("report-note").textContent = "";
     render(d.markdown);
+    setBattles(d.battles);
   } catch (e) {
     if (seq === reportSeq) $("report-note").textContent = e.message;
   }
@@ -161,6 +264,17 @@ function poll() {
     }
   }, 3000);
 }
+
+$("opp").addEventListener("input", showBattles);
+$("vs").addEventListener("submit", (ev) => ev.preventDefault());
+$("vs-me").addEventListener("click", () => {
+  $("opp").value = battles.me;
+  showBattles();
+});
+$("vs-all").addEventListener("click", () => {
+  $("opp").value = "";
+  showBattles();
+});
 
 $("form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
