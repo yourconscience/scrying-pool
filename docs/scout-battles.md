@@ -52,5 +52,6 @@ No new endpoint: `GET /api/scout?player=` answers with a `battles` field next to
 ## Known gaps
 
 - A player with a fetch but no saved game gets the Scout page's existing error, not a list of stubs.
+- `complete` compares VP only: a missing late move that changes no VP (a Copper, say) is not caught, so a deck can be a card short with the warning off.
 - Dates are the list's UTC day.
 - The rendered page has not been looked at in a browser; the data was checked through the API against the saved files.
