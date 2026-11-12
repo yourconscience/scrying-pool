@@ -263,6 +263,9 @@ function render(r) {
     seat(r.second_seat, "Going second"),
   );
 
+  const bot = r.dombot || [];
+  $("bot").hidden = !bot.length;
+  $("bot").textContent = bot.map((p) => `${p.name}: ${p.time}, ${p.decisions} decisions at ${p.sec_per_decision} s each`).join(". ") + ".";
   $("usual-box").hidden = false;
   $("vs-box").hidden = !r.compare;
   if (r.compare) {

@@ -4,7 +4,7 @@
 .ask label { display: flex; gap: 8px; align-items: center; color: var(--ink-2); }
 .ask #last { width: 5em; }
 .ask #opponent { width: 11em; }
-.ask #ids { width: 17em; }
+.ask #ids { width: 17em; min-height: 2.4em; font: inherit; resize: vertical; }
 .ins .ask button { border: 0; background: var(--ink); color: var(--panel); padding: 8px 20px; font-weight: 600; }
 .ins .ask button.second { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--axis); }
 .ins .ask button:disabled { opacity: 0.5; cursor: default; }

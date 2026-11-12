@@ -47,10 +47,19 @@ type gamesReport struct {
 	Usual        gameStats    `json:"usual"` // your other games of the last 90 days
 	Compare      *gamesVs     `json:"compare,omitempty"`
 	Takeaways    []string     `json:"takeaways"`
-	FirstSeat    seatSplit    `json:"first_seat"`  // your results going first
-	SecondSeat   seatSplit    `json:"second_seat"` // and going second
-	Findings     []finding    `json:"findings"`    // points that repeat in 2 or more games
+	FirstSeat    seatSplit    `json:"first_seat"`       // your results going first
+	SecondSeat   seatSplit    `json:"second_seat"`      // and going second
+	Findings     []finding    `json:"findings"`         // points that repeat in 2 or more games
+	DomBot       []botPlayer  `json:"dombot,omitempty"` // each player's time and decisions, from a pasted DomBot reply
 	Games        []reportGame `json:"games"`
+}
+
+// botPlayer is a player's line of DomBot's "!match" reply.
+type botPlayer struct {
+	Name           string `json:"name"`
+	Time           string `json:"time"`
+	Decisions      string `json:"decisions"`
+	SecPerDecision string `json:"sec_per_decision"`
 }
 
 // gameStats averages some of a player's games.
@@ -374,6 +383,9 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 		who := ""
 		if ask.Opponent != "" {
 			who = " against " + ask.Opponent
+		}
+		if r.Named {
+			return nil, fmt.Errorf("none of those games of %s%s is saved yet: %s. Load them first.", me, who, strings.Join(r.Missing, ", "))
 		}
 		return nil, fmt.Errorf("none of those games of %s%s is saved", me, who)
 	}

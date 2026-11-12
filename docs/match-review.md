@@ -68,7 +68,7 @@ A game with no Province or three-pile ending in the log is read as a resignation
 
 ## Input
 
-Game ids only: `--ids` on the command line, the game numbers box on the page. A pasted match chat doesn't carry them (checked on the sample chat: no game number appears), and [match notes](match-notes.md) doesn't need them. DomBot's `!match` reply lists them, one per game, but the page doesn't read the reply.
+Game ids: `--ids` on the command line, the game numbers box on the page. The box also takes DomBot's `!match` reply pasted whole: the page takes the game ids from the lines that start with a game number, the opponent from the `A v. B` line (the name that isn't you) and each player's time and decisions per second for the header. It uses a plain match, not `parseSummary`, because the reply the user gets has no score line before each game line, which `parseSummary` needs. Games that aren't saved are listed as not saved, and when none is saved the page says so with the ids. A pasted match chat doesn't carry game numbers (checked on the sample chat). The command line takes ids only.
 
 ## Not in this change
 

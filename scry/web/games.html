@@ -37,11 +37,11 @@
     <form id="form" class="ask">
       <label>Last <input id="last" type="number" min="1" max="100" value="10"> games</label>
       <label>Against <input id="opponent" autocomplete="off" spellcheck="false" placeholder="any player"></label>
-      <label>Or these game numbers <input id="ids" autocomplete="off" spellcheck="false" placeholder="185400051 185400329"></label>
+      <label>Or these game numbers, or DomBot's !match reply <textarea id="ids" rows="1" autocomplete="off" spellcheck="false" placeholder="185400051 185400329"></textarea></label>
       <button type="submit">Show</button>
       <button type="button" id="load" class="second">Load the missing ones</button>
     </form>
-    <p class="hint">Game numbers only: a pasted match chat doesn't carry them. DomBot's !match reply lists them, one per game. Show reads the games already saved. Load uses your dominion.games tab in Brave and logs in if it has to. It leaves a finished game or an empty table by itself, then takes the tab over until it's done, so don't press it between the games of a match. It won't touch a game in progress against a person.</p>
+    <p class="hint">A pasted match chat doesn't carry game numbers, but DomBot's !match reply does: paste it whole and the games, the opponent and each player's time come from it. Show reads the games already saved. Load uses your dominion.games tab in Brave and logs in if it has to. It leaves a finished game or an empty table by itself, then takes the tab over until it's done, so don't press it between the games of a match. It won't touch a game in progress against a person.</p>
     <div id="run" class="run" hidden>
       <p class="live"><span class="dot" id="dot" aria-hidden="true"></span> <span id="run-text"></span></p>
       <details><summary>Log</summary><pre id="log"></pre></details>
@@ -51,6 +51,7 @@
   <p id="error" role="alert" hidden></p>
 
   <section class="kpis" id="kpis" aria-label="Summary"></section>
+  <p class="hint" id="bot" hidden></p>
 
   <section class="panel" id="notes-box" aria-labelledby="notes-h" hidden>
     <h2 id="notes-h">Across the match</h2>
