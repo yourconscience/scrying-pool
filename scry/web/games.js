@@ -145,6 +145,7 @@ function gapChart(host, g) {
   });
   const ch = echarts.init(host, null, { renderer: "svg" });
   charts.push(ch);
+  if (window.ResizeObserver) new ResizeObserver(() => ch.resize()).observe(host);
   const up = css("--up"), down = css("--down"), muted = css("--muted"), ink = css("--ink-2"), rule = css("--rule");
   ch.setOption({
     animation: false,
@@ -181,7 +182,8 @@ function gameCard(g, i) {
   const body = el("div", "game-body");
   if (v) {
     const left = el("div", "col");
-    const max = Math.max(v.you.total, v.them.total, 1);
+    const drawn = (side) => side.vp.reduce((n, x) => n + Math.max(x.vp, 0), 0);
+    const max = Math.max(drawn(v.you), drawn(v.them), 1);
     const vps = el("div", "vps");
     vps.append(vpRow("You", v.you, max), vpRow(g.opponent, v.them, max));
     left.append(el("h3", "", "Points by source"), vps, el("h3", "", "Final decks"), deckRow("You", v.you), deckRow(g.opponent, v.them));
@@ -293,7 +295,9 @@ function render(r) {
 // the charts take their colours from the stylesheet: draw them again when the theme changes
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => last && drawGames(last));
 
+let requests = 0;
 async function show() {
+  const mine = ++requests;
   showError("");
   const a = ask(), q = new URLSearchParams();
   if (a.ids) q.set("ids", a.ids);
@@ -301,8 +305,10 @@ async function show() {
   if (a.opponent) q.set("opponent", a.opponent);
   history.replaceState(null, "", "?" + q);
   try {
-    render(await api("/api/report?" + q));
+    const r = await api("/api/report?" + q);
+    if (mine === requests) render(r);
   } catch (e) {
+    if (mine !== requests) return;
     showError(e.message);
     $("meta").textContent = "";
   }

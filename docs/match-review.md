@@ -42,7 +42,7 @@ A rule fires only past its threshold. The win rates are yours over the decided g
 | Thinning (Coppers and Estates trashed) | you trashed 4 or more than they did | 4 or more fewer | 73% of 56 | 29% of 79 | kept |
 | Points from other sources (Victory cards other than Province, Duchy, Estate, VP tokens, landscapes) | 10 VP or more above them | 10 VP or more below | 77% of 30 | 21% of 24 | kept |
 | Curses (given against received) | you gave 3 or more than you took | took 3 or more than you gave | 74% of 38 | 22% of 27 | kept |
-| Action cards in the final deck | 6 or more above them | 6 or more below | 70% of 93 | 27% of 44 | kept |
+| Action cards in the final deck | 6 or more above them | 6 or more below | 72% of 96 | 29% of 45 | kept |
 | $ per turn on turns 3-12, against the opponent in the same game | 0.5 above, both sides under 10 VP of other sources | 0.5 below | 69% of 138 | 32% of 157 | kept |
 | Province split | 2 or more Provinces above them | 2 or more below | 93% of 89 | 6% of 122 | kept: it is the score, so it restates the result, but it says by how much; the first Provinces' turns are added only when neither side has 10 VP of other sources |
 | The last turn | you won and trailed before your last turn, which ended the game | you lost, led before their last turn, and it ended the game | by construction | by construction | kept as a fact: it needs the log's last decision |
@@ -58,7 +58,7 @@ Rules that were measured and dropped:
 | First Gold and first Province | Not a rule on their own, as the accepted position-analysis design shows (not yet on main). The Province split line carries the first Province's turn only on boards with little other VP. |
 | $ per turn against your own usual | 58% of 157 above, 45% of 216 below: the same-game comparison separates better (69% and 32%), and the usual stays as context in the text when 20 or more games are in the window. |
 
-Read the win rates as how often a point matched the result, not as a cause. A game you won can show a "went badly" point: 27% of the games with fewer Action cards than the opponent were still won, and the report keeps them because the fact is true.
+Read the win rates as how often a point matched the result, not as a cause. A game you won can show a "went badly" point: 29% of the games with fewer Action cards than the opponent were still won, and the report keeps them because the fact is true.
 
 The rule thresholds sit at the top of `scry/matchview.go`. The measurement is for one player's games, so it is a floor for how well a rule holds for a stranger.
 

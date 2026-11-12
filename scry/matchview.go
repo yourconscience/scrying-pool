@@ -193,9 +193,9 @@ func (s sideView) otherVP() int {
 func sideOf(client *cartographer.Client, turns []cartographer.Turn, player string, bd cartographer.VPBreakdown, deck cartographer.Deck) sideView {
 	v := sideView{Cards: deckSize(deck), Provinces: deck["Province"] + deck["Colony"], Deck: deckCards(client, deck)}
 	v.VP, v.Total = vpSources(client, bd)
-	for _, c := range v.Deck {
-		if c.Kind == "action" {
-			v.Actions += c.N
+	for name, n := range deck {
+		if c := client.Cards[name]; c != nil && c.Is("Action") {
+			v.Actions += n
 		}
 	}
 	prevCurses := 0
@@ -294,7 +294,7 @@ func endOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.T
 	switch f.Ending {
 	case "provinces":
 		pile := "Province"
-		if _, ok := supply.Initial["Colony"]; ok {
+		if _, ok := supply.Initial["Colony"]; ok && supply.Left["Colony"] < supply.Left["Province"] {
 			pile = "Colony"
 		}
 		e.Text = fmt.Sprintf("Ended on %ss: %d left, %s took the last turn (turn %d).", pile, max(supply.Left[pile], 0), name, e.Turn)
