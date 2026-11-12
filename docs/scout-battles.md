@@ -8,7 +8,7 @@ After scouting a player you want to look at their games one by one, against anyo
 
 ## What the page shows
 
-After picking a scouted player the page shows their name and two views, switched by two buttons: **Analysis** (the report, shown first) and **Battles**. Only one is visible at a time, so the long list never pushes the report off screen. A link with `?player=NAME&vs=OPPONENT` opens on Battles with the filter filled.
+After picking a scouted player the page shows two views, switched by two buttons next to the list of scouted players: **Analysis** (the matchup dashboard, shown first; described below) and **Battles**. Only one is visible at a time, so the long list never pushes the report off screen. A link with `?player=NAME&vs=OPPONENT` opens on Battles with the filter filled.
 
 Battles has a filter by opponent (type a few letters, pick a name from the list, or press the button for your own name to isolate the head-to-head), then one card per game, newest first. A game is one of the up to 100 two-player games against people that the scout fetch lists for the player (`games` in `scout-<player>.json`). Cards show:
 
@@ -22,7 +22,24 @@ Only games with a saved log are listed at first. The listed games without one (m
 
 On a phone it is one column, with the decks stacked and the buttons sized to tap.
 
-## Where each field comes from
+## The Analysis view
+
+A matchup dashboard that fits one screen at 1280x800 and stacks into one column on a phone. It is drawn from the report as data: `GET /api/scout?player=` returns `report` (the `scoutReport` that `scry scout -json` prints) next to `markdown` and `battles`. No new endpoint and no new counting. The same colours, type, panels and ECharts version as the Profiles page; the scouted player is blue and you are amber, which mean no better or worse (green and orange are kept for that).
+
+| Block | What it shows | Report fields |
+|---|---|---|
+| Matchup strip | level and rank of both, the expected score as one split bar, the head-to-head record, recent form: their win rate over the scouted games and yours over the last 90 days, each with its game count | `dominion_games.summary`, `.my_summary` (level, rank), `.headToHead` (record, `expected`), `them.record`, `me.record`, `them.games`, `me.games` |
+| Where they differ | up to four findings as sentences with their numbers ("Opened with a trasher: won 10 of 12, otherwise 3 of 11"), the gap in points as a badge; the same splits the Markdown's "Where X differs most" lists (4 games a side, 20 points), the strongest per theme, those with 8 games or more on both sides first; a side under 8 games is marked "few games" | `them.seat`, `.stronger`, `.opened_as`, `.styles`, `.kingdoms` |
+| How they open | win rate by how the first two turns went (two kingdom cards, a card and Silver, ...), both players; the kingdom cards they open with most | `shapes`, `opened` |
+| What they build | the games per style (of their games) and the win rate with it, both players | `styles` |
+| How games end and run | win rate by ending and by length, both players | `endings`, `length` |
+| Kingdom cards | the cards they take most and leave alone, as chips with the games (taken or left alone / in the kingdom), with art where `card-images/` has it | `took`, `skipped`, `battles.images` |
+
+Each bar is a win rate with its 80% range as a line and its count as text ("64%  7/11", won of played) at the right, so a phone needs no hover; the tooltip has the same. Rows under 5 games, and cards that were in fewer than 3 kingdoms, are drawn faded. A 50% line marks even. The "Full report" button under the blocks opens the Markdown tables, collapsed by default.
+
+Not on it: the dominion.games game list, turns of the first Gold and Province, margin and the per-card win rates (all in the full report).
+
+## Where each field comes from (Battles)
 
 | Field | Source |
 |---|---|
@@ -56,4 +73,4 @@ No new endpoint: `GET /api/scout?player=` answers with a `battles` field next to
 - A player with a fetch but no saved game gets the Scout page's existing error, not a list of stubs.
 - `complete` compares VP only: a missing late move that changes no VP (a Copper, say) is not caught, so a deck can be a card short with the warning off.
 - Dates are the list's UTC day.
-- The rendered page has not been looked at in a browser; the data was checked through the API against the saved files.
+- The Analysis view was looked at in a headless browser at 1280x800 and 390 px wide, not on a phone; dark mode and touch have not been checked.

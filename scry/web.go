@@ -304,11 +304,6 @@ func newHandler(timeout time.Duration) http.Handler {
 			return
 		}
 		player := r.URL.Query().Get("player")
-		md, err := scout(player, "", dir, scoutGames(r.URL.Query().Get("n")), false)
-		if err != nil {
-			writeJSON(w, 422, map[string]string{"error": err.Error()})
-			return
-		}
 		c, err := loadCorpus()
 		if err != nil {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
@@ -319,12 +314,17 @@ func newHandler(timeout time.Duration) http.Handler {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
+		rep, err := scoutOf(client, c.account, c.profiles, c.features, player, "", dir, scoutGames(r.URL.Query().Get("n")))
+		if err != nil {
+			writeJSON(w, 422, map[string]string{"error": err.Error()})
+			return
+		}
 		battles, err := battlesOf(client, dir, c.features, player)
 		if err != nil {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
-		writeJSON(w, 200, map[string]any{"player": player, "markdown": md, "battles": battles})
+		writeJSON(w, 200, map[string]any{"player": player, "markdown": rep.markdown(), "report": rep, "battles": battles})
 	}))
 	mux.HandleFunc("POST /api/scout", localOnly(func(w http.ResponseWriter, r *http.Request) {
 		// Only our own page may start a run: it drives the dominion.games tab.

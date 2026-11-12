@@ -62,6 +62,117 @@ img.kc { width: 76px; height: auto; }
 #view-battles .hint { font-size: 16px; }
 
 /* the two views of a player */
-.tabs { margin: 4px 0 14px; }
+.tabs { margin: 0; }
 .ins .tabs button { min-height: 44px; padding: 8px 20px; font-size: 16px; }
 .ins .row button.second { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--axis); }
+
+/* page chrome kept short, so the analysis fits one screen */
+.ins details.panel > summary { cursor: pointer; font: 600 17px/1.3 var(--sans); }
+.ins details.panel[open] > summary { margin-bottom: 8px; }
+#list-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding-block: 10px; }
+#list-box h2 { margin: 0; font-size: 17px; }
+#list-box .picks { margin: 0; }
+#list-box .hint { margin: 0; }
+.ins button.pick { padding: 6px 12px; }
+.who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 14px 0 10px; }
+.ins .who h2 { margin: 0; font: 700 28px/1.15 var(--sans); letter-spacing: -0.02em; }
+
+/* the matchup: the two players in one pair of colours that don't mean better or worse (green and orange do) */
+:root { --them: #2f62a8; --you: #a87500; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --them: #4f86d0; --you: #b8841a; } }
+:root[data-theme="dark"] { --them: #4f86d0; --you: #b8841a; }
+.dash { display: grid; gap: 10px; }
+.d-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.d-strip .panel, .d-mid .panel { padding: 12px 16px; }
+.d-strip .kpi .v { font-size: 26px; }
+.d-strip .kpi .s { overflow-wrap: anywhere; }
+.split { display: flex; gap: 2px; height: 22px; margin: 4px 0 2px; }
+.split i { display: grid; align-items: center; font: 600 13px var(--num); color: #fff; padding-inline: 8px; min-width: 0; font-style: normal; }
+.split i:first-child { border-radius: 6px 0 0 6px; } .split i:last-child { border-radius: 0 6px 6px 0; justify-content: end; }
+.split .them, .legend2 i.them { background: var(--them); }
+.split .you, .legend2 i.you { background: var(--you); }
+.d-mid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.ch h2 { font-size: 17px; margin: 0 0 8px; }
+.ch .note { margin: 6px 0 0; font-size: 14.5px; }
+.keys ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 20px; }
+.keys .head { margin-bottom: 6px; }
+.keys .head h2 { margin: 0; }
+.keys li { font-size: 15.5px; line-height: 1.3; }
+.keys li b { font-weight: 600; }
+.pts { display: inline-block; min-width: 2.6em; margin-right: 6px; font: 600 14.5px var(--num); text-align: center; border-radius: 6px; padding: 0 4px; }
+.pts.up { color: var(--up-ink); background: color-mix(in oklab, var(--up) 16%, var(--panel)); }
+.pts.down { color: var(--down-ink); background: color-mix(in oklab, var(--down) 16%, var(--panel)); }
+.few { color: var(--muted); font-size: 14.5px; border: 1px solid var(--axis); border-radius: 6px; padding: 0 6px; white-space: nowrap; }
+
+/* paired bars are ECharts, drawn in scout.js */
+.ec { min-height: 60px; }
+.d-strip .form { align-content: center; }
+.fl { font-size: 15.5px; color: var(--ink-2); }
+.fl b { font: 600 19px var(--num); color: var(--ink); }
+.fl i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+.fl i.them { background: var(--them); } .fl i.you { background: var(--you); }
+.legend2 { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+.legend2 i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+.legend2 i.you { margin-left: 10px; }
+
+/* the cards, as chips */
+.cards2 { display: grid; gap: 6px; }
+.cl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ct { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; min-width: 7.5em; }
+.cards2 .head { margin-bottom: 6px; }
+.cards2 .head h2 { margin: 0; }
+.cc { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--rule); border-radius: 999px; padding: 2px 10px 2px 4px; font-size: 15px; }
+.cc:not(:has(img)) { padding-left: 10px; }
+.cc img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+.cc b { font-weight: 500; }
+.cc span { color: var(--muted); font: 13.5px var(--num); }
+.cc.thin { opacity: 0.55; }
+
+
+@media (max-width: 1100px) {
+  .d-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .d-mid, .keys ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .d-strip, .d-mid, .keys ul { grid-template-columns: minmax(0, 1fr); }
+  .ct { min-width: 100%; }
+}
+
+/* the page head gives way to the report: names, tabs and the strip come first */
+body:has(#report-box:not([hidden])) .ins-title .eyebrow, body:has(#report-box:not([hidden])) .ins-title .hint { display: none; }
+.ins-title h1 { font-size: 26px; }
+.ins .ins-head { margin: 8px 0 8px; }
+
+.d-strip .panel { padding: 10px 16px; }
+#load-box { margin-left: auto; }
+#load-box[open] { flex-basis: 100%; }
+#load-box > summary { cursor: pointer; font: 600 16px var(--sans); padding: 6px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--axis); width: max-content; margin-left: auto; }
+.who { margin: 10px 0 8px; }
+.seg[hidden] { display: none; }
+#list-box .tabs { margin-left: 12px; }
+#report-note:empty { display: none; }
+.d-strip .panel { padding: 8px 16px; }
+.d-strip .kpi { gap: 0; }
+.keys { padding-block: 10px; }
+.d-mid .panel { padding: 10px 14px; }
+.ch h2 { margin-bottom: 4px; }
+.legend2 { font-size: 14px; }
+body:has(#report-box:not([hidden])) .ins-head { display: none; }
+.foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin-top: 8px; }
+.foot .legend2 { flex: 1 1 auto; }
+.foot details.full { margin: 0; flex: 0 0 auto; }
+.foot details.full[open] { flex-basis: 100%; }
+.foot details.full > summary { cursor: pointer; font: 600 16px var(--sans); padding: 4px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--axis); width: max-content; margin-left: auto; }
+.foot details.full[open] > summary { margin-bottom: 10px; }
+.ch .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; margin: 0 0 4px; }
+.ch .head h2 { margin: 0; }
+.ch > h2 + .hint { margin: 0 0 4px; }
+.cc { font-size: 14.5px; }
+.d-mid .ch h2 { display: inline-block; margin-right: 10px; }
+.foot details.full .rep { background: var(--panel); border-radius: 16px; padding: 18px 20px; }
+.dash .panel { margin: 0; }
+#list-box { margin-bottom: 10px; }
+.cards2 { gap: 4px; }
+.cc { padding-block: 1px; }
+.cc img { width: 22px; height: 22px; }
+.d-mid .ch .hint { white-space: nowrap; }

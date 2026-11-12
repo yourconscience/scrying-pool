@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
+	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
 )
 
 // scoutData is what scout fetches about a player from dominion.games. It's kept
@@ -267,11 +268,24 @@ func scout(player, me, dir string, n int, asJSON bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	r, err := scoutOf(client, account, profiles, features, player, me, dir, n)
+	if err != nil {
+		return "", err
+	}
+	if asJSON {
+		b, err := json.MarshalIndent(r, "", " ")
+		return string(b) + "\n", err
+	}
+	return r.markdown(), nil
+}
+
+// scoutOf is the report, from the saved games already read.
+func scoutOf(client *cartographer.Client, account string, profiles map[string]*advisor.Profile, features []*advisor.Features, player, me, dir string, n int) (*scoutReport, error) {
 	var data *scoutData
 	if b, err := os.ReadFile(scoutFile(dir, player)); err == nil {
 		data = &scoutData{}
 		if err := json.Unmarshal(b, data); err != nil {
-			return "", fmt.Errorf("%s: %w", scoutFile(dir, player), err)
+			return nil, fmt.Errorf("%s: %w", scoutFile(dir, player), err)
 		}
 		player = data.Player // as dominion.games spells it
 		if me == "" {
@@ -294,7 +308,7 @@ func scout(player, me, dir string, n int, asJSON bool) (string, error) {
 		theirs = theirs[len(theirs)-n:] // saved in game-number order
 	}
 	if len(theirs) == 0 {
-		return "", fmt.Errorf("no saved games of %q; run scout without -offline to load them", player)
+		return nil, fmt.Errorf("no saved games of %q; run scout without -offline to load them", player)
 	}
 	roles := func(card string) []string {
 		var types []string
@@ -309,11 +323,7 @@ func scout(player, me, dir string, n int, asJSON bool) (string, error) {
 			r.HeadToHead = append(r.HeadToHead, f)
 		}
 	}
-	if asJSON {
-		b, err := json.MarshalIndent(r, "", " ")
-		return string(b) + "\n", err
-	}
-	return r.markdown(), nil
+	return r, nil
 }
 
 func pct(x float64) string { return fmt.Sprintf("%.0f%%", 100*x) }
