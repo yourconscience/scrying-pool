@@ -498,15 +498,22 @@ func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Du
 	var status struct {
 		Running bool     `json:"running"`
 		Error   string   `json:"lastError"`
-		Fresh   []string `json:"fresh"` // finished games not imported yet
+		Fresh   []string `json:"fresh"` // finished games not imported this run yet
 	}
 	// each tick reads the run and the games finished since the last one, which go
 	// to the games folder at once: a run that dies keeps what it loaded
-	tick := `const C = window.scryCapture;
-if (!C) return null;
-return Object.assign(C.status(), { fresh: ` + string(ids) + `.filter((id) => (C.results[id] || {}).status === "ok" && !C.results[id].exported) });`
+	taken := map[string]bool{} // keys already imported this run
 	for t0, lost := time.Now(), 0; ; time.Sleep(20 * time.Second) {
-		out, err := t.page(tick, time.Minute)
+		var rest []string
+		for _, k := range keys {
+			if !taken[k] {
+				rest = append(rest, k)
+			}
+		}
+		pending, _ := json.Marshal(rest)
+		out, err := t.page(`const C = window.scryCapture;
+if (!C) return null;
+return Object.assign(C.status(), { fresh: `+string(pending)+`.filter((id) => (C.results[id] || {}).status === "ok") });`, time.Minute)
 		if err != nil {
 			return err
 		}
@@ -525,6 +532,9 @@ return Object.assign(C.status(), { fresh: ` + string(ids) + `.filter((id) => (C.
 		}
 		if err := importFresh(t, status.Fresh, dir, minTurns); err != nil {
 			return err
+		}
+		for _, k := range status.Fresh {
+			taken[k] = true
 		}
 		if !status.Running {
 			break
@@ -586,7 +596,7 @@ func reinject(t tab) error {
 }
 
 // importFresh imports the tab's games with these keys, a few at a time through one
-// file for importGames, and marks them exported so no later tick pulls them again.
+// file for importGames.
 func importFresh(t tab, keys []string, dir string, minTurns int) error {
 	if len(keys) == 0 {
 		return nil
@@ -610,18 +620,15 @@ func importFresh(t tab, keys []string, dir string, minTurns int) error {
 			return err
 		}
 		for _, r := range recs {
-			f.Write(append(r, '\n'))
+			if _, err := f.Write(append(r, '\n')); err != nil {
+				return err
+			}
 		}
 	}
 	if err := f.Close(); err != nil {
 		return err
 	}
-	if err := importGames(f.Name(), dir, minTurns); err != nil {
-		return err
-	}
-	all, _ := json.Marshal(keys)
-	_, err = t.page("const C = window.scryCapture; for (const id of "+string(all)+") { C.results[id].exported = true; await C.save(C.results[id]); }", time.Minute)
-	return err
+	return importGames(f.Name(), dir, minTurns)
 }
 
 // manifestGame is a game a manifest-*.json in the games folder lists: DomBot's
