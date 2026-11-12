@@ -55,23 +55,28 @@
     <div class="picks" id="list"></div>
   </section>
 
-  <section class="panel" id="battles-box" aria-labelledby="battles-h" hidden>
-    <h2 id="battles-h">Battles</h2>
-    <p class="hint" id="battles-note"></p>
-    <form id="vs" class="row">
-      <label class="opp">Against <input id="opp" list="opps" autocomplete="off" spellcheck="false" placeholder="any player"></label>
-      <datalist id="opps"></datalist>
-      <button type="button" id="vs-me"></button>
-      <button type="button" id="vs-all">All</button>
-    </form>
-    <div id="battles"></div>
-    <p class="hint">Resignation is what a game reads as when neither Provinces or Colonies nor three piles ran out in the log: who resigned isn't saved, and a timeout looks the same. The decks come from the saved log; when the log's VP differ from the score, the deck may be a card short.</p>
-  </section>
-
   <section class="panel" id="report-box" aria-labelledby="report-h" hidden>
     <h2 id="report-h">Report</h2>
-    <p class="hint" id="report-note"></p>
-    <div class="rep" id="report"></div>
+    <div class="seg tabs" role="group" aria-label="View">
+      <button type="button" id="tab-report" aria-pressed="true">Analysis</button>
+      <button type="button" id="tab-battles" aria-pressed="false" hidden>Battles</button>
+    </div>
+    <div id="view-report">
+      <p class="hint" id="report-note"></p>
+      <div class="rep" id="report"></div>
+    </div>
+    <div id="view-battles" hidden>
+      <p class="hint" id="battles-note"></p>
+      <form id="vs" class="row">
+        <label class="opp">Against <input id="opp" list="opps" autocomplete="off" spellcheck="false" placeholder="any player"></label>
+        <datalist id="opps"></datalist>
+        <button type="button" id="vs-me"></button>
+        <button type="button" id="vs-all">All</button>
+        <button type="button" id="unlogged" class="second" hidden></button>
+      </form>
+      <div id="battles"></div>
+      <p class="hint">Resignation is what a game reads as when neither Provinces or Colonies nor three piles ran out in the log: who resigned isn't saved, and a timeout looks the same. The decks come from the saved log; when the log's VP differ from the score, the deck may be a card short.</p>
+    </div>
   </section>
 
   <p id="error" role="alert" hidden></p>

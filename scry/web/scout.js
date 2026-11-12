@@ -54,7 +54,7 @@ function render(md) {
   for (let i = 0; i < lines.length; ) {
     const l = lines[i];
     if (l.startsWith("# ")) {
-      $("report-h").textContent = l.slice(2);
+      out.append(el("p", "", l.slice(2)));
     } else if (l.startsWith("## ")) {
       out.append(el("h3", "", l.slice(3)));
     } else if (l.startsWith("|")) {
@@ -98,6 +98,14 @@ const RESULT = { 1: ["W", "win", "won"], 0.5: ["T", "tie", "tied"], 0: ["L", "lo
 const ENDINGS = { provinces: "Provinces", colonies: "Colonies", piles: "Three piles", resign: "Resignation, by whom isn't saved" };
 const KINDS = { victory: "Victory", treasure: "Treasure", action: "Action", curse: "Curse" };
 let battles = null; // the player's {me, games, images}
+let allGames = false; // Battles also lists the games without a saved log
+
+function setView(v) {
+  $("view-report").hidden = v !== "report";
+  $("view-battles").hidden = v !== "battles";
+  $("tab-report").setAttribute("aria-pressed", String(v === "report"));
+  $("tab-battles").setAttribute("aria-pressed", String(v === "battles"));
+}
 
 function deck(cards) {
   const box = el("div", "deck");
@@ -163,9 +171,15 @@ function showBattles() {
   if (!battles) return;
   const q = $("opp").value.trim().toLowerCase();
   const rows = battles.games.filter((g) => g.opponent.toLowerCase().includes(q));
-  const withLog = rows.filter((g) => g.log).length;
-  $("battles-note").textContent = `${rows.length} of ${battles.games.length} listed games${q ? ` against "${$("opp").value.trim()}"` : ""}; ${withLog} with a saved log. Newest first.`;
-  box.replaceChildren(...rows.map((g) => battle(g, battles.player, battles.images)));
+  const logged = rows.filter((g) => g.log);
+  $("battles-note").textContent = `${rows.length} of ${battles.games.length} listed games${q ? ` against "${$("opp").value.trim()}"` : ""}; ${logged.length} with a saved log. Newest first.`;
+  // the games without a log wait behind the toggle, unless they are all there is
+  const bare = rows.length - logged.length;
+  const games = bare === 1 ? "game" : "games";
+  const all = allGames || !logged.length;
+  $("unlogged").hidden = !bare || !logged.length;
+  $("unlogged").textContent = allGames ? `Hide the ${bare} ${games} without a log` : `Show the ${bare} ${games} without a log`;
+  box.replaceChildren(...(all ? rows : logged).map((g) => battle(g, battles.player, battles.images)));
   const url = new URL(location.href);
   if (q) url.searchParams.set("vs", $("opp").value.trim());
   else url.searchParams.delete("vs");
@@ -174,8 +188,8 @@ function showBattles() {
 
 function setBattles(b) {
   battles = b;
-  $("battles-box").hidden = !b;
-  if (!b) return;
+  $("tab-battles").hidden = !b;
+  if (!b) return setView("report");
   const n = {};
   for (const g of b.games) n[g.opponent] = (n[g.opponent] || 0) + 1;
   $("opps").replaceChildren(...Object.keys(n).sort().map((o) => {
@@ -196,9 +210,11 @@ async function showReport(player) {
   $("report-h").textContent = player;
   $("report-note").textContent = "Counting their games against yours…";
   $("report").replaceChildren();
-  $("battles-box").hidden = true;
+  $("tab-battles").hidden = true;
   battles = null;
+  allGames = false;
   $("opp").value = vs;
+  setView(vs ? "battles" : "report"); // a link with a filter opens on Battles
   vs = ""; // the link's filter is for the first report only
   history.replaceState(null, "", "?player=" + encodeURIComponent(player));
   for (const b of $("list").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.player === player));
@@ -265,6 +281,12 @@ function poll() {
   }, 3000);
 }
 
+$("tab-report").addEventListener("click", () => setView("report"));
+$("tab-battles").addEventListener("click", () => setView("battles"));
+$("unlogged").addEventListener("click", () => {
+  allGames = !allGames;
+  showBattles();
+});
 $("opp").addEventListener("input", showBattles);
 $("vs").addEventListener("submit", (ev) => ev.preventDefault());
 $("vs-me").addEventListener("click", () => {

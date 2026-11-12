@@ -4,11 +4,13 @@ Back to the [README](../README.md).
 
 Status: built, on top of the Scout page (PR #40). Feedback welcome on the ending labels and the deck grouping.
 
-After scouting a player you want to look at their games one by one, against anyone: "yikyak against Lynet": what the kingdom was, who won and by how much, how long it ran, how it ended, and what both decks looked like at the end. No turn by turn. This is the Battles panel of the Scout page.
+After scouting a player you want to look at their games one by one, against anyone: "yikyak against Lynet": what the kingdom was, who won and by how much, how long it ran, how it ended, and what both decks looked like at the end. No turn by turn. This is the Battles view of the Scout page.
 
 ## What the page shows
 
-A filter by opponent (type a few letters, pick a name from the list, or press the button for your own name to isolate the head-to-head), then one card per game, newest first. A game is one of the up to 100 two-player games against people that the scout fetch lists for the player (`games` in `scout-<player>.json`).
+After picking a scouted player the page shows their name and two views, switched by two buttons: **Analysis** (the report, shown first) and **Battles**. Only one is visible at a time, so the long list never pushes the report off screen. A link with `?player=NAME&vs=OPPONENT` opens on Battles with the filter filled.
+
+Battles has a filter by opponent (type a few letters, pick a name from the list, or press the button for your own name to isolate the head-to-head), then one card per game, newest first. A game is one of the up to 100 two-player games against people that the scout fetch lists for the player (`games` in `scout-<player>.json`). Cards show:
 
 - Result for the scouted player (won, lost or tied), the score (34–28), both players' levels then, the date, and who went first.
 - How many turns, and how it ended: Provinces, Colonies, three piles or a resignation.
@@ -16,9 +18,9 @@ A filter by opponent (type a few letters, pick a name from the list, or press th
 - Both final decks, as counts grouped Victory, Treasure, Action and Curse, largest first.
 - A link to the analysis page for the game.
 
-A listed game with no saved log (most of them, until the scout run has loaded them) still has its card with what the list knows: date, players, levels and score, marked "log not loaded". It has no first player, turns, ending, kingdom or decks.
+Only games with a saved log are listed at first. The listed games without one (most of them, until the scout run has loaded them) wait behind a button that carries their count; they show what the list knows (date, players, levels, score) marked "log not loaded", and no first player, turns, ending, kingdom or decks. The note line always says how many games are listed and how many have a log. The filter applies to whichever set is shown; when the typed name matches only games without a log, those are shown rather than an empty list.
 
-On a phone it is one column, with the decks stacked.
+On a phone it is one column, with the decks stacked and the buttons sized to tap.
 
 ## Where each field comes from
 
@@ -40,7 +42,7 @@ No new endpoint: `GET /api/scout?player=` answers with a `battles` field next to
 
 **The ending.** `Features.Ending` is `provinces`, `piles` or `resign`, by the markus rule in `advisor/features.go`: at most one Province or Colony left is `provinces`, at most one card from three empty piles is `piles`, anything else is `resign`. So `provinces` covers Colony; the page separates them with the supply: Colony left at most 1 and Province not. If both piles are nearly gone it says Provinces. Colony was in 18 saved games and ran out in 8. The page can say a game ended on Provinces, Colonies or piles. It cannot say who resigned: that isn't saved. `resign` is also what a timeout, a disconnect or a log missing its last two moves would look like, and some resignations read as ties (docs/position-analysis.md on branch position-eval). The score screen's first line, "You Resigned" in 444 of 580 games, is the capture's own resignation and says nothing about the game.
 
-**Reuse.** Reused: `scoutData`/`scoutGame`, `loadCorpus`, `webClient`, `advisor.LoadGames`, `Features`, `FinalDecks`, `/card-image/`, the `analyze.html#ID` link and the Last games page's wording for endings. New: one file of Go (`battles.go`, about 120 lines), the Battles panel in `scout.html`, `scout.js`, `scout.css`.
+**Reuse.** Reused: `scoutData`/`scoutGame`, `loadCorpus`, `webClient`, `advisor.LoadGames`, `Features`, `FinalDecks`, `/card-image/`, the `analyze.html#ID` link and the Last games page's wording for endings. New: one file of Go (`battles.go`, about 120 lines), the views and the Battles panel in `scout.html`, `scout.js`, `scout.css`.
 
 ## Not in this change
 

@@ -59,4 +59,9 @@ img.kc { width: 76px; height: auto; }
 .deck .size { color: var(--muted); }
 .deck .grp { overflow-wrap: anywhere; }
 .deck .grp b { font-weight: 600; color: var(--ink-2); }
-#battles-box .hint { font-size: 16px; }
+#view-battles .hint { font-size: 16px; }
+
+/* the two views of a player */
+.tabs { margin: 4px 0 14px; }
+.ins .tabs button { min-height: 44px; padding: 8px 20px; font-size: 16px; }
+.ins .row button.second { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--axis); }
