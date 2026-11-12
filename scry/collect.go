@@ -496,15 +496,34 @@ func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Du
 	}
 	ids, _ := json.Marshal(keys)
 	var status struct {
-		Running bool   `json:"running"`
-		Error   string `json:"lastError"`
+		Running bool     `json:"running"`
+		Error   string   `json:"lastError"`
+		Fresh   []string `json:"fresh"` // finished games not imported yet
 	}
-	for t0 := time.Now(); ; time.Sleep(20 * time.Second) {
-		out, err := t.page("return window.scryCapture.status();", time.Minute)
+	// each tick reads the run and the games finished since the last one, which go
+	// to the games folder at once: a run that dies keeps what it loaded
+	tick := `const C = window.scryCapture;
+if (!C) return null;
+return Object.assign(C.status(), { fresh: ` + string(ids) + `.filter((id) => (C.results[id] || {}).status === "ok" && !C.results[id].exported) });`
+	for t0, lost := time.Now(), 0; ; time.Sleep(20 * time.Second) {
+		out, err := t.page(tick, time.Minute)
 		if err != nil {
 			return err
 		}
+		if string(out) == "null" { // the tab was reloaded: the script is gone, the stored queue isn't
+			if lost++; lost > 5 {
+				return fmt.Errorf("the dominion.games tab lost the capture script %d times; run again once it stays put", lost)
+			}
+			fmt.Println("the capture script is gone from the dominion.games tab (reloaded?); injecting it again")
+			if err := reinject(t); err != nil {
+				return err
+			}
+			continue
+		}
 		if err := json.Unmarshal(out, &status); err != nil {
+			return err
+		}
+		if err := importFresh(t, status.Fresh, dir, minTurns); err != nil {
 			return err
 		}
 		if !status.Running {
@@ -519,7 +538,6 @@ func captureGames(t tab, todo []string, dir string, minTurns int, budget time.Du
 		fmt.Println("the capture stopped:", status.Error)
 	}
 
-	// the captured games, a few at a time, into one file for importGames
 	byStatus := `const C = window.scryCapture, by = {};
 for (const id of ` + string(ids) + `) { const r = C.results[id] || { status: "not tried" }; (by[r.status] = by[r.status] || []).push(r.status !== "ok" && r.error ? id + " (" + r.error + ")" : id); }
 return by;`
@@ -536,13 +554,50 @@ return by;`
 			fmt.Printf("%d %s: %s\n", len(gs), s, strings.Join(gs, ", "))
 		}
 	}
+	return nil
+}
+
+// reinject puts the capture script back into a reloaded tab and resumes the
+// queue the page's IndexedDB kept. It doesn't log in: a tab that isn't logged in
+// (or was kicked) stops the run, and so do a game or a table.
+func reinject(t tab) error {
+	var st lobby
+	for t0 := time.Now(); !st.In && !st.Game && !st.Table && time.Since(t0) < 2*time.Minute; time.Sleep(3 * time.Second) {
+		var err error
+		if st, err = t.lobby(); err != nil {
+			return err
+		}
+	}
+	if !st.In && !st.Game && !st.Table {
+		return fmt.Errorf("dominion.games isn't logged in in Brave; log in there and run again")
+	}
+	capture, _ := webFiles.ReadFile("web/capture.js")
+	out, err := t.page(string(capture)+"\nconst C = window.scryCapture;\nconst s = await C.toLobby();\nif (s) return s;\nawait C.resume();\nreturn \"resumed\";", 2*time.Minute)
+	if err != nil {
+		return err
+	}
+	switch string(out) {
+	case `"game"`:
+		return fmt.Errorf("you're in a game against another player on dominion.games; finish it and run again")
+	case `"table"`:
+		return fmt.Errorf("another player is at your table on dominion.games; leave it and run again")
+	}
+	return nil
+}
+
+// importFresh imports the tab's games with these keys, a few at a time through one
+// file for importGames, and marks them exported so no later tick pulls them again.
+func importFresh(t tab, keys []string, dir string, minTurns int) error {
+	if len(keys) == 0 {
+		return nil
+	}
 	f, err := os.CreateTemp("", "scry-collect-*.jsonl")
 	if err != nil {
 		return err
 	}
 	defer os.Remove(f.Name())
 	defer f.Close()
-	for ok := by["ok"]; len(ok) > 0; {
+	for ok := keys; len(ok) > 0; {
 		n := min(10, len(ok))
 		part, _ := json.Marshal(ok[:n])
 		ok = ok[n:]
@@ -561,12 +616,12 @@ return by;`
 	if err := f.Close(); err != nil {
 		return err
 	}
-	if len(by["ok"]) > 0 {
-		if err := importGames(f.Name(), dir, minTurns); err != nil {
-			return err
-		}
+	if err := importGames(f.Name(), dir, minTurns); err != nil {
+		return err
 	}
-	return nil
+	all, _ := json.Marshal(keys)
+	_, err = t.page("const C = window.scryCapture; for (const id of "+string(all)+") { C.results[id].exported = true; await C.save(C.results[id]); }", time.Minute)
+	return err
 }
 
 // manifestGame is a game a manifest-*.json in the games folder lists: DomBot's
