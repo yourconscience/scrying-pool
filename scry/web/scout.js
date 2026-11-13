@@ -8,6 +8,7 @@ const params = new URLSearchParams(location.search);
 let shown = ""; // the player whose report is on the page
 let reportSeq = 0; // the latest report asked for; an older answer is dropped
 let polling = null;
+let pollError = false; // the error on the page came from a poll, so a good poll clears it
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -151,13 +152,15 @@ function poll() {
   polling = setInterval(async () => {
     try {
       const d = await refresh();
-      showError("");
+      if (pollError) showError("");
+      pollError = false;
       if (d.run.running) return;
       clearInterval(polling);
       polling = null;
       if (!d.run.error) showReport(d.players.find((p) => p.player.toLowerCase() === d.run.player.toLowerCase())?.player || d.run.player);
     } catch (e) {
       showError(e.message);
+      pollError = true;
     }
   }, 3000);
 }
@@ -170,6 +173,7 @@ $("form").addEventListener("submit", async (ev) => {
     poll();
   } catch (e) {
     showError(e.message);
+    pollError = false;
   }
 });
 

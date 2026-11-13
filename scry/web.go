@@ -241,12 +241,21 @@ func newHandler(timeout time.Duration) http.Handler {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
-		ask := gamesAsk{Me: q.Get("me"), Opponent: strings.TrimSpace(q.Get("opponent")), Last: reportLast(q.Get("last")), IDs: reNumber.FindAllString(q.Get("ids"), -1)}
+		me := q.Get("me")
+		if me == "" {
+			me = c.account
+		}
+		ids, opponent, bot := pastedGames(q.Get("ids"), me)
+		if opponent == "" {
+			opponent = strings.TrimSpace(q.Get("opponent"))
+		}
+		ask := gamesAsk{Me: q.Get("me"), Opponent: opponent, Last: reportLast(q.Get("last")), IDs: ids}
 		rep, err := buildGames(client, dir, c.account, c.profiles, c.features, ask)
 		if err != nil {
 			writeJSON(w, 422, map[string]string{"error": err.Error()})
 			return
 		}
+		rep.DomBot = bot
 		writeJSON(w, 200, rep)
 	}))
 	mux.HandleFunc("GET /api/report/load", localOnly(func(w http.ResponseWriter, r *http.Request) {
@@ -267,7 +276,7 @@ func newHandler(timeout time.Duration) http.Handler {
 			Opponent string `json:"opponent"`
 			IDs      string `json:"ids"`
 		}
-		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<12)).Decode(&req); err != nil {
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<16)).Decode(&req); err != nil {
 			writeJSON(w, 400, map[string]string{"error": "bad request: " + err.Error()})
 			return
 		}
@@ -280,7 +289,8 @@ func newHandler(timeout time.Duration) http.Handler {
 			writeJSON(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
-		if err := startLoad(dir, reportLast(req.Last), req.Opponent, reNumber.FindAllString(req.IDs, -1)); err != nil {
+		ids, _, _ := pastedGames(req.IDs, "")
+		if err := startLoad(dir, reportLast(req.Last), req.Opponent, ids); err != nil {
 			writeJSON(w, 409, map[string]string{"error": err.Error()})
 			return
 		}
@@ -391,7 +401,40 @@ func localOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-var reNumber = regexp.MustCompile(`\d+`)
+var reNumber = regexp.MustCompile(`\d{8,10}`)
+
+var (
+	reBotGame   = regexp.MustCompile(`(?m)^\s*(\d{8,10}) \(`)
+	reBotPlayer = regexp.MustCompile(`(?m)^(.+)\nTime: (.+)\nDecisions: (\d+) \(([\d.]+) s/dec\)`)
+)
+
+// pastedGames reads the ids box: game numbers, or DomBot's "!match" reply, whose
+// game lines start with the id. From a reply it also takes the opponent (the name
+// in the "A v. B" line that isn't me) and each player's time and decisions.
+func pastedGames(text, me string) (ids []string, opponent string, bot []botPlayer) {
+	text = strings.ReplaceAll(text, "\r\n", "\n")
+	for _, m := range reBotGame.FindAllStringSubmatch(text, -1) {
+		ids = append(ids, m[1])
+	}
+	if len(ids) == 0 {
+		return reNumber.FindAllString(text, -1), "", nil
+	}
+	for _, l := range strings.Split(text, "\n") {
+		if a, b, ok := strings.Cut(strings.TrimSpace(l), " v. "); ok {
+			switch {
+			case strings.EqualFold(a, me):
+				opponent = b
+			case strings.EqualFold(b, me):
+				opponent = a
+			}
+			break
+		}
+	}
+	for _, m := range reBotPlayer.FindAllStringSubmatch(text, -1) {
+		bot = append(bot, botPlayer{Name: strings.TrimSpace(m[1]), Time: m[2], Decisions: m[3], SecPerDecision: m[4]})
+	}
+	return ids, opponent, bot
+}
 
 // reportLast reads how many latest games the Last games page asks for: 10 unless
 // it says, and no more than the server lists.

@@ -47,7 +47,19 @@ type gamesReport struct {
 	Usual        gameStats    `json:"usual"` // your other games of the last 90 days
 	Compare      *gamesVs     `json:"compare,omitempty"`
 	Takeaways    []string     `json:"takeaways"`
+	FirstSeat    seatSplit    `json:"first_seat"`       // your results going first
+	SecondSeat   seatSplit    `json:"second_seat"`      // and going second
+	Findings     []finding    `json:"findings"`         // points that repeat in 2 or more games
+	DomBot       []botPlayer  `json:"dombot,omitempty"` // each player's time and decisions, from a pasted DomBot reply
 	Games        []reportGame `json:"games"`
+}
+
+// botPlayer is a player's line of DomBot's "!match" reply.
+type botPlayer struct {
+	Name           string `json:"name"`
+	Time           string `json:"time"`
+	Decisions      string `json:"decisions"`
+	SecPerDecision string `json:"sec_per_decision"`
 }
 
 // gameStats averages some of a player's games.
@@ -82,6 +94,7 @@ type reportGame struct {
 	Them     theirGame     `json:"them"`
 	Turning  *turningPoint `json:"turning,omitempty"`
 	Records  []cardRecord  `json:"records,omitempty"`
+	View     *matchView    `json:"view,omitempty"` // matchview.go
 }
 
 // theirGame is the opponent's side of a game.
@@ -371,9 +384,13 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 		if ask.Opponent != "" {
 			who = " against " + ask.Opponent
 		}
+		if r.Named {
+			return nil, fmt.Errorf("none of those games of %s%s is saved yet: %s. Load them first.", me, who, strings.Join(r.Missing, ", "))
+		}
 		return nil, fmt.Errorf("none of those games of %s%s is saved", me, who)
 	}
 
+	slices.Reverse(picked) // numbered in the order they were played
 	ids := make([]string, len(picked))
 	for i, g := range picked {
 		ids[i] = g.ID
@@ -395,6 +412,7 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 			theirs[f.ID] = f
 		}
 	}
+	usual := slices.DeleteFunc(lastDays(mine, siteDays), func(f *advisor.Features) bool { return slices.Contains(ids, f.ID) })
 	for _, g := range picked {
 		f := g.Features
 		these = append(these, f)
@@ -424,16 +442,20 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 			rg.Them.Luck = luckOf(client, profiles, turns, f.Opponent)
 			rg.Verdict = verdict(f.Result, rg.Luck, rg.Them.Luck)
 			rg.Turning = turningOf(client, s, turns, me, f.Opponent, f.Result)
+			rg.View = matchViewOf(client, s, turns, f, theirs[f.ID], usual)
 		}
 		r.Games = append(r.Games, rg)
 	}
 	r.These, r.WinStats, r.LossStats = statsOf(these), statsOf(wins), statsOf(losses)
-	r.Usual = statsOf(slices.DeleteFunc(lastDays(mine, siteDays), func(f *advisor.Features) bool { return slices.Contains(ids, f.ID) }))
+	r.Usual = statsOf(usual)
 	if ask.Opponent != "" {
-		r.Compare = compareWith(picked[0].Features, mine, features)
-		r.Opponent = picked[0].Opponent // as dominion.games spells it
+		newest := picked[len(picked)-1]
+		r.Compare = compareWith(newest.Features, mine, features)
+		r.Opponent = newest.Opponent // as dominion.games spells it
 	}
 	r.Takeaways = r.takeaways()
+	r.FirstSeat, r.SecondSeat = seatsOf(r.Games)
+	r.Findings = findingsOf(r.Games)
 	return r, nil
 }
 
@@ -611,6 +633,13 @@ func (r *gamesReport) markdown() string {
 	}{{"These", r.These}, {"Wins", r.WinStats}, {"Losses", r.LossStats}, {"Usual, 90 days", r.Usual}} {
 		fmt.Fprintf(&b, "| %s | %s |\n", row.name, strings.Join(statCells(row.s), " | "))
 	}
+	fmt.Fprintf(&b, "\nBy seat: first %s of %d, second %s of %d.\n", trimScore(r.FirstSeat.Score), r.FirstSeat.Games, trimScore(r.SecondSeat.Score), r.SecondSeat.Games)
+	if len(r.Findings) > 0 {
+		b.WriteString("\n## Across the match\n\n")
+		for _, f := range r.Findings {
+			fmt.Fprintf(&b, "- %s\n", f.Text)
+		}
+	}
 	if len(r.Takeaways) > 0 {
 		b.WriteString("\n## Takeaways\n\n")
 		for _, t := range r.Takeaways {
@@ -653,6 +682,7 @@ func (r *gamesReport) markdown() string {
 			}
 			fmt.Fprintf(&b, "Your record with these cards: %s\n", strings.Join(parts, "; "))
 		}
+		g.viewMarkdown(&b)
 	}
 	return b.String()
 }
