@@ -233,7 +233,7 @@ func matchViewOf(client *cartographer.Client, s *advisor.Saved, turns []cartogra
 		Gap:  []gapPoint{},
 	}
 	if !f.Complete {
-		v.Note = fmt.Sprintf("The log's last decision is missing: the points and decks here are %d to %d, the game's score %d to %d.", v.You.Total, v.Them.Total, f.MyVP, f.OppVP)
+		v.Note = fmt.Sprintf("The saved game has no final score, so the points and decks here (%d to %d) are unverified.", v.You.Total, v.Them.Total)
 		if len(f.Final) == 2 {
 			v.Note = fmt.Sprintf("The log's last decision is missing: the points and decks here are %d to %d, the game's score %d to %d.", v.You.Total, v.Them.Total, f.Final[0], f.Final[1])
 		}
@@ -293,13 +293,27 @@ func endOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.T
 	supply := s.Game.Supply(client)
 	switch f.Ending {
 	case "provinces":
-		pile := "Province"
-		if _, ok := supply.Initial["Colony"]; ok && supply.Left["Colony"] < supply.Left["Province"] {
-			pile = "Colony"
+		left := func(p string) int {
+			if n, ok := supply.Left[p]; ok {
+				return max(n, 0)
+			}
+			return supply.Initial[p]
 		}
-		e.Text = fmt.Sprintf("Ended on %ss: %d left, %s took the last turn (turn %d).", pile, max(supply.Left[pile], 0), name, e.Turn)
+		pile, n := "Province", left("Province")
+		if _, ok := supply.Initial["Colony"]; ok && left("Colony") < n {
+			pile, n = "Colony", left("Colony")
+		}
+		e.Text = fmt.Sprintf("Ended on the %s pile (%d left), %s took the last turn (turn %d).", pile, n, name, e.Turn)
+		if n > 0 {
+			e.Text = fmt.Sprintf("Supply shows %d in the %s pile, %s took the last turn (turn %d). The game may have been resigned.", n, pile, name, e.Turn)
+		}
 	case "piles":
-		e.Text = fmt.Sprintf("Ended on piles (%s empty), %s took the last turn (turn %d).", strings.Join(supply.EmptyPiles(), ", "), name, e.Turn)
+		piles := supply.EmptyPiles()
+		sort.Strings(piles)
+		e.Text = fmt.Sprintf("Ended on piles (%s empty), last turn: %s (turn %d).", strings.Join(piles, ", "), name, e.Turn)
+		if len(piles) < 3 {
+			e.Text = fmt.Sprintf("Supply shows empty piles: %s. Last turn: %s (turn %d). The game may have been resigned.", strings.Join(piles, ", "), name, e.Turn)
+		}
 	default:
 		e.By = ""
 		e.Text = fmt.Sprintf("No Province or pile ending in the log: a resignation, or the log stops early. It doesn't say who resigned. The last turn was turn %d, the score then %d to %d.", e.Turn, f.MyVP, f.OppVP)
@@ -308,31 +322,6 @@ func endOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.T
 		}
 	}
 	return e
-}
-
-func numWord(n int, one, many string) string {
-	if n == 1 {
-		return fmt.Sprintf("%d %s", n, one)
-	}
-	return fmt.Sprintf("%d %s", n, many)
-}
-
-// kingdomCopies counts a deck's cards by kingdom pile.
-func kingdomCopies(client *cartographer.Client, kingdom []string, d cartographer.Deck) map[string]int {
-	out := map[string]int{}
-	pile := map[string]string{}
-	for _, k := range kingdom {
-		pile[client.PileOf(k)] = k
-	}
-	for name, n := range d {
-		if k, ok := pile[client.PileOf(name)]; ok {
-			if c := client.Cards[name]; c != nil && c.Is("Victory") { // Castles, Nobles: the VP rule has them
-				continue
-			}
-			out[k] += n
-		}
-	}
-	return out
 }
 
 func pointsOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.Turn, f, theirs *advisor.Features, v *matchView, usual []*advisor.Features) []point {
@@ -350,7 +339,7 @@ func pointsOf(client *cartographer.Client, s *advisor.Saved, turns []cartographe
 	// Province split, with the first Province's turn when neither side has much other VP
 	if d := v.You.Provinces - v.Them.Provinces; d >= provinceGap || d <= -provinceGap {
 		text := fmt.Sprintf("Provinces: %d to %s's %d", v.You.Provinces, opp, v.Them.Provinces)
-		if theirs != nil && f.FirstProvince > 0 && theirs.FirstProvince > 0 && v.You.otherVP() < altGap && v.Them.otherVP() < altGap {
+		if theirs != nil && f.FirstProvince > 0 && theirs.FirstProvince > 0 && abs(v.You.otherVP()) < altGap && abs(v.Them.otherVP()) < altGap {
 			text += fmt.Sprintf("; your first on turn %d, theirs on turn %d", f.FirstProvince, theirs.FirstProvince)
 		}
 		add("provinces", d > 0, "%s.", text)
@@ -362,9 +351,8 @@ func pointsOf(client *cartographer.Client, s *advisor.Saved, turns []cartographe
 	}
 
 	// Curses
-	given, received := v.Them.Cursed, v.You.Cursed
-	if d := given - received; d >= curseGap || d <= -curseGap {
-		add("curse", d > 0, "Curses: you gave %d and took %d.", given, received)
+	if d := v.Them.Cursed - v.You.Cursed; d >= curseGap || d <= -curseGap {
+		add("curse", d > 0, "Curses taken: you %d, %s %d.", v.You.Cursed, opp, v.Them.Cursed)
 	}
 
 	// what each built: Action cards in the final deck
@@ -383,7 +371,7 @@ func pointsOf(client *cartographer.Client, s *advisor.Saved, turns []cartographe
 	}
 
 	// $ per turn against the opponent in the same game, left out when other VP matter
-	if theirs != nil && len(f.Coins) >= 3 && len(theirs.Coins) >= 3 && v.You.otherVP() < altGap && v.Them.otherVP() < altGap {
+	if theirs != nil && len(f.Coins) >= 3 && len(theirs.Coins) >= 3 && abs(v.You.otherVP()) < altGap && abs(v.Them.otherVP()) < altGap {
 		mine, other := coinsMid(f.Coins), coinsMid(theirs.Coins)
 		if d := mine - other; d >= tempoGap || d <= -tempoGap {
 			text := fmt.Sprintf("$%.1f per turn on turns 3-12, %s $%.1f", mine, opp, other)
@@ -408,7 +396,7 @@ var ruleLabels = map[string][2]string{ // bad, good
 	"thin":      {"Trashed fewer Coppers and Estates than the opponent", "Trashed more Coppers and Estates than the opponent"},
 	"provinces": {"Fewer Provinces than the opponent", "More Provinces than the opponent"},
 	"alt":       {"Fewer points from other sources than the opponent", "More points from other sources than the opponent"},
-	"curse":     {"Took more Curses than you gave", "Gave more Curses than you took"},
+	"curse":     {"Took more Curses than the opponent", "Took fewer Curses than the opponent"},
 	"actions":   {"Fewer Action cards than the opponent in the final deck", "More Action cards than the opponent in the final deck"},
 	"end":       {"Led before the opponent's last turn and lost", "Trailed before your last turn and won"},
 	"tempo":     {"Less $ per turn than the opponent", "More $ per turn than the opponent"},

@@ -81,6 +81,7 @@ const VP_COLORS = {
 };
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const charts = [];
+const observers = [];
 
 // One player's points: a bar scaled to the larger total, then each source as text with its number.
 function vpRow(name, side, max) {
@@ -145,7 +146,11 @@ function gapChart(host, g) {
   });
   const ch = echarts.init(host, null, { renderer: "svg" });
   charts.push(ch);
-  if (window.ResizeObserver) new ResizeObserver(() => ch.resize()).observe(host);
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => ch.resize());
+    ro.observe(host);
+    observers.push(ro);
+  }
   const up = css("--up"), down = css("--down"), muted = css("--muted"), ink = css("--ink-2"), rule = css("--rule");
   ch.setOption({
     animation: false,
@@ -240,6 +245,7 @@ function gameCard(g, i) {
 let pendingCharts = [];
 let last = null;
 function drawGames(r) {
+  for (const o of observers.splice(0)) o.disconnect();
   for (const c of charts.splice(0)) c.dispose();
   pendingCharts = [];
   $("games").replaceChildren(...r.games.map(gameCard));
@@ -343,6 +349,12 @@ async function follow() {
 $("form").addEventListener("submit", (e) => {
   e.preventDefault();
   show();
+});
+$("ids").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    show();
+  }
 });
 $("load").addEventListener("click", async () => {
   showError("");

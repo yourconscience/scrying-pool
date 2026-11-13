@@ -30,7 +30,7 @@ After a match you want to know, game by game and across the match, what you did 
 | Who took the last turn | the player of the last turn in `Game.Turns()` |
 | VP gap after each turn, swing | `scoresByTurn`, the same replay `scry review` uses |
 | Coppers and Estates trashed | the Trashed column of each of the player's own turns |
-| Curses given and received | each Curse that comes into a player's deck between two turn snapshots (the opponent's received count is what you gave) |
+| Curses taken by each player | each Curse that comes into a player's deck between two turn snapshots; the log does not say who gave it |
 | $ per turn, opponent's side | `Features.Coins` of the opponent's side of the same game |
 
 ## The rules
@@ -41,7 +41,7 @@ A rule fires only past its threshold. The win rates are yours over the decided g
 |---|---|---|---|---|---|
 | Thinning (Coppers and Estates trashed) | you trashed 4 or more than they did | 4 or more fewer | 73% of 56 | 29% of 79 | kept |
 | Points from other sources (Victory cards other than Province, Duchy, Estate, VP tokens, landscapes) | 10 VP or more above them | 10 VP or more below | 77% of 30 | 21% of 24 | kept |
-| Curses (given against received) | you gave 3 or more than you took | took 3 or more than you gave | 74% of 38 | 22% of 27 | kept |
+| Curses taken | the opponent took 3 or more than you | you took 3 or more than the opponent | 74% of 38 | 22% of 27 | kept |
 | Action cards in the final deck | 6 or more above them | 6 or more below | 72% of 96 | 29% of 45 | kept |
 | $ per turn on turns 3-12, against the opponent in the same game | 0.5 above, both sides under 10 VP of other sources | 0.5 below | 69% of 138 | 32% of 157 | kept |
 | Province split | 2 or more Provinces above them | 2 or more below | 93% of 89 | 6% of 122 | kept: it is the score, so it restates the result, but it says by how much; the first Provinces' turns are added only when neither side has 10 VP of other sources |

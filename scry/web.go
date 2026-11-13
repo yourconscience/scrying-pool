@@ -276,7 +276,7 @@ func newHandler(timeout time.Duration) http.Handler {
 			Opponent string `json:"opponent"`
 			IDs      string `json:"ids"`
 		}
-		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<12)).Decode(&req); err != nil {
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<16)).Decode(&req); err != nil {
 			writeJSON(w, 400, map[string]string{"error": "bad request: " + err.Error()})
 			return
 		}
@@ -343,7 +343,7 @@ func localOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-var reNumber = regexp.MustCompile(`\d+`)
+var reNumber = regexp.MustCompile(`\d{8,10}`)
 
 var (
 	reBotGame   = regexp.MustCompile(`(?m)^\s*(\d{8,10}) \(`)
