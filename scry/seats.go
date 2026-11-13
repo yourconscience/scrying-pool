@@ -12,6 +12,8 @@ import (
 // first seat's. A log names only the cards its own seat can see: to it, the other
 // player "draws 5 cards". The two logs are the same game line by line, so each line
 // of the second seat's player comes from its own log, under the first log's names.
+// One seat's log often stops a few lines before the other's; when the logs part
+// and no turn starts after that line in either, the first log is kept from there.
 // It returns how many lines that changed.
 func mergeSeats(first, second string) (merged string, named int, err error) {
 	a, b := strings.Split(first, "\n"), strings.Split(second, "\n")
@@ -23,18 +25,24 @@ func mergeSeats(first, second string) (merged string, named int, err error) {
 		return "", 0, fmt.Errorf("the second log isn't from the other seat: seats %v and %v", sa, sb)
 	}
 	out := slices.Clone(a)
+	part := func(i int) (string, int, error) {
+		if !opensTurn(a[i:]) && !opensTurn(b[i:]) {
+			return strings.Join(out, "\n"), named, nil
+		}
+		return "", 0, fmt.Errorf("the logs part at line %d: %q and %q", i+1, a[i], b[i])
+	}
 	for i := 0; i < min(len(a), len(b)); i++ {
 		ka, ta, _ := strings.Cut(a[i], "\t")
 		kb, tb, _ := strings.Cut(b[i], "\t")
 		if ka != kb {
-			return "", 0, fmt.Errorf("the logs part at line %d: %q and %q", i+1, a[i], b[i])
+			return part(i)
 		}
 		fa, fb := strings.Split(ta, "|"), strings.Split(tb, "|")
 		if len(fa) < 2 || (fa[0] != sa[0] && fa[0] != sa[1]) {
 			continue
 		}
 		if len(fb) < 2 || fb[1] != fa[1] || (fa[0] == sa[0]) != (fb[0] == sb[0]) {
-			return "", 0, fmt.Errorf("the logs part at line %d: %q and %q", i+1, a[i], b[i])
+			return part(i)
 		}
 		if fa[0] == sa[1] {
 			for j, f := range fb { // the same player has the other name in the other log
@@ -52,6 +60,14 @@ func mergeSeats(first, second string) (merged string, named int, err error) {
 		}
 	}
 	return strings.Join(out, "\n"), named, nil
+}
+
+// opensTurn reports whether one of lines starts a turn ("0T\tTurn 13 - name").
+func opensTurn(lines []string) bool {
+	return slices.ContainsFunc(lines, func(l string) bool {
+		k, _, _ := strings.Cut(l, "\t")
+		return strings.HasSuffix(k, "T")
+	})
 }
 
 // seatNames reads a log's short names for the first and second seat, from the

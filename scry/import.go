@@ -4,6 +4,7 @@ package main
 
 import (
 	"bufio"
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -180,11 +181,13 @@ func addOther(client *cartographer.Client, dir, id, other string) (int, error) {
 	}
 	bot, _ := os.ReadFile(base + ".bot.log")
 	merged, named, err := mergeSeats(string(log), other)
-	if err != nil {
-		return 0, err
+	if err == nil {
+		if m := client.Check(merged+string(bot), string(score)); !m.OK() && client.Check(string(log)+string(bot), string(score)).OK() {
+			err = fmt.Errorf("the merged log fails the check: %s", strings.Join(m.Problems, "; "))
+		}
 	}
-	if m := client.Check(merged+string(bot), string(score)); !m.OK() && client.Check(string(log)+string(bot), string(score)).OK() {
-		return 0, fmt.Errorf("the merged log fails the check: %s", strings.Join(m.Problems, "; "))
+	if err != nil { // marked, so the nightly run doesn't load it again; collect GAME still does
+		return 0, cmp.Or(replaceHeaders(dir, id, []string{"both seats"}, "# both seats: not merged: "+strings.ReplaceAll(err.Error(), "\n", " ")+"\n"), err)
 	}
 	if err := os.WriteFile(base+".log", []byte(merged), 0o644); err != nil {
 		return 0, err
