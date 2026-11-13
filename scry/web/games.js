@@ -75,6 +75,98 @@ const VERDICT = {
   unclear: "The hands don't settle it",
 };
 
+const VP_COLORS = {
+  Province: "var(--up)", Colony: "color-mix(in oklab, var(--up) 55%, var(--ink))", Duchy: "var(--coin)", Estate: "var(--axis)",
+  "Other Victory cards": "var(--ink-2)", "VP tokens": "color-mix(in oklab, var(--coin) 50%, var(--ink))", "Landscapes and states": "var(--muted)",
+};
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const charts = [];
+const observers = [];
+
+// One player's points: a bar scaled to the larger total, then each source as text with its number.
+function vpRow(name, side, max) {
+  const row = el("div", "vp-row");
+  const bar = el("div", "vp-bar");
+  bar.setAttribute("role", "img");
+  bar.setAttribute("aria-label", `${name}: ${side.total} VP`);
+  for (const x of side.vp) {
+    if (x.vp <= 0 || !VP_COLORS[x.label]) continue;
+    const seg = el("i");
+    seg.style.width = (100 * x.vp) / max + "%";
+    seg.style.background = VP_COLORS[x.label];
+    seg.title = `${x.label} ${x.vp}`;
+    bar.append(seg);
+  }
+  const head = el("div", "vp-head");
+  head.append(el("b", "", name), el("span", "vp-total", side.total + " VP"));
+  const list = el("div", "vp-list");
+  for (const x of side.vp) {
+    const item = el("span", "vp-src");
+    const dot = el("i");
+    dot.style.background = VP_COLORS[x.label] || "var(--down)";
+    item.append(dot, `${x.label} ${x.vp}`);
+    if (x.detail) item.title = x.detail;
+    list.append(item);
+  }
+  if (!side.vp.length) list.append(el("span", "vp-src", "no points"));
+  row.append(head, bar, list);
+  const detail = side.vp.filter((x) => x.detail).map((x) => `${x.label}: ${x.detail}`);
+  if (detail.length) row.append(el("div", "vp-detail", detail.join(". ")));
+  return row;
+}
+
+function deckRow(name, side) {
+  const row = el("div", "deck-row");
+  row.append(el("div", "deck-head", `${name}: ${side.cards} cards`));
+  const chips = el("div", "chips-line");
+  for (const c of side.deck) chips.append(el("span", "dc " + c.kind, `${c.n} ${c.card}`));
+  row.append(chips);
+  return row;
+}
+
+function pointsCol(box, list, good) {
+  const items = list.filter((p) => p.good === good);
+  const col = el("div", "pts " + (good ? "well" : "badly"));
+  col.append(el("h3", "", good ? "Went well" : "Went badly"));
+  if (!items.length) col.append(el("p", "none", "Nothing the rules pick out."));
+  else {
+    const ul = el("ul");
+    for (const p of items) ul.append(el("li", "", p.text));
+    col.append(ul);
+  }
+  box.append(col);
+}
+
+function gapChart(host, g) {
+  if (!window.echarts) return;
+  const seats = {};
+  const data = g.view.gap.map((p) => {
+    seats[p.turn] = (seats[p.turn] || 0) + 1;
+    return [p.turn + (seats[p.turn] > 1 ? 0.5 : 0), p.gap];
+  });
+  const ch = echarts.init(host, null, { renderer: "svg" });
+  charts.push(ch);
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => ch.resize());
+    ro.observe(host);
+    observers.push(ro);
+  }
+  const up = css("--up"), down = css("--down"), muted = css("--muted"), ink = css("--ink-2"), rule = css("--rule");
+  ch.setOption({
+    animation: false,
+    grid: { left: 40, right: 12, top: 12, bottom: 28 },
+    textStyle: { fontFamily: css("--num"), color: muted, fontSize: 12.5 },
+    xAxis: { type: "value", min: 1, minInterval: 1, name: "turn", nameLocation: "end", nameGap: 6, nameTextStyle: { color: muted }, axisLine: { lineStyle: { color: rule } }, splitLine: { show: false } },
+    yAxis: { type: "value", axisLine: { show: false }, splitLine: { lineStyle: { color: rule } }, axisLabel: { formatter: (v) => (v > 0 ? "+" + v : v) } },
+    tooltip: { trigger: "axis", confine: true, valueFormatter: (v) => (v > 0 ? "+" + v : v) },
+    series: [{
+      type: "line", data, step: "end", symbolSize: 5, lineStyle: { color: ink, width: 2 },
+      itemStyle: { color: (p) => (p.value[1] >= 0 ? up : down) },
+      markLine: { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: ink, type: "dashed" }, data: [{ yAxis: 0 }] },
+    }],
+  });
+}
+
 function gameCard(g, i) {
   const [mark, word, said] = RESULT[g.result] || ["?", "", ""];
   const box = el("section", "panel game");
@@ -89,9 +181,36 @@ function gameCard(g, i) {
   if (g.chance) facts.push(`win chance ${pct(g.chance)} at levels ${one(g.my_level)} and ${one(g.opp_level)}`);
   facts.push(g.date);
   top.append(el("span", "res " + word, mark), h, el("span", "facts", facts.join(" · ")));
+  box.append(top);
 
+  const v = g.view;
   const body = el("div", "game-body");
-  const left = el("div", "scroll");
+  if (v) {
+    const left = el("div", "col");
+    const drawn = (side) => side.vp.reduce((n, x) => n + Math.max(x.vp, 0), 0);
+    const max = Math.max(drawn(v.you), drawn(v.them), 1);
+    const vps = el("div", "vps");
+    vps.append(vpRow("You", v.you, max), vpRow(g.opponent, v.them, max));
+    left.append(el("h3", "", "Points by source"), vps, el("h3", "", "Final decks"), deckRow("You", v.you), deckRow(g.opponent, v.them));
+    if (v.note) left.append(el("p", "hint", v.note));
+
+    const right = el("div", "col");
+    const pts = el("div", "pts-grid");
+    pointsCol(pts, v.points, true);
+    pointsCol(pts, v.points, false);
+    right.append(pts, el("h3", "", "Ending and swing"), el("p", "", v.end.text));
+    if (v.swing) right.append(el("p", "", v.swing.text));
+    const host = el("div", "ec ec-gap");
+    host.setAttribute("aria-label", "Your VP minus theirs after each turn");
+    right.append(host);
+    if (v.gap.length) pendingCharts.push([host, g]);
+    right.append(el("p", "hint", "Gap after each turn: above zero you lead."));
+    body.append(left, right);
+  }
+  box.append(body);
+
+  const more = el("details", "more");
+  more.append(el("summary", "", "Other numbers"));
   const t = el("table", "sides");
   const buys = (o) => [o.opening, (o.opening_buys || []).join(" / ")].filter(Boolean).join(": ") || "–";
   table(t, ["", "You", g.opponent], [
@@ -101,11 +220,12 @@ function gameCard(g, i) {
     ["$ per turn, t3-12", "$" + one(g.coins_mid), "$" + one(g.them.coins_mid)],
     ["Draw luck", luckText(g.luck), luckText(g.them.luck)],
   ]);
-  left.append(t);
+  const sc = el("div", "scroll");
+  sc.append(t);
   const lines = el("dl", "lines");
-  const line = (k, v) => {
+  const line = (k, val) => {
     const d = el("div");
-    d.append(el("dt", "", k), v instanceof Node ? v : el("dd", "", v));
+    d.append(el("dt", "", k), val instanceof Node ? val : el("dd", "", val));
     lines.append(d);
   };
   if (g.verdict) line("Hands", el("dd", "verdict " + g.verdict, VERDICT[g.verdict]));
@@ -115,12 +235,25 @@ function gameCard(g, i) {
   }
   line("Kingdom", g.kingdom.join(", ") + (g.landscapes && g.landscapes.length ? " · " + g.landscapes.join(", ") : ""));
   if (g.records && g.records.length) line("Your record with the cards you took", g.records.map((c) => `${c.card} ${pct(c.score)} of ${c.games}`).join("; "));
-  body.append(left, lines);
-  box.append(top, body);
+  const grid = el("div", "game-body");
+  grid.append(sc, lines);
+  more.append(grid);
+  box.append(more);
   return box;
 }
 
+let pendingCharts = [];
+let last = null;
+function drawGames(r) {
+  for (const o of observers.splice(0)) o.disconnect();
+  for (const c of charts.splice(0)) c.dispose();
+  pendingCharts = [];
+  $("games").replaceChildren(...r.games.map(gameCard));
+  for (const [host, g] of pendingCharts) gapChart(host, g);
+}
+
 function render(r) {
+  last = r;
   document.title = "Dominion Last Games";
   const who = r.me + (r.opponent ? " vs " + r.opponent : "");
   $("title").textContent = r.named ? `${who}: ${games_(r.games.length)} you named` : `${who}: last ${games_(r.games.length)}`;
@@ -130,14 +263,18 @@ function render(r) {
   $("meta").textContent = meta;
 
   const u = r.usual, s = r.these, box = $("kpis");
-  const against = (text, ok) => (ok ? text : "no other games to compare");
+  const seat = (x, name) => kpi(name, x.games ? `${points(x.score)}/${x.games}` : "–", x.games ? pct(x.score / x.games) + " of the points" : "no games");
   box.replaceChildren(
-    kpi("Score", `${points(r.score)}/${s.games}`, r.leveled ? (r.leveled < s.games ? `${points(r.leveled_score)}/${r.leveled} with levels, expected ${one(r.expected)}` : `expected ${one(r.expected)}`) : "no levels to predict from"),
-    kpi("Won, lost, tied", `${r.wins}-${r.losses}-${r.ties}`, against(`your usual: ${pct(u.score)} of the points`, u.games)),
-    kpi("$ per turn, t1-10", "$" + one(s.coins), against(`your usual: $${one(u.coins)}`, u.games)),
-    kpi("First Province", s.first_province ? "turn " + one(s.first_province) : "none", against(`your usual: turn ${one(u.first_province)}`, u.first_province)),
+    kpi("Score", `${points(r.score)}/${s.games}`, r.leveled ? (r.leveled < s.games ? `${points(r.leveled_score)}/${r.leveled} with levels, expected ${one(r.expected)}` : `expected ${one(r.expected)} from the levels`) : "no levels to predict from"),
+    kpi("Won, lost, tied", `${r.wins}-${r.losses}-${r.ties}`, u.games ? `your usual: ${pct(u.score)} of the points` : "no other games to compare"),
+    seat(r.first_seat, "Going first"),
+    seat(r.second_seat, "Going second"),
   );
 
+  const bot = r.dombot || [];
+  $("bot").hidden = !bot.length;
+  $("bot").textContent = bot.map((p) => `${p.name}: ${p.time}, ${p.decisions} decisions at ${p.sec_per_decision} s each`).join(". ") + ".";
+  $("usual-box").hidden = false;
   $("vs-box").hidden = !r.compare;
   if (r.compare) {
     const c = r.compare;
@@ -147,19 +284,26 @@ function render(r) {
       [`Last ${c.recent_days} days, saved`, `${pct(c.my_recent.score)} of ${c.my_recent.games}`, `${pct(c.opp_recent.score)} of ${c.opp_recent.games}`],
     ]);
   }
-
-  $("sides-box").hidden = false;
   table($("sides"), ["", "Games", "Score", "Turns", "$", "First Province", "No Province"], [
     statCells("These", s), statCells("Wins", r.win_stats), statCells("Losses", r.loss_stats), statCells("Usual", u),
   ]);
 
-  $("notes-box").hidden = !r.takeaways.length;
+  $("notes-box").hidden = false;
+  const found = r.findings || [];
+  $("findings").replaceChildren(...(found.length ? found.map((f) => el("li", "", f.text)) : [el("li", "", "Nothing the rules pick out came up in 2 or more games.")]));
+  $("notes-h2").hidden = !r.takeaways.length;
   $("notes").replaceChildren(...r.takeaways.map((t) => el("li", "", t)));
-  $("games").replaceChildren(...r.games.map(gameCard));
+  drawGames(r);
+  $("rules-note").hidden = false;
   $("luck-note").hidden = false;
 }
 
+// the charts take their colours from the stylesheet: draw them again when the theme changes
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => last && drawGames(last));
+
+let requests = 0;
 async function show() {
+  const mine = ++requests;
   showError("");
   const a = ask(), q = new URLSearchParams();
   if (a.ids) q.set("ids", a.ids);
@@ -167,8 +311,10 @@ async function show() {
   if (a.opponent) q.set("opponent", a.opponent);
   history.replaceState(null, "", "?" + q);
   try {
-    render(await api("/api/report?" + q));
+    const r = await api("/api/report?" + q);
+    if (mine === requests) render(r);
   } catch (e) {
+    if (mine !== requests) return;
     showError(e.message);
     $("meta").textContent = "";
   }
@@ -203,6 +349,12 @@ async function follow() {
 $("form").addEventListener("submit", (e) => {
   e.preventDefault();
   show();
+});
+$("ids").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    show();
+  }
 });
 $("load").addEventListener("click", async () => {
   showError("");
