@@ -247,6 +247,6 @@ A card counts as done when the games that use it pass the check, not when the se
 
 1. **The only product is the evaluation of the board.** Bots play each other to train it; nobody plays against them.
 2. **Two players only.**
-3. **Straight to the network.** Network-guided search from the start, with no stage of hand-made evaluation.
+3. **Straight to the network.** Network-guided search from the start, with no stage of hand-made evaluation. Changed 2026-11-03: a small logistic evaluation comes first, and the network must beat its log loss of 0.596, not 0.639 ([position analysis](position-analysis.md#the-simulator-plan)).
 4. **The engine lives in this public repo,** as pydominion and DominionSim do.
 5. **Ask pydominion's author for a license.** With one (MIT, say), its rules and tests could be ported directly instead of only read.
