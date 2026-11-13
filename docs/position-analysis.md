@@ -2,7 +2,7 @@
 
 Back to the [README](../README.md). It builds on the [match report](match-report.md), and it changes one decision of the [simulator plan](simulator.md).
 
-Status: design, not built. The numbers were measured on 2026-11-03 with one-off scripts that aren't in the repo. Feedback wanted on the kingdom rules, the combo table and the decisions at the end.
+Status: design accepted on 2026-11-03, not built. The numbers were measured that day with one-off scripts that aren't in the repo. Feedback wanted on the kingdom rules and the combo table.
 
 ## The problem
 
@@ -51,7 +51,9 @@ Read for this design, in their own terms:
   - [Native Village/Bridge](https://dominionstrategy.com/2012/01/02/combo-of-the-day-27-native-villagebridge/): a whole-game plan; watch the piles.
   - [Souk/Gamble](https://forum.dominionstrategy.com/index.php?topic=12757.1700): only a forum note so far, so it stays low confidence.
 
-The [Dominion Strategy wiki](https://wiki.dominionstrategy.com/index.php/Combo) sits behind a proof-of-work check for bots. A search index's copies gave us its Engine, Combo and Terminal space pages. The others stayed closed and we don't get around the check, so its per-card "works with" lists aren't used.
+**The [Dominion Strategy wiki](https://wiki.dominionstrategy.com/index.php/Combo).** The live site sits behind a proof-of-work check, and its `robots.txt` shuts out AI crawlers by name, so we don't crawl it and don't get around the check. We don't need to: WikiTeam's [dump of 2024-10-06](https://archive.org/details/wiki-wiki.dominionstrategy.com-20241006) on the Internet Archive has the text of every page (`history.xml.zst`, 8 MB; the 2 GB of images aren't needed). The wiki's license is CC BY-NC-SA 3.0, so the dump stays out of the repo, and what we take from it is written in our own words with a link to the page and credit to the wiki. Pages newer than the dump come from single archived copies (real pages up to 2025-12-28, the check after that) or from an export you run in your own browser.
+
+The wiki feeds the kingdom read and the combo table, through each card's Strategy and "Synergies and combos" sections and the Combo page. Raw links between cards don't predict results: in [a public graph of the wiki's links](https://github.com/dfm/dominion), the player whose final deck held more linked pairs won 51% of 219 games. So they don't go into the evaluation as they are.
 
 ## The design
 
@@ -142,8 +144,19 @@ A chance to win after every turn, from public information. It's a logistic model
 - **t1-4 stay flat:** nothing beats a coin there, so the bar shows only the seat and level prior and says it's too early.
 - **Noise.** Over one round at t5-12, the chance moves a median of 6 points, 17 at the 90th percentile and 26 at the 97th. A move of 17 or more in a round is marked as a swing. Swings replace the VP-gap turning point.
 - **Levels.** On the 230 games with levels, adding them to the VP-and-deck model takes log loss from 0.632 to 0.607. They enter as a fixed offset where known.
-- **More games of this kind won't help much.** Training on 60 games gives 0.66, 120 gives 0.61, and 180 to 385 stay at 0.60-0.61. The next gain has to come from card-aware features, not volume. The model is fitted mostly on one player's games, so its fit to other populations is unknown.
+- **More games of this kind won't help much.** Training on 60 games gives 0.66, 120 gives 0.61, and 180 to 385 stay at 0.60-0.61. The next gain has to come from card-aware features or from other players' games, not volume.
 - **What failed.** Simulating turns from each deck, with each card's measured average effect (chance of $8, of two Provinces, of drawing the deck), adds nothing once role counts and recent turns are in. It's left out. Its residual, actual $ minus expected $, reaches AUC 0.64 on the result, but it averages +0.6 $ a turn, so it's measuring deck power the simulation misses, not luck. It can't replace draw luck.
+
+**Where it errs,** on the same held-out predictions:
+
+- **The model's shape isn't the limit.** Gradient boosting on the same features gets 0.598 against 0.596. Averaging the two gains 0.003 (95% interval -0.003 to 0.009). The logistic stays.
+- **Board flags in the formula don't help.** VP lead, Actions or coins multiplied by what the board offers (a kingdom Victory card, control, the count of pieces) give 0.596 to 0.601. So the engine-or-money question stays in the kingdom read, and a card-aware feature has to measure what the deck does, not what the board allows.
+- **Alt VP boards aren't worse:** 0.576 with 10 or more VP of alt VP in the game against 0.606, since tokens count in the VP lead. The favourite there wins about 4 points less than predicted between 0.50 and 0.80.
+- **Comebacks fit a calibrated model:** the eventual winner fell to 20% or less from t9 on in 17% of 465 games.
+- **One chance is unsure.** Refitting on resampled games moves one position's chance across a 90% range of 17-19 points (median, t5-12). A move over one round is firmer: a median range of 10 points, and of 172 moves of 17 or more, 88% stay at 10 or more across the refits.
+- **The biggest unknown is the population.** 480 of the 481 games include one player, so the model has never been tested on other players' games. A few hundred scouted games of stronger players are the test.
+
+**How it's built.** `scry` exports one row per position. A script fits them with the grouped cross-validation above, prints the table above and writes 30 weight sets from resampled games, which go into Go. The report shows the middle as the chance and the spread as a band, not one number. At fit time the script checks the signs of the weights that have a known direction, such as VP lead, and prints the 20 positions where the model was surest and wrong. Those, with your marks on recent games, become a list of cases each refit is compared against.
 
 **Luck.** The treasure-only number stays until a hand measure passes two tests: its mean is zero, and it doesn't correlate with deck strength. Both seats now give every hand, so the measure can compare each hand with other hands from the same deck.
 
@@ -180,15 +193,16 @@ The verdict "draw / deck / unclear" gives way to three lines: plan, clock, hands
 
 ## The simulator plan
 
-- **Decision 3 changes.** The plan says straight to the network, with no stage of hand-made evaluation. This design puts a small model first: it works now, it explains itself, and the network's start (M5) is still open. The network stays the goal for strength and for buy review.
+- **Decision 3 changed** (accepted 2026-11-03). The plan said straight to the network, with no stage of hand-made evaluation. This design puts a small model first: it works now, it explains itself, and the network's start (M5) is still open. The network stays the goal for strength and for buy review.
 - **M6's bar moves.** The network must beat log loss 0.596 on these games, not 0.639.
 - **The engine earns its keep sooner,** through money baselines and later scripted plans for the combo table's pars.
 
 ## Data fixes
 
 - **Real results.** Check whether the server's profile result names the winner or who resigned, which needs a logged-in look, and save it. Until then a resignation is read from the scores.
-- **Second seats.** 28 of 518 games have them. `collect -other 30` took 8 minutes, so the nightly run could take far more than 30 and finish the backfill in days instead of about 16 nights. Say how many is fine for the account: the capture notes already call hundreds of games a night heavy use.
-- **Logs that end differently.** 2 of 30 merges failed because one seat's log runs longer at the end. Merge the common part.
+- **Second seats.** On 2026-11-13, 342 of 550 saved games have them, and the server won't replay 3. The nightly run takes the 100 latest without them, but after the first nights it merged 34, 19, 8, 6 and 6: the same 94 games fail every night and fill the batch, so the 111 older ones are never reached.
+- **Other players' games.** Scout a few hundred games of stronger players, to test the evaluation outside one player's games.
+- **Logs that end differently.** In 91 of those 94 the logs part within 32 lines of the end, where one seat's log stops a few lines early; 3 part hundreds of lines before it. Merge up to the parting line when no turn starts after it, and mark a game that still fails so it isn't tried every night.
 - **Token sources,** by the card or landscape that gave each token.
 
 ## Build order
@@ -196,8 +210,8 @@ The verdict "draw / deck / unclear" gives way to three lines: plan, clock, hands
 Effort is an estimate.
 
 1. Score sources and the new game card wording: half a day.
-2. The evaluation: export, fit, embedded weights, chart, swings: 2-3 days.
-3. Kingdom read, landscape table, combo table with 20 entries, money baseline: 3-4 days.
+2. The evaluation: export, fit, embedded weights, chart with a band, swings: 2-3 days.
+3. Kingdom read, landscape table, combo table with 20 entries from the sources and the wiki dump, money baseline: 3-4 days.
 4. What each player built, with collisions: 2 days.
 5. Rule flags, each measured: 2 days.
 6. Buy review, after the ratings: unknown.
@@ -209,6 +223,4 @@ Effort is an estimate.
 
 ## Decisions needed
 
-1. Accept the change to decision 3 of the simulator plan?
-2. Who rates the 20 kingdoms: you, or a stronger player you trust?
-3. How many second-seat games a night?
+Who rates the 20 kingdoms: you, or a stronger player you trust?
