@@ -53,7 +53,9 @@ Read for this design, in their own terms:
 
 **The [Dominion Strategy wiki](https://wiki.dominionstrategy.com/index.php/Combo).** The live site sits behind a proof-of-work check, and its `robots.txt` shuts out AI crawlers by name, so we don't crawl it and don't get around the check. We don't need to: WikiTeam's [dump of 2024-10-06](https://archive.org/details/wiki-wiki.dominionstrategy.com-20241006) on the Internet Archive has the text of every page (`history.xml.zst`, 8 MB; the 2 GB of images aren't needed). The wiki's license is CC BY-NC-SA 3.0, so the dump stays out of the repo, and what we take from it is written in our own words with a link to the page and credit to the wiki. Pages newer than the dump come from single archived copies (real pages up to 2025-12-28, the check after that) or from an export you run in your own browser.
 
-The wiki feeds the kingdom read and the combo table, through each card's Strategy and "Synergies and combos" sections and the Combo page. Raw links between cards don't predict results: in [a public graph of the wiki's links](https://github.com/dfm/dominion), the player whose final deck held more linked pairs won 51% of 219 games. So they don't go into the evaluation as they are.
+The dump was read on 2026-11-13: 2,168 articles. 491 of our 503 kingdom cards have a page; the other 12 are 7 split or renamed piles, whose halves have pages, 2 alternate versions and 3 Animals cards. 364 have a Strategy section of more than 200 characters, and 148 link outside strategy articles. A Synergies heading is rare (31 pages): combos are written into the Strategy prose, as links to other cards. The concept pages are all there: Engine, Money strategies, Slog, Rush, Alt-VP, Draw-to-x, Terminal space, Payload and Combo.
+
+The wiki feeds the kingdom read and the combo table, through each card's Strategy section, the cards it links and the concept pages. Raw links between cards don't predict results: in [a public graph of the wiki's links](https://github.com/dfm/dominion), the player whose final deck held more linked pairs won 51% of 219 games. So they don't go into the evaluation as they are.
 
 ## The design
 
@@ -202,7 +204,7 @@ The verdict "draw / deck / unclear" gives way to three lines: plan, clock, hands
 - **Real results.** Check whether the server's profile result names the winner or who resigned, which needs a logged-in look, and save it. Until then a resignation is read from the scores.
 - **Second seats.** On 2026-11-13, 342 of 550 saved games have them, and the server won't replay 3. The nightly run takes the 100 latest without them, but after the first nights it merged 34, 19, 8, 6 and 6: the same 94 games fail every night and fill the batch, so the 111 older ones are never reached.
 - **Other players' games.** Scout a few hundred games of stronger players, to test the evaluation outside one player's games.
-- **Logs that end differently.** In 91 of those 94 the logs part within 32 lines of the end, where one seat's log stops a few lines early; 3 part hundreds of lines before it. Merge up to the parting line when no turn starts after it, and mark a game that still fails so it isn't tried every night.
+- **Logs that end differently.** In 91 of those 94 the logs part within 32 lines of the end, where one seat's log stops a few lines early; 3 part hundreds of lines before it. Merge up to the parting line when no turn starts after it, and mark a game that still fails so it isn't tried every night (#50).
 - **Token sources,** by the card or landscape that gave each token.
 
 ## Build order
