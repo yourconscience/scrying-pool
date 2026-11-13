@@ -296,6 +296,79 @@ func newHandler(timeout time.Duration) http.Handler {
 		}
 		writeJSON(w, 202, loadStatus())
 	}))
+	// The Scout page: the players scouted before and the latest run, a player's
+	// report and battles from the saved games, and a run of `scry scout` that loads their
+	// games in the dominion.games tab.
+	mux.HandleFunc("GET /api/scouts", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, map[string]any{"players": scouted(dir), "run": scoutStatus()})
+	}))
+	mux.HandleFunc("GET /api/scout", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		player := r.URL.Query().Get("player")
+		c, err := loadCorpus()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		client, err := webClient()
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		rep, err := scoutOf(client, c.account, c.profiles, c.features, player, "", dir, scoutGames(r.URL.Query().Get("n")))
+		if err != nil {
+			writeJSON(w, 422, map[string]string{"error": err.Error()})
+			return
+		}
+		battles, err := battlesOf(client, dir, c.features, player)
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 200, map[string]any{"player": player, "markdown": rep.markdown(), "report": rep, "battles": battles})
+	}))
+	mux.HandleFunc("POST /api/scout", localOnly(func(w http.ResponseWriter, r *http.Request) {
+		// Only our own page may start a run: it drives the dominion.games tab.
+		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
+			writeJSON(w, 403, map[string]string{"error": "cross-origin request refused"})
+			return
+		}
+		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+			writeJSON(w, 415, map[string]string{"error": "expected JSON"})
+			return
+		}
+		var req struct {
+			Player string `json:"player"`
+			N      string `json:"n"`
+		}
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<10)).Decode(&req); err != nil {
+			writeJSON(w, 400, map[string]string{"error": "bad request: " + err.Error()})
+			return
+		}
+		if req.Player = strings.TrimSpace(req.Player); req.Player == "" || len(req.Player) > 64 {
+			writeJSON(w, 400, map[string]string{"error": "type the player's name as dominion.games shows it"})
+			return
+		}
+		dir, err := gamesDir("")
+		if err != nil {
+			writeJSON(w, 500, map[string]string{"error": err.Error()})
+			return
+		}
+		if err := startScout(req.Player, dir, scoutGames(req.N)); err != nil {
+			writeJSON(w, 409, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, 202, scoutStatus())
+	}))
 	mux.HandleFunc("POST /api/format", func(w http.ResponseWriter, r *http.Request) {
 		// Only our own page may trigger this: it can send a DM from the user's account.
 		if o := r.Header.Get("Origin"); o != "" && o != "http://"+r.Host {
@@ -405,6 +478,11 @@ var (
 // startLoad runs `scry games` in a process of its own and keeps its output. The
 // page reads the report from the saved games afterwards, so the report goes nowhere.
 func startLoad(dir string, last int, opponent string, ids []string) error {
+	startMu.Lock()
+	defer startMu.Unlock()
+	if s := scoutStatus(); s.Running {
+		return fmt.Errorf("the Scout page is scouting %s", s.Player)
+	}
 	loadMu.Lock()
 	defer loadMu.Unlock()
 	if loadNow.Running {
@@ -463,6 +541,16 @@ func loadStatus() loadRun {
 	s := loadNow
 	s.Log = slices.Clone(s.Log)
 	return s
+}
+
+// scoutGames reads how many of a player's games the Scout page asks for: 25
+// unless it says, and no more than the server lists.
+func scoutGames(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil || n < 1 {
+		return 25
+	}
+	return min(n, scoutList)
 }
 
 // allowGamePost lets our own pages and the dominion.games tab post games.
