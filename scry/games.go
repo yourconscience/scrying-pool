@@ -390,6 +390,7 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 		return nil, fmt.Errorf("none of those games of %s%s is saved", me, who)
 	}
 
+	slices.Reverse(picked) // numbered in the order they were played
 	ids := make([]string, len(picked))
 	for i, g := range picked {
 		ids[i] = g.ID
@@ -448,8 +449,9 @@ func buildGames(client *cartographer.Client, dir, account string, profiles map[s
 	r.These, r.WinStats, r.LossStats = statsOf(these), statsOf(wins), statsOf(losses)
 	r.Usual = statsOf(usual)
 	if ask.Opponent != "" {
-		r.Compare = compareWith(picked[0].Features, mine, features)
-		r.Opponent = picked[0].Opponent // as dominion.games spells it
+		newest := picked[len(picked)-1]
+		r.Compare = compareWith(newest.Features, mine, features)
+		r.Opponent = newest.Opponent // as dominion.games spells it
 	}
 	r.Takeaways = r.takeaways()
 	r.FirstSeat, r.SecondSeat = seatsOf(r.Games)

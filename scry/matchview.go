@@ -57,6 +57,7 @@ type endView struct {
 	Text      string `json:"text"`
 	GapBefore int    `json:"gap_before"` // your VP minus theirs, before the last turn
 	GapAfter  int    `json:"gap_after"`
+	Doubtful  bool   `json:"-"` // the supply says the game may have been resigned
 }
 
 type swingView struct {
@@ -305,6 +306,7 @@ func endOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.T
 		}
 		e.Text = fmt.Sprintf("Ended on the %s pile (%d left), %s took the last turn (turn %d).", pile, n, name, e.Turn)
 		if n > 0 {
+			e.Doubtful = true
 			e.Text = fmt.Sprintf("Supply shows %d in the %s pile, %s took the last turn (turn %d). The game may have been resigned.", n, pile, name, e.Turn)
 		}
 	case "piles":
@@ -312,6 +314,7 @@ func endOf(client *cartographer.Client, s *advisor.Saved, turns []cartographer.T
 		sort.Strings(piles)
 		e.Text = fmt.Sprintf("Ended on piles (%s empty), last turn: %s (turn %d).", strings.Join(piles, ", "), name, e.Turn)
 		if len(piles) < 3 {
+			e.Doubtful = true
 			e.Text = fmt.Sprintf("Supply shows empty piles: %s. Last turn: %s (turn %d). The game may have been resigned.", strings.Join(piles, ", "), name, e.Turn)
 		}
 	default:
@@ -361,7 +364,7 @@ func pointsOf(client *cartographer.Client, s *advisor.Saved, turns []cartographe
 	}
 
 	// the last turn
-	if f.Complete && v.End.How != "resign" {
+	if f.Complete && v.End.How != "resign" && !v.End.Doubtful {
 		switch {
 		case f.Result == 0 && v.End.By == "them" && v.End.GapBefore > 0:
 			add("end", false, "You led by %d before %s's last turn, which ended the game and moved the gap to %s.", v.End.GapBefore, opp, sign(v.End.GapAfter))

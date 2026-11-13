@@ -9,7 +9,7 @@ After a match you want to know, game by game and across the match, what you did 
 ## What the report shows
 
 - **Match header.** Score against what the levels predicted (the existing expected score over the games with both levels) and results by seat, going first and going second.
-- **One card per game.**
+- **One card per game.** Games are numbered in the order they were played, oldest first, as DomBot lists a match; `--last N` uses the same order.
   - Seat, result and score, how it ended, turns, kingdom, levels and win chance (all existing).
   - **Points by source** for both players: Province, Colony, Duchy, Estate, other Victory cards, VP tokens, landscapes and states (Wall, Museum, Misery and the like), Curses. Other Victory cards and landscapes list their cards with the VP each gave.
   - **Final decks** of both players, as counts, Actions first, then Treasures, Victory cards, Curses.
@@ -45,7 +45,7 @@ A rule fires only past its threshold. The win rates are yours over the decided g
 | Action cards in the final deck | 6 or more above them | 6 or more below | 72% of 96 | 29% of 45 | kept |
 | $ per turn on turns 3-12, against the opponent in the same game | 0.5 above, both sides under 10 VP of other sources | 0.5 below | 69% of 138 | 32% of 157 | kept |
 | Province split | 2 or more Provinces above them | 2 or more below | 93% of 89 | 6% of 122 | kept: it is the score, so it restates the result, but it says by how much; the first Provinces' turns are added only when neither side has 10 VP of other sources |
-| The last turn | you won and trailed before your last turn, which ended the game | you lost, led before their last turn, and it ended the game | by construction | by construction | kept as a fact: it needs the log's last decision |
+| The last turn | you won and trailed before your last turn, which ended the game | you lost, led before their last turn, and it ended the game | by construction | by construction | kept as a fact: it needs the log's last decision; skipped for a game that may have been resigned |
 
 Rules that were measured and dropped:
 
@@ -64,7 +64,7 @@ The rule thresholds sit at the top of `scry/matchview.go`. The measurement is fo
 
 ## What a resignation can and cannot tell
 
-A game with no Province or three-pile ending in the log is read as a resignation, as the rest of `scry` reads it, and about a third of the games (174 of 509 decided) are. It may also be a log that stops before the last decision. The log doesn't say who resigned, so the ending line gives the last turn's number and the score and does not name anyone. The two rules that read the last turn skip these games, and any game whose computed score differs from the row's (the last decision is missing): such a game carries a note with both pairs of numbers.
+A game with no Province or three-pile ending in the log is read as a resignation, as the rest of `scry` reads it, and about a third of the games (174 of 509 decided) are. It may also be a log that stops before the last decision. The log doesn't say who resigned, so the ending line gives the last turn's number and the score and does not name anyone. The two rules that read the last turn skip these games, and the games whose supply shows Provinces or piles left on the table (the ending line says they may have been resigned), and any game whose computed score differs from the row's (the last decision is missing): such a game carries a note with both pairs of numbers.
 
 ## Input
 
