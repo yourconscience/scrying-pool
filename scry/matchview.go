@@ -108,11 +108,27 @@ func usualCoins(games []*advisor.Features) (coins float64, n int) {
 
 var vpOrder = []string{"Province", "Colony", "Duchy", "Estate", "Other Victory cards", "VP tokens", "Landscapes and states", "Curse"}
 
-// vpSources groups a player's VP breakdown by where the points came from.
-func vpSources(client *cartographer.Client, b cartographer.VPBreakdown) (out []vpSource, total int) {
+// vpSources groups a player's VP breakdown by where the points came from, and
+// names what gave the VP tokens.
+func vpSources(client *cartographer.Client, b cartographer.VPBreakdown, tokens map[string]int) (out []vpSource, total int) {
 	out = []vpSource{}
 	sums := map[string]int{}
 	detail := map[string][]string{}
+	srcs := make([]string, 0, len(tokens))
+	for k, v := range tokens {
+		if v != 0 {
+			srcs = append(srcs, k)
+		}
+	}
+	sort.Slice(srcs, func(i, j int) bool {
+		if tokens[srcs[i]] != tokens[srcs[j]] {
+			return tokens[srcs[i]] > tokens[srcs[j]]
+		}
+		return srcs[i] < srcs[j]
+	})
+	for _, k := range srcs {
+		detail["VP tokens"] = append(detail["VP tokens"], fmt.Sprintf("%s %+d", k, tokens[k]))
+	}
 	keys := make([]string, 0, len(b))
 	for k := range b {
 		keys = append(keys, k)
@@ -191,9 +207,9 @@ func (s sideView) otherVP() int {
 	return n
 }
 
-func sideOf(client *cartographer.Client, turns []cartographer.Turn, player string, bd cartographer.VPBreakdown, deck cartographer.Deck) sideView {
+func sideOf(client *cartographer.Client, turns []cartographer.Turn, player string, bd cartographer.VPBreakdown, deck cartographer.Deck, tokens map[string]int) sideView {
 	v := sideView{Cards: deckSize(deck), Provinces: deck["Province"] + deck["Colony"], Deck: deckCards(client, deck)}
-	v.VP, v.Total = vpSources(client, bd)
+	v.VP, v.Total = vpSources(client, bd, tokens)
 	for name, n := range deck {
 		if c := client.Cards[name]; c != nil && c.Is("Action") {
 			v.Actions += n
@@ -227,10 +243,10 @@ func matchViewOf(client *cartographer.Client, s *advisor.Saved, turns []cartogra
 	if len(byTurn) != len(turns) {
 		return nil
 	}
-	decks := s.Game.FinalDecks()
+	decks, tokens := s.Game.FinalDecks(), s.Game.TokenSources()
 	v := &matchView{
-		You:  sideOf(client, turns, me, final[me], decks[me]),
-		Them: sideOf(client, turns, opp, final[opp], decks[opp]),
+		You:  sideOf(client, turns, me, final[me], decks[me], tokens[me]),
+		Them: sideOf(client, turns, opp, final[opp], decks[opp], tokens[opp]),
 		Gap:  []gapPoint{},
 	}
 	if !f.Complete {

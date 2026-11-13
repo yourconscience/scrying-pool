@@ -11,7 +11,7 @@ After a match you want to know, game by game and across the match, what you did 
 - **Match header.** Score against what the levels predicted (the existing expected score over the games with both levels) and results by seat, going first and going second.
 - **One card per game.** Games are numbered in the order they were played, oldest first, as DomBot lists a match; `--last N` uses the same order.
   - Seat, result and score, how it ended, turns, kingdom, levels and win chance (all existing).
-  - **Points by source** for both players: Province, Colony, Duchy, Estate, other Victory cards, VP tokens, landscapes and states (Wall, Museum, Misery and the like), Curses. Other Victory cards and landscapes list their cards with the VP each gave.
+  - **Points by source** for both players: Province, Colony, Duchy, Estate, other Victory cards, VP tokens, landscapes and states (Wall, Museum, Misery and the like), Curses. Other Victory cards and landscapes list their cards with the VP each gave, and VP tokens list what gave them (Collection +32, Aqueduct +5). In the Markdown report these lines take the place of first Gold and first Province, which stay only when the log can't be scored.
   - **Final decks** of both players, as counts, Actions first, then Treasures, Victory cards, Curses.
   - **Ending:** Provinces (Colonies), three piles with the piles named, or a resignation, and who took the last turn.
   - **Swing:** the single turn where the VP gap moved most, who played it and what they gained (the existing three-round turning point stays under "Other numbers"), and a line chart of the gap after every turn.
@@ -24,7 +24,7 @@ After a match you want to know, game by game and across the match, what you did 
 
 | Field | Source |
 |---|---|
-| Points by source | `Client.Score` over the whole log (the `scry review` breakdown), its keys grouped by the table above. Tokens come as one `VP tokens` total: the code doesn't know which card or landscape gave them. |
+| Points by source | `Client.Score` over the whole log (the `scry review` breakdown), its keys grouped by the table above. `Game.TokenSources` names what gave each VP token: the card or landscape the line names ("gets 2 VP from Collection", "takes 1 VP from the Temple pile"), or else the card the line is nested under ("buys a Salt the Earth", then "gets 1 VP"). On 575 saved games the sources add up to the token total on all 313 sides with tokens. |
 | Final decks | `Game.FinalDecks()` |
 | Ending, piles, Provinces left | `Features.Ending` and `Game.Supply()` |
 | Who took the last turn | the player of the last turn in `Game.Turns()` |
@@ -74,7 +74,7 @@ Game ids: `--ids` on the command line, the game numbers box on the page. The box
 
 - Advice on what to buy. The points say what happened.
 - `scry match OPPONENT`, still in the [match report](match-report.md) build order.
-- VP tokens by source, a kingdom read and a win chance by turn: the accepted position-analysis design, not built.
+- VP per turn over the last turns, who controls the ending, a kingdom read and a win chance by turn: the accepted position-analysis design, not built.
 - Matches with more than two players.
 
 ## Known gaps

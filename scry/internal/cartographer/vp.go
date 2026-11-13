@@ -1,6 +1,9 @@
 package cartographer
 
-import "sort"
+import (
+	"sort"
+	"strings"
+)
 
 // Scoring follows the cards' own texts. Fixed values for Victory cards come from
 // the printed VP (checked against pydominion); the rest are the "worth" and
@@ -219,6 +222,36 @@ func (c *Client) Score(g *Game, in ScoreInput) map[string]VPBreakdown {
 			}
 		}
 		out[p] = b
+	}
+	return out
+}
+
+// TokenSources sums each player's VP tokens by what gave them: the card or
+// landscape the line names ("gets 2 VP from Collection", "takes 1 VP from the
+// Temple pile"), or else the card the line is nested under ("buys a Salt the
+// Earth", then "gets 1 VP"). The sums add up to the players' VP tokens.
+func (g *Game) TokenSources() map[string]map[string]int {
+	out := map[string]map[string]int{}
+	for _, e := range g.Events {
+		c, ok := counterT[e.Template]
+		if !ok || c.field != "vp" || e.Player == "" {
+			continue
+		}
+		src := e.Cause
+		if a, ok := e.Args[2]; ok {
+			if len(a.Cards) > 0 && a.Cards[0].Card != nil {
+				src = a.Cards[0].Card.Name
+			} else if t := strings.TrimSuffix(strings.TrimPrefix(a.Text, "the "), " pile"); t != "" {
+				src = t
+			}
+		}
+		if src == "" {
+			src = "other"
+		}
+		if out[e.Player] == nil {
+			out[e.Player] = map[string]int{}
+		}
+		out[e.Player][src] += c.sign * amount(e.Args[1])
 	}
 	return out
 }
