@@ -96,7 +96,7 @@ function render(md) {
 
 const RESULT = { 1: ["W", "win", "won"], 0.5: ["T", "tie", "tied"], 0: ["L", "loss", "lost"] };
 const ENDINGS = { provinces: "Provinces", colonies: "Colonies", piles: "Three piles", resign: "Resignation, by whom isn't saved" };
-const KINDS = { victory: "Victory", treasure: "Treasure", action: "Action", curse: "Curse" };
+const KINDS = { action: "Action", treasure: "Treasure", victory: "Victory", curse: "Curse" };
 let battles = null; // the player's {me, games, images}
 let allGames = false; // Battles also lists the games without a saved log
 

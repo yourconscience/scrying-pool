@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dominion Last Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="insights.css">
 <link rel="stylesheet" href="recent.css">
 <link rel="stylesheet" href="games.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js" integrity="sha384-C2iskrW/uPW46KzOjrvJIQo4YkV8lkD+QS0CrDN18IIPIpT/g2USu8bTP3nvmIAD" crossorigin="anonymous"></script>
 </head>
 <body class="insights">
 <nav class="top">
@@ -28,7 +29,7 @@
   <div class="ins-head">
     <div class="ins-title">
       <p class="eyebrow">Dominion Online</p>
-      <h1 id="title">Last games</h1>
+      <h1 id="title">Match review</h1>
       <p id="meta" class="hint">Reading the saved games…</p>
     </div>
   </div>
@@ -37,11 +38,11 @@
     <form id="form" class="ask">
       <label>Last <input id="last" type="number" min="1" max="100" value="10"> games</label>
       <label>Against <input id="opponent" autocomplete="off" spellcheck="false" placeholder="any player"></label>
-      <label>Or these game numbers <input id="ids" autocomplete="off" spellcheck="false" placeholder="185400051 185400329"></label>
+      <label>Or these game numbers, or DomBot's !match reply <textarea id="ids" rows="1" autocomplete="off" spellcheck="false" placeholder="185400051 185400329"></textarea></label>
       <button type="submit">Show</button>
       <button type="button" id="load" class="second">Load the missing ones</button>
     </form>
-    <p class="hint">Show reads the games already saved. Load uses your dominion.games tab in Brave and logs in if it has to. It leaves a finished game or an empty table by itself, then takes the tab over until it's done, so don't press it between the games of a match. It won't touch a game in progress against a person.</p>
+    <p class="hint">A pasted match chat doesn't carry game numbers, but DomBot's !match reply does: paste it whole and the games, the opponent and each player's time come from it. Show reads the games already saved. Load uses your dominion.games tab in Brave and logs in if it has to. It leaves a finished game or an empty table by itself, then takes the tab over until it's done, so don't press it between the games of a match. It won't touch a game in progress against a person.</p>
     <div id="run" class="run" hidden>
       <p class="live"><span class="dot" id="dot" aria-hidden="true"></span> <span id="run-text"></span></p>
       <details><summary>Log</summary><pre id="log"></pre></details>
@@ -51,24 +52,24 @@
   <p id="error" role="alert" hidden></p>
 
   <section class="kpis" id="kpis" aria-label="Summary"></section>
-
-  <section class="panel" id="vs-box" aria-labelledby="vs-h" hidden>
-    <h2 id="vs-h">Side by side</h2>
-    <div class="scroll"><table class="sides" id="vs"></table></div>
-  </section>
-
-  <section class="panel" id="sides-box" aria-labelledby="sides-h" hidden>
-    <h2 id="sides-h">These games and your usual</h2>
-    <p class="hint">Usual is your other saved games of the last 90 days. Turns and $ are yours; $ is per turn over turns 1-10.</p>
-    <div class="scroll"><table class="sides" id="sides"></table></div>
-  </section>
+  <p class="hint" id="bot" hidden></p>
 
   <section class="panel" id="notes-box" aria-labelledby="notes-h" hidden>
-    <h2 id="notes-h">What stands out</h2>
+    <h2 id="notes-h">Across the match</h2>
+    <ul id="findings"></ul>
+    <h3 id="notes-h2">Other readings</h3>
     <ul id="notes"></ul>
   </section>
 
   <div id="games"></div>
+
+  <details class="panel" id="usual-box" hidden>
+    <summary>These games against your usual and the opponent</summary>
+    <div class="scroll" id="vs-box"><table class="sides" id="vs"></table></div>
+    <p class="hint">Usual is your other saved games of the last 90 days. Turns and $ are yours; $ is per turn over turns 1-10.</p>
+    <div class="scroll"><table class="sides" id="sides"></table></div>
+  </details>
+  <p class="hint" id="rules-note" hidden>Went well and went badly are comparisons from fixed rules, not verdicts: each is a fact with its numbers, and docs/match-review.md says what each rule compares and how often it matched the result over the saved games. Points and decks are rebuilt from the log; tokens aren't split by the card that gave them.</p>
   <p class="hint" id="luck-note" hidden>Draw luck compares the treasure in your hands on turns 3-12 with what the deck's treasure gives on average. It counts treasure only, so a deck that pays with actions looks unlucky: read it as a hint. A log names only the first seat's hands, unless it merges both seats.</p>
 </main>
 <footer class="site-foot">

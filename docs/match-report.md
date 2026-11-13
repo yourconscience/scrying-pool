@@ -2,7 +2,7 @@
 
 Back to the [README](../README.md).
 
-Status: `scry games` and the Last games page in `scry web` are built; `scry match OPPONENT` and `-scout N` are not. Feedback welcome on the commands, the template and the draw-luck rule.
+Status: `scry games` and the Last games page in `scry web` are built, and [match review](match-review.md) adds points by source, final decks, the ending, the swing and went-well / went-badly points to each game; `scry match OPPONENT` and `-scout N` are not. Feedback welcome on the commands, the template and the draw-luck rule.
 
 After a league match you want one command that loads the match's games and says, compactly: who was favoured, what each kingdom offered, what happened in each game, and whether a loss came from the draw or from the deck. Today that takes `scry match`, copying ids by hand, `scry collect ID...`, then `scry review` per game and reading three reports.
 

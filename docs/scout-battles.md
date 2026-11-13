@@ -15,7 +15,7 @@ Battles has a filter by opponent (type a few letters, pick a name from the list,
 - Result for the scouted player (won, lost or tied), the score (34–28), both players' levels then, the date, and who went first.
 - How many turns, and how it ended: Provinces, Colonies, three piles or a resignation.
 - The kingdom: the cards and the landscapes, as images when `card-images/` has them, else as names.
-- Both final decks, as counts grouped Victory, Treasure, Action and Curse, largest first.
+- Both final decks, as counts grouped Action, Treasure, Victory and Curse, largest first.
 - A link to the analysis page for the game.
 
 Only games with a saved log are listed at first. The listed games without one (most of them, until the scout run has loaded them) wait behind a button that carries their count; they show what the list knows (date, players, levels, score) marked "log not loaded", and no first player, turns, ending, kingdom or decks. The note line always says how many games are listed and how many have a log. The filter applies to whichever set is shown; when the typed name matches only games without a log, those are shown rather than an empty list.

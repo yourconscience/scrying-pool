@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"slices"
-	"sort"
 
 	"github.com/yourconscience/scrying-pool/scry/internal/advisor"
 	"github.com/yourconscience/scrying-pool/scry/internal/cartographer"
@@ -45,47 +44,6 @@ type battleLog struct {
 	Landscapes []string   `json:"landscapes"`
 	Deck       []deckCard `json:"deck"`
 	OppDeck    []deckCard `json:"opp_deck"`
-}
-
-// deckCard is a card of a final deck, in the order the page shows them.
-type deckCard struct {
-	Card string `json:"card"`
-	N    int    `json:"n"`
-	Kind string `json:"kind"` // victory | treasure | action | curse
-}
-
-var kindOrder = []string{"victory", "treasure", "action", "curse"}
-
-func deckCards(client *cartographer.Client, d cartographer.Deck) []deckCard {
-	out := []deckCard{}
-	for card, n := range d {
-		if n <= 0 {
-			continue
-		}
-		kind := "action"
-		if c := client.Cards[card]; c != nil {
-			switch {
-			case slices.Contains(c.Types, "Curse"):
-				kind = "curse"
-			case slices.Contains(c.Types, "Victory"):
-				kind = "victory"
-			case slices.Contains(c.Types, "Treasure"):
-				kind = "treasure"
-			}
-		}
-		out = append(out, deckCard{card, n, kind})
-	}
-	sort.Slice(out, func(i, j int) bool {
-		a, b := out[i], out[j]
-		if a.Kind != b.Kind {
-			return slices.Index(kindOrder, a.Kind) < slices.Index(kindOrder, b.Kind)
-		}
-		if a.N != b.N {
-			return a.N > b.N
-		}
-		return a.Card < b.Card
-	})
-	return out
 }
 
 // battlesOf lists the games in the player's scout file, nil without one.
