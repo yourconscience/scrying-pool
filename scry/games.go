@@ -666,7 +666,10 @@ func (r *gamesReport) markdown() string {
 		}
 		b.WriteString("\n")
 		fmt.Fprintf(&b, "Opening: %s %s (%s: %s %s)\n", g.Opening, strings.Join(g.OpeningBuys, " / "), g.Opponent, g.Them.Opening, strings.Join(g.Them.OpeningBuys, " / "))
-		fmt.Fprintf(&b, "First Gold %s (%s), first Province %s (%s); $%.1f per turn on t3-12 (%.1f)\n", turnOr(g.FirstGold), turnOr(g.Them.FirstGold), turnOr(g.FirstProvince), turnOr(g.Them.FirstProvince), g.CoinsMid, g.Them.CoinsMid)
+		if g.View == nil { // otherwise the points by source below say how each player scored
+			fmt.Fprintf(&b, "First Gold %s (%s), first Province %s (%s); ", turnOr(g.FirstGold), turnOr(g.Them.FirstGold), turnOr(g.FirstProvince), turnOr(g.Them.FirstProvince))
+		}
+		fmt.Fprintf(&b, "$%.1f per turn on t3-12 (%.1f)\n", g.CoinsMid, g.Them.CoinsMid)
 		fmt.Fprintf(&b, "Draw luck: %s (%s: %s)", luckText(g.Luck), g.Opponent, luckText(g.Them.Luck))
 		if g.Verdict != "" {
 			fmt.Fprintf(&b, ". Verdict: %s", g.Verdict)
