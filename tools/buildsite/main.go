@@ -64,6 +64,14 @@ func run() error {
 		}
 	}
 
+	icon, err := os.ReadFile("scry/web/favicon.svg")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(filepath.Join(*out, "favicon.svg"), icon, 0o644); err != nil {
+		return err
+	}
+
 	html := string(page)
 	html = replaceOnce(html, `<link rel="stylesheet" href="style.css">`, "<style>\n"+string(css)+"</style>")
 	html = replaceOnce(html, `<script src="app.js"></script>`,
