@@ -32,7 +32,8 @@ const usageText = `usage:
   scry collect -other N [GAME ...]                 load saved games from the second seat too, so they name both players' cards
   scry scout [-n 25] [-offline] [-json] PLAYER     load a player's latest games and compare their play with yours
   scry games [PLAYER] [--last 10 | --ids ID ...]   report on your latest games or the games you name (-offline, -json)
-  scry check [-prior FILE] [DIR or LOG_FILES]      check saved logs against score screens (and final scores)
+  scry league [-load] [-json] FILE                 compare a league division's players from DomBot "!match" replies pasted into FILE
+  scry check [-prior FILE] [DIR or LOG_FILES]    check saved logs against score screens (and final scores)
   scry review [-names "Bot=Player"] [-json] LOG    turn table and final decks for a copied game log
   scry features [-me NAME] [-profiles] [-dir DIR]  one CSV row per saved game (or what each card does per play)
   scry db [-o FILE] [-dir DIR]                     build an SQLite database of the saved games
@@ -260,6 +261,38 @@ func main() {
 		var text string
 		if text, err = gamesText(d, gamesAsk{Me: *me, Opponent: opponent, Last: *last, IDs: ids}, *asJSON); err == nil {
 			err = emit(*out, text)
+		}
+	case "league":
+		dir := fs.String("dir", "", "the league's saved games (default: <user config>/scrying-pool/league-<FILE's name>, apart from your own games)")
+		load := fs.Bool("load", false, "first save the games not saved yet: copied from your games folder, else loaded through the dominion.games tab in Brave")
+		asJSON := fs.Bool("json", false, "write JSON instead of Markdown")
+		minTurns := fs.Int("min-turns", 3, "with -load: skip games where a player had fewer turns (AFK opponents)")
+		budget := fs.Duration("budget", 2*time.Hour, "with -load: stop loading games after this long")
+		fs.Parse(args)
+		if fs.NArg() != 1 {
+			fail(fmt.Errorf("usage: scry league [-load] [-json] [-o OUT] FILE, FILE holding DomBot's \"!match\" replies"))
+		}
+		text, rerr := os.ReadFile(fs.Arg(0))
+		if rerr != nil {
+			fail(rerr)
+		}
+		games, warnings, perr := parseLeague(string(text))
+		if perr != nil {
+			fail(perr)
+		}
+		d, derr := leagueDir(*dir, fs.Arg(0))
+		if derr != nil {
+			fail(derr)
+		}
+		fmt.Fprintf(os.Stderr, "%d games; league folder %s\n", len(games), d)
+		if *load {
+			if lerr := loadLeague(d, games, *minTurns, *budget); lerr != nil {
+				fmt.Fprintln(os.Stderr, "scry: load:", lerr)
+			}
+		}
+		var report string
+		if report, err = leagueText(d, games, warnings, *asJSON); err == nil {
+			err = emit(*out, report)
 		}
 	case "features":
 		me := fs.String("me", "", "the player whose games to describe (default: the account that loaded most games)")
