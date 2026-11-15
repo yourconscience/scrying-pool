@@ -42,7 +42,7 @@ func buildSite(out string, players []string, data string) error {
 	if err != nil {
 		return err
 	}
-	for _, f := range []string{"style.css", "insights.css", "insights.js", "recent.css", "recent.js", "engine.css", "engine.js"} {
+	for _, f := range []string{"style.css", "insights.css", "insights.js", "recent.css", "recent.js", "engine.css", "engine.js", "favicon.svg"} {
 		b, err := webFiles.ReadFile("web/" + f)
 		if err != nil {
 			return err
