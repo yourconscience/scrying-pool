@@ -126,11 +126,14 @@ type turningPoint struct {
 	TheirGain []string `json:"their_gains"`
 }
 
-// cardRecord is how you score in your saved games with a card you took.
+// cardRecord is how you score in your saved games with a card you took, and in
+// the saved games where it was in the kingdom and you didn't take it.
 type cardRecord struct {
-	Card  string  `json:"card"`
-	Games int     `json:"games"`
-	Score float64 `json:"score"`
+	Card         string  `json:"card"`
+	Games        int     `json:"games"`
+	Score        float64 `json:"score"`
+	SkippedGames int     `json:"skipped_games"`
+	SkippedScore float64 `json:"skipped_score"`
 }
 
 const (
@@ -325,7 +328,8 @@ func turningOf(client *cartographer.Client, s *advisor.Saved, turns []cartograph
 }
 
 // recordsOf is your record over the saved games with the kingdom cards you took
-// in this game, for the cards you've taken in at least 5 games.
+// in this game, for the cards you've taken in at least 5 games, beside your
+// record in the games where the card was in the kingdom and you skipped it.
 func recordsOf(g *advisor.Features, mine []*advisor.Features) []cardRecord {
 	var out []cardRecord
 	for _, card := range g.Kingdom {
@@ -337,10 +341,16 @@ func recordsOf(g *advisor.Features, mine []*advisor.Features) []cardRecord {
 			if f.Took[card] {
 				r.Games++
 				r.Score += f.Result
+			} else if slices.Contains(f.Kingdom, card) {
+				r.SkippedGames++
+				r.SkippedScore += f.Result
 			}
 		}
 		if r.Games >= 5 {
 			r.Score /= float64(r.Games)
+			if r.SkippedGames > 0 {
+				r.SkippedScore /= float64(r.SkippedGames)
+			}
 			out = append(out, r)
 		}
 	}
@@ -682,6 +692,11 @@ func (r *gamesReport) markdown() string {
 			parts := make([]string, len(g.Records))
 			for j, c := range g.Records {
 				parts[j] = fmt.Sprintf("%s %s of %d", c.Card, pct(c.Score), c.Games)
+				if c.SkippedGames > 0 {
+					parts[j] += fmt.Sprintf(", skipped %s of %d", pct(c.SkippedScore), c.SkippedGames)
+				} else {
+					parts[j] += ", never skipped"
+				}
 			}
 			fmt.Fprintf(&b, "Your record with these cards: %s\n", strings.Join(parts, "; "))
 		}
