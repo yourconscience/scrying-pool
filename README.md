@@ -53,6 +53,7 @@ Profiles are built from games saved on your computer, so this part runs locally.
 3. Your profile appears on the app's Profiles page. To put it on the live page, follow [site-data/README.md](site-data/README.md).
 4. After a bad run, the app's **Last games** page or `scry games --last 10` reports on your latest games: score against expected, against your usual, and game by game. `scry games OPPONENT --ids ID ...` or the page's game numbers box shows one match: points by source, final decks, the ending and the swing in each game, what went well and badly, and what repeated ([Match reports](docs/match-report.md), [Match review](docs/match-review.md)).
 5. Before a match, `scry scout PLAYER`, or the Scout page in `scry web`, loads your opponent's latest games and sets their openings, cards and styles beside yours ([Scouting an opponent](docs/capture.md#scouting-an-opponent)).
+6. At the end of a league season, `scry league -load FILE` sets every player of your division side by side from DomBot's `!match` replies pasted into FILE: records going first and second, $ per turn against their opponents, pile endings and leads lost on the last turn ([League review](docs/league.md)).
 
 ## Good to know
 
