@@ -31,8 +31,8 @@ async function show() {
     const again = Object.assign(document.createElement("button"), { textContent: "Save again" });
     again.addEventListener("click", async () => {
       again.disabled = true;
-      await chrome.runtime.sendMessage({ type: "retry", id: g.id });
-      setTimeout(show, 1500);
+      await chrome.runtime.sendMessage({ type: "retry", id: g.id }); // resolves when the save is over
+      show();
     });
     li.append(again);
     return li;

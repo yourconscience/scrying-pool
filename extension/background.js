@@ -31,6 +31,9 @@ async function save(r) {
   if (saved.some((g) => g.id === r.id)) return;
   const folder = cleanFolder(s.folder);
   const entry = { id: r.id, players: r.original, at: new Date().toISOString(), files: [] };
+  // kept as failed until its files finish, in case the browser stops the worker meanwhile
+  failed[r.id] = { ...entry, record: r, error: "not finished: the browser stopped the save" };
+  await chrome.storage.local.set({ failed });
   try {
     if (s.jsonl) { await download(`${folder}/${r.id}.jsonl`, JSON.stringify(r) + "\n", "application/json"); entry.files.push(`${r.id}.jsonl`); }
     if (s.log) { await download(`${folder}/${r.id}.log`, r.log, "text/plain"); entry.files.push(`${r.id}.log`); }
@@ -44,10 +47,13 @@ async function save(r) {
   chrome.action.setBadgeText({ text: entry.error ? "!" : String(unseen + 1) });
 }
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg) return;
   if (msg.type === "game" && sender.tab) save(msg.record);
-  if (msg.type === "retry" && !sender.tab) {
-    chrome.storage.local.get("failed").then(({ failed = {} }) => failed[msg.id] && save(failed[msg.id].record));
+  if (msg.type === "retry" && !sender.tab) { // answers once the save is over, so the popup can show the outcome
+    chrome.storage.local.get("failed")
+      .then(({ failed = {} }) => failed[msg.id] && save(failed[msg.id].record))
+      .finally(() => sendResponse({ done: true }));
+    return true;
   }
 });
