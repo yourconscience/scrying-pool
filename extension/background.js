@@ -18,8 +18,9 @@ const finished = (id) => new Promise((resolve, reject) => {
   chrome.downloads.search({ id }).then(([d]) => d && settle(d.state, d.error)); // it may have finished already
 });
 
-const download = async (filename, text, type) => finished(await chrome.downloads.download({
-  url: `data:${type};charset=utf-8,` + encodeURIComponent(text),
+// Sent as plain bytes: with application/json Brave renamed 186248797.jsonl to .json.
+const download = async (filename, text) => finished(await chrome.downloads.download({
+  url: "data:application/octet-stream;charset=utf-8," + encodeURIComponent(text),
   filename, conflictAction: "overwrite", saveAs: false,
 }));
 
@@ -35,8 +36,8 @@ async function save(r) {
   failed[r.id] = { ...entry, record: r, error: "not finished: the browser stopped the save" };
   await chrome.storage.local.set({ failed });
   try {
-    if (s.jsonl) { await download(`${folder}/${r.id}.jsonl`, JSON.stringify(r) + "\n", "application/json"); entry.files.push(`${r.id}.jsonl`); }
-    if (s.log) { await download(`${folder}/${r.id}.log`, r.log, "text/plain"); entry.files.push(`${r.id}.log`); }
+    if (s.jsonl) { await download(`${folder}/${r.id}.jsonl`, JSON.stringify(r) + "\n"); entry.files.push(`${r.id}.jsonl`); }
+    if (s.log) { await download(`${folder}/${r.id}.log`, r.log); entry.files.push(`${r.id}.log`); }
   } catch (e) {
     entry.error = String(e && e.message || e);
   }

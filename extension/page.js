@@ -81,6 +81,12 @@
       const name = p.playerId === me.id ? me.name : players.find((n) => n !== me.name);
       if (name && p.score) scores[name] = p.score.totalPoints;
     }
+    // a live log's header names each player's rating level: "0\tjohnHatrick|: 54.13"
+    const levels = {};
+    for (const l of log.slice(0, 6)) {
+      const m = /^0\t(.+)\|: (\d+(?:\.\d+)?)$/.exec(l);
+      if (m && players.includes(m[1])) levels[m[1]] = parseFloat(m[2]);
+    }
     const text = document.body.innerText, k = text.search(resultRe), end = k >= 0 ? text.indexOf("Players (", k) : -1;
     const now = new Date();
     const day = `${now.getUTCFullYear()}-${now.toLocaleString("en", { month: "short", timeZone: "UTC" })}-${String(now.getUTCDate()).padStart(2, "0")}`;
@@ -91,7 +97,8 @@
       log: "# scrying-pool log v1\n" + log.join("\n") + "\n",
       score: k < 0 ? "" : end > k ? text.slice(k, end) : text.slice(k),
       kingdom: kingdom(),
-      profile: { time: now.toISOString(), rated: /\brated\b/.test(log[0]) && !/\bunrated\b/.test(log[0]), players, scores },
+      profile: { time: now.toISOString(), rated: /\brated\b/.test(log[0]) && !/\bunrated\b/.test(log[0]), players, scores,
+        ...(Object.keys(levels).length === 2 ? { levels } : {}) },
     };
     window.postMessage({ scrySaveLogs: "game", record }, location.origin);
   };

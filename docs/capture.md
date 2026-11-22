@@ -102,7 +102,8 @@ The extension in `extension/` saves every game you finish on dominion.games, wit
 - Browsers let an extension write only inside the download folder, so the folder can't be elsewhere. If the browser asks where to save each download, it asks for these files too.
 - When the server reports the game finished (the client's `tableService.gameResult`), it reads the game: the log from the client's log model, which outlives the log panel, the score screen, and each player's final score into the row. A game that was already finished when the page loaded is skipped. So are games while `scry collect` or `scry scout` is replaying games in the tab, and games with the bot (Lord Rattington) in a seat.
 - The first version waited for the score screen and the log panel together, and saved nothing on 2026-11-22: once a live game ends, the log panel may be gone.
-- The log names your own cards and has the game's last move, which a replay misses. It has no rating levels, so the report shows no win chance for these games. The date is when the game ended.
+- The log names your own cards and has the game's last move, which a replay misses. Its header names both players' rating levels (`0	johnHatrick|: 54.13`), which go into the score file, so the report shows a win chance. The date is when the game ended.
+- With Brave's "Ask where to save each file before downloading" on (brave://settings/downloads), each file opens a save dialog: extensions can't skip it. The files go out as `application/octet-stream`, because with `application/json` Brave renamed `ID.jsonl` to `ID.json`.
 - `scry collect` skips a game already imported this way.
 
 ## Scouting an opponent

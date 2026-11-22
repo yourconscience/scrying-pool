@@ -201,7 +201,7 @@ func profileLines(p *gameProfile) string {
 		return ""
 	}
 	out := fmt.Sprintf("# played: %s\n# rated: %v\n", p.Time, p.Rated)
-	if len(p.Levels) == 0 { // a game the browser extension saved: the page doesn't show levels
+	if len(p.Levels) == 0 { // levels unknown, as in a browser extension save whose log header lacks them
 		return out
 	}
 	var levels []string
