@@ -234,7 +234,7 @@ function gameCard(g, i) {
     line(`Turning point, turns ${tp.from}-${tp.to}`, `Gap ${tp.gap_before} to ${tp.gap_after}. You gained ${list(tp.my_gains)}. ${g.opponent} gained ${list(tp.their_gains)}.`);
   }
   line("Kingdom", g.kingdom.join(", ") + (g.landscapes && g.landscapes.length ? " · " + g.landscapes.join(", ") : ""));
-  if (g.records && g.records.length) line("Your record with the cards you took", g.records.map((c) => `${c.card} ${pct(c.score)} of ${c.games}`).join("; "));
+  if (g.records && g.records.length) line("Your record with the cards you took", g.records.map((c) => `${c.card} ${pct(c.score)} of ${c.games}, ` + (c.skipped_games ? `skipped ${pct(c.skipped_score)} of ${c.skipped_games}` : "never skipped")).join("; "));
   const grid = el("div", "game-body");
   grid.append(sc, lines);
   more.append(grid);

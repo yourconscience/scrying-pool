@@ -59,7 +59,7 @@ Expected: 44% per game, 1.3 of 3. Actual: 1.
 ## Game 1, 185400051: lost 28-41, Provinces, 17 turns, heth first
 
 Kingdom: Caravan, Tea House, ... | Landscapes: ... | Roles: village, draw, trash
-Your record with these cards: Caravan 60% of 10; Tea House 40% of 5
+Your record with these cards: Caravan 60% of 10, skipped 45% of 11; Tea House 40% of 5, never skipped
 Opening 4/3: Caravan / Silver (heth: 5/2 Witch)
 First Gold t6 (heth t5), first Province t11 (heth t9)
 Draw luck: -1.4 $/turn over t3-t12, 3 bad hands (heth +0.2, 1)
