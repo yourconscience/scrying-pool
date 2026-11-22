@@ -20,7 +20,7 @@
   const done = new Set();
   let game = null; // the game the client is showing, from its log updates
   let panelLog = []; // the log panel's lines, copied every tick while it shows
-  let pending = null; // a finished game waiting for its score screen: {result, since}
+  let pending = null; // a finished game waiting for its score screen: {result, me}
   let started = false;
 
   // The client's log updates carry the game object; keep the latest one.
@@ -122,15 +122,21 @@
     if (window.scryCapture && window.scryCapture.running) return;
     if (r && !done.has(String(r.gameId))) {
       done.add(String(r.gameId));
-      pending = { result: r, since: Date.now() };
+      flush(); // a game still waiting goes without its score screen
+      pending = { result: r, me };
     }
-    // wait up to 10 s for the score screen, whose text goes with the game
-    if (pending && (resultRe.test(document.body.innerText) || Date.now() - pending.since > 10000)) {
-      const p = pending;
-      pending = null;
-      send(p.result, me);
-    }
+    // The score screen opens only when you click OK on "Game ended", which can be minutes
+    // later; its text goes with the game, so wait for it.
+    if (pending && resultRe.test(document.body.innerText)) flush();
+  };
+
+  const flush = () => {
+    if (!pending) return;
+    const p = pending;
+    pending = null;
+    send(p.result, p.me);
   };
 
   setInterval(check, 2000);
+  window.addEventListener("pagehide", flush); // the tab closes or reloads before the score screen
 })();
