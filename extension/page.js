@@ -4,8 +4,8 @@
 // exports for `scry import` (scry/web/capture.js), and hands it to relay.js. It only
 // reads the page.
 //
-// Left alone: tabs where scry is replaying games (it injects window.scryCapture), and
-// games with the bot that scry and Load Old Game put in a seat.
+// Left alone: games while scry is replaying games in the tab (window.scryCapture is
+// running), and games with the bot that scry and Load Old Game put in a seat.
 (() => {
   if (window.scrySaveLogs) return;
   window.scrySaveLogs = true;
@@ -54,7 +54,7 @@
 
   const check = () => {
     hook();
-    if (window.scryCapture) return;
+    if (window.scryCapture && window.scryCapture.running) return;
     const rows = [...document.querySelectorAll(".log-scroll-container .log-line")];
     if (!rows.length) return;
     const text = document.body.innerText;

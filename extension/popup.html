@@ -21,6 +21,8 @@
   li small { color: var(--muted); }
   .error { color: var(--bad); }
   #status { color: var(--ok); font-size: 12px; min-height: 16px; }
+  #status.warn { color: var(--bad); }
+  button { font: inherit; font-size: 12px; margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -35,6 +37,10 @@
 <label><input type="checkbox" id="log"> <span><code>ID.log</code>, the log alone</span></label>
 <p class="hint">Then: <code>cat ~/Downloads/<span id="folder-hint"></span>/*.jsonl | scry import</code></p>
 <div id="status"></div>
+<div id="failed-box" hidden>
+  <h2>Not saved</h2>
+  <ol id="failed"></ol>
+</div>
 <h2>Saved games</h2>
 <ol id="saved"></ol>
 <script type="module" src="popup.js"></script>
