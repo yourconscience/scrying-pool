@@ -100,7 +100,8 @@ The extension in `extension/` saves every game you finish on dominion.games, wit
 3. After playing: `cat ~/Downloads/scrying-pool/*.jsonl | scry import`. Importing a game again replaces it.
 
 - Browsers let an extension write only inside the download folder, so the folder can't be elsewhere. If the browser asks where to save each download, it asks for these files too.
-- When the score screen shows "You Win" (or Lose, Tie, Resigned), it reads the game. A tab where `scry collect` or `scry scout` is replaying games, and games with the bot (Lord Rattington) in a seat, are left alone.
+- When the server reports the game finished (the client's `tableService.gameResult`), it reads the game: the log from the client's log model, which outlives the log panel, the score screen, and each player's final score into the row. A game that was already finished when the page loaded is skipped. So are games while `scry collect` or `scry scout` is replaying games in the tab, and games with the bot (Lord Rattington) in a seat.
+- The first version waited for the score screen and the log panel together, and saved nothing on 2026-11-22: once a live game ends, the log panel may be gone.
 - The log names your own cards and has the game's last move, which a replay misses. It has no rating levels, so the report shows no win chance for these games. The date is when the game ended.
 - `scry collect` skips a game already imported this way.
 
