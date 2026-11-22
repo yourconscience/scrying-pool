@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Scrying Pool: save game logs",
+  "version": "0.1.0",
+  "description": "Saves the log of every dominion.games game you finish into a folder, ready for scry import.",
+  "permissions": ["downloads", "storage"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [
+    { "matches": ["https://dominion.games/*"], "js": ["page.js"], "world": "MAIN", "run_at": "document_idle" },
+    { "matches": ["https://dominion.games/*"], "js": ["relay.js"], "run_at": "document_idle" }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "Scrying Pool" },
+  "options_page": "popup.html"
+}

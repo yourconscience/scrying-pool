@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scrying Pool</title>
+<style>
+  :root { --bg: #f6f5f0; --fg: #1c201a; --muted: #5d6357; --line: #d8d6cc; --ok: #3d6b35; --bad: #b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1c201a; --fg: #e5e8de; --muted: #9aa092; --line: #343a30; --ok: #8fc283; --bad: #f2b8b5; } }
+  body { margin: 0; padding: 14px 16px; width: 340px; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, sans-serif; }
+  h1 { font-size: 15px; margin: 0 0 10px; }
+  label { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+  .field { display: block; margin: 10px 0; }
+  .field span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+  input[type=text] { width: 100%; box-sizing: border-box; padding: 5px 7px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: inherit; font: inherit; }
+  .hint { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+  code { font-size: 12px; }
+  h2 { font-size: 13px; margin: 14px 0 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+  ol { margin: 0; padding: 0; list-style: none; }
+  li { padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  li small { color: var(--muted); }
+  .error { color: var(--bad); }
+  #status { color: var(--ok); font-size: 12px; min-height: 16px; }
+</style>
+</head>
+<body>
+<h1>Scrying Pool: save game logs</h1>
+<label><input type="checkbox" id="enabled"> Save each game I finish on dominion.games</label>
+<div class="field">
+  <span>Folder inside your download folder</span>
+  <input type="text" id="folder" spellcheck="false">
+  <p class="hint">Browsers let extensions write only inside the download folder.</p>
+</div>
+<label><input type="checkbox" id="jsonl"> <span><code>ID.jsonl</code> for <code>scry import</code></span></label>
+<label><input type="checkbox" id="log"> <span><code>ID.log</code>, the log alone</span></label>
+<p class="hint">Then: <code>cat ~/Downloads/<span id="folder-hint"></span>/*.jsonl | scry import</code></p>
+<div id="status"></div>
+<h2>Saved games</h2>
+<ol id="saved"></ol>
+<script type="module" src="popup.js"></script>
+</body>
+</html>

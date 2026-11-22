@@ -91,6 +91,19 @@ To run it by hand, use `tools/collect.sh` (`SCRY_HOST=HOST tools/collect.sh` fro
 
 To run it every morning and publish on Sundays, put two launchd agents in `~/Library/LaunchAgents` (`scry collect -notify` daily, `scry collect -notify -publish REPO -merge` weekly, with `StartCalendarInterval`) and load them with `launchctl bootstrap gui/$(id -u) FILE`. A Mac that was asleep at that time runs the job when it wakes. The agents run the installed binary: rebuild it (`go build -o ~/.local/bin/scry ./scry`) after changes to what the site reads, or the weekly run publishes data in the old shape.
 
+## Saving each game as it ends
+
+The extension in `extension/` saves every game you finish on dominion.games, with no replay: the log as the game showed it to you, the score screen, the kingdom and both players. It works in Brave, Chrome and other Chromium browsers.
+
+1. Open `brave://extensions` (`chrome://extensions` in Chrome), turn on Developer mode, click **Load unpacked** and pick the `extension` folder of this repository.
+2. Its toolbar button sets the folder, inside the browser's download folder (`scrying-pool` by default), and what to save: `ID.jsonl` for `scry import` (on by default) and `ID.log`, the log alone (off). It lists the games saved so far, and its badge counts new ones.
+3. After playing: `cat ~/Downloads/scrying-pool/*.jsonl | scry import`. Importing a game again replaces it.
+
+- Browsers let an extension write only inside the download folder, so the folder can't be elsewhere. If the browser asks where to save each download, it asks for these files too.
+- When the score screen shows "You Win" (or Lose, Tie, Resigned), it reads the game. A tab where `scry collect` or `scry scout` is replaying games, and games with the bot (Lord Rattington) in a seat, are left alone.
+- The log names your own cards and has the game's last move, which a replay misses. It has no rating levels, so the report shows no win chance for these games. The date is when the game ended.
+- `scry collect` skips a game already imported this way.
+
 ## Scouting an opponent
 
 Before a league match, `scry scout PLAYER` loads the player's latest games and compares their play with yours:
