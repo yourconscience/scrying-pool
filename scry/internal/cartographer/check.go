@@ -170,12 +170,17 @@ func (c *Client) Landscapes(score string) []string {
 // original player; the bot sits in seat 2, the second original player. In your
 // own games the reloading player is the one whose name is among the original
 // players; in other people's games neither log name is, and seat 1 plays first.
+// A game the browser extension saved as it ended (extension/) was not reloaded:
+// its log names both players.
 func SeatNames(logPlayers, original []string) map[string]string {
 	if len(original) != 2 || len(logPlayers) != 2 {
 		return nil
 	}
 	in := func(n string) bool { return n == original[0] || n == original[1] }
 	viewer, bot := logPlayers[0], logPlayers[1]
+	if in(viewer) && in(bot) && viewer != bot { // a game saved as it was played: its log names the players themselves
+		return map[string]string{viewer: viewer, bot: bot}
+	}
 	if !in(viewer) && in(bot) {
 		viewer, bot = bot, viewer
 	}

@@ -200,11 +200,15 @@ func profileLines(p *gameProfile) string {
 	if p == nil || p.Time == "" {
 		return ""
 	}
+	out := fmt.Sprintf("# played: %s\n# rated: %v\n", p.Time, p.Rated)
+	if len(p.Levels) == 0 { // levels unknown, as in a browser extension save whose log header lacks them
+		return out
+	}
 	var levels []string
 	for _, name := range p.Players {
 		levels = append(levels, fmt.Sprintf("%s %.2f", name, p.Levels[name]))
 	}
-	return fmt.Sprintf("# played: %s\n# rated: %v\n# levels: %s\n", p.Time, p.Rated, strings.Join(levels, " / "))
+	return out + fmt.Sprintf("# levels: %s\n", strings.Join(levels, " / "))
 }
 
 var reGameID = regexp.MustCompile(`^\d{1,12}$`)
